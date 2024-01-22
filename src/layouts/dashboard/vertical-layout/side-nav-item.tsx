@@ -81,7 +81,9 @@ export const SideNavItem: FC<SideNavItemProps> = (props) => {
           disabled={disabled}
           className={classNames(
             "btn w-full justify-start rounded-xl",
-            active ? "btn-primary text-white" : "btn-ghost text-text-secondary"
+            active
+              ? "btn-primary bg-orange-400 border-orange-400 text-white"
+              : "btn-ghost text-text-secondary"
           )}
         >
           {startIcon && <span>{startIcon}</span>}

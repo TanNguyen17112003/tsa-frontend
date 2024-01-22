@@ -13,7 +13,8 @@ const config: Config = {
     themes: [
       {
         light: {
-          primary: "orange",
+          ...require("daisyui/src/theming/themes")["[data-theme=light]"],
+          primary: "#F97316",
         },
       },
     ],
@@ -27,6 +28,7 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        primary: "oklch(var(--brand-primary-brand-primary) / <alpha-value>)",
         "text-secondary": "#374151",
         "amber-100": "var(--amber-100)",
         "amber-200": "var(--amber-200)",

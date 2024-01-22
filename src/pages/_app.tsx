@@ -8,11 +8,13 @@ import "simplebar-react/dist/simplebar.min.css";
 import "src/styles/globals.css";
 
 import { SnackbarProvider } from "notistack";
+import { useNProgress } from "src/hooks/use-nprogress";
 
 const App = (props: AppProps) => {
   const { Component, pageProps } = props;
 
   const getLayout = Component.getLayout ?? ((page) => page);
+  useNProgress();
 
   return (
     <>

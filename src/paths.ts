@@ -13,7 +13,7 @@ export const paths = {
     categories: "/dashboard/categories",
     complaints: "/dashboard/complaints",
     "add-complaint": "/dashboard/add-complaint",
-    "dang-xuat": "/dang-xuat",
+    logout: "/dang-xuat",
   },
   401: "/401",
   404: "/404",

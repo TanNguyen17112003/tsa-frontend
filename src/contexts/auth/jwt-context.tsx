@@ -224,7 +224,7 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
   const signOut = useCallback(async (): Promise<void> => {
     CookieHelper.removeItem(CookieKeys.TOKEN);
     dispatch({ type: ActionType.SIGN_OUT });
-    router.push(paths.login);
+    router.push(paths.auth.login);
   }, [router]);
 
   return (

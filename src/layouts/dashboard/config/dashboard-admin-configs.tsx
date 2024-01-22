@@ -1,6 +1,9 @@
-import { PiScalesBold } from "react-icons/pi";
+import { RectangleGroupIcon, BookOpenIcon } from "@heroicons/react/24/solid";
+import { BookshelfFillIcon } from "src/components/icons/BookshelfFillIcon";
+import { IoPersonCircleOutline, IoFlag } from "react-icons/io5";
 import { paths } from "src/paths";
-import { RectangleGroupIcon } from "@heroicons/react/24/solid";
+import { FilesEarmarkFillIcon } from "src/components/icons/FilesEarmarkFillIcon";
+import { BsDoorOpen } from "react-icons/bs";
 
 export const getDashboardAdminConfigs = () => {
   return [
@@ -8,18 +11,33 @@ export const getDashboardAdminConfigs = () => {
       items: [
         {
           title: "Trang chủ",
-          path: paths.admin.index,
+          path: paths.dashboard.index,
           icon: <RectangleGroupIcon className="h-6 w-6" />,
         },
         {
-          title: "Cân đá",
-          path: paths.admin.index,
-          icon: <PiScalesBold size="20px" />,
+          title: "Kho dữ liệu",
+          path: paths.dashboard.collections,
+          icon: <BookshelfFillIcon className="h-6 w-6" />,
         },
         {
-          title: "Cân đá",
-          path: paths.admin.index,
-          icon: <PiScalesBold size="20px" />,
+          title: "Quản lý tài khoản",
+          path: paths.dashboard.accounts,
+          icon: <IoPersonCircleOutline className="h-6 w-6" />,
+        },
+        {
+          title: "Quản lý danh mục",
+          path: paths.dashboard.categories,
+          icon: <FilesEarmarkFillIcon className="h-6 w-6" />,
+        },
+        {
+          title: "Quản lý khiếu nại",
+          path: paths.dashboard.complaints,
+          icon: <IoFlag className="h-6 w-6" />,
+        },
+        {
+          title: "Đăng xuất",
+          path: paths.dashboard.logout,
+          icon: <BsDoorOpen className="h-6 w-6" />,
         },
       ],
     },

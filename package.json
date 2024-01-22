@@ -1,6 +1,7 @@
 {
-  "name": "with-tailwindcss-app",
-  "version": "0.1.0",
+  "name": "siu-sutra-frontend",
+  "version": "1.0.0",
+  "author": "SHub Solution",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -10,7 +11,6 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.1.1",
-    "bootstrap-icons": "^1.11.3",
     "classnames": "^2.5.1",
     "cookies-next": "^4.0.0",
     "date-fns": "3.3.0",

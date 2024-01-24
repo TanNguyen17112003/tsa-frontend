@@ -1,6 +1,3 @@
-import { StationConnection } from "src/types/station";
-import { fileToBase64 } from "./file-to-base64";
-
 export const downloadUrl = (url: string, name?: string) => {
   const link = document.createElement("a");
   let fileName = name;
@@ -43,43 +40,6 @@ export const urlToFile = async (
     return new File([blob], _fileName || "no_name", { type: blob.type });
   } catch (error) {
     return undefined;
-  }
-};
-
-export const getCameraImage = async (
-  cam_id: string,
-  { static_ip, static_camera_id, static_camera_key }: StationConnection
-): Promise<string> => {
-  if (static_ip) {
-    const newKey = new Date().getTime();
-    const url = `${static_ip}/${cam_id}?key=${newKey}`;
-    const file = await urlToFile(url, "image.jpg", { timeout: 900 });
-    if (!file) {
-      return "";
-    }
-    return String(await fileToBase64(file));
-  } else {
-    return "";
-  }
-};
-
-export const getScaleWeight = async (
-  scale_id: string,
-  { static_ip }: StationConnection
-): Promise<{ weight: number; raw: string }> => {
-  if (static_ip) {
-    const controller = new AbortController();
-    const id = setTimeout(() => controller.abort(), 950);
-    const response = await fetch(`${static_ip}/scale`, {
-      method: "GET",
-      signal: controller.signal,
-    });
-    clearTimeout(id);
-    const json = await response.json();
-    const raw: string = json.weight;
-    return { weight: Number(raw.slice(0, 6)), raw };
-  } else {
-    return { weight: 0, raw: "" };
   }
 };
 

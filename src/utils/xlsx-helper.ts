@@ -2,9 +2,6 @@ import _ from "lodash";
 import { CardTableConfig } from "src/components/card-table";
 import * as XLSX from "xlsx";
 import { getObjectValue } from "./obj-helper";
-import { StationDetail } from "src/types/station";
-import XlsxPopulate from "xlsx-populate";
-import { downloadFile } from "./url-handler";
 
 export interface ImportXLSXConfigField {
   labels: string[];
@@ -20,7 +17,6 @@ export interface ImportXLSXOptions {
 }
 
 export interface ExportHeader {
-  currentStation?: StationDetail;
   title: string;
   titleHelperText?: string;
   colSpan: number;
@@ -163,11 +159,11 @@ export async function importXLSX<T extends ImportXLSXConfig>(
 
             resolve({ data: results });
           } catch (error) {
-            resolve({ data: [], error });
+            resolve({ data: [], error: String(error) });
           }
         };
       } catch (error) {
-        resolve(error);
+        resolve({ error: String(error), data: [] });
       }
     }
   );
@@ -242,128 +238,3 @@ export const updateCell = (
 ) => {
   XLSX.utils.sheet_add_aoa(ws, [[value]], { origin: pos });
 };
-
-export const sheet_add_title = (
-  worksheet: XLSX.WorkSheet,
-  { currentStation, title, colSpan, helperFields }: ExportHeader
-) => {
-  if (currentStation) {
-    XLSX.utils.sheet_add_aoa(
-      worksheet,
-      [
-        [
-          `CÔNG TY CỔ PHẦN VẬT LIỆU XÂY DỰNG BÌNH DƯƠNG - ${currentStation?.name}`.toUpperCase(),
-        ],
-        [currentStation?.address],
-        [title],
-        ...(helperFields ? [[]] : []),
-        ...(helperFields || []).map((field) => [field]),
-      ],
-      { origin: "A1" }
-    );
-
-    worksheet["!merges"] = [
-      ...(worksheet["!merges"] || []),
-      ...[
-        { s: { r: 0, c: 0 }, e: { r: 0, c: colSpan } },
-        { s: { r: 1, c: 0 }, e: { r: 1, c: colSpan } },
-        { s: { r: 2, c: 0 }, e: { r: 2, c: colSpan } },
-        ...(helperFields || []).map((_, index) => ({
-          s: { r: 3 + index, c: 0 },
-          e: { r: 3 + index, c: colSpan },
-        })),
-      ],
-    ];
-  }
-};
-
-export const to_xlsx_populate = async (
-  worksheet: XLSX.WorkSheet
-): Promise<XlsxPopulate.Workbook> => {
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, `Sheet 1`);
-  const wb = await XlsxPopulate.fromDataAsync(
-    XLSX.write(workbook, { type: "buffer" })
-  );
-  return wb;
-};
-
-export async function exportStyledWorksheet<T extends {}>(
-  data: T[],
-  exportFields: ExportWorksheetField<T>[],
-  opts?: XLSX.JSON2SheetOpts & {
-    indexColumn?: boolean;
-    fileName?: string;
-    numberFormat?: { [key in keyof Partial<T>]: string };
-    additionalRows?: any[][];
-    additionalMerges?: XLSX.Range[];
-  },
-  header?: ExportHeader
-) {
-  let origin: XLSX.CellAddress = {
-    r: 4 + Math.ceil(header?.helperFields?.length || 0),
-    c: 0,
-  };
-  const worksheet = exportWorksheet(data, exportFields, {
-    ...opts,
-    origin,
-  });
-
-  if (opts?.additionalRows) {
-    XLSX.utils.sheet_add_aoa(worksheet, opts.additionalRows, {
-      origin: { r: origin.r + data.length + 1, c: 0 },
-    });
-  }
-  if (header) {
-    sheet_add_title(worksheet, {
-      ...header,
-      colSpan: exportFields.length - 1 + (opts?.indexColumn ? 1 : 0),
-    });
-  }
-  worksheet["!merges"]?.push(...(opts?.additionalMerges || []));
-  const workbook = await to_xlsx_populate(worksheet);
-  const sheet = workbook.sheet(0);
-
-  origin = { c: origin.c + 1, r: origin.r + 1 };
-  const tableCellRange = sheet.range(
-    origin?.r || 1,
-    origin?.c || 1,
-    (origin?.r || 1) + data.length + (opts?.additionalRows?.length || 0),
-    (origin?.c || 1) + exportFields.length - 1 + (opts?.indexColumn ? 1 : 0)
-  );
-  tableCellRange.style({
-    border: true,
-  });
-  const tableHeaderRow = sheet.row(origin?.r || 1);
-  tableHeaderRow.style({
-    bold: true,
-    horizontalAlignment: "center",
-    verticalAlignment: "center",
-    fontSize: 13,
-  });
-  tableHeaderRow.height(24);
-
-  exportFields.forEach((field, index) =>
-    sheet
-      .column(index + 1 + (opts?.indexColumn ? 1 : 0))
-      .style("numberFormat", opts?.numberFormat?.[field.key] || "#,##")
-  );
-
-  sheet.cell(1, 1).style({
-    bold: true,
-    verticalAlignment: "center",
-    fontSize: 18,
-  });
-  sheet
-    .range(2, 1, 4 + Math.ceil(header?.helperFields?.length || 0), 1)
-    .style({ bold: true, fontSize: 15 });
-
-  if (header?.helperData) {
-    for (let i = 4; i < 4 + Math.ceil(header.helperData.length / 2); i++) {
-      sheet.cell(i, 1).style({ bold: true, horizontalAlignment: "right" });
-      sheet.cell(i, 4).style({ bold: true, horizontalAlignment: "right" });
-    }
-  }
-  const blob = await workbook.outputAsync();
-  downloadFile(blob as Blob, `${opts?.fileName || "export"}.xlsx`);
-}

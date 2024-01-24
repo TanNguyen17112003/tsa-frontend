@@ -50,11 +50,11 @@ export class UsersApi {
     return await apiDelete(`/users/${id}`, { id });
   }
 
-  static async signIn(request: SignInRequest): SignInResponse {
+  static async signIn(request: SignInRequest): Promise<SignInResponse> {
     return await apiPost("/users/login", request);
   }
 
-  static async signUp(request: SignUpRequest): SignUpResponse {
+  static async signUp(request: SignUpRequest): Promise<SignUpResponse> {
     return await apiPost("/users", request);
   }
 

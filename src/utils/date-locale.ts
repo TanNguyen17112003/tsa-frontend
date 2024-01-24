@@ -1,4 +1,4 @@
-import { Locale } from "date-fns";
+import { FormatRelativeFnOptions, FormatRelativeToken, Locale } from "date-fns";
 import locale from "date-fns/locale/en-US";
 
 const formatDistanceLocale: Record<string, string> = {
@@ -18,25 +18,6 @@ const formatDistanceLocale: Record<string, string> = {
   xYears: "{{count}}y",
   overXYears: "{{count}}y",
   almostXYears: "{{count}}y",
-};
-
-export const customLocale: Locale = {
-  ...locale,
-  formatDistance: (token, count, options) => {
-    options = options || {};
-
-    const result = formatDistanceLocale[token].replace("{{count}}", count);
-
-    if (options.addSuffix) {
-      if (options.comparison > 0) {
-        return "in " + result;
-      } else {
-        return result + " ago";
-      }
-    }
-
-    return result;
-  },
 };
 
 export const formatDate = (date: Date): string => {

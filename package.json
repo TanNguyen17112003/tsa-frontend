@@ -53,6 +53,7 @@
     "html-to-draftjs": "^1.5.0",
     "i18next": "23.7.16",
     "idb-keyval": "^6.2.1",
+    "lodash": "^4.17.21",
     "lodash.debounce": "4.0.8",
     "lodash.isequal": "4.5.0",
     "lucide-react": "^0.315.0",

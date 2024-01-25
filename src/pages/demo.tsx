@@ -1,17 +1,49 @@
 import { ChangeEventHandler, useCallback, useRef, useState } from "react";
-import { Descendant } from "slate";
 import PlateEditor from "src/modules/Editor";
 import type { Page as PageType } from "src/types/page";
 import { createPlateEditor, deserializeHtml } from "@udecode/plate-common";
 import plugins from "src/modules/Editor/plugins";
-import { createDeserializeDocxPlugin } from "@udecode/plate-serializer-docx";
+import _ from "lodash";
+
+const reduceChildren = (block: any) => {
+  if (!block.children) {
+    return block;
+  }
+  const blockChildren: any[] = block.children;
+  const newChildren: any[] = [];
+  let currentChild: any | null = null;
+  for (let i = 0; i < blockChildren.length; i++) {
+    if (blockChildren[i].children || !blockChildren[i].text) {
+      if (currentChild) {
+        newChildren.push(currentChild);
+        currentChild = null;
+      }
+      newChildren.push(reduceChildren(blockChildren[i]));
+    } else if (
+      currentChild &&
+      _.isEqual(
+        { ...currentChild, text: "" },
+        { ...blockChildren[i], text: "" }
+      )
+    ) {
+      currentChild.text += blockChildren[i].text || "";
+    } else {
+      if (currentChild) {
+        newChildren.push(currentChild);
+      }
+      currentChild = blockChildren[i];
+      currentChild.text = currentChild.text || "";
+    }
+  }
+  if (currentChild != null) {
+    newChildren.push(currentChild);
+  }
+  return { ...block, children: newChildren };
+};
 
 const Page: PageType = () => {
   const docxContainer = useRef<HTMLDivElement | null>(null);
-  const [slateContent, setSlateContent] = useState<Descendant[]>();
-  const [value, setValue] = useState<any[]>([]);
-
-  const [html, setHtml] = useState("");
+  const [plateValue, setPlateValue] = useState<any[]>([]);
 
   const handleUpload: ChangeEventHandler<HTMLInputElement> = useCallback(
     async (e) => {
@@ -29,7 +61,6 @@ const Page: PageType = () => {
           ignoreFonts: true,
         });
 
-        setHtml(docxContainer.current.innerHTML);
         const content = docxContainer.current.innerHTML;
         let resultContent = "";
         let pos = 0;
@@ -65,11 +96,13 @@ const Page: PageType = () => {
             break;
           }
         }
-        const aaa = deserializeHtml(tmpEditor, {
+        const aaa: any[] = deserializeHtml(tmpEditor, {
           element: docxContainer.current,
         });
         console.log("aaa", aaa);
-        setValue(aaa);
+        const newContent = aaa.map((value) => reduceChildren(value));
+        console.log("new", newContent);
+        setPlateValue(newContent);
       }
     },
     []
@@ -83,7 +116,7 @@ const Page: PageType = () => {
       </div>
       <div className="card">
         <div className="card-content">
-          <PlateEditor key={value.toString()} initialValue={value} />
+          <PlateEditor key={plateValue.toString()} initialValue={plateValue} />
         </div>
       </div>
     </div>

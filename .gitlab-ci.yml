@@ -11,7 +11,7 @@ before_script:
   - yarn
 pages:
   script:
-    - yarn build
+    - yarn build-staging
     - rm -rf public
     - mv out public
   artifacts:

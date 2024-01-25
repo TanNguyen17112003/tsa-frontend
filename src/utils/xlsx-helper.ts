@@ -1,7 +1,7 @@
 import _ from "lodash";
-import { CardTableConfig } from "src/components/card-table";
 import * as XLSX from "xlsx";
 import { getObjectValue } from "./obj-helper";
+import { CustomTableConfig } from "src/components/custom-table";
 
 export interface ImportXLSXConfigField {
   labels: string[];
@@ -214,7 +214,7 @@ export function cardTableConfigsToExportFields<
   P,
   T extends { id: P; [key: string]: any }
 >(
-  configs: CardTableConfig<P, T>[],
+  configs: CustomTableConfig<P, T>[],
   opts?: {
     custom?: { [key in keyof Partial<T>]: (data: T) => any };
     ignore?: (keyof T | string)[];

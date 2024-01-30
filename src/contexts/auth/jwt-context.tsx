@@ -101,7 +101,7 @@ export interface AuthContextType extends State {
   signIn: (email: string, password: string) => Promise<UserDetail | undefined>;
   signUp: (
     email: string,
-    name: string,
+    user_name: string,
     full_name: string,
     password: string,
     confirm_password: string
@@ -180,9 +180,9 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
   const signIn = useCallback(
     async (user_name: string, password: string): Promise<UserDetail> => {
       const response = await UsersApi.signIn({ user_name, password });
-      console.log("response in signIn", response);
+
       localStorage.setItem(CookieKeys.TOKEN, response.token);
-      localStorage.setItem("user_data", JSON.stringify(response));
+      localStorage.setItem("user_data", JSON.stringify(response.data));
 
       dispatch({
         type: ActionType.SIGN_IN,
@@ -198,14 +198,14 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
   const signUp = useCallback(
     async (
       email: string,
-      name: string,
+      user_name: string,
       full_name: string,
       password: string,
       confirm_password: string
     ): Promise<void> => {
       const { accessToken } = await UsersApi.signUp({
         email,
-        name,
+        user_name,
         password,
         full_name,
         confirm_password,

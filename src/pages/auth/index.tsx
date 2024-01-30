@@ -9,45 +9,62 @@ import { EyeIcon } from "src/components/icons/EyeIcon";
 import HeaderTitle from "src/components/ui/HeaderTitle";
 import { ArrowLeft } from "src/components/icons/ArrowLeft";
 import { useRouter } from "next/router";
-import { AuthContext, AuthProvider } from "src/contexts/auth/jwt-context";
+import {
+  AuthContext,
+  AuthContextType,
+  AuthProvider,
+} from "src/contexts/auth/jwt-context";
+import PasswordInput from "src/components/ui/PasswordInput";
+import { paths } from "src/paths";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { useMounted } from "src/hooks/use-mounted";
+import { usePageView } from "src/hooks/use-page-view";
 
-const PasswordInput = () => {
-  const [showPassword, setShowPassword] = useState(false);
-  const togglePasswordVisibility = () => setShowPassword(!showPassword);
+interface Values {
+  user_name: string;
+  password: string;
+  submit: null;
+}
 
-  return (
-    <div className="relative ">
-      <input
-        type={showPassword ? "text" : "password"}
-        placeholder="Nhập mật khẩu tại đây ..."
-        className="input input-bordered w-[388px] pl-3 pr-10 placeholder:w-[334px] placeholder:h-[20px] focus:placeholder:w-[334px] 
-        focus:placeholder:h-[20px]"
-      />
-      <div
-        className="flex absolute top-1/2 right-4 transform -translate-y-1/2 cursor-pointer"
-        onClick={togglePasswordVisibility}
-      >
-        <EyeIcon className="" />
-      </div>
-    </div>
-  );
+const initialValues: Values = {
+  user_name: "",
+  password: "",
+  submit: null,
 };
+
+const validationSchema = Yup.object({
+  user_name: Yup.string().max(255).required("user_name is required"),
+  password: Yup.string().max(255).required("Password is required"),
+});
 const Page: PageType = () => {
+  const isMounted = useMounted();
   const router = useRouter();
-  const { signIn } = useAuth();
+  const { signIn } = useAuth<AuthContextType>();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const handleSignUp = () => {
-    router.push("/auth/register");
+    router.replace(paths.auth.register);
   };
 
-  const handleSignIn = () => {
-    signIn("admin", "1234")
-      .then((response) => {
-        console.log("Result: ", response);
-      })
-      .catch((error: any) => {
-        console.log("Error: ", error);
-      });
+  const handleSignIn = async () => {
+    try {
+      await signIn(username, password);
+      router.replace(paths.dashboard.index);
+    } catch (error: any) {
+      console.error(error);
+      setError("Vui lòng kiểm tra lại Tên đăng nhập/Mật khẩu");
+    }
   };
+
+  useEffect(() => {
+    if (username || password) {
+      setError("");
+    }
+  }, [username, password]);
 
   return (
     <div className="h-screen flex ">
@@ -68,19 +85,30 @@ const Page: PageType = () => {
               type="text"
               placeholder="Nhập tên đăng nhập tại đây ..."
               className="input input-bordered w-[388px] px-3"
+              onChange={(e) => setUsername(e.target.value)}
+              value={username}
             />
             <div className="gap-6"></div>
             <span className="label color-label-input-caret label-text text-xs font-text-xs-semibold font-semibold">
               Mật khẩu
             </span>
-            {/* <input
-                type="text"
-                placeholder="Nhập mật khẩu tại đây ..."
-                className="input input-bordered w-[388px] px-3"
-              /> */}
-            <PasswordInput />
+
+            <PasswordInput
+              onChange={(e: any) => setPassword(e.target.value)}
+              value={password}
+              showPassword={showPassword}
+              togglePasswordVisibility={() => setShowPassword(!showPassword)}
+            />
           </div>
           <div className="mt-5"></div>
+          {error && (
+            <div>
+              <p className="text-sm font-semibold text-center flex items-center justify-center h-29 text-[#EF4444] gap-6">
+                {error}
+              </p>
+              <div className="mt-5"> </div>
+            </div>
+          )}
           <button
             className="btn btn-primary text-white w-full"
             onClick={() => handleSignIn()}

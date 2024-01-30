@@ -9,36 +9,39 @@ import HeaderTitle from "src/components/ui/HeaderTitle";
 import { ArrowLeft } from "src/components/icons/ArrowLeft";
 import { useRouter } from "next/router";
 import { AuthProvider } from "src/contexts/auth/jwt-context";
+import PasswordInput from "src/components/ui/PasswordInput";
+import { paths } from "src/paths";
 
-const PasswordInput = () => {
-  const [showPassword, setShowPassword] = useState(false);
-  const togglePasswordVisibility = () => setShowPassword(!showPassword);
-
-  return (
-    <div className="relative ">
-      <input
-        type={showPassword ? "text" : "password"}
-        placeholder="Nhập mật khẩu tại đây ..."
-        className="input input-bordered w-[388px] pl-3 pr-10 placeholder:w-[334px] placeholder:h-[20px] focus:placeholder:w-[334px] 
-        focus:placeholder:h-[20px]"
-      />
-      <div
-        className="flex absolute top-1/2 right-4 transform -translate-y-1/2 cursor-pointer"
-        onClick={togglePasswordVisibility}
-      >
-        <EyeIcon className="" />
-      </div>
-    </div>
-  );
-};
 const Page: PageType = () => {
   const router = useRouter();
-
+  const { signUp } = useAuth();
+  // Form State
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const handleGoBack = () => {
-    // Xử lý khi nút "Quay lại" được nhấp vào.
     console.log("Quay lại");
-    router.push("/auth");
-    // Thêm logic xử lý quay lại tại đây.
+    router.replace(paths.auth.login);
+  };
+
+  const handleSignUp = async () => {
+    try {
+      const response = await signUp(
+        email,
+        username,
+        fullName,
+        password,
+        confirmPassword
+      );
+      console.log(response);
+      router.replace(paths.auth.login);
+    } catch (error: any) {
+      console.error(error);
+    }
   };
   return (
     <>
@@ -74,6 +77,8 @@ const Page: PageType = () => {
                 type="text"
                 placeholder="Nhập họ và tên của bạn ..."
                 className="input input-bordered w-[388px] px-3"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
               />
               <div className="gap-6"></div>
 
@@ -84,6 +89,8 @@ const Page: PageType = () => {
                 type="text"
                 placeholder="Nhập tên đăng nhập tại đây ..."
                 className="input input-bordered w-[388px] px-3"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
               />
               <div className="gap-6"></div>
               <span className="label color-label-input-caret label-text text-xs font-text-xs-semibold font-semibold">
@@ -93,23 +100,39 @@ const Page: PageType = () => {
                 type="text"
                 placeholder="Nhập địa chỉ Email tại đây ..."
                 className="input input-bordered w-[388px] px-3"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
               <div className="gap-6"></div>
               <span className="label color-label-input-caret label-text text-xs font-text-xs-semibold font-semibold">
                 Mật khẩu
               </span>
-
-              <PasswordInput />
+              <PasswordInput
+                onChange={(e: any) => setPassword(e.target.value)}
+                value={password}
+                showPassword={showPassword}
+                togglePasswordVisibility={() => setShowPassword(!showPassword)}
+              />
               <div className="gap-6"></div>
               <span className="label color-label-input-caret label-text text-xs font-text-xs-semibold font-semibold">
                 Nhập lại mật khẩu
               </span>
 
-              <PasswordInput />
+              <PasswordInput
+                onChange={(e: any) => setConfirmPassword(e.target.value)}
+                value={confirmPassword}
+                showPassword={showConfirmPassword}
+                togglePasswordVisibility={() =>
+                  setShowConfirmPassword(!showConfirmPassword)
+                }
+              />
               <div className="gap-6"></div>
             </div>
             <div className="mt-5"></div>
-            <button className="btn btn-primary text-white w-full">
+            <button
+              className="btn btn-primary text-white w-full"
+              onClick={() => handleSignUp()}
+            >
               Đăng ký
             </button>
           </div>

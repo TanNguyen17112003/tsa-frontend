@@ -19,7 +19,7 @@ type SignInResponse = Promise<{
 
 type SignUpRequest = {
   email: string;
-  name: string;
+  user_name: string;
   password: string;
   full_name: string;
   confirm_password: string;

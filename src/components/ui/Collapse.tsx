@@ -1,5 +1,5 @@
 import React, { useState, useEffect, ReactNode } from "react";
-import classnames from "classnames";
+import clsx from "clsx";
 
 interface CollapseProps
   extends React.DetailedHTMLProps<
@@ -29,7 +29,7 @@ export const Collapse: React.FC<CollapseProps> = ({
     }
   }, [isOpen]);
 
-  const mergedClassName = classnames(className, {
+  const mergedClassName = clsx(className, {
     "overflow-hidden": true,
     "transition-height duration-300": true,
   });

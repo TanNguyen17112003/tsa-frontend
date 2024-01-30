@@ -3,7 +3,7 @@
 import React from "react";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import { withCn, withProps } from "@udecode/cn";
-import classNames from "classnames";
+import clsx from "clsx";
 
 export const TooltipProvider = TooltipPrimitive.Provider;
 export const Tooltip = TooltipPrimitive.Root;
@@ -47,11 +47,7 @@ export function withTooltip<
 
     if (tooltip && mounted) {
       return (
-        <div
-          {...tooltipProps}
-          className={classNames("tooltip")}
-          data-tip="hello"
-        >
+        <div {...tooltipProps} className={clsx("tooltip")} data-tip="hello">
           {component}
           {/* <TooltipTrigger asChild>{component}</TooltipTrigger>
 

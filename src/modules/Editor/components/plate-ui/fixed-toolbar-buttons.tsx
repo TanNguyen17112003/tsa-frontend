@@ -1,29 +1,53 @@
-import React from "react";
 import {
   MARK_BOLD,
-  MARK_CODE,
   MARK_ITALIC,
-  MARK_STRIKETHROUGH,
   MARK_UNDERLINE,
 } from "@udecode/plate-basic-marks";
-import { useEditorReadOnly } from "@udecode/plate-common";
+import { useEditorReadOnly, useEditorRef } from "@udecode/plate-common";
 import {
+  BiAlignLeft,
+  BiAlignMiddle,
+  BiAlignRight,
   BiBold,
-  BiCode,
   BiItalic,
-  BiStrikethrough,
   BiUnderline,
 } from "react-icons/bi";
 
-import { InsertDropdownMenu } from "./insert-dropdown-menu";
+import {
+  useAlignDropdownMenu,
+  useAlignDropdownMenuState,
+} from "@udecode/plate-alignment";
 import { MarkToolbarButton } from "./mark-toolbar-button";
-import { ModeDropdownMenu } from "./mode-dropdown-menu";
-import { ToolbarGroup } from "./toolbar";
-import { TurnIntoDropdownMenu } from "./turn-into-dropdown-menu";
-import { BsTypeItalic } from "react-icons/bs";
+import { ToolbarButton, ToolbarGroup } from "./toolbar";
+import clsx from "clsx";
+import Autocomplete from "src/components/Autocomplete";
+
+const alignmentItems = [
+  {
+    value: "left",
+    tooltip: "Align left",
+    icon: BiAlignLeft,
+  },
+  {
+    value: "center",
+    tooltip: "Align center",
+    icon: BiAlignMiddle,
+  },
+  {
+    value: "right",
+    tooltip: "Align right",
+    icon: BiAlignRight,
+  },
+];
 
 export function FixedToolbarButtons() {
   const readOnly = useEditorReadOnly();
+  const state = useAlignDropdownMenuState();
+  const { radioGroupProps } = useAlignDropdownMenu(state);
+  radioGroupProps.onValueChange;
+  const editor = useEditorRef();
+
+  console.log("state, radioGroupProps", state, radioGroupProps);
 
   return (
     <div className="w-full overflow-hidden">
@@ -35,43 +59,58 @@ export function FixedToolbarButtons() {
       >
         {!readOnly && (
           <>
+            <div className="grow" />
             <ToolbarGroup noSeparator>
-              <InsertDropdownMenu />
-              <TurnIntoDropdownMenu />
-            </ToolbarGroup>
-
-            <ToolbarGroup>
-              <MarkToolbarButton tooltip="Bold (⌘+B)" nodeType={MARK_BOLD}>
+              <MarkToolbarButton
+                tooltip="Bold (⌘+B)"
+                nodeType={MARK_BOLD}
+                className="border-2 py-3 px-4"
+              >
                 <BiBold />
               </MarkToolbarButton>
-              <MarkToolbarButton tooltip="Italic (⌘+I)" nodeType={MARK_ITALIC}>
+              <MarkToolbarButton
+                tooltip="Italic (⌘+I)"
+                nodeType={MARK_ITALIC}
+                className="border-2 py-3 px-4"
+              >
                 <BiItalic />
               </MarkToolbarButton>
               <MarkToolbarButton
                 tooltip="Underline (⌘+U)"
                 nodeType={MARK_UNDERLINE}
+                className="border-2 py-3 px-4"
               >
-                <BiUnderline />
+                <BiUnderline size={0} />
               </MarkToolbarButton>
-
-              <MarkToolbarButton
-                tooltip="Strikethrough (⌘+⇧+M)"
-                nodeType={MARK_STRIKETHROUGH}
-              >
-                <BiStrikethrough />
-              </MarkToolbarButton>
-              <MarkToolbarButton tooltip="Code (⌘+E)" nodeType={MARK_CODE}>
-                <BiCode />
-              </MarkToolbarButton>
+            </ToolbarGroup>
+            <ToolbarGroup noSeparator>
+              {alignmentItems.map((item) => (
+                <ToolbarButton
+                  tooltip={item.tooltip}
+                  className={clsx("border-2 py-3 px-4")}
+                  pressed={item.value == state.value}
+                  key={item.value}
+                  onClick={() => radioGroupProps.onValueChange(item.value)}
+                >
+                  {<item.icon />}
+                </ToolbarButton>
+              ))}
+            </ToolbarGroup>
+            <ToolbarGroup noSeparator>
+              <div className="w-[300px]">
+                <Autocomplete
+                  options={Array(10)
+                    .fill(0)
+                    .map((_, index) => ({
+                      value: index,
+                      label: index.toString(),
+                    }))}
+                  onChange={(value) => console.log("value", value)}
+                ></Autocomplete>
+              </div>
             </ToolbarGroup>
           </>
         )}
-
-        <div className="grow" />
-
-        <ToolbarGroup noSeparator>
-          <ModeDropdownMenu />
-        </ToolbarGroup>
       </div>
     </div>
   );

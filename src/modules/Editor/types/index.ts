@@ -8,4 +8,5 @@ export interface EditorFormat {
   italic?: boolean;
   underline?: boolean;
   fontSize?: number;
+  color?: string;
 }

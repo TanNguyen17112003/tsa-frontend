@@ -14,7 +14,7 @@ import plugins from "./plugins";
 
 import { useCallback, type FC } from "react";
 import clsx from "clsx";
-import { EditorFormat, EditorHighlight } from "./types/highlight";
+import { EditorFormat, EditorHighlight } from "./types";
 
 interface PlateEditorProps {
   initialValue: any;
@@ -71,9 +71,15 @@ const Leaf = ({
   return (
     <span
       {...attributes}
+      style={{
+        color: leaf.color,
+        fontSize: leaf.fontSize,
+      }}
       className={clsx(
         leaf.highlightSearch && "bg-orange-200",
         leaf.highlightNote && "bg-orange-300"
+        // leaf.color && `text-[${leaf.color}]`,
+        // leaf.fontSize && `text-[${leaf.fontSize}]`
         // leaf.bold && "font-bold",
         // leaf.italic && "italic",
         // leaf.underline && "underline"

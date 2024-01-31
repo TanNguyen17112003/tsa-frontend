@@ -65,7 +65,7 @@ export function FixedToolbarButtons() {
   }, [editorState.selection]);
 
   const handleChangeFontSize = useCallback(
-    (value: number) => {
+    (value: string) => {
       setMarks(editorState, { fontSize: value, note: "abc" });
       focusEditor(editorState);
     },
@@ -145,8 +145,8 @@ export function FixedToolbarButtons() {
                   className="w-[120px]"
                   placeholder="Kích thước"
                   options={fontSizeOptions.map((fontSize) => ({
-                    value: fontSize,
-                    label: fontSize.toString(),
+                    value: `${fontSize}pt`,
+                    label: `${fontSize}pt`,
                   }))}
                   value={selectionMark?.fontSize || undefined}
                   onChange={handleChangeFontSize}

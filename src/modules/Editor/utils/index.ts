@@ -15,49 +15,30 @@ export const convertDocx2Editor = async (file: File): Promise<any[]> => {
     ignoreWidth: true,
     ignoreFonts: true,
   });
+  const htmlContent = container.innerHTML;
+  const htmlArticleString = htmlContent.substring(
+    htmlContent.indexOf("<article>"),
+    htmlContent.indexOf("</article>") + 11
+  );
 
   const tmpEditor = createPlateEditor({ plugins });
   const blocks: any[] = deserializeHtml(tmpEditor, {
-    element: container,
+    element: htmlArticleString,
   });
+  console.log("blocks", blocks);
   const cleanedBlocks = blocks.map((block) => cleanBlock(block));
+  console.log("cleanedBlocks", cleanedBlocks);
   container.remove();
   return cleanedBlocks;
 };
 
-export const cleanHtml = (content: string) => {
-  let resultContent = "";
-  let pos = 0;
-  while (true) {
-    const spanIndex = content.indexOf("<span", pos);
-    if (spanIndex >= 0) {
-      resultContent += content.substring(pos, spanIndex);
-      const endIndex = content.indexOf(">", pos + 1);
-      const spanContent = content.substring(spanIndex, endIndex + 1);
-      let closeIndex = content.indexOf("</span>", endIndex + 1);
-      let textContent = content.substring(endIndex + 1, closeIndex);
-      // console.log("spanContent", spanContent);
-      while (true) {
-        const nextSpanIndex = content.indexOf(spanContent, closeIndex + 1);
-        if (nextSpanIndex != closeIndex + 7) {
-          break;
-        }
-        closeIndex = content.indexOf("</span>", nextSpanIndex + 1);
-        textContent += content.substring(
-          nextSpanIndex + spanContent.length + 1,
-          closeIndex
-        );
-      }
-      // console.log("textContent", textContent);
-      resultContent += spanContent + textContent + "</span>";
-      pos = closeIndex + 7;
-    } else {
-      resultContent += content.substring(pos);
-      break;
-    }
-  }
-};
-
+/**
+ * Clean and normalize blocks:
+ *  - Remove duplicate text children with same format
+ *  - Convert color from rgb format to hex
+ * @param block from deserialize html
+ * @returns cleaned blocks
+ */
 export const cleanBlock = (block: any) => {
   if (!block.children) {
     return block;
@@ -91,5 +72,61 @@ export const cleanBlock = (block: any) => {
   if (currentChild != null) {
     newChildren.push(currentChild);
   }
-  return { ...block, children: newChildren };
+  return {
+    ...block,
+    children: newChildren.map((child) =>
+      child.color ? { ...child, color: rgbToHex(child.color) } : child
+    ),
+  };
 };
+
+export const cleanHtml = (content: string) => {
+  let resultContent = "";
+  let pos = 0;
+  while (true) {
+    const spanIndex = content.indexOf("<span", pos);
+    if (spanIndex >= 0) {
+      resultContent += content.substring(pos, spanIndex);
+      const endIndex = content.indexOf(">", pos + 1);
+      const spanContent = content.substring(spanIndex, endIndex + 1);
+      let closeIndex = content.indexOf("</span>", endIndex + 1);
+      let textContent = content.substring(endIndex + 1, closeIndex);
+      while (true) {
+        const nextSpanIndex = content.indexOf(spanContent, closeIndex + 1);
+        if (nextSpanIndex != closeIndex + 7) {
+          break;
+        }
+        closeIndex = content.indexOf("</span>", nextSpanIndex + 1);
+        textContent += content.substring(
+          nextSpanIndex + spanContent.length + 1,
+          closeIndex
+        );
+      }
+      resultContent += spanContent + textContent + "</span>";
+      pos = closeIndex + 7;
+    } else {
+      resultContent += content.substring(pos);
+      break;
+    }
+  }
+};
+
+function rgbToHex(rgb: string): string {
+  // Extract the RGB values from the input string
+  const match = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+  if (!match) {
+    return rgb;
+  }
+
+  const red = parseInt(match[1], 10);
+  const green = parseInt(match[2], 10);
+  const blue = parseInt(match[3], 10);
+
+  // Convert each RGB component to its hex representation
+  const hexRed = red.toString(16).padStart(2, "0");
+  const hexGreen = green.toString(16).padStart(2, "0");
+  const hexBlue = blue.toString(16).padStart(2, "0");
+
+  // Concatenate the hex values and return the result
+  return `#${hexRed}${hexGreen}${hexBlue}`;
+}

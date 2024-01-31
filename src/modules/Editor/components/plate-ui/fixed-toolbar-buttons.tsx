@@ -27,8 +27,9 @@ import { ToolbarButton } from "./toolbar";
 import clsx from "clsx";
 import Autocomplete from "src/components/Autocomplete";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { BaseSelection, BaseText } from "slate";
-import { fontSizeOptions } from "../../configs";
+import { BaseText } from "slate";
+import { fontSizeOptions, highlightOptions } from "../../configs";
+import { BsCardText } from "react-icons/bs";
 
 const alignmentItems = [
   {
@@ -65,8 +66,15 @@ export function FixedToolbarButtons() {
 
   const handleChangeFontSize = useCallback(
     (value: number) => {
-      setMarks(editorState, { fontSize: value, color: "red" });
+      setMarks(editorState, { fontSize: value, note: "abc" });
+      focusEditor(editorState);
+    },
+    [editorState]
+  );
 
+  const handleChangeHighlight = useCallback(
+    (mark: { fontSize: number; color: string }) => {
+      setMarks(editorState, mark);
       focusEditor(editorState);
     },
     [editorState]
@@ -83,7 +91,23 @@ export function FixedToolbarButtons() {
         {!readOnly && (
           <>
             <div className="grow" />
+
             <div className="flex gap-4 px-3">
+              <div className="flex gap-1 items-center">
+                {highlightOptions.map((highlightOption) => (
+                  <div
+                    key={highlightOption.color + highlightOption.fontSize}
+                    className="tooltip tooltip-bottom"
+                    data-tip={highlightOption.tooltip}
+                  >
+                    <button
+                      className={clsx("btn btn-circle btn-sm border-none")}
+                      style={{ backgroundColor: highlightOption.color }}
+                      onClick={() => handleChangeHighlight(highlightOption)}
+                    />
+                  </div>
+                ))}
+              </div>
               <div className="flex gap-1">
                 <MarkToolbarButton
                   nodeType={MARK_BOLD}
@@ -127,6 +151,12 @@ export function FixedToolbarButtons() {
                   value={selectionMark?.fontSize || undefined}
                   onChange={handleChangeFontSize}
                 ></Autocomplete>
+              </div>
+              <div className="flex gap-1 items-center">
+                <div className="btn p-3 btn-md">
+                  Thêm ghi chú
+                  <BsCardText className="h-4 w-4" />
+                </div>
               </div>
             </div>
           </>

@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+
+.tooltip {
+  --tooltip-color: #000000aa;
+  --tooltip-text-color: #eeeeee;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

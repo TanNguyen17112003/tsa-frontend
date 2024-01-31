@@ -101,9 +101,10 @@ export interface AuthContextType extends State {
   signIn: (email: string, password: string) => Promise<UserDetail | undefined>;
   signUp: (
     email: string,
-    name: string,
-    phone: string,
-    password: string
+    user_name: string,
+    full_name: string,
+    password: string,
+    confirm_password: string
   ) => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -177,8 +178,8 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
   );
 
   const signIn = useCallback(
-    async (email: string, password: string): Promise<UserDetail> => {
-      const response = await UsersApi.signIn({ username: email, password });
+    async (user_name: string, password: string): Promise<UserDetail> => {
+      const response = await UsersApi.signIn({ user_name, password });
 
       localStorage.setItem(CookieKeys.TOKEN, response.token);
       localStorage.setItem("user_data", JSON.stringify(response.data));
@@ -197,15 +198,17 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
   const signUp = useCallback(
     async (
       email: string,
-      name: string,
-      phone: string,
-      password: string
+      user_name: string,
+      full_name: string,
+      password: string,
+      confirm_password: string
     ): Promise<void> => {
       const { accessToken } = await UsersApi.signUp({
         email,
-        name,
+        user_name,
         password,
-        phone,
+        full_name,
+        confirm_password,
       });
       // const user = await UsersApi.me({ accessToken });
 

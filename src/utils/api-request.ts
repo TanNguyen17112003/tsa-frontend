@@ -54,11 +54,13 @@ const apiFetch = async (
   try {
     const response = await fetch(input, init);
     const result = await response.json();
+    // console.log("result api fetch ", result);
     if (!response.ok || response.status != 200) {
       const message = `Lỗi: ${result.message || response.status}`;
       throw new Error(message);
     }
     const tmp = JSON.stringify(result);
+    // console.log("value of tmp " + tmp);
     return JSON.parse(tmp, reviver);
   } catch (error) {
     throw error;

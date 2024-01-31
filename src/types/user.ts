@@ -6,10 +6,8 @@ export interface User {
   email: string;
   name: string;
   password: string;
-  station_type: string;
   role: string;
   deleted_at?: null | string | Date;
-  position: string;
 }
 
 export interface UserDetail extends User {}
@@ -31,6 +29,4 @@ export const initialUser: UserDetail = {
   name: "",
   password: "",
   role: "",
-  station_type: "",
-  position: "",
 };

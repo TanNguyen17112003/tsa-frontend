@@ -8,7 +8,7 @@ import {
 } from "src/utils/api-request";
 
 type SignInRequest = {
-  username: string;
+  user_name: string;
   password: string;
 };
 
@@ -19,9 +19,10 @@ type SignInResponse = Promise<{
 
 type SignUpRequest = {
   email: string;
-  name: string;
+  user_name: string;
   password: string;
-  phone: string;
+  full_name: string;
+  confirm_password: string;
 };
 
 type SignUpResponse = Promise<{

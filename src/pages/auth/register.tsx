@@ -5,11 +5,11 @@ import { Layout as DashboardLayout } from "src/layouts/dashboard";
 import type { Page as PageType } from "src/types/page";
 import backgroundImage from "../../images/background-siu.svg";
 import HeaderTitle from "src/components/ui/HeaderTitle";
-import { ArrowLeft } from "src/components/icons/ArrowLeft";
 import { useRouter } from "next/router";
 import { AuthProvider } from "src/contexts/auth/jwt-context";
 import PasswordInput from "src/components/ui/PasswordInput";
 import { paths } from "src/paths";
+import { FaArrowLeftLong } from "react-icons/fa6";
 
 const Page: PageType = () => {
   const router = useRouter();
@@ -53,15 +53,10 @@ const Page: PageType = () => {
         <div className="flex flex-col max-w-max max-h-screen justify-center px-[106px]">
           <HeaderTitle />
           <div
-            className="flex items-center  px-4 pt-1 pb-1 rounded-lg border-slate-200 gap-2  w-[115px] text-xs h-[24px] "
+            className="flex items-center  px-4 pt-1 pb-1  border-slate-200 border gap-2  w-[115px] text-xs h-[24px] bg-buttons-buttons-secondary-default rounded-lg cursor-pointer"
             onClick={handleGoBack}
-            style={{
-              cursor: "pointer",
-              border: "1px solid #E5E7EB",
-              background: "rgba(255, 255, 255, 0.00)",
-            }}
           >
-            <ArrowLeft className="w-[14px] h-[7px]" />
+            <FaArrowLeftLong />
             <span className="label color-label-input-caret label-text text-xs font-text-xs-semibold font-semibold w-[60px] h-[16px]">
               Quay lại
             </span>
@@ -141,6 +136,6 @@ const Page: PageType = () => {
   );
 };
 
-Page.getLayout = (page) => <AuthProvider>{page}</AuthProvider>;
+Page.getLayout = (page) => <>{page}</>;
 
 export default Page;

@@ -1,4 +1,4 @@
-import { EyeIcon } from "../icons/EyeIcon";
+import { IoEyeOutline } from "react-icons/io5";
 
 const PasswordInput = ({
   onChange,
@@ -24,7 +24,7 @@ const PasswordInput = ({
       className="flex absolute top-1/2 right-4 transform -translate-y-1/2 cursor-pointer"
       onClick={togglePasswordVisibility}
     >
-      <EyeIcon className="" />
+      <IoEyeOutline className="" />
     </div>
   </div>
 );

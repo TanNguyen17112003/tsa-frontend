@@ -8,7 +8,7 @@ export interface Response {
 
 export interface ResponseDetail extends Response {}
 
-export const initialUser: ResponseDetail = {
+export const initialResponse: ResponseDetail = {
   error: 0,
   message: "",
   data: {},

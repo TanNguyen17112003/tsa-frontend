@@ -5,9 +5,7 @@ import { Layout as DashboardLayout } from "src/layouts/dashboard";
 import type { Page as PageType } from "src/types/page";
 import Image from "next/image";
 import backgroundImage from "../../images/background-siu.png";
-import { EyeIcon } from "src/components/icons/EyeIcon";
 import HeaderTitle from "src/components/ui/HeaderTitle";
-import { ArrowLeft } from "src/components/icons/ArrowLeft";
 import { useRouter } from "next/router";
 import {
   AuthContext,
@@ -21,7 +19,6 @@ import * as Yup from "yup";
 import { useMounted } from "src/hooks/use-mounted";
 
 const Page: PageType = () => {
-  const isMounted = useMounted();
   const router = useRouter();
   const { signIn } = useAuth<AuthContextType>();
   const [username, setUsername] = useState("");
@@ -86,7 +83,7 @@ const Page: PageType = () => {
           <div className="mt-5"></div>
           {error && (
             <div>
-              <p className="text-sm font-semibold text-center flex items-center justify-center h-29 text-[#EF4444] gap-6">
+              <p className="text-sm font-semibold text-center flex items-center justify-center  text-red-500 gap-6">
                 {error}
               </p>
               <div className="mt-5"> </div>
@@ -100,13 +97,13 @@ const Page: PageType = () => {
           </button>
           <div className="flex items-center gap-0">
             <button
-              className="btn bg-none border-none  text-[#F97316] px-4 pt-1 pb-1 w-[136px] h-[24px] text-xs	 "
+              className="btn bg-none border-none text-orange-500 px-4 pt-1 pb-1 w-[136px] h-[24px] text-xs	"
               onClick={() => handleSignUp()}
             >
               Đăng ký tài khoản
             </button>
             <span>/</span>
-            <button className="btn bg-none border-none text-[#F97316] px-4 pt-1 pb-1 w-[136px] h-[24px] text-xs	">
+            <button className="btn bg-none border-none text-orange-500 px-4 pt-1 pb-1 w-[136px] h-[24px] text-xs	">
               Quên mật khẩu
             </button>
           </div>
@@ -116,6 +113,6 @@ const Page: PageType = () => {
   );
 };
 
-Page.getLayout = (page) => <AuthProvider>{page}</AuthProvider>;
+Page.getLayout = (page) => <>{page}</>;
 
 export default Page;

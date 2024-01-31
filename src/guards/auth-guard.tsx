@@ -7,7 +7,7 @@ import { paths } from "src/paths";
 import { Issuer } from "src/utils/auth";
 
 const loginPaths: Record<Issuer, string> = {
-  [Issuer.JWT]: paths.login,
+  [Issuer.JWT]: paths.auth.login,
 };
 
 interface AuthGuardProps {

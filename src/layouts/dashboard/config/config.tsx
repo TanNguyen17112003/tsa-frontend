@@ -22,13 +22,6 @@ export interface Section {
 export const useSections = () => {
   const { user } = useAuth();
 
-  const apiActions = useMemo(
-    () => new Set<string>(user?.api_actions || []),
-    [user?.api_actions]
-  );
-
-  const router = useRouter();
-
   return useMemo(() => {
     return getDashboardAdminConfigs();
   }, []);

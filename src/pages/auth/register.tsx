@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { EyeIcon } from "src/components/icons/EyeIcon";
 import { useAuth } from "src/hooks/use-auth";
 import { Layout as DashboardLayout } from "src/layouts/dashboard";
 import type { Page as PageType } from "src/types/page";

@@ -19,24 +19,7 @@ import { paths } from "src/paths";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useMounted } from "src/hooks/use-mounted";
-import { usePageView } from "src/hooks/use-page-view";
 
-interface Values {
-  user_name: string;
-  password: string;
-  submit: null;
-}
-
-const initialValues: Values = {
-  user_name: "",
-  password: "",
-  submit: null,
-};
-
-const validationSchema = Yup.object({
-  user_name: Yup.string().max(255).required("user_name is required"),
-  password: Yup.string().max(255).required("Password is required"),
-});
 const Page: PageType = () => {
   const isMounted = useMounted();
   const router = useRouter();

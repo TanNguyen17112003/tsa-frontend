@@ -1,4 +1,3 @@
-import { FaBook } from "react-icons/fa";
 import Link from "next/link";
 
 export const CommonCard = ({
@@ -13,7 +12,7 @@ export const CommonCard = ({
   children: any[];
 }) => {
   return (
-    <div className="p-4 border border-gray-300 rounded-md">
+    <div className="p-4 border border-gray-300 rounded-md m-4 bg-white">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold  mr-4">{title}</h2>
         <Link href="/dashboard" className="text-orange-500">

@@ -31,7 +31,7 @@ export const ToolbarSeparator = withCn(
 
 const toolbarButtonVariants = cva(
   cn(
-    "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+    "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 disabled:pointer-events-none disabled:opacity-50",
     "[&_svg:not([data-icon])]:h-5 [&_svg:not([data-icon])]:w-5"
   ),
   {
@@ -43,9 +43,9 @@ const toolbarButtonVariants = cva(
           "border border-input bg-transparent hover:bg-accent hover:text-accent-foreground",
       },
       size: {
-        default: "h-10 px-3",
-        sm: "h-9 px-2",
-        lg: "h-11 px-5",
+        default: "px-4",
+        sm: "px-3",
+        lg: "px-6",
       },
     },
     defaultVariants: {
@@ -55,7 +55,7 @@ const toolbarButtonVariants = cva(
   }
 );
 
-const ToolbarButton = withTooltip(
+const ToolbarButton =
   // eslint-disable-next-line react/display-name
   React.forwardRef<
     React.ElementRef<typeof ToolbarToggleItem>,
@@ -120,8 +120,7 @@ const ToolbarButton = withTooltip(
         </ToolbarPrimitive.Button>
       );
     }
-  )
-);
+  );
 ToolbarButton.displayName = "ToolbarButton";
 export { ToolbarButton };
 

@@ -43,7 +43,9 @@ const reduceChildren = (block: any) => {
 
 const Page: PageType = () => {
   const docxContainer = useRef<HTMLDivElement | null>(null);
-  const [plateValue, setPlateValue] = useState<any[]>([]);
+  const [plateValue, setPlateValue] = useState<any[]>([
+    { type: "p", children: [{ text: "" }] },
+  ]);
 
   const handleUpload: ChangeEventHandler<HTMLInputElement> = useCallback(
     async (e) => {
@@ -65,7 +67,6 @@ const Page: PageType = () => {
         let resultContent = "";
         let pos = 0;
         while (true) {
-          console.log("pos", pos);
           const spanIndex = content.indexOf("<span", pos);
           if (spanIndex >= 0) {
             resultContent += content.substring(pos, spanIndex);

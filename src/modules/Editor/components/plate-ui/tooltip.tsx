@@ -47,7 +47,7 @@ export function withTooltip<
 
     if (tooltip && mounted) {
       return (
-        <div {...tooltipProps} className={clsx("tooltip")} data-tip="hello">
+        <div {...tooltipProps} className={clsx("tooltip")} data-tip={tooltip}>
           {component}
           {/* <TooltipTrigger asChild>{component}</TooltipTrigger>
 

@@ -3,7 +3,12 @@ import {
   MARK_ITALIC,
   MARK_UNDERLINE,
 } from "@udecode/plate-basic-marks";
-import { useEditorReadOnly, useEditorRef } from "@udecode/plate-common";
+import {
+  focusEditor,
+  setMarks,
+  useEditorReadOnly,
+  useEditorState,
+} from "@udecode/plate-common";
 import {
   BiAlignLeft,
   BiAlignMiddle,
@@ -18,9 +23,12 @@ import {
   useAlignDropdownMenuState,
 } from "@udecode/plate-alignment";
 import { MarkToolbarButton } from "./mark-toolbar-button";
-import { ToolbarButton, ToolbarGroup } from "./toolbar";
+import { ToolbarButton } from "./toolbar";
 import clsx from "clsx";
 import Autocomplete from "src/components/Autocomplete";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { BaseSelection, BaseText } from "slate";
+import { fontSizeOptions } from "../../configs";
 
 const alignmentItems = [
   {
@@ -44,15 +52,30 @@ export function FixedToolbarButtons() {
   const readOnly = useEditorReadOnly();
   const state = useAlignDropdownMenuState();
   const { radioGroupProps } = useAlignDropdownMenu(state);
-  radioGroupProps.onValueChange;
-  const editor = useEditorRef();
+  const editorState = useEditorState();
+  const [selectionMark, setSelectionMark] = useState<Omit<
+    BaseText & { fontSize?: number },
+    "text"
+  > | null>(null);
 
-  console.log("state, radioGroupProps", state, radioGroupProps);
+  useEffect(() => {
+    setSelectionMark(editorState.getMarks());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editorState.selection]);
+
+  const handleChangeFontSize = useCallback(
+    (value: number) => {
+      setMarks(editorState, { fontSize: value, color: "red" });
+
+      focusEditor(editorState);
+    },
+    [editorState]
+  );
 
   return (
-    <div className="w-full overflow-hidden">
+    <div className="relative w-full py-2">
       <div
-        className="flex flex-wrap"
+        className="relative flex flex-wrap items-center"
         style={{
           transform: "translateX(calc(-1px))",
         }}
@@ -60,55 +83,52 @@ export function FixedToolbarButtons() {
         {!readOnly && (
           <>
             <div className="grow" />
-            <ToolbarGroup noSeparator>
-              <MarkToolbarButton
-                tooltip="Bold (⌘+B)"
-                nodeType={MARK_BOLD}
-                className="border-2 py-3 px-4"
-              >
-                <BiBold />
-              </MarkToolbarButton>
-              <MarkToolbarButton
-                tooltip="Italic (⌘+I)"
-                nodeType={MARK_ITALIC}
-                className="border-2 py-3 px-4"
-              >
-                <BiItalic />
-              </MarkToolbarButton>
-              <MarkToolbarButton
-                tooltip="Underline (⌘+U)"
-                nodeType={MARK_UNDERLINE}
-                className="border-2 py-3 px-4"
-              >
-                <BiUnderline size={0} />
-              </MarkToolbarButton>
-            </ToolbarGroup>
-            <ToolbarGroup noSeparator>
-              {alignmentItems.map((item) => (
-                <ToolbarButton
-                  tooltip={item.tooltip}
-                  className={clsx("border-2 py-3 px-4")}
-                  pressed={item.value == state.value}
-                  key={item.value}
-                  onClick={() => radioGroupProps.onValueChange(item.value)}
+            <div className="flex gap-4 px-3">
+              <div className="flex gap-1">
+                <MarkToolbarButton
+                  nodeType={MARK_BOLD}
+                  className="border-[1px] py-3 px-4"
                 >
-                  {<item.icon />}
-                </ToolbarButton>
-              ))}
-            </ToolbarGroup>
-            <ToolbarGroup noSeparator>
-              <div className="w-[300px]">
+                  <BiBold />
+                </MarkToolbarButton>
+                <MarkToolbarButton
+                  nodeType={MARK_ITALIC}
+                  className="border-[1px] py-3 px-4"
+                >
+                  <BiItalic />
+                </MarkToolbarButton>
+                <MarkToolbarButton
+                  nodeType={MARK_UNDERLINE}
+                  className="border-[1px] py-3 px-4"
+                >
+                  <BiUnderline size={0} />
+                </MarkToolbarButton>
+              </div>
+              <div className="flex gap-1">
+                {alignmentItems.map((item) => (
+                  <ToolbarButton
+                    className={clsx("border-[1px] py-3 px-4")}
+                    pressed={item.value == state.value}
+                    key={item.value}
+                    onClick={() => radioGroupProps.onValueChange(item.value)}
+                  >
+                    {<item.icon />}
+                  </ToolbarButton>
+                ))}
+              </div>
+              <div className="flex gap-1 items-center">
                 <Autocomplete
-                  options={Array(10)
-                    .fill(0)
-                    .map((_, index) => ({
-                      value: index,
-                      label: index.toString(),
-                    }))}
-                  onChange={(value) => console.log("value", value)}
+                  className="w-[120px]"
+                  placeholder="Kích thước"
+                  options={fontSizeOptions.map((fontSize) => ({
+                    value: fontSize,
+                    label: fontSize.toString(),
+                  }))}
+                  value={selectionMark?.fontSize || undefined}
+                  onChange={handleChangeFontSize}
                 ></Autocomplete>
               </div>
-            </ToolbarGroup>
+            </div>
           </>
         )}
       </div>

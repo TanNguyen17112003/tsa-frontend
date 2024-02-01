@@ -1,7 +1,7 @@
 import React, { FC, ReactNode } from "react";
 import PropTypes from "prop-types";
 import Link from "next/link";
-import classNames from "classnames";
+import clsx from "clsx";
 import { SideNavItem } from "./side-nav-item";
 
 interface DashboardItem {

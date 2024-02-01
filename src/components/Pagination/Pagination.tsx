@@ -1,4 +1,4 @@
-import classNames from "classnames";
+import clsx from "clsx";
 import type { FC } from "react";
 
 interface PaginationProps {
@@ -20,7 +20,7 @@ const Pagination: FC<PaginationProps> = ({
         .fill(0)
         .map((_, index) => (
           <button
-            className={classNames(
+            className={clsx(
               "join-item btn",
               index == page ? "btn-active" : undefined
             )}

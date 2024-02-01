@@ -1,5 +1,5 @@
 import React from "react";
-import classnames from "classnames";
+import clsx from "clsx";
 
 interface TableSortLabelProps
   extends React.DetailedHTMLProps<
@@ -21,7 +21,7 @@ const CustomTableSortLabel: React.FC<TableSortLabelProps> = ({
   className,
   ...rest
 }) => {
-  const mergedClassName = classnames(className, {
+  const mergedClassName = clsx(className, {
     "cursor-pointer": onClick,
     "hover:underline": onClick,
     "font-semibold": active,

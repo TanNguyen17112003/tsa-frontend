@@ -1,7 +1,7 @@
 import React, { FC, ReactNode, useState, useCallback } from "react";
 import Link from "next/link";
 import { Collapse } from "src/components/ui/Collapse";
-import classNames from "classnames";
+import clsx from "clsx";
 
 interface SideNavItemProps {
   active?: boolean;
@@ -58,7 +58,7 @@ export const SideNavItem: FC<SideNavItemProps> = (props) => {
         <button
           disabled={disabled}
           onClick={handleToggle}
-          className={classNames("btn w-full justify-start text-text-secondary")}
+          className={clsx("btn w-full justify-start text-text-secondary")}
         >
           {startIcon && <div>{startIcon}</div>}
 
@@ -79,7 +79,7 @@ export const SideNavItem: FC<SideNavItemProps> = (props) => {
       <Link href={path || "#"}>
         <button
           disabled={disabled}
-          className={classNames(
+          className={clsx(
             "btn w-full justify-start rounded-xl",
             active
               ? "btn-primary bg-orange-400 border-orange-400 text-white"
@@ -87,7 +87,7 @@ export const SideNavItem: FC<SideNavItemProps> = (props) => {
           )}
         >
           {startIcon && <span>{startIcon}</span>}
-          <div className={classNames("prose-sm prose")}>{title}</div>
+          <div className={clsx("prose-sm prose")}>{title}</div>
           {label && <span className="ml-2">{label}</span>}
         </button>
       </Link>

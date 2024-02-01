@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { CustomTableHeaderCell } from "./custom-table-header-cell";
 import { CustomTableProps, CustomTableSortModel } from "./custom-table.types";
 import { CustomTableResizableCell } from "./custom-table-resizable-cell";
-import classNames from "classnames";
+import clsx from "clsx";
 
 export function CustomTableHeader<P, T extends { id: P; [key: string]: any }>(
   props: CustomTableProps<P, T> & {
@@ -32,10 +32,7 @@ export function CustomTableHeader<P, T extends { id: P; [key: string]: any }>(
 
   return (
     <thead
-      className={classNames(
-        "bg-slate-100",
-        stickyHeader ? "sticky -top-1 z-10" : ""
-      )}
+      className={clsx("bg-slate-100", stickyHeader ? "sticky -top-1 z-10" : "")}
     >
       <tr>
         {(indexColumn || select) && (
@@ -47,7 +44,7 @@ export function CustomTableHeader<P, T extends { id: P; [key: string]: any }>(
               {select && (
                 <input
                   type="checkbox"
-                  className={classNames("checkbox -my-1 -mx-1")}
+                  className={clsx("checkbox -my-1 -mx-1")}
                   checked={select.selected.length >= rows.length}
                   onChange={(e) =>
                     e.target.checked
@@ -93,10 +90,7 @@ export function CustomTableHeader<P, T extends { id: P; [key: string]: any }>(
             config.groupedHeaderLabel ? (
               <th
                 key={config.key.toString()}
-                className={classNames(
-                  "text-nowrap px-2",
-                  config.headerCellClassName
-                )}
+                className={clsx("text-nowrap px-2", config.headerCellClassName)}
               >
                 <div className="flex gap-1 items-center">
                   {config.headerIcon}

@@ -4,7 +4,7 @@ import { getObjectValue } from "src/utils/obj-helper";
 import { CustomTableConfig } from "./custom-table.types";
 import useFunction from "src/hooks/use-function";
 import { BsPencilFill } from "react-icons/bs";
-import classNames from "classnames";
+import clsx from "clsx";
 
 export function CustomTableCell<P, T extends { id: P; [key: string]: any }>({
   data,
@@ -72,7 +72,7 @@ export function CustomTableCell<P, T extends { id: P; [key: string]: any }>({
 
   if (editing && config.renderEditingCell) {
     return (
-      <td className={classNames(cellClassName, config.cellClassName)}>
+      <td className={clsx(cellClassName, config.cellClassName)}>
         {config.renderEditingCell(
           editingValue,
           setEditingValue,
@@ -91,11 +91,7 @@ export function CustomTableCell<P, T extends { id: P; [key: string]: any }>({
       align={
         config.type == "number" || config.type == "float" ? "right" : "left"
       }
-      className={classNames(
-        "overflow-hidden",
-        cellClassName,
-        config.cellClassName
-      )}
+      className={clsx("overflow-hidden", cellClassName, config.cellClassName)}
     >
       {config.renderEditingCell ? (
         <div className="flex items-center justify-end -my-1">

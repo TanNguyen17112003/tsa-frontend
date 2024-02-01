@@ -6,7 +6,7 @@ import { CustomTableHeader } from "./custom-table-header";
 import { CustomTableProps, CustomTableSortModel } from "./custom-table.types";
 import SimpleBar from "simplebar-react";
 import { BsPencilFill, BsTrash2Fill } from "react-icons/bs";
-import classNames from "classnames";
+import clsx from "clsx";
 import { IoWarning } from "react-icons/io5";
 import Pagination from "../Pagination";
 
@@ -110,7 +110,7 @@ export function CustomTable<P, T extends { id: P; [key: string]: any }>(
       {children}
       <SimpleBar {...scrollbarProps} ref={scrollBar}>
         <table
-          className={classNames(
+          className={clsx(
             "relative min-w-[700px]",
             isMounted && flexible ? "table-fixed" : undefined,
             tableClassName
@@ -126,7 +126,7 @@ export function CustomTable<P, T extends { id: P; [key: string]: any }>(
             {pagedRows.map((row, index) => (
               <tr
                 key={row.id + "-key-" + index}
-                className={classNames(
+                className={clsx(
                   "text-nowrap px-2",
                   row.error ? "bg-error-900" : undefined,
                   onClickRow ? "cursor-pointer hover:bg-orange-900" : undefined
@@ -141,7 +141,7 @@ export function CustomTable<P, T extends { id: P; [key: string]: any }>(
                       {select && (
                         <input
                           type="checkbox"
-                          className={classNames("checkbox -my-1 -mx-1")}
+                          className={clsx("checkbox -my-1 -mx-1")}
                           checked={select.selected.includes(row)}
                           onChange={(e) =>
                             e.target.checked

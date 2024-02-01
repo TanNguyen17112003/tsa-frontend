@@ -14,7 +14,6 @@ const Page = () => {
             src="/assets/errors/error-401.png"
           />
           <h1 className={`text-center text-4xl`}>401: Không tìm thấy trang</h1>
-          classNach
           <div className="flex justify-center mt-6">
             <button
               onClick={() => router.push(paths.index)}

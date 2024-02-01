@@ -1,4 +1,4 @@
-import classNames from "classnames";
+import clsx from "clsx";
 import {
   HTMLAttributes,
   MouseEventHandler,
@@ -92,7 +92,7 @@ export const CustomTableResizableCell = ({
     <th
       {...props}
       ref={ref}
-      className={classNames(
+      className={clsx(
         "overflow-visible relative px-2",
         props.className,
         width ? `w-[${width}px]` : "w-auto"
@@ -101,14 +101,14 @@ export const CustomTableResizableCell = ({
       {props.children}
       {!disableResize && (
         <div
-          className={classNames(
+          className={clsx(
             "w-4 border-gray h-full absolute top-0 -right-2 cursor-col-resize z-10 hover:px-[6px] hover:[&>div]:bg-neutral-500",
             isDragging ? "px-[6px]" : "px-[8px]"
           )}
           onMouseDown={handleMouseDown}
         >
           <div
-            className={classNames(
+            className={clsx(
               "flex flex-col rounded-md w-full h-full",
               isDragging ? "bg-neutral-500" : "bg-neutral-400"
             )}

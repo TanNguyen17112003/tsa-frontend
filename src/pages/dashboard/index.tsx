@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { useAuth } from "src/hooks/use-auth";
 import { Layout as DashboardLayout } from "src/layouts/dashboard";
 import type { Page as PageType } from "src/types/page";
-import { CommonCard } from "src/components/CommonCard";
+import CommonCard from "src/components/CommonCard";
+import { HiMagnifyingGlass } from "react-icons/hi2";
+import { PiBookOpen } from "react-icons/pi";
 
 const children = [
   { title: "Bài dịch số 23", time: "15:30 - 01/12/2023" },
@@ -12,6 +14,17 @@ const children = [
   { title: "Bài dịch số 26", time: "15:30 - 01/12/2023" },
 ];
 
+const history = [
+  { title: "Đọc bài kinh 1: Bài dịch số 2", time: "15:30 - 01/12/2023" },
+  { title: "Tìm kiếm bài dịch số 62", time: "15:30 - 01/12/2023" },
+  { title: "Đọc bài kinh 7: Bài dịch số 20", time: "15:30 - 01/12/2023" },
+  { title: "Đọc bài kinh 3: Bài dịch số 21", time: "15:30 - 01/12/2023" },
+  { title: "Tìm kiếm bài dịch số 62", time: "15:30 - 01/12/2023" },
+  { title: "Đọc bài kinh 11: Bài dịch số 24", time: "15:30 - 01/12/2023" },
+  { title: "Tìm kiếm bài dịch số 62", time: "15:30 - 01/12/2023" },
+  { title: "Đọc bài kinh 5: Bài dịch số 26", time: "15:30 - 01/12/2023" },
+];
+
 const Page: PageType = () => {
   const [searchMode, setSearchMode] = useState("basic");
   const handleModeChange = (newMode: string) => {
@@ -19,64 +32,97 @@ const Page: PageType = () => {
   };
   return (
     <div
-      className="p-4 bg-cover bg-center h-screen"
+      className="flex p-6 bg-cover bg-center h-screen"
       style={{ backgroundImage: 'url("/background.png")' }}
     >
-      <div className="text-xl font-semibold bg-white my-4">
-        Tổng quan hệ thống
+      <div className="w-full">
+        <div className="text-2xl font-semibold bg-white my-4">
+          Tổng quan hệ thống
+        </div>
+        <div className="flex bg-white h-15 pr-auto">
+          <div className="flex p-2 items-center border border-gray-300 rounded-md h-12 w-full">
+            <div className="flex">
+              <HiMagnifyingGlass
+                style={{ fontSize: "2rem", marginRight: "5px" }}
+              />
+              <input
+                type="text"
+                placeholder="Nhập từ khóa tìm kiếm..."
+                className="outline-none w-full text-sm/normal"
+              />
+            </div>
+            <div className="border-l-2 h-full relative">
+              <select
+                value={searchMode}
+                onChange={(e) => handleModeChange(e.target.value)}
+                className="text-md text-black-600 bg-white m-2"
+              >
+                <option value="basic">Tìm kiếm cơ bản</option>
+                <option value="advanced">Tìm kiếm nâng cao</option>
+                <option value="adjacent">Tìm kiếm từ liền kề</option>
+              </select>
+            </div>
+          </div>
+          <button className="ml-2 bg-orange-500 text-white px-4 py-2 rounded-md">
+            <div>Tìm_kiếm</div>
+          </button>
+        </div>
+        <div
+          className="flex p-4 bg-cover bg-center w-auto h-auto"
+          style={{ backgroundImage: 'url("/image_overview.png")' }}
+        >
+          <div>Bài kinh</div>
+          <div>Tài khoản dịch giả</div>
+        </div>
+        <div style={{ display: "flex", flexDirection: "row" }}>
+          <div className="w-">AAA</div>
+          <CommonCard
+            link="/dashboard"
+            linkLabel="Xem tất cả"
+            title="Bài dịch mới nhất"
+          >
+            {children.map((c, index) => (
+              <div className="pb-4">
+                <PiBookOpen style={{ fontSize: "1.4em" }} />
+                <div key={index} className="text-black-700">
+                  {c.title}
+                </div>
+                <div key={index} className="text-gray-500 text-xs">
+                  {c.time}
+                </div>
+              </div>
+            ))}
+          </CommonCard>
+        </div>
       </div>
-      <div className="flex bg-white h-15">
-        <div className="flex items-center border border-orange-300 p-2 rounded-md w-full">
+      <div className="p-4 border border-gray-300 rounded-3xl bg-white w-auto h-auto ml-3 divide-y-2 min-w-96">
+        <div className="mb-4">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="30"
-            height="30"
-            viewBox="0 0 20 20"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
             fill="none"
           >
             <path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
-              d="M9 3.5C5.96243 3.5 3.5 5.96243 3.5 9C3.5 12.0376 5.96243 14.5 9 14.5C10.519 14.5 11.893 13.8852 12.8891 12.8891C13.8852 11.893 14.5 10.519 14.5 9C14.5 5.96243 12.0376 3.5 9 3.5ZM2 9C2 5.13401 5.13401 2 9 2C12.866 2 16 5.13401 16 9C16 10.6625 15.4197 12.1906 14.4517 13.3911L17.7803 16.7197C18.0732 17.0126 18.0732 17.4874 17.7803 17.7803C17.4874 18.0732 17.0126 18.0732 16.7197 17.7803L13.3911 14.4517C12.1906 15.4197 10.6625 16 9 16C5.13401 16 2 12.866 2 9Z"
-              fill="#4B5563"
+              d="M12 6V12H16.5M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
+              stroke="black"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
             />
           </svg>
-          <input
-            type="text"
-            placeholder="Tìm kiếm..."
-            className="outline-none w-full"
-          />
-          <div>
-            <select
-              value={searchMode}
-              onChange={(e) => handleModeChange(e.target.value)}
-              className="text-sm text-black-600 bg-white border border-orange-300 rounded-r-md px-2 py-1"
-            >
-              <option value="basic">Tìm kiếm cơ bản</option>
-              <option value="advanced">Tìm kiếm nâng cao</option>
-              <option value="adjacent">Tìm kiếm từ liền kề</option>
-            </select>
-          </div>
+          <h2 className="font-semibold">Lịch sử hoạt động hệ thống</h2>
         </div>
-        <button className="ml-2 bg-orange-500 text-white px-4 py-2 rounded-md">
-          <div>Tìm_kiếm</div>
-        </button>
-      </div>
-      <div
-        className="flex p-4 bg-cover bg-center h-screen w-50 h-11"
-        style={{ backgroundImage: 'url("/image_overview.png")' }}
-      >
-        <div>Bài kinh</div>
-        <div>Tài khoản dịch giả</div>
-      </div>
-      <div style={{ display: "flex", flexDirection: "row" }}>
-        <div className="w-">AAA</div>
-        <CommonCard
-          children={children}
-          link=""
-          linkLabel="/dasboard"
-          title="Bài dịch mới nhất"
-        />
+        <div className="space-y-8">
+          <div className="mt-4"></div>
+          {history.map((h) => (
+            <div>
+              <div className="text-cyan-500">{h.title}</div>
+              <div className="text-gray-500 text-xs">{h.time}</div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

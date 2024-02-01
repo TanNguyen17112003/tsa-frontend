@@ -15,6 +15,7 @@ import plugins from "./plugins";
 import { useCallback, type FC } from "react";
 import clsx from "clsx";
 import { EditorFormat, EditorHighlight } from "./types";
+import NoteCard from "./components/NoteCard";
 
 interface PlateEditorProps {
   initialValue: any;
@@ -58,7 +59,9 @@ const PlateEditor: FC<PlateEditorProps> = ({ initialValue, searchText }) => {
 
       <Editor renderLeaf={(props) => <Leaf {...props} />} decorate={decorate} />
 
-      <FloatingToolbar></FloatingToolbar>
+      <FloatingToolbar>
+        <NoteCard noteIndex={1} />
+      </FloatingToolbar>
     </Plate>
   );
 };

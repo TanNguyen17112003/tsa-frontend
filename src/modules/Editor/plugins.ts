@@ -73,6 +73,7 @@ import { HrElement } from "./components/plate-ui/hr-element";
 import { KbdLeaf } from "./components/plate-ui/kbd-leaf";
 import { ParagraphElement } from "./components/plate-ui/paragraph-element";
 import { withPlaceholders } from "./components/plate-ui/placeholder";
+import { NoteElement } from "./components/plate-ui/note-element";
 
 const plugins = createPlugins(
   [
@@ -183,15 +184,16 @@ const plugins = createPlugins(
       },
     }),
     createNodeIdPlugin(),
-    // createSelectOnBackspacePlugin({
-    //   options: {
-    //     query: {
-    //       allow: [
-    //         // ELEMENT_IMAGE, ELEMENT_HR
-    //       ],
-    //     },
-    //   },
-    // }),
+    createSelectOnBackspacePlugin({
+      options: {
+        query: {
+          allow: MARK_SUPERSCRIPT,
+          // allow: [
+          // ELEMENT_IMAGE, ELEMENT_HR
+          // ],
+        },
+      },
+    }),
     createDeletePlugin(),
     createSoftBreakPlugin({
       options: {
@@ -231,7 +233,7 @@ const plugins = createPlugins(
       [MARK_KBD]: KbdLeaf,
       [MARK_STRIKETHROUGH]: withProps(PlateLeaf, { as: "s" }),
       [MARK_SUBSCRIPT]: withProps(PlateLeaf, { as: "sub" }),
-      [MARK_SUPERSCRIPT]: withProps(PlateLeaf, { as: "sup" }),
+      [MARK_SUPERSCRIPT]: withProps(NoteElement, {}),
       [MARK_UNDERLINE]: withProps(PlateLeaf, { as: "u" }),
     }),
   }

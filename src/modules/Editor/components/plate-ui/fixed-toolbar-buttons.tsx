@@ -148,15 +148,19 @@ export function FixedToolbarButtons() {
                     value: `${fontSize}pt`,
                     label: `${fontSize}pt`,
                   }))}
-                  value={selectionMark?.fontSize || undefined}
+                  value={
+                    selectionMark?.fontSize
+                      ? selectionMark.fontSize.toString()
+                      : undefined
+                  }
                   onChange={handleChangeFontSize}
                 ></Autocomplete>
               </div>
               <div className="flex gap-1 items-center">
-                <div className="btn p-3 btn-md">
+                <button className="btn p-3 btn-md border-secondary shadow-none">
                   Thêm ghi chú
                   <BsCardText className="h-4 w-4" />
-                </div>
+                </button>
               </div>
             </div>
           </>

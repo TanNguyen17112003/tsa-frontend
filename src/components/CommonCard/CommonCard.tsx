@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { PiBookOpen } from "react-icons/pi";
+import { HiMiniArrowSmallRight } from "react-icons/hi2";
 
-export const CommonCard = ({
+const CommonCard = ({
   title,
   link,
   linkLabel,
@@ -12,47 +14,20 @@ export const CommonCard = ({
   children: any[];
 }) => {
   return (
-    <div className="p-4 border border-gray-300 rounded-md m-4 bg-white">
+    <div className="p-5 border border-gray-300 rounded-3xl m-4 bg-white">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold  mr-4">{title}</h2>
         <Link href="/dashboard" className="flex text-orange-500">
-          Xem tất cả{" "}
-          <span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="23"
-              height="23"
-              viewBox="0 0 20 20"
-              fill="none"
-            >
-              <path
-                fill-rule="evenodd"
-                clip-rule="evenodd"
-                d="M5 10C5 9.58579 5.33579 9.25 5.75 9.25H12.3879L10.2302 7.29063C9.93159 7.00353 9.92228 6.52875 10.2094 6.23017C10.4965 5.93159 10.9713 5.92228 11.2698 6.20938L14.7698 9.45938C14.9169 9.60078 15 9.79599 15 10C15 10.204 14.9169 10.3992 14.7698 10.5406L11.2698 13.7906C10.9713 14.0777 10.4965 14.0684 10.2094 13.7698C9.92228 13.4713 9.93159 12.9965 10.2302 12.7094L12.3879 10.75H5.75C5.33579 10.75 5 10.4142 5 10Z"
-                fill="#F97316"
-              />
-            </svg>
-          </span>
+          Xem tất cả <HiMiniArrowSmallRight style={{ fontSize: "1.4em" }} />
         </Link>
       </div>
       {children.map((c, index) => (
         <div className="pb-4">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-          >
-            <path
-              d="M6.01416 3.9978C3.80516 3.9978 2.01416 5.7888 2.01416 7.9978V15.9978C2.01416 18.2068 3.80516 19.9978 6.01416 19.9978L9.02317 20.0078C9.44917 20.0078 9.89516 20.2038 10.4062 20.6748C10.6052 20.8588 10.8432 21.0888 11.0052 21.3038C11.1852 21.5438 11.4202 22.0008 12.0142 21.9978C12.6082 21.9948 12.8012 21.5908 13.0142 21.3098C13.1752 21.1118 13.3682 20.9228 13.5672 20.7388C14.0792 20.2678 14.5882 19.9978 15.0142 19.9978H18.0142C20.2232 19.9978 22.0142 18.2068 22.0142 15.9978V7.9978C22.0142 5.7888 20.2232 3.9978 18.0142 3.9978H15.0142C13.8032 3.9978 12.7482 4.55381 12.0142 5.40381C11.2802 4.55381 10.2252 3.9978 9.01416 3.9978H6.01416ZM6.01416 5.9978H9.01416C10.1192 5.9978 11.0142 6.8928 11.0142 7.9978L11.0202 18.6468C10.3962 18.2418 9.72617 17.9978 9.01416 17.9978H6.01416C4.90916 17.9978 4.01416 17.1028 4.01416 15.9978V7.9978C4.01416 6.8928 4.90916 5.9978 6.01416 5.9978ZM15.0142 5.9978H18.0142C19.1192 5.9978 20.0142 6.8928 20.0142 7.9978V15.9978C20.0142 17.1028 19.1192 17.9978 18.0142 17.9978H15.0142C14.3022 17.9978 13.6342 18.2548 13.0102 18.6598L13.0142 7.9978C13.0142 6.8928 13.9092 5.9978 15.0142 5.9978Z"
-              fill="#374151"
-            />
-          </svg>
+          <PiBookOpen style={{ fontSize: "1.4em" }} />
           <div key={index} className="text-black-700">
             {c.title}
           </div>
-          <div key={index} className="text-gray-500">
+          <div key={index} className="text-gray-500 text-xs">
             {c.time}
           </div>
         </div>
@@ -60,3 +35,5 @@ export const CommonCard = ({
     </div>
   );
 };
+
+export default CommonCard;

@@ -1,1 +1,3 @@
-export * from "./CommonCard";
+import CommonCard from "./CommonCard";
+
+export default CommonCard;

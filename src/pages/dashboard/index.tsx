@@ -63,14 +63,14 @@ const Page: PageType = () => {
         </button>
       </div>
       <div
-        className="flex p-4 bg-cover bg-center h-screen w-auto h-12"
+        className="flex p-4 bg-cover bg-center h-screen w-50 h-11"
         style={{ backgroundImage: 'url("/image_overview.png")' }}
       >
         <div>Bài kinh</div>
         <div>Tài khoản dịch giả</div>
       </div>
       <div style={{ display: "flex", flexDirection: "row" }}>
-        <div>AAA</div>
+        <div className="w-">AAA</div>
         <CommonCard
           children={children}
           link=""

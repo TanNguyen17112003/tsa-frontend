@@ -18,8 +18,12 @@ const config: Config = {
     themes: [
       {
         light: {
-          ...require("daisyui/src/theming/themes")["[data-theme=light]"],
+          ...require("daisyui/src/theming/themes")["[light]"],
           primary: "#F97316",
+          secondary: "#E5E7EB",
+          info: "#FFF7ED",
+          accent: "#06B6D4",
+          error: "#EF4444",
         },
       },
     ],
@@ -49,6 +53,17 @@ const config: Config = {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          "50": "#fff4ed",
+          "100": "#ffe6d5",
+          "200": "#feccaa",
+          "300": "#fdac74",
+          "400": "#fb8a3c",
+          "500": "#f97316",
+          "600": "#ea670c",
+          "700": "#c2570c",
+          "800": "#9a4a12",
+          "900": "#7c3d12",
+          "950": "#432007",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -65,6 +80,17 @@ const config: Config = {
         accent: {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
+          "50": "#ecfcff",
+          "100": "#cff7fe",
+          "200": "#a5effc",
+          "300": "#67e4f9",
+          "400": "#22d0ee",
+          "500": "#06b6d4",
+          "600": "#0899b2",
+          "700": "#0e7d90",
+          "800": "#156775",
+          "900": "#165863",
+          "950": "#083b44",
         },
         popover: {
           DEFAULT: "hsl(var(--popover))",

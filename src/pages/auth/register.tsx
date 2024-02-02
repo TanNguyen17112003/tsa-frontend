@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "src/hooks/use-auth";
 import { Layout as DashboardLayout } from "src/layouts/dashboard";
 import type { Page as PageType } from "src/types/page";
-import backgroundImage from "../../images/background-siu.svg";
+import backgroundImage from "../../../public/ui/background-siu.png";
 import HeaderTitle from "src/components/ui/HeaderTitle";
 import { useRouter } from "next/router";
 import { AuthProvider } from "src/contexts/auth/jwt-context";
@@ -57,79 +57,87 @@ const Page: PageType = () => {
             onClick={handleGoBack}
           >
             <FaArrowLeftLong />
-            <span className="label color-label-input-caret label-text text-xs font-text-xs-semibold font-semibold w-[60px] h-[16px]">
+            <span className="label color-label-input-caret label-text text-xs  font-semibold w-[60px] h-[16px]">
               Quay lại
             </span>
           </div>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault(); // Prevent the default form submission
+              handleSignUp();
+            }}
+          >
+            <div className="justify-start items-start w-full mt-3">
+              <div className="flex flex-col gap-2">
+                <span className="label color-label-input-caret label-text text-xs  font-semibold">
+                  Họ và tên
+                </span>
+                <input
+                  type="text"
+                  placeholder="Nhập họ và tên của bạn ..."
+                  className="input input-bordered w-[388px] px-3"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                />
+                <div className="gap-6"></div>
 
-          <div className="justify-start items-start w-full mt-3">
-            <div className="flex flex-col gap-2">
-              <span className="label color-label-input-caret label-text text-xs font-text-xs-semibold font-semibold">
-                Họ và tên
-              </span>
-              <input
-                type="text"
-                placeholder="Nhập họ và tên của bạn ..."
-                className="input input-bordered w-[388px] px-3"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-              />
-              <div className="gap-6"></div>
+                <span className="label color-label-input-caret label-text text-xs font-semibold">
+                  Tên đăng nhập
+                </span>
+                <input
+                  type="text"
+                  placeholder="Nhập tên đăng nhập tại đây ..."
+                  className="input input-bordered w-[388px] px-3"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
+                <div className="gap-6"></div>
+                <span className="label color-label-input-caret label-text text-xs font-semibold">
+                  Địa chỉ Email
+                </span>
+                <input
+                  type="text"
+                  placeholder="Nhập địa chỉ Email tại đây ..."
+                  className="input input-bordered w-[388px] px-3"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                <div className="gap-6"></div>
+                <span className="label color-label-input-caret label-text text-xs font-semibold">
+                  Mật khẩu
+                </span>
+                <PasswordInput
+                  onChange={(e: any) => setPassword(e.target.value)}
+                  value={password}
+                  showPassword={showPassword}
+                  togglePasswordVisibility={() =>
+                    setShowPassword(!showPassword)
+                  }
+                />
+                <div className="gap-6"></div>
+                <span className="label color-label-input-caret label-text text-xs font-semibold">
+                  Nhập lại mật khẩu
+                </span>
 
-              <span className="label color-label-input-caret label-text text-xs font-text-xs-semibold font-semibold">
-                Tên đăng nhập
-              </span>
-              <input
-                type="text"
-                placeholder="Nhập tên đăng nhập tại đây ..."
-                className="input input-bordered w-[388px] px-3"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-              />
-              <div className="gap-6"></div>
-              <span className="label color-label-input-caret label-text text-xs font-text-xs-semibold font-semibold">
-                Địa chỉ Email
-              </span>
-              <input
-                type="text"
-                placeholder="Nhập địa chỉ Email tại đây ..."
-                className="input input-bordered w-[388px] px-3"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <div className="gap-6"></div>
-              <span className="label color-label-input-caret label-text text-xs font-text-xs-semibold font-semibold">
-                Mật khẩu
-              </span>
-              <PasswordInput
-                onChange={(e: any) => setPassword(e.target.value)}
-                value={password}
-                showPassword={showPassword}
-                togglePasswordVisibility={() => setShowPassword(!showPassword)}
-              />
-              <div className="gap-6"></div>
-              <span className="label color-label-input-caret label-text text-xs font-text-xs-semibold font-semibold">
-                Nhập lại mật khẩu
-              </span>
-
-              <PasswordInput
-                onChange={(e: any) => setConfirmPassword(e.target.value)}
-                value={confirmPassword}
-                showPassword={showConfirmPassword}
-                togglePasswordVisibility={() =>
-                  setShowConfirmPassword(!showConfirmPassword)
-                }
-              />
-              <div className="gap-6"></div>
+                <PasswordInput
+                  onChange={(e: any) => setConfirmPassword(e.target.value)}
+                  value={confirmPassword}
+                  showPassword={showConfirmPassword}
+                  togglePasswordVisibility={() =>
+                    setShowConfirmPassword(!showConfirmPassword)
+                  }
+                />
+                <div className="gap-6"></div>
+              </div>
+              <div className="mt-5"></div>
+              <button
+                className="btn btn-primary text-white w-full"
+                type="submit"
+              >
+                Đăng ký
+              </button>
             </div>
-            <div className="mt-5"></div>
-            <button
-              className="btn btn-primary text-white w-full"
-              onClick={() => handleSignUp()}
-            >
-              Đăng ký
-            </button>
-          </div>
+          </form>
         </div>
       </div>
     </>

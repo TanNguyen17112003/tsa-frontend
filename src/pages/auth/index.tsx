@@ -4,7 +4,7 @@ import { useAuth } from "src/hooks/use-auth";
 import { Layout as DashboardLayout } from "src/layouts/dashboard";
 import type { Page as PageType } from "src/types/page";
 import Image from "next/image";
-import backgroundImage from "../../images/background-siu.png";
+import backgroundImage from "../../../public/ui/background-siu.png";
 import HeaderTitle from "src/components/ui/HeaderTitle";
 import { useRouter } from "next/router";
 import {
@@ -57,53 +57,60 @@ const Page: PageType = () => {
       <div className="flex flex-col max-w-max max-h-max justify-center items-center px-[106px]">
         <HeaderTitle />
         <div className="justify-start items-start max-w-max max-h-max ">
-          <div className="flex flex-col gap-2">
-            <span className="label color-label-input-caret label-text text-xs font-text-xs-semibold font-semibold">
-              Tên đăng nhập
-            </span>
-            <input
-              type="text"
-              placeholder="Nhập tên đăng nhập tại đây ..."
-              className="input input-bordered w-[388px] px-3"
-              onChange={(e) => setUsername(e.target.value)}
-              value={username}
-            />
-            <div className="gap-6"></div>
-            <span className="label color-label-input-caret label-text text-xs font-text-xs-semibold font-semibold">
-              Mật khẩu
-            </span>
-
-            <PasswordInput
-              onChange={(e: any) => setPassword(e.target.value)}
-              value={password}
-              showPassword={showPassword}
-              togglePasswordVisibility={() => setShowPassword(!showPassword)}
-            />
-          </div>
-          <div className="mt-5"></div>
-          {error && (
-            <div>
-              <p className="text-sm font-semibold text-center flex items-center justify-center  text-red-500 gap-6">
-                {error}
-              </p>
-              <div className="mt-5"> </div>
-            </div>
-          )}
-          <button
-            className="btn btn-primary text-white w-full"
-            onClick={() => handleSignIn()}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault(); // Prevent the default form submission
+              handleSignIn();
+            }}
           >
-            Đăng nhập
-          </button>
+            <div className="flex flex-col gap-2">
+              <span className="label color-label-input-caret label-text text-xs  font-semibold ">
+                Tên đăng nhập
+              </span>
+              <input
+                type="text"
+                placeholder="Nhập tên đăng nhập tại đây ..."
+                className="input input-bordered w-[388px] px-3"
+                onChange={(e) => setUsername(e.target.value)}
+                value={username}
+              />
+              <div className="gap-6"></div>
+              <span className="label color-label-input-caret label-text text-xs  font-semibold">
+                Mật khẩu
+              </span>
+
+              <PasswordInput
+                onChange={(e: any) => setPassword(e.target.value)}
+                value={password}
+                showPassword={showPassword}
+                togglePasswordVisibility={() => setShowPassword(!showPassword)}
+              />
+            </div>
+            <div className="mt-5"></div>
+            {error && (
+              <div>
+                <p className="text-sm font-semibold text-center flex items-center justify-center  text-red-500 gap-6">
+                  {error}
+                </p>
+                <div className="mt-5"> </div>
+              </div>
+            )}
+            <button
+              className="btn btn-primary text-white w-full"
+              type="submit" // Specify the button type as "submit"
+            >
+              Đăng nhập
+            </button>
+          </form>
           <div className="flex items-center gap-0">
             <button
-              className="btn bg-none border-none text-orange-500 px-4 pt-1 pb-1 w-[136px] h-[24px] text-xs	"
+              className="btn bg-none border-none text-orange-500 px-4 pt-1 pb-1 max-w-max h-[24px] text-xs	"
               onClick={() => handleSignUp()}
             >
               Đăng ký tài khoản
             </button>
             <span>/</span>
-            <button className="btn bg-none border-none text-orange-500 px-4 pt-1 pb-1 w-[136px] h-[24px] text-xs	">
+            <button className="btn bg-none border-none text-orange-500 px-4 pt-1 pb-1 max-w-max  h-[24px] text-xs	">
               Quên mật khẩu
             </button>
           </div>

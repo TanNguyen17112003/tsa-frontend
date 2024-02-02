@@ -1,14 +1,21 @@
-import { useEditorRef } from "@udecode/plate-common";
-import type { FC } from "react";
+import { useEffect, type FC, useRef } from "react";
+import { useNotesContext } from "../NoteProvider/NoteProvider";
+import { actionAsyncStorage } from "next/dist/client/components/action-async-storage.external";
 
 interface NoteCardProps {
   noteIndex: number;
 }
 
 const NoteCard: FC<NoteCardProps> = ({ noteIndex }) => {
-  const editor = useEditorRef();
+  const { activeNoteId, notes } = useNotesContext();
+  const ref = useRef<HTMLTextAreaElement | null>(null);
 
-  console.log("editor", editor.sel);
+  useEffect(() => {
+    const note = notes.find((note) => note.id == activeNoteId);
+    if (ref.current) {
+      ref.current.value = note?.note || "";
+    }
+  }, [activeNoteId, notes]);
 
   return (
     <div className="inline-flex flex-col items-start gap-2 px-2 py-3 relative rounded-lg">
@@ -18,7 +25,11 @@ const NoteCard: FC<NoteCardProps> = ({ noteIndex }) => {
         <div className="btn btn-xs">Huỷ</div>
         <div className="btn btn-primary btn-xs text-white">Lưu</div>
       </div>
-      <input className="w-full" multiple />
+      <textarea
+        ref={ref}
+        className="w-full border-[1px] min-w-[320px] rounded-lg p-1"
+        rows={4}
+      />
     </div>
   );
 };

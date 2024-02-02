@@ -72,6 +72,9 @@ export const FloatingToolbar = withRef<
   const isSelectedNote = useMemo(() => {
     const mark: (BaseText & EditorFormat) | null =
       editorRef.getMarks() as BaseText & EditorFormat;
+    if (!mark.superscript) {
+      onChangeActiveNoteId("");
+    }
     return mark?.superscript;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editorRef.selection]);

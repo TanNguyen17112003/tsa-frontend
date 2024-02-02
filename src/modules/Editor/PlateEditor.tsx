@@ -22,7 +22,7 @@ import { Note } from "./types/note";
 interface PlateEditorProps {
   initialValue: any;
   searchText?: string;
-  notes?: { [name: string]: Note };
+  notes?: Note[];
 }
 
 const PlateEditor: FC<PlateEditorProps> = ({
@@ -77,7 +77,7 @@ const PlateEditor: FC<PlateEditorProps> = ({
         <FixedToolbarButtons />
       </FixedToolbar>
 
-      <NotesProvider notes={notes || {}} onChangeActiveNoteId={setActiveNoteId}>
+      <NotesProvider notes={notes || []} onChangeActiveNoteId={setActiveNoteId}>
         <Editor
           renderLeaf={(props) => <Leaf {...props} />}
           decorate={decorate}

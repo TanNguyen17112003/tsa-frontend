@@ -8,13 +8,13 @@ import {
 import { Note } from "../../types/note";
 
 interface ContextValue {
-  notes: { [name: string]: Note };
+  notes: Note[];
   onChangeActiveNoteId: (noteId: string) => void;
   activeNoteId: string;
 }
 
 export const NotesContext = createContext<ContextValue>({
-  notes: {},
+  notes: [],
   onChangeActiveNoteId: () => {},
   activeNoteId: "",
 });
@@ -25,7 +25,7 @@ const NotesProvider = ({
   onChangeActiveNoteId,
 }: {
   children: ReactNode;
-  notes: { [name: string]: Note };
+  notes: Note[];
   onChangeActiveNoteId: (noteId: string) => void;
 }) => {
   const [activeNoteId, setActiveNoteId] = useState("");

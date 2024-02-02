@@ -1,3 +1,5 @@
+import { Note } from "./note";
+
 export interface EditorHighlight {
   highlightSearch?: boolean;
   highlightNote?: boolean;
@@ -10,4 +12,9 @@ export interface EditorFormat {
   fontSize?: number;
   color?: string;
   superscript?: boolean;
+}
+
+export interface ConvertDocx2EditorResult {
+  notes: Note[];
+  blocks: any[];
 }

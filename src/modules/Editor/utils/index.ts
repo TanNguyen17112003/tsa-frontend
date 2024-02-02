@@ -2,8 +2,12 @@ import { createPlateEditor, deserializeHtml } from "@udecode/plate-common";
 import plugins from "../plugins";
 import _ from "lodash";
 import { v4 } from "uuid";
+import { ConvertDocx2EditorResult } from "../types";
+import { Note } from "../types/note";
 
-export const convertDocx2Editor = async (file: File): Promise<any[]> => {
+export const convertDocx2Editor = async (
+  file: File
+): Promise<ConvertDocx2EditorResult> => {
   const container = document.createElement("div");
   container.style.display = "none";
   document.body.appendChild(container);
@@ -54,7 +58,7 @@ export const convertDocx2Editor = async (file: File): Promise<any[]> => {
     return { id: noteId, note: extractContent(noteContent).trim() };
   });
   console.log("notes", notes);
-  return notedBlocks;
+  return { blocks: notedBlocks, notes };
 };
 
 /**

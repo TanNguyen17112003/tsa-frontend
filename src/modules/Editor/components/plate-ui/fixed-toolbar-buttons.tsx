@@ -22,14 +22,15 @@ import {
   useAlignDropdownMenu,
   useAlignDropdownMenuState,
 } from "@udecode/plate-alignment";
+import clsx from "clsx";
+import { useCallback, useEffect, useState } from "react";
+import { BsCardText } from "react-icons/bs";
+import { BaseText } from "slate";
+import Autocomplete from "src/components/Autocomplete";
+import { fontSizeOptions, highlightOptions } from "../../configs";
 import { MarkToolbarButton } from "./mark-toolbar-button";
 import { ToolbarButton } from "./toolbar";
-import clsx from "clsx";
-import Autocomplete from "src/components/Autocomplete";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { BaseText } from "slate";
-import { fontSizeOptions, highlightOptions } from "../../configs";
-import { BsCardText } from "react-icons/bs";
+import { EditorFormat } from "../../types";
 
 const alignmentItems = [
   {
@@ -55,7 +56,7 @@ export function FixedToolbarButtons() {
   const { radioGroupProps } = useAlignDropdownMenu(state);
   const editorState = useEditorState();
   const [selectionMark, setSelectionMark] = useState<Omit<
-    BaseText & { fontSize?: number },
+    BaseText & EditorFormat,
     "text"
   > | null>(null);
 
@@ -112,18 +113,21 @@ export function FixedToolbarButtons() {
                 <MarkToolbarButton
                   nodeType={MARK_BOLD}
                   className="border-[1px] py-3 px-4"
+                  disabled={selectionMark?.superscript}
                 >
                   <BiBold />
                 </MarkToolbarButton>
                 <MarkToolbarButton
                   nodeType={MARK_ITALIC}
                   className="border-[1px] py-3 px-4"
+                  disabled={selectionMark?.superscript}
                 >
                   <BiItalic />
                 </MarkToolbarButton>
                 <MarkToolbarButton
                   nodeType={MARK_UNDERLINE}
                   className="border-[1px] py-3 px-4"
+                  disabled={selectionMark?.superscript}
                 >
                   <BiUnderline size={0} />
                 </MarkToolbarButton>
@@ -135,6 +139,7 @@ export function FixedToolbarButtons() {
                     pressed={item.value == state.value}
                     key={item.value}
                     onClick={() => radioGroupProps.onValueChange(item.value)}
+                    disabled={selectionMark?.superscript}
                   >
                     {<item.icon />}
                   </ToolbarButton>
@@ -148,15 +153,20 @@ export function FixedToolbarButtons() {
                     value: `${fontSize}pt`,
                     label: `${fontSize}pt`,
                   }))}
-                  value={`${selectionMark?.fontSize}pt` || undefined}
+                  value={
+                    selectionMark?.fontSize
+                      ? selectionMark.fontSize.toString()
+                      : undefined
+                  }
                   onChange={handleChangeFontSize}
+                  disabled={selectionMark?.superscript}
                 ></Autocomplete>
               </div>
               <div className="flex gap-1 items-center">
-                <div className="btn p-3 btn-md">
+                <button className="btn p-3 btn-md border-secondary shadow-none">
                   Thêm ghi chú
                   <BsCardText className="h-4 w-4" />
-                </div>
+                </button>
               </div>
             </div>
           </>

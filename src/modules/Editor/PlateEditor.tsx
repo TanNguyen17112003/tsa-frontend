@@ -5,49 +5,70 @@ import {
   TText,
   Value,
 } from "@udecode/plate-common";
+import { Range as SlateRange, Text as SlateText } from "slate";
 import { Editor } from "./components/plate-ui/editor";
 import { FixedToolbar } from "./components/plate-ui/fixed-toolbar";
 import { FixedToolbarButtons } from "./components/plate-ui/fixed-toolbar-buttons";
 import { FloatingToolbar } from "./components/plate-ui/floating-toolbar";
-import { Text as SlateText, Range as SlateRange } from "slate";
 import plugins from "./plugins";
 
-import { useCallback, type FC } from "react";
 import clsx from "clsx";
+import { useCallback, type FC, useState } from "react";
+import NoteCard from "./components/NoteCard";
+import NotesProvider from "./components/NoteProvider/NoteProvider";
 import { EditorFormat, EditorHighlight } from "./types";
+import { Note } from "./types/note";
 
 interface PlateEditorProps {
   initialValue: any;
   searchText?: string;
+  notes?: Note[];
 }
 
-const PlateEditor: FC<PlateEditorProps> = ({ initialValue, searchText }) => {
+const PlateEditor: FC<PlateEditorProps> = ({
+  initialValue,
+  searchText,
+  notes,
+}) => {
+  const [activeNoteId, setActiveNoteId] = useState("");
   const decorate = useCallback(
     ([node, path]: TNodeEntry): (SlateRange &
       EditorHighlight &
       EditorFormat)[] => {
       const ranges: (SlateRange & EditorHighlight)[] = [];
 
-      if (searchText && SlateText.isText(node)) {
-        const { text } = node;
-        const parts = text.split(searchText);
-        let offset = 0;
-
-        parts.forEach((part, i) => {
-          if (i !== 0) {
-            ranges.push({
-              anchor: { path, offset: offset - searchText.length },
-              focus: { path, offset },
-              highlightSearch: true,
-            });
-          }
-
-          offset = offset + part.length + searchText.length;
+      if (activeNoteId && node.noteId == activeNoteId) {
+        ranges.push({
+          anchor: { path, offset: 0 },
+          focus: {
+            path,
+            offset: typeof node.text == "string" ? node.text.length : 0,
+          },
+          highlightNote: true,
         });
       }
+
+      // if (searchText && SlateText.isText(node)) {
+      //   const { text } = node;
+      //   const parts = text.split(searchText);
+      //   let offset = 0;
+
+      //   parts.forEach((part, i) => {
+      //     if (i !== 0) {
+      //       ranges.push({
+      //         anchor: { path, offset: offset - searchText.length },
+      //         focus: { path, offset },
+      //         highlightSearch: true,
+      //       });
+      //     }
+
+      //     offset = offset + part.length + searchText.length;
+      //   });
+      // }
+      // console.log("ranges", ranges);
       return ranges;
     },
-    [searchText]
+    [activeNoteId]
   );
 
   return (
@@ -56,9 +77,16 @@ const PlateEditor: FC<PlateEditorProps> = ({ initialValue, searchText }) => {
         <FixedToolbarButtons />
       </FixedToolbar>
 
-      <Editor renderLeaf={(props) => <Leaf {...props} />} decorate={decorate} />
+      <NotesProvider notes={notes || []} onChangeActiveNoteId={setActiveNoteId}>
+        <Editor
+          renderLeaf={(props) => <Leaf {...props} />}
+          decorate={decorate}
+        />
 
-      <FloatingToolbar></FloatingToolbar>
+        <FloatingToolbar>
+          <NoteCard noteIndex={1} />
+        </FloatingToolbar>
+      </NotesProvider>
     </Plate>
   );
 };
@@ -76,8 +104,8 @@ const Leaf = ({
         fontSize: leaf.fontSize,
       }}
       className={clsx(
-        leaf.highlightSearch && "bg-orange-200",
-        leaf.highlightNote && "bg-orange-300"
+        leaf.highlightNote && "bg-orange-200"
+        // leaf.highlightSearch && "bg-orange-200",
         // leaf.color && `text-[${leaf.color}]`,
         // leaf.fontSize && `text-[${leaf.fontSize}]`
         // leaf.bold && "font-bold",

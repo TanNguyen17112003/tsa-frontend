@@ -1,5 +1,6 @@
 import { ChangeEventHandler, useCallback, useRef, useState } from "react";
 import PlateEditor from "src/modules/Editor";
+import { Note } from "src/modules/Editor/types/note";
 import { convertDocx2Editor } from "src/modules/Editor/utils";
 import type { Page as PageType } from "src/types/page";
 
@@ -9,14 +10,16 @@ const Page: PageType = () => {
   const [plateValue, setPlateValue] = useState<any[]>([
     { type: "p", children: [{ text: "" }] },
   ]);
+  const [notes, setNotes] = useState<Note[]>([]);
 
   const handleUpload: ChangeEventHandler<HTMLInputElement> = useCallback(
     async (e) => {
       const file = e.target.files?.[0];
 
       if (file) {
-        const value = await convertDocx2Editor(file);
-        setPlateValue(value);
+        const result = await convertDocx2Editor(file);
+        setPlateValue(result.blocks);
+        setNotes(result.notes);
       }
     },
     []
@@ -26,11 +29,11 @@ const Page: PageType = () => {
     <div>
       <div className="flex">
         <input type="file" onChange={handleUpload} />
-        <input
+        {/* <input
           className="input input-sm input-bordered w-full max-w-xs"
           placeholder="search"
           onChange={(e) => setSearchText(e.target.value)}
-        />
+        /> */}
       </div>
       <div>
         <div className="hidden" ref={docxContainer} />
@@ -40,7 +43,8 @@ const Page: PageType = () => {
           <PlateEditor
             key={plateValue.toString()}
             initialValue={plateValue}
-            searchText={searchText}
+            // searchText={searchText}
+            notes={notes}
           />
         </div>
       </div>

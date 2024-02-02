@@ -14,6 +14,7 @@ interface AutocompleteProps<T extends number | string> {
   placeholder?: string;
   className?: string;
   freeSolo?: boolean;
+  disabled?: boolean;
 }
 
 const Autocomplete = <T extends number | string>({
@@ -23,6 +24,7 @@ const Autocomplete = <T extends number | string>({
   className,
   placeholder,
   freeSolo,
+  disabled,
 }: AutocompleteProps<T>) => {
   const [query, setQuery] = useState("");
   const ref = useRef<HTMLDivElement>(null);
@@ -108,7 +110,7 @@ const Autocomplete = <T extends number | string>({
     <div
       className={clsx(
         "dropdown border-[1px] rounded-lg inline-block",
-        open && "dropdown-open",
+        open && !disabled && "dropdown-open",
         className
       )}
       ref={ref}
@@ -119,39 +121,45 @@ const Autocomplete = <T extends number | string>({
         className="relative cursor-default overflow-hidden rounded-lg bg-white text-left"
       >
         <input
-          className="input input-sm focus-visible:border-none -webkit-outer-spin-button:-webkit-appearance-[none]"
+          className={clsx(
+            "input input-sm focus-visible:border-none -webkit-outer-spin-button:-webkit-appearance-[none]",
+            disabled && "input-disabled"
+          )}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={placeholder}
+          disabled={disabled}
         />
         <div className="btn btn-sm btn-ghost absolute inset-y-0 right-0 flex items-center pr-2">
           <ChevronUpDownIcon className="w-5 text-gray-400" aria-hidden="true" />
         </div>
       </div>
-      <ul
-        tabIndex={0}
-        className={clsx(
-          "dropdown-content z-[100] inline-block menu w-full bg-white border-[1px] p-0 rounded-lg max-h-[50vh] overflow-y-scroll"
-        )}
-        ref={ulRef}
-      >
-        {options.map((option, index) => (
-          <li
-            key={option.value}
-            className={clsx(
-              "btn btn-ghost btn-sm hover:bg-orange-300 text-left w-full relative select-none pl-2 py-1",
-              option.value == value
-                ? "bg-orange-500 text-white"
-                : "text-gray-900",
-              index === focusedIndex && "bg-orange-200"
-            )}
-            value={option.value}
-            onClick={() => handleChooseOption(option.value)}
-          >
-            {option.label}
-          </li>
-        ))}
-      </ul>
+      {!disabled && (
+        <ul
+          tabIndex={0}
+          className={clsx(
+            "dropdown-content z-[100] inline-block menu w-full bg-white border-[1px] p-0 rounded-lg max-h-[50vh] overflow-y-scroll"
+          )}
+          ref={ulRef}
+        >
+          {options.map((option, index) => (
+            <li
+              key={option.value}
+              className={clsx(
+                "btn btn-ghost btn-sm hover:bg-orange-300 text-left w-full relative select-none pl-2 py-1",
+                option.value == value
+                  ? "bg-orange-500 text-white"
+                  : "text-gray-900",
+                index === focusedIndex && "bg-orange-200"
+              )}
+              value={option.value}
+              onClick={() => handleChooseOption(option.value)}
+            >
+              {option.label}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };

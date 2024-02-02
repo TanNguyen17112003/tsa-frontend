@@ -1,6 +1,7 @@
 import { createPlateEditor, deserializeHtml } from "@udecode/plate-common";
 import plugins from "../plugins";
 import _ from "lodash";
+import { v4 } from "uuid";
 
 export const convertDocx2Editor = async (file: File): Promise<any[]> => {
   const container = document.createElement("div");
@@ -15,7 +16,9 @@ export const convertDocx2Editor = async (file: File): Promise<any[]> => {
     ignoreWidth: true,
     ignoreFonts: true,
   });
+
   const htmlContent = container.innerHTML;
+  container.remove();
   const htmlArticleString = htmlContent.substring(
     htmlContent.indexOf("<article>"),
     htmlContent.indexOf("</article>") + 11
@@ -25,11 +28,33 @@ export const convertDocx2Editor = async (file: File): Promise<any[]> => {
   const blocks: any[] = deserializeHtml(tmpEditor, {
     element: htmlArticleString,
   });
-  console.log("blocks", blocks);
   const cleanedBlocks = blocks.map((block) => cleanBlock(block));
-  console.log("cleanedBlocks", cleanedBlocks);
-  container.remove();
-  return cleanedBlocks;
+  const noteIds: string[] = [];
+  const notedBlocks: any[] = cleanedBlocks.map((block) => {
+    const result = getNoteIds(block);
+    noteIds.push(...result.noteIds);
+    return result.block;
+  });
+  console.log("cleanedBlocks", notedBlocks);
+  console.log("noteIds", noteIds);
+  let htmlPos = htmlContent.indexOf("<ol>", htmlContent.indexOf("</article>"));
+  const notes = noteIds.map((noteId) => {
+    if (htmlPos < 0) {
+      return { id: noteId, note: "" };
+    }
+    htmlPos = htmlContent.indexOf("<li>", htmlPos + 1);
+    if (htmlPos < 0) {
+      return { id: noteId, note: "" };
+    }
+
+    const noteContent = htmlContent.substring(
+      htmlPos,
+      htmlContent.indexOf("</li>", htmlPos)
+    );
+    return { id: noteId, note: extractContent(noteContent).trim() };
+  });
+  console.log("notes", notes);
+  return notedBlocks;
 };
 
 /**
@@ -39,12 +64,13 @@ export const convertDocx2Editor = async (file: File): Promise<any[]> => {
  * @param block from deserialize html
  * @returns cleaned blocks
  */
-export const cleanBlock = (block: any) => {
+export const cleanBlock = (block: any): any => {
   if (!block.children) {
     return block;
   }
   const blockChildren: any[] = block.children;
   const newChildren: any[] = [];
+
   let currentChild: any | null = null;
   for (let i = 0; i < blockChildren.length; i++) {
     if (blockChildren[i].children || !blockChildren[i].text) {
@@ -74,10 +100,37 @@ export const cleanBlock = (block: any) => {
   }
   return {
     ...block,
-    children: newChildren.map((child) =>
-      child.color ? { ...child, color: rgbToHex(child.color) } : child
-    ),
+    children: newChildren.map((child) => {
+      const newChild = child;
+      if (child.color) {
+        child.color = rgbToHex(child.color);
+      }
+      if (child.superscript) {
+        child.noteIndex = child.text;
+        child.text = "*";
+      }
+      return newChild;
+    }),
   };
+};
+
+const getNoteIds = (block: any): { block: any; noteIds: string[] } => {
+  if (!block.children) {
+    return { block, noteIds: [] };
+  }
+  const blockChildren: any[] = block.children;
+  const noteIds: string[] = [];
+  const newChildren = blockChildren.map((child) => {
+    if (child.superscript) {
+      const id = v4();
+      child.noteId = id;
+      noteIds.push(id);
+    }
+    const result = getNoteIds(child);
+    noteIds.push(...result.noteIds);
+    return result.block;
+  });
+  return { block: { ...block, children: newChildren }, noteIds };
 };
 
 export const cleanHtml = (content: string) => {
@@ -112,7 +165,6 @@ export const cleanHtml = (content: string) => {
 };
 
 function rgbToHex(rgb: string): string {
-  // Extract the RGB values from the input string
   const match = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
   if (!match) {
     return rgb;
@@ -122,11 +174,33 @@ function rgbToHex(rgb: string): string {
   const green = parseInt(match[2], 10);
   const blue = parseInt(match[3], 10);
 
-  // Convert each RGB component to its hex representation
   const hexRed = red.toString(16).padStart(2, "0");
   const hexGreen = green.toString(16).padStart(2, "0");
   const hexBlue = blue.toString(16).padStart(2, "0");
 
-  // Concatenate the hex values and return the result
   return `#${hexRed}${hexGreen}${hexBlue}`;
 }
+
+function extractContent(html: string) {
+  var span = document.createElement("span");
+  span.innerHTML = html;
+  return span.textContent || span.innerText;
+}
+
+export const getBlockPath = (
+  blocks: any[],
+  noteId: string
+): number[] | null => {
+  for (let i = 0; i < blocks.length; i++) {
+    if (blocks[i].noteId == noteId) {
+      return [i];
+    }
+    if (blocks[i].children) {
+      const path = getBlockPath(blocks[i].children, noteId);
+      if (path) {
+        return [i, ...path];
+      }
+    }
+  }
+  return null;
+};

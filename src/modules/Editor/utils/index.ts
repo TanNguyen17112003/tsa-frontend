@@ -35,7 +35,7 @@ export const convertDocx2Editor = async (file: File): Promise<any[]> => {
     noteIds.push(...result.noteIds);
     return result.block;
   });
-  console.log("cleanedBlocks", notedBlocks);
+  console.log("notedBlocks", notedBlocks);
   console.log("noteIds", noteIds);
   let htmlPos = htmlContent.indexOf("<ol>", htmlContent.indexOf("</article>"));
   const notes = noteIds.map((noteId) => {
@@ -120,7 +120,7 @@ const getNoteIds = (block: any): { block: any; noteIds: string[] } => {
   }
   const blockChildren: any[] = block.children;
   const noteIds: string[] = [];
-  const newChildren = blockChildren.map((child) => {
+  const tempNewChildren = blockChildren.map((child) => {
     if (child.superscript) {
       const id = v4();
       child.noteId = id;
@@ -129,6 +129,32 @@ const getNoteIds = (block: any): { block: any; noteIds: string[] } => {
     const result = getNoteIds(child);
     noteIds.push(...result.noteIds);
     return result.block;
+  });
+  const newChildren: any[] = [];
+  tempNewChildren.forEach((child, index) => {
+    if (
+      index < tempNewChildren.length - 1 &&
+      tempNewChildren[index + 1].noteId
+    ) {
+      const text: string = child.text;
+      text.trimEnd();
+      const wordStartPos = text.lastIndexOf("(");
+      const wordEndPos = text.lastIndexOf(")");
+      if (wordEndPos == text.length - 1) {
+        newChildren.push({
+          ...child,
+          text: text.substring(0, wordStartPos),
+        });
+        newChildren.push({
+          ...child,
+          noteId: tempNewChildren[index + 1].noteId,
+          noteIndex: tempNewChildren[index + 1].noteIndex,
+          text: text.substring(wordStartPos + 1, wordEndPos),
+        });
+        return;
+      }
+    }
+    newChildren.push(child);
   });
   return { block: { ...block, children: newChildren }, noteIds };
 };
@@ -192,7 +218,7 @@ export const getBlockPath = (
   noteId: string
 ): number[] | null => {
   for (let i = 0; i < blocks.length; i++) {
-    if (blocks[i].noteId == noteId) {
+    if (blocks[i].noteId == noteId && blocks[i].superscript) {
       return [i];
     }
     if (blocks[i].children) {

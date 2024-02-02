@@ -19,6 +19,7 @@ import { BaseText } from "slate";
 import { NOTE_BUTTON_ID } from "../../configs";
 import { EditorFormat } from "../../types";
 import { Toolbar } from "./toolbar";
+import { useNotesContext } from "../NoteProvider/NoteProvider";
 
 export const FloatingToolbar = withRef<
   typeof Toolbar,
@@ -26,6 +27,7 @@ export const FloatingToolbar = withRef<
     state?: FloatingToolbarState;
   }
 >(({ state, children, ...props }, componentRef) => {
+  const { onChangeActiveNoteId } = useNotesContext();
   const editorRef = useEditorRef();
   const floatingToolbarState = useFloatingToolbarState({
     ...state,

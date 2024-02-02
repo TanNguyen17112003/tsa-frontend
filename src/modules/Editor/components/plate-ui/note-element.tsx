@@ -4,9 +4,11 @@ import { useCallback, useRef } from "react";
 import { getBlockPath } from "../../utils";
 import { NOTE_BUTTON_ID } from "../../configs";
 import { MouseEvent } from "react";
+import { useNotesContext } from "../NoteProvider/NoteProvider";
 
 export const NoteElement = withRef<typeof PlateLeaf, TText>(
   ({ className, children, ...props }, ref) => {
+    const { onChangeActiveNoteId } = useNotesContext();
     const spanRef = useRef<HTMLElement | null>(null);
 
     const handleClick = useCallback(
@@ -29,6 +31,7 @@ export const NoteElement = withRef<typeof PlateLeaf, TText>(
             },
           });
         }
+        // select content to show popup
         const sel = window.getSelection();
         sel?.removeAllRanges();
         if (spanRef.current) {
@@ -37,8 +40,9 @@ export const NoteElement = withRef<typeof PlateLeaf, TText>(
           range.selectNodeContents(spanRef.current);
           sel?.addRange(range);
         }
+        onChangeActiveNoteId(children.props.leaf.noteId);
       },
-      [children.props.leaf.noteId, props.editor]
+      [children.props.leaf.noteId, onChangeActiveNoteId, props.editor]
     );
 
     return (

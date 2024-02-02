@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "src/hooks/use-auth";
 import { Layout as DashboardLayout } from "src/layouts/dashboard";
 import type { Page as PageType } from "src/types/page";
-import backgroundImage from "../../images/background-siu.png";
+import backgroundImage from "../../../public/ui/background-siu.png";
 import HeaderTitle from "src/components/ui/HeaderTitle";
 import { useRouter } from "next/router";
 import { AuthProvider } from "src/contexts/auth/jwt-context";

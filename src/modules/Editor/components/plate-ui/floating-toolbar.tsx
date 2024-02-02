@@ -1,16 +1,23 @@
 "use client";
 
-import React from "react";
 import { cn, withRef } from "@udecode/cn";
-import { PortalBody, useComposedRef } from "@udecode/plate-common";
 import {
-  flip,
+  PortalBody,
+  useComposedRef,
+  useEditorRef,
+} from "@udecode/plate-common";
+import {
   FloatingToolbarState,
+  flip,
   offset,
   useFloatingToolbar,
   useFloatingToolbarState,
 } from "@udecode/plate-floating";
+import { useEffect, useMemo } from "react";
 
+import { BaseText } from "slate";
+import { NOTE_BUTTON_ID } from "../../configs";
+import { EditorFormat } from "../../types";
 import { Toolbar } from "./toolbar";
 
 export const FloatingToolbar = withRef<
@@ -19,6 +26,7 @@ export const FloatingToolbar = withRef<
     state?: FloatingToolbarState;
   }
 >(({ state, children, ...props }, componentRef) => {
+  const editorRef = useEditorRef();
   const floatingToolbarState = useFloatingToolbarState({
     ...state,
     floatingOptions: {
@@ -37,6 +45,7 @@ export const FloatingToolbar = withRef<
       ],
       ...state?.floatingOptions,
     },
+    ignoreReadOnly: false,
   });
 
   const {
@@ -47,11 +56,29 @@ export const FloatingToolbar = withRef<
 
   const ref = useComposedRef<HTMLDivElement>(componentRef, floatingRef);
 
-  if (hidden) return null;
+  useEffect(() => {
+    const handleUpdate = (e: MouseEvent) => {
+      const element: HTMLElement | null = e.target as HTMLElement;
+      if (element?.id == NOTE_BUTTON_ID) {
+        floatingToolbarState.floating.update();
+      }
+    };
+    document.addEventListener("mouseup", handleUpdate);
+    return () => window.removeEventListener("mouseup", handleUpdate);
+  }, [floatingToolbarState.floating, floatingToolbarState.floating.update]);
+
+  const isSelectedNote = useMemo(() => {
+    const mark: (BaseText & EditorFormat) | null =
+      editorRef.getMarks() as BaseText & EditorFormat;
+    return mark?.superscript;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editorRef.selection]);
+
+  if (hidden || !isSelectedNote) return null;
 
   return (
     <PortalBody>
-      <Toolbar
+      <div
         ref={ref}
         className={cn(
           "absolute z-50 whitespace-nowrap border bg-popover px-1 opacity-100 shadow-md rounded-xl print:hidden"
@@ -60,7 +87,7 @@ export const FloatingToolbar = withRef<
         {...props}
       >
         {children}
-      </Toolbar>
+      </div>
     </PortalBody>
   );
 });

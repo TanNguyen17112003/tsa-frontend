@@ -9,4 +9,5 @@ export interface EditorFormat {
   underline?: boolean;
   fontSize?: number;
   color?: string;
+  superscript?: boolean;
 }

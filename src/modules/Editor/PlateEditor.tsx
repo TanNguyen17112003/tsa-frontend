@@ -5,17 +5,17 @@ import {
   TText,
   Value,
 } from "@udecode/plate-common";
+import { Range as SlateRange, Text as SlateText } from "slate";
 import { Editor } from "./components/plate-ui/editor";
 import { FixedToolbar } from "./components/plate-ui/fixed-toolbar";
 import { FixedToolbarButtons } from "./components/plate-ui/fixed-toolbar-buttons";
 import { FloatingToolbar } from "./components/plate-ui/floating-toolbar";
-import { Text as SlateText, Range as SlateRange } from "slate";
 import plugins from "./plugins";
 
-import { useCallback, type FC } from "react";
 import clsx from "clsx";
-import { EditorFormat, EditorHighlight } from "./types";
+import { useCallback, type FC } from "react";
 import NoteCard from "./components/NoteCard";
+import { EditorFormat, EditorHighlight } from "./types";
 
 interface PlateEditorProps {
   initialValue: any;

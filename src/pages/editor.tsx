@@ -1,5 +1,9 @@
 import { ChangeEventHandler, useCallback, useRef, useState } from "react";
-import PlateEditor from "src/modules/Editor";
+import dynamic from "next/dynamic";
+const PlateEditor = dynamic(() => import("src/modules/Editor"), {
+  loading: () => <p>Loading...</p>,
+});
+
 import { Note } from "src/modules/Editor/types/note";
 import { convertDocx2Editor } from "src/modules/Editor/utils";
 import type { Page as PageType } from "src/types/page";

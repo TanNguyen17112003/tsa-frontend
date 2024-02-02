@@ -72,7 +72,7 @@ export const FloatingToolbar = withRef<
   const isSelectedNote = useMemo(() => {
     const mark: (BaseText & EditorFormat) | null =
       editorRef.getMarks() as BaseText & EditorFormat;
-    if (!mark.superscript) {
+    if (!mark?.superscript) {
       onChangeActiveNoteId("");
     }
     return mark?.superscript;

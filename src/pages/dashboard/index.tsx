@@ -82,7 +82,7 @@ const Page: PageType = () => {
             title="Bài dịch mới nhất"
           >
             {children.map((c, index) => (
-              <div className="pb-4">
+              <div className="pb-4" key={c.title}>
                 <PiBookOpen style={{ fontSize: "1.4em" }} />
                 <div key={index} className="text-black-700">
                   {c.title}
@@ -117,7 +117,7 @@ const Page: PageType = () => {
         <div className="space-y-8">
           <div className="mt-4"></div>
           {history.map((h) => (
-            <div>
+            <div key={h.title}>
               <div className="text-cyan-500">{h.title}</div>
               <div className="text-gray-500 text-xs">{h.time}</div>
             </div>

@@ -66,6 +66,7 @@ const ToolbarButton =
       VariantProps<typeof toolbarButtonVariants> & {
         pressed?: boolean;
         isDropdown?: boolean;
+        tooltip?: string;
       }
   >(
     (

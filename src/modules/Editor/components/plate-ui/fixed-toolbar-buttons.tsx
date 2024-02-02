@@ -148,7 +148,7 @@ export function FixedToolbarButtons() {
                     value: `${fontSize}pt`,
                     label: `${fontSize}pt`,
                   }))}
-                  value={selectionMark?.fontSize || undefined}
+                  value={`${selectionMark?.fontSize}pt` || undefined}
                   onChange={handleChangeFontSize}
                 ></Autocomplete>
               </div>

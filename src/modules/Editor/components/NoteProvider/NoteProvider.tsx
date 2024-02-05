@@ -10,6 +10,8 @@ import {
 import { v4 } from "uuid";
 import { Note } from "../../types/note";
 import { getNodeByPath } from "../../utils";
+import { EditorFormat } from "../../types";
+import { BaseText } from "slate";
 
 interface ContextValue {
   notes: Note[];
@@ -80,8 +82,8 @@ const NotesProvider = ({
     const { apply } = editor;
     const newApply = (o: TOperation) => {
       if (o.type == "remove_text") {
-        const node: any = getNodeByPath(editor, o.path);
-        if (node.noteId && node.superscript) {
+        const mark: any = editor.getMarks();
+        if (mark && mark.noteId && mark.superscript) {
           return;
         }
       } else if (

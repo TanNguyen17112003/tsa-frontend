@@ -7,17 +7,14 @@ import {
   useEffect,
   useState,
 } from "react";
-import { v4 } from "uuid";
 import { Note } from "../../types/note";
-import { getNodeByPath } from "../../utils";
-import { EditorFormat } from "../../types";
-import { BaseText } from "slate";
+import { showNote } from "../../utils";
 
 interface ContextValue {
   notes: Note[];
   activeNoteId: string;
   setActiveNoteId: (noteId: string) => void;
-  addNote: (note: string) => void;
+  addNote: (noteId: string, note: string) => void;
   updateNote: (noteId: string, note: string) => void;
   deleteNote: (noteId: string) => void;
 }
@@ -49,13 +46,14 @@ const NotesProvider = ({
     (noteId: string) => {
       setActiveNoteId(noteId);
       onChangeActiveNoteId(noteId);
+      showNote(editor, noteId);
     },
-    [onChangeActiveNoteId]
+    [editor, onChangeActiveNoteId]
   );
 
   const addNote = useCallback(
-    (note: string) => {
-      onUpdateNotes([...notes, { id: v4(), note }]);
+    (noteId: string, note: string) => {
+      onUpdateNotes([...notes, { id: noteId, note }]);
     },
     [notes, onUpdateNotes]
   );
@@ -101,6 +99,8 @@ const NotesProvider = ({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  console.log("notes", notes);
 
   return (
     <NotesContext.Provider

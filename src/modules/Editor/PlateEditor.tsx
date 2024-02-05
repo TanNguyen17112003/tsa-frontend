@@ -75,15 +75,14 @@ const PlateEditor: FC<PlateEditorProps> = ({
 
   return (
     <Plate plugins={plugins} initialValue={initialValue}>
-      <FixedToolbar>
-        <FixedToolbarButtons />
-      </FixedToolbar>
-
       <NotesProvider
         notes={notes || []}
         onChangeActiveNoteId={setActiveNoteId}
         onUpdateNotes={onUpdateNotes}
       >
+        <FixedToolbar>
+          <FixedToolbarButtons />
+        </FixedToolbar>
         <Editor
           renderLeaf={(props) => <Leaf {...props} />}
           decorate={decorate}

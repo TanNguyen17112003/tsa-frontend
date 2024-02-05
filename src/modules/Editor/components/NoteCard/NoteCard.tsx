@@ -1,7 +1,7 @@
 import { useEffect, type FC, useRef, useCallback } from "react";
 import { useNotesContext } from "../NoteProvider/NoteProvider";
 import { useEditorRef } from "@udecode/plate-common";
-import { getNodeByPath, getPathByNoteId } from "../../utils";
+import { getNodeByPath, getPathByNoteId, updateNoteIndexes } from "../../utils";
 
 interface NoteCardProps {
   noteIndex: number;
@@ -14,7 +14,6 @@ const NoteCard: FC<NoteCardProps> = ({ noteIndex }) => {
   const editor = useEditorRef();
 
   const handleDelete = useCallback(() => {
-    console.log("editor.selection", editor.selection);
     editor.deleteFragment();
     const path = getPathByNoteId(editor.children, activeNoteId, {
       noSuperscript: true,
@@ -31,6 +30,7 @@ const NoteCard: FC<NoteCardProps> = ({ noteIndex }) => {
       }
     }
     deleteNote(activeNoteId);
+    updateNoteIndexes(editor);
     setActiveNoteId("");
   }, [activeNoteId, deleteNote, editor, setActiveNoteId]);
 
@@ -49,6 +49,7 @@ const NoteCard: FC<NoteCardProps> = ({ noteIndex }) => {
     const note = notes.find((note) => note.id == activeNoteId);
     if (ref.current) {
       ref.current.value = note?.note || "";
+      // setTimeout(() => ref.current?.focus(), 200);
     }
   }, [activeNoteId, notes]);
 
@@ -73,6 +74,7 @@ const NoteCard: FC<NoteCardProps> = ({ noteIndex }) => {
         </button>
       </div>
       <textarea
+        autoFocus
         ref={ref}
         className="w-full border-[1px] min-w-[320px] rounded-lg p-1"
         rows={4}

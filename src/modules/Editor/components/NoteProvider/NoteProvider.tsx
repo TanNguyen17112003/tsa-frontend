@@ -1,12 +1,15 @@
+import { TOperation, useEditorRef } from "@udecode/plate-common";
 import {
   ReactNode,
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useState,
 } from "react";
-import { Note } from "../../types/note";
 import { v4 } from "uuid";
+import { Note } from "../../types/note";
+import { getNodeByPath } from "../../utils";
 
 interface ContextValue {
   notes: Note[];
@@ -38,6 +41,7 @@ const NotesProvider = ({
   onUpdateNotes: (notes: Note[]) => void;
 }) => {
   const [activeNoteId, setActiveNoteId] = useState("");
+  const editor = useEditorRef();
 
   const handleChange = useCallback(
     (noteId: string) => {
@@ -71,6 +75,30 @@ const NotesProvider = ({
     },
     [notes, onUpdateNotes]
   );
+
+  useEffect(() => {
+    const { apply } = editor;
+    const newApply = (o: TOperation) => {
+      if (o.type == "remove_text") {
+        const node: any = getNodeByPath(editor, o.path);
+        if (node.noteId && node.superscript) {
+          return;
+        }
+      } else if (
+        o.type == "remove_node" &&
+        o.node.noteId &&
+        o.node.superscript
+      ) {
+        return;
+      }
+      apply(o);
+    };
+    editor.apply = newApply;
+    return () => {
+      editor.apply = apply;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <NotesContext.Provider

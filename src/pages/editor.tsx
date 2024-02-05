@@ -1,4 +1,10 @@
-import { ChangeEventHandler, useCallback, useRef, useState } from "react";
+import {
+  ChangeEventHandler,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import dynamic from "next/dynamic";
 const PlateEditor = dynamic(() => import("src/modules/Editor"), {
   loading: () => <p>Loading...</p>,
@@ -14,6 +20,7 @@ const Page: PageType = () => {
   const [plateValue, setPlateValue] = useState<any[]>([
     { type: "p", children: [{ text: "" }] },
   ]);
+  const valueRef = useRef<any[]>([]);
   const [notes, setNotes] = useState<Note[]>([]);
 
   const handleUpload: ChangeEventHandler<HTMLInputElement> = useCallback(
@@ -29,19 +36,44 @@ const Page: PageType = () => {
     []
   );
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      localStorage.setItem("value", JSON.stringify(valueRef.current));
+      localStorage.setItem("notes", JSON.stringify(notes));
+    }, 500);
+    return () => clearInterval(interval);
+  }, [notes]);
+
+  useEffect(() => {
+    const value: any[] = JSON.parse(localStorage.getItem("value") || "[]");
+    const notes: Note[] = JSON.parse(localStorage.getItem("notes") || "[]");
+    if (value.length > 0) {
+      setPlateValue(value);
+    }
+    setNotes(notes);
+  }, []);
+
   return (
     <div>
-      <div className="flex">
+      <div className="flex items-center py-1 px-2">
         <input type="file" onChange={handleUpload} />
+        <button
+          className="btn btn-primary btn-outline btn-xs"
+          onClick={() => {
+            setPlateValue([{ type: "p", children: [{ text: "" }] }]);
+            setNotes([]);
+          }}
+        >
+          Reset
+        </button>
         {/* <input
           className="input input-sm input-bordered w-full max-w-xs"
           placeholder="search"
           onChange={(e) => setSearchText(e.target.value)}
         /> */}
       </div>
-      <div>
-        <div className="hidden" ref={docxContainer} />
-      </div>
+      <hr />
+
       <div className="card">
         <div className="card-content">
           <PlateEditor
@@ -50,6 +82,10 @@ const Page: PageType = () => {
             // searchText={searchText}
             notes={notes}
             onUpdateNotes={setNotes}
+            onChange={(value) => {
+              console.log("value", value);
+              valueRef.current = value;
+            }}
           />
         </div>
       </div>

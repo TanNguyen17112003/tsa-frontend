@@ -9,7 +9,6 @@ import plugins from "../plugins";
 import _ from "lodash";
 import { v4 } from "uuid";
 import { ConvertDocx2EditorResult } from "../types";
-import { Node } from "slate";
 
 export const convertDocx2Editor = async (
   file: File
@@ -311,12 +310,19 @@ export const getNodeByPath = (
 
 export const updateNoteIndexes = (editor: PlateEditor<Value>) => {
   const paths = getAllNotePaths(editor.children, []);
+  const selection = editor.selection;
   paths.forEach((path, index) => {
-    editor.setNodes<Node & { noteIndex: string }>(
-      { noteIndex: (index + 1).toString() },
-      { at: { path: path.path, offset: 0 } }
-    );
+    editor.select({
+      anchor: { path: path.path, offset: 0 },
+      focus: { path: path.path, offset: 1 },
+    });
+    editor.addMark("noteIndex", (index + 1).toString());
   });
+  if (selection) {
+    editor.select(selection);
+  } else {
+    editor.deselect();
+  }
 };
 
 export const showNote = (editor: PlateEditor<Value>, noteId: string) => {

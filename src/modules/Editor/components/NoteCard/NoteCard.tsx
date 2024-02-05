@@ -44,7 +44,7 @@ const NoteCard: FC<NoteCardProps> = ({ noteIndex }) => {
   return (
     <div className="inline-flex flex-col items-start gap-2 px-2 py-3 relative rounded-lg">
       <div className="flex items-center gap-2 relative self-stretch w-full">
-        <div className="relative flex-1 text-lg">Chú thích [{noteIndex}]</div>
+        <div className="relative flex-1 text-lg">Chú thích</div>
         <button
           className="btn btn-error btn-xs text-white"
           onClick={handleDelete}

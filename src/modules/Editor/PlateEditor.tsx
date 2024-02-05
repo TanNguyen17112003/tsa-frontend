@@ -24,6 +24,7 @@ interface PlateEditorProps {
   searchText?: string;
   notes?: Note[];
   onUpdateNotes: (notes: Note[]) => void;
+  onChange: (value: any) => void;
 }
 
 const PlateEditor: FC<PlateEditorProps> = ({
@@ -31,6 +32,7 @@ const PlateEditor: FC<PlateEditorProps> = ({
   searchText,
   notes,
   onUpdateNotes,
+  onChange,
 }) => {
   const [activeNoteId, setActiveNoteId] = useState("");
   const decorate = useCallback(
@@ -74,7 +76,7 @@ const PlateEditor: FC<PlateEditorProps> = ({
   );
 
   return (
-    <Plate plugins={plugins} initialValue={initialValue}>
+    <Plate plugins={plugins} initialValue={initialValue} onChange={onChange}>
       <NotesProvider
         notes={notes || []}
         onChangeActiveNoteId={setActiveNoteId}

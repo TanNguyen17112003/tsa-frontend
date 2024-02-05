@@ -1,20 +1,20 @@
 import { cn } from "@udecode/cn";
 import { PlateLeaf, TText, withRef } from "@udecode/plate-common";
 import { useCallback, useRef } from "react";
-import { getBlockPath } from "../../utils";
+import { getPathByNoteId } from "../../utils";
 import { NOTE_BUTTON_ID } from "../../configs";
 import { MouseEvent } from "react";
 import { useNotesContext } from "../NoteProvider/NoteProvider";
 
 export const NoteElement = withRef<typeof PlateLeaf, TText>(
   ({ className, children, ...props }, ref) => {
-    const { onChangeActiveNoteId } = useNotesContext();
+    const { setActiveNoteId } = useNotesContext();
     const spanRef = useRef<HTMLElement | null>(null);
 
     const handleClick = useCallback(
       async (e: MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
-        const path = getBlockPath(
+        const path = getPathByNoteId(
           props.editor.children,
           children.props.leaf.noteId
         );
@@ -40,9 +40,9 @@ export const NoteElement = withRef<typeof PlateLeaf, TText>(
           range.selectNodeContents(spanRef.current);
           sel?.addRange(range);
         }
-        onChangeActiveNoteId(children.props.leaf.noteId);
+        setActiveNoteId(children.props.leaf.noteId);
       },
-      [children.props.leaf.noteId, onChangeActiveNoteId, props.editor]
+      [children.props.leaf.noteId, setActiveNoteId, props.editor]
     );
 
     return (

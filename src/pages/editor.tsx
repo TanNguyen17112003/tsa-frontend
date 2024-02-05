@@ -49,6 +49,7 @@ const Page: PageType = () => {
             initialValue={plateValue}
             // searchText={searchText}
             notes={notes}
+            onUpdateNotes={setNotes}
           />
         </div>
       </div>

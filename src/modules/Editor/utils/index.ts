@@ -1,4 +1,8 @@
-import { createPlateEditor, deserializeHtml } from "@udecode/plate-common";
+import {
+  TDescendant,
+  createPlateEditor,
+  deserializeHtml,
+} from "@udecode/plate-common";
 import plugins from "../plugins";
 import _ from "lodash";
 import { v4 } from "uuid";
@@ -217,20 +221,44 @@ function extractContent(html: string) {
   return span.textContent || span.innerText;
 }
 
-export const getBlockPath = (
+export const getPathByNoteId = (
   blocks: any[],
-  noteId: string
+  noteId: string,
+  options?: { noSuperscript?: boolean }
 ): number[] | null => {
   for (let i = 0; i < blocks.length; i++) {
-    if (blocks[i].noteId == noteId && blocks[i].superscript) {
+    if (
+      blocks[i].noteId == noteId &&
+      (options?.noSuperscript || blocks[i].superscript)
+    ) {
       return [i];
     }
     if (blocks[i].children) {
-      const path = getBlockPath(blocks[i].children, noteId);
+      const path = getPathByNoteId(blocks[i].children, noteId);
       if (path) {
         return [i, ...path];
       }
     }
   }
   return null;
+};
+
+export const getNodeByPath = (
+  block: Object & { children: TDescendant[] },
+  path: number[]
+): TDescendant | undefined => {
+  if (path.length == 0) {
+    return undefined;
+  }
+  let node: TDescendant = block.children?.[path[0]];
+
+  path.forEach((id) => {
+    const children: TDescendant[] = node.children as TDescendant[];
+    if (node.children && children[id]) {
+      node = children[id];
+    } else {
+      return undefined;
+    }
+  });
+  return node;
 };

@@ -1,14 +1,49 @@
-import { useEffect, type FC, useRef } from "react";
+import { useEffect, type FC, useRef, useCallback } from "react";
 import { useNotesContext } from "../NoteProvider/NoteProvider";
-import { actionAsyncStorage } from "next/dist/client/components/action-async-storage.external";
+import { useEditorRef } from "@udecode/plate-common";
+import { getNodeByPath, getPathByNoteId } from "../../utils";
 
 interface NoteCardProps {
   noteIndex: number;
 }
 
 const NoteCard: FC<NoteCardProps> = ({ noteIndex }) => {
-  const { activeNoteId, notes } = useNotesContext();
+  const { activeNoteId, setActiveNoteId, notes, deleteNote, updateNote } =
+    useNotesContext();
   const ref = useRef<HTMLTextAreaElement | null>(null);
+  const editor = useEditorRef();
+
+  const handleDelete = useCallback(() => {
+    console.log("editor.selection", editor.selection);
+    editor.deleteFragment();
+    const path = getPathByNoteId(editor.children, activeNoteId, {
+      noSuperscript: true,
+    });
+    if (path) {
+      const node = getNodeByPath(editor, path);
+      if (node) {
+        editor.select({
+          anchor: { path: path, offset: 0 },
+          focus: { path: path, offset: (node.text as string).length || 0 },
+        });
+        editor.removeMark("noteId");
+        editor.removeMark("noteIndex");
+      }
+    }
+    deleteNote(activeNoteId);
+    setActiveNoteId("");
+  }, [activeNoteId, deleteNote, editor, setActiveNoteId]);
+
+  const handleCancel = useCallback(() => {
+    editor.deselect();
+    setActiveNoteId("");
+  }, [editor, setActiveNoteId]);
+
+  const handleSave = useCallback(() => {
+    updateNote(activeNoteId, ref.current?.value || "");
+    editor.deselect();
+    setActiveNoteId("");
+  }, [activeNoteId, editor, setActiveNoteId, updateNote]);
 
   useEffect(() => {
     const note = notes.find((note) => note.id == activeNoteId);
@@ -21,9 +56,21 @@ const NoteCard: FC<NoteCardProps> = ({ noteIndex }) => {
     <div className="inline-flex flex-col items-start gap-2 px-2 py-3 relative rounded-lg">
       <div className="flex items-center gap-2 relative self-stretch w-full">
         <div className="relative flex-1 text-lg">Chú thích [{noteIndex}]</div>
-        <div className="btn btn-error btn-xs text-white">Xoá</div>
-        <div className="btn btn-xs">Huỷ</div>
-        <div className="btn btn-primary btn-xs text-white">Lưu</div>
+        <button
+          className="btn btn-error btn-xs text-white"
+          onClick={handleDelete}
+        >
+          Xoá
+        </button>
+        <button className="btn btn-xs" onClick={handleCancel}>
+          Huỷ
+        </button>
+        <button
+          className="btn btn-primary btn-xs text-white"
+          onClick={handleSave}
+        >
+          Lưu
+        </button>
       </div>
       <textarea
         ref={ref}

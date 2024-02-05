@@ -27,7 +27,7 @@ export const FloatingToolbar = withRef<
     state?: FloatingToolbarState;
   }
 >(({ state, children, ...props }, componentRef) => {
-  const { onChangeActiveNoteId } = useNotesContext();
+  const { setActiveNoteId } = useNotesContext();
   const editorRef = useEditorRef();
   const floatingToolbarState = useFloatingToolbarState({
     ...state,
@@ -73,7 +73,7 @@ export const FloatingToolbar = withRef<
     const mark: (BaseText & EditorFormat) | null =
       editorRef.getMarks() as BaseText & EditorFormat;
     if (!mark?.superscript) {
-      onChangeActiveNoteId("");
+      setActiveNoteId("");
     }
     return mark?.superscript;
     // eslint-disable-next-line react-hooks/exhaustive-deps

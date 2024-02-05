@@ -1,9 +1,14 @@
-import { createPlateEditor, deserializeHtml } from "@udecode/plate-common";
+import {
+  PlateEditor,
+  TDescendant,
+  Value,
+  createPlateEditor,
+  deserializeHtml,
+} from "@udecode/plate-common";
 import plugins from "../plugins";
 import _ from "lodash";
 import { v4 } from "uuid";
 import { ConvertDocx2EditorResult } from "../types";
-import { Note } from "../types/note";
 
 export const convertDocx2Editor = async (
   file: File
@@ -152,7 +157,6 @@ const getNoteIds = (block: any): { block: any; noteIds: string[] } => {
         newChildren.push({
           ...child,
           noteId: tempNewChildren[index + 1].noteId,
-          noteIndex: tempNewChildren[index + 1].noteIndex,
           text: text.substring(wordStartPos + 1, wordEndPos),
         });
         return;
@@ -217,20 +221,122 @@ function extractContent(html: string) {
   return span.textContent || span.innerText;
 }
 
-export const getBlockPath = (
+export const getPathByNoteId = (
   blocks: any[],
-  noteId: string
+  noteId: string,
+  options?: { noSuperscript?: boolean }
 ): number[] | null => {
   for (let i = 0; i < blocks.length; i++) {
-    if (blocks[i].noteId == noteId && blocks[i].superscript) {
+    if (
+      blocks[i].noteId == noteId &&
+      (options?.noSuperscript || blocks[i].superscript)
+    ) {
       return [i];
     }
     if (blocks[i].children) {
-      const path = getBlockPath(blocks[i].children, noteId);
+      const path = getPathByNoteId(blocks[i].children, noteId, options);
       if (path) {
         return [i, ...path];
       }
     }
   }
   return null;
+};
+
+export interface GetAllNotePathsResult {
+  id: string;
+  path: number[];
+}
+export const getAllNotePaths = (
+  blocks: TDescendant[],
+  currentPath: number[],
+  options?: { noSuperscript?: boolean }
+): GetAllNotePathsResult[] => {
+  const result: GetAllNotePathsResult[] = [];
+  for (let i = 0; i < blocks.length; i++) {
+    if (blocks[i].noteId && (options?.noSuperscript || blocks[i].superscript)) {
+      result.push({
+        id: blocks[i].noteId as string,
+        path: [...currentPath, i],
+      });
+    }
+    if (blocks[i].children) {
+      const paths = getAllNotePaths(
+        blocks[i].children as TDescendant[],
+        [...currentPath, i],
+        options
+      );
+      result.push(...paths);
+    }
+  }
+  return result;
+};
+
+export const isContainNote = (
+  blocks: TDescendant[],
+  options?: { noSuperscript?: boolean }
+): boolean => {
+  for (let i = 0; i < blocks.length; i++) {
+    const block = blocks[i];
+    if (block.noteId && (options?.noSuperscript || block.superscript)) {
+      return true;
+    }
+    if (block.children && isContainNote(block.children as TDescendant[])) {
+      return true;
+    }
+  }
+  return false;
+};
+
+export const getNodeByPath = (
+  block: Object & { children: TDescendant[] },
+  path: number[]
+): TDescendant | undefined => {
+  if (path.length == 0) {
+    return undefined;
+  }
+  let node: TDescendant = block.children?.[path[0]];
+  path.forEach((id) => {
+    const children: TDescendant[] = node.children as TDescendant[];
+    if (node.children && children[id]) {
+      node = children[id];
+    } else {
+      return undefined;
+    }
+  });
+
+  return node;
+};
+
+export const updateNoteIndexes = (editor: PlateEditor<Value>) => {
+  const paths = getAllNotePaths(editor.children, []);
+  const selection = editor.selection;
+  paths.forEach((path, index) => {
+    editor.select({
+      anchor: { path: path.path, offset: 0 },
+      focus: { path: path.path, offset: 1 },
+    });
+    editor.addMark("noteIndex", (index + 1).toString());
+  });
+  if (selection) {
+    editor.select(selection);
+  } else {
+    editor.deselect();
+  }
+};
+
+export const showNote = (editor: PlateEditor<Value>, noteId: string) => {
+  const path = getPathByNoteId(editor.children, noteId);
+  if (path) {
+    editor.select({
+      anchor: {
+        path,
+        offset: 0,
+      },
+      focus: {
+        path,
+        offset: 1,
+      },
+    });
+  }
 };

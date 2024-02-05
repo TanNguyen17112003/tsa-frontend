@@ -10,7 +10,7 @@ import {
   useState,
 } from "react";
 import { useDrag } from "src/hooks/use-drag";
-import { useDebounce } from "src/hooks/use_debounce";
+import { useDebounce } from "src/hooks/use-debounce";
 
 export const CustomTableResizableCell = ({
   log,

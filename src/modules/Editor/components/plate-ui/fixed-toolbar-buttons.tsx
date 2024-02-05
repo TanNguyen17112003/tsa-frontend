@@ -27,10 +27,13 @@ import { useCallback, useEffect, useState } from "react";
 import { BsCardText } from "react-icons/bs";
 import { BaseText } from "slate";
 import Autocomplete from "src/components/Autocomplete";
+import { v4 } from "uuid";
 import { fontSizeOptions, highlightOptions } from "../../configs";
+import { EditorFormat } from "../../types";
+import { isContainNote, updateNoteIndexes } from "../../utils";
+import { useNotesContext } from "../NoteProvider/NoteProvider";
 import { MarkToolbarButton } from "./mark-toolbar-button";
 import { ToolbarButton } from "./toolbar";
-import { EditorFormat } from "../../types";
 
 const alignmentItems = [
   {
@@ -51,6 +54,7 @@ const alignmentItems = [
 ];
 
 export function FixedToolbarButtons() {
+  const { addNote, setActiveNoteId } = useNotesContext();
   const readOnly = useEditorReadOnly();
   const state = useAlignDropdownMenuState();
   const { radioGroupProps } = useAlignDropdownMenu(state);
@@ -80,6 +84,27 @@ export function FixedToolbarButtons() {
     },
     [editorState]
   );
+
+  const handleAddNote = useCallback(() => {
+    const blocks = editorState.getFragment();
+    const isCurrentSelectionContainNote = isContainNote(blocks);
+    if (editorState.selection && !isCurrentSelectionContainNote) {
+      const id = v4();
+      addNote(id, "");
+      const mark = editorState.getMarks();
+      editorState.addMark("noteId", id);
+      editorState.collapse({ edge: "end" });
+      editorState.insertNode({
+        ...mark,
+        text: "*",
+        noteId: id,
+        superscript: true,
+        noteIndex: "?",
+      });
+      updateNoteIndexes(editorState);
+      setTimeout(() => setActiveNoteId(id), editorState.children.length * 2); // await editor update to create note element
+    }
+  }, [addNote, editorState, setActiveNoteId]);
 
   return (
     <div className="relative w-full py-2">
@@ -163,7 +188,10 @@ export function FixedToolbarButtons() {
                 ></Autocomplete>
               </div>
               <div className="flex gap-1 items-center">
-                <button className="btn p-3 btn-md border-secondary shadow-none">
+                <button
+                  className="btn p-3 btn-md border-secondary shadow-none"
+                  onClick={handleAddNote}
+                >
                   Thêm ghi chú
                   <BsCardText className="h-4 w-4" />
                 </button>

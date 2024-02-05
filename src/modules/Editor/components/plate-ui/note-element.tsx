@@ -1,48 +1,19 @@
 import { cn } from "@udecode/cn";
 import { PlateLeaf, TText, withRef } from "@udecode/plate-common";
-import { useCallback, useRef } from "react";
-import { getBlockPath } from "../../utils";
+import { MouseEvent, useCallback } from "react";
 import { NOTE_BUTTON_ID } from "../../configs";
-import { MouseEvent } from "react";
 import { useNotesContext } from "../NoteProvider/NoteProvider";
 
 export const NoteElement = withRef<typeof PlateLeaf, TText>(
   ({ className, children, ...props }, ref) => {
-    const { onChangeActiveNoteId } = useNotesContext();
-    const spanRef = useRef<HTMLElement | null>(null);
+    const { setActiveNoteId } = useNotesContext();
 
     const handleClick = useCallback(
       async (e: MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
-        const path = getBlockPath(
-          props.editor.children,
-          children.props.leaf.noteId
-        );
-
-        if (path) {
-          props.editor.select({
-            anchor: {
-              path,
-              offset: 0,
-            },
-            focus: {
-              path,
-              offset: 1,
-            },
-          });
-        }
-        // select content to show popup
-        const sel = window.getSelection();
-        sel?.removeAllRanges();
-        if (spanRef.current) {
-          spanRef.current.focus();
-          const range = document.createRange();
-          range.selectNodeContents(spanRef.current);
-          sel?.addRange(range);
-        }
-        onChangeActiveNoteId(children.props.leaf.noteId);
+        setActiveNoteId(children.props.leaf.noteId);
       },
-      [children.props.leaf.noteId, onChangeActiveNoteId, props.editor]
+      [children.props.leaf.noteId, setActiveNoteId]
     );
 
     return (
@@ -53,13 +24,17 @@ export const NoteElement = withRef<typeof PlateLeaf, TText>(
         {...props}
         style={{
           fontSize: 14,
-          marginRight: children.props.leaf.noteIndex.toString().length * 8 + 4,
+          marginRight:
+            (children.props.leaf.noteIndex || 0).toString().length * 8 + 4,
           marginLeft: 2,
           ...props,
         }}
       >
         <span className="relative -translate-y-2">
-          <span ref={spanRef} style={{ fontSize: 0 }}>
+          <span
+            style={{ fontSize: 0 }}
+            id={`note-id-${children.props.leaf.noteId}`}
+          >
             {children}
           </span>
 

@@ -13,13 +13,13 @@ import {
   useFloatingToolbar,
   useFloatingToolbarState,
 } from "@udecode/plate-floating";
-import { useEffect, useMemo } from "react";
 
 import { BaseText } from "slate";
 import { NOTE_BUTTON_ID } from "../../configs";
 import { EditorFormat } from "../../types";
 import { Toolbar } from "./toolbar";
 import { useNotesContext } from "../NoteProvider/NoteProvider";
+import { useMemo, useEffect } from "react";
 
 export const FloatingToolbar = withRef<
   typeof Toolbar,
@@ -27,11 +27,22 @@ export const FloatingToolbar = withRef<
     state?: FloatingToolbarState;
   }
 >(({ state, children, ...props }, componentRef) => {
-  const { onChangeActiveNoteId } = useNotesContext();
+  const { setActiveNoteId, activeNoteId } = useNotesContext();
   const editorRef = useEditorRef();
+
+  const getBoundingClientRect = useMemo(() => {
+    if (typeof window != "undefined") {
+      const element = document.getElementById(`note-id-${activeNoteId}`);
+      return element?.getBoundingClientRect.bind(element);
+    }
+    return undefined;
+  }, [activeNoteId]);
+
   const floatingToolbarState = useFloatingToolbarState({
     ...state,
+
     floatingOptions: {
+      getBoundingClientRect: activeNoteId ? getBoundingClientRect : undefined,
       placement: "top",
       middleware: [
         offset(12),
@@ -69,17 +80,21 @@ export const FloatingToolbar = withRef<
     return () => window.removeEventListener("mouseup", handleUpdate);
   }, [floatingToolbarState.floating, floatingToolbarState.floating.update]);
 
+  useEffect(() => {
+    floatingToolbarState.floating.update();
+  }, [activeNoteId, floatingToolbarState.floating]);
+
   const isSelectedNote = useMemo(() => {
     const mark: (BaseText & EditorFormat) | null =
       editorRef.getMarks() as BaseText & EditorFormat;
     if (!mark?.superscript) {
-      onChangeActiveNoteId("");
+      setActiveNoteId("");
     }
     return mark?.superscript;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editorRef.selection]);
 
-  if (hidden || !isSelectedNote) return null;
+  if (hidden || !isSelectedNote || !activeNoteId) return null;
 
   return (
     <PortalBody>

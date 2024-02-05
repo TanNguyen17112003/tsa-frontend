@@ -23,12 +23,16 @@ interface PlateEditorProps {
   initialValue: any;
   searchText?: string;
   notes?: Note[];
+  onUpdateNotes: (notes: Note[]) => void;
+  onChange: (value: any) => void;
 }
 
 const PlateEditor: FC<PlateEditorProps> = ({
   initialValue,
   searchText,
   notes,
+  onUpdateNotes,
+  onChange,
 }) => {
   const [activeNoteId, setActiveNoteId] = useState("");
   const decorate = useCallback(
@@ -72,12 +76,15 @@ const PlateEditor: FC<PlateEditorProps> = ({
   );
 
   return (
-    <Plate plugins={plugins} initialValue={initialValue}>
-      <FixedToolbar>
-        <FixedToolbarButtons />
-      </FixedToolbar>
-
-      <NotesProvider notes={notes || []} onChangeActiveNoteId={setActiveNoteId}>
+    <Plate plugins={plugins} initialValue={initialValue} onChange={onChange}>
+      <NotesProvider
+        notes={notes || []}
+        onChangeActiveNoteId={setActiveNoteId}
+        onUpdateNotes={onUpdateNotes}
+      >
+        <FixedToolbar>
+          <FixedToolbarButtons />
+        </FixedToolbar>
         <Editor
           renderLeaf={(props) => <Leaf {...props} />}
           decorate={decorate}

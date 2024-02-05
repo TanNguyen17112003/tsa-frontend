@@ -100,8 +100,6 @@ const NotesProvider = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  console.log("notes", notes);
-
   return (
     <NotesContext.Provider
       value={{

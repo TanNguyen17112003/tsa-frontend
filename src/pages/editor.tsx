@@ -83,7 +83,6 @@ const Page: PageType = () => {
             notes={notes}
             onUpdateNotes={setNotes}
             onChange={(value) => {
-              console.log("value", value);
               valueRef.current = value;
             }}
           />

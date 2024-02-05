@@ -158,7 +158,6 @@ const getNoteIds = (block: any): { block: any; noteIds: string[] } => {
         newChildren.push({
           ...child,
           noteId: tempNewChildren[index + 1].noteId,
-          noteIndex: tempNewChildren[index + 1].noteIndex,
           text: text.substring(wordStartPos + 1, wordEndPos),
         });
         return;
@@ -312,7 +311,6 @@ export const getNodeByPath = (
 
 export const updateNoteIndexes = (editor: PlateEditor<Value>) => {
   const paths = getAllNotePaths(editor.children, []);
-  editor.de;
   paths.forEach((path, index) => {
     editor.setNodes<Node & { noteIndex: string }>(
       { noteIndex: (index + 1).toString() },

@@ -89,16 +89,11 @@ export function FixedToolbarButtons() {
     const blocks = editorState.getFragment();
     const isCurrentSelectionContainNote = isContainNote(blocks);
     if (editorState.selection && !isCurrentSelectionContainNote) {
-      const path = editorState.selection.focus.path;
       const id = v4();
       addNote(id, "");
-      console.log("id", id);
       const mark = editorState.getMarks();
       editorState.addMark("noteId", id);
-      editorState.setSelection({
-        anchor: editorState.selection.focus,
-        focus: editorState.selection.focus,
-      });
+      editorState.collapse({ edge: "end" });
       editorState.insertNode({
         ...mark,
         text: "*",
@@ -106,9 +101,8 @@ export function FixedToolbarButtons() {
         superscript: true,
         noteIndex: "?",
       });
-      editorState.deselect();
       updateNoteIndexes(editorState);
-      setActiveNoteId(id);
+      setTimeout(() => setActiveNoteId(id), editorState.children.length * 2); // await editor update to create note element
     }
   }, [addNote, editorState, setActiveNoteId]);
 

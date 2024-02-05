@@ -24,7 +24,8 @@ export const NoteElement = withRef<typeof PlateLeaf, TText>(
         {...props}
         style={{
           fontSize: 14,
-          marginRight: children.props.leaf.noteIndex.toString().length * 8 + 4,
+          marginRight:
+            (children.props.leaf.noteIndex || 0).toString().length * 8 + 4,
           marginLeft: 2,
           ...props,
         }}

@@ -1,7 +1,7 @@
-import { useEffect, type FC, useRef, useCallback } from "react";
-import { useNotesContext } from "../NoteProvider/NoteProvider";
 import { useEditorRef } from "@udecode/plate-common";
-import { getNodeByPath, getPathByNoteId, updateNoteIndexes } from "../../utils";
+import { useCallback, useEffect, useRef, type FC } from "react";
+import { updateNoteIndexes } from "../../utils";
+import { useNotesContext } from "../NoteProvider/NoteProvider";
 
 interface NoteCardProps {
   noteIndex: number;
@@ -14,23 +14,11 @@ const NoteCard: FC<NoteCardProps> = ({ noteIndex }) => {
   const editor = useEditorRef();
 
   const handleDelete = useCallback(() => {
+    editor.removeMark("superscript");
     editor.deleteFragment();
-    const path = getPathByNoteId(editor.children, activeNoteId, {
-      noSuperscript: true,
-    });
-    if (path) {
-      const node = getNodeByPath(editor, path);
-      if (node) {
-        editor.select({
-          anchor: { path: path, offset: 0 },
-          focus: { path: path, offset: (node.text as string).length || 0 },
-        });
-        editor.removeMark("noteId");
-        editor.removeMark("noteIndex");
-      }
-    }
     deleteNote(activeNoteId);
     updateNoteIndexes(editor);
+    editor.set;
     setActiveNoteId("");
   }, [activeNoteId, deleteNote, editor, setActiveNoteId]);
 

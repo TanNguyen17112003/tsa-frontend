@@ -2,6 +2,7 @@ import React, { FC, ReactNode, useState, useCallback } from "react";
 import Link from "next/link";
 import { Collapse } from "src/components/ui/Collapse";
 import clsx from "clsx";
+import { Button } from "src/components/shadcn/ui/button";
 
 interface SideNavItemProps {
   active?: boolean;
@@ -77,19 +78,15 @@ export const SideNavItem: FC<SideNavItemProps> = (props) => {
   return (
     <li>
       <Link href={path || "#"}>
-        <button
+        <Button
+          variant={active ? "default" : "ghost"}
           disabled={disabled}
-          className={clsx(
-            "btn w-full justify-start rounded-xl",
-            active
-              ? "btn-primary bg-orange-400 border-orange-400 text-white"
-              : "btn-ghost text-text-secondary"
-          )}
+          className={clsx("w-full justify-start rounded-xl")}
         >
-          {startIcon && <span>{startIcon}</span>}
+          {startIcon && <span className="mr-2">{startIcon}</span>}
           <div className={clsx("prose-sm prose")}>{title}</div>
           {label && <span className="ml-2">{label}</span>}
-        </button>
+        </Button>
       </Link>
     </li>
   );

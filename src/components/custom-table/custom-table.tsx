@@ -9,6 +9,7 @@ import { BsPencilFill, BsTrash2Fill } from "react-icons/bs";
 import clsx from "clsx";
 import { IoWarning } from "react-icons/io5";
 import Pagination from "../Pagination";
+import { Button } from "../shadcn/ui/button";
 
 export function CustomTable<P, T extends { id: P; [key: string]: any }>(
   props: CustomTableProps<P, T> &
@@ -179,28 +180,23 @@ export function CustomTable<P, T extends { id: P; [key: string]: any }>(
                     <div className="flex justify-end -my-1">
                       {renderRowActions?.(row, index)}
                       {onClickEdit && (
-                        <div
-                          className="btn btn-circle"
-                          onClick={() => onClickEdit(row, index)}
-                        >
+                        <Button onClick={() => onClickEdit(row, index)}>
                           <BsPencilFill className="h-4 w-4 bg-blue-500" />
-                        </div>
+                        </Button>
                       )}
                       {onClickDelete && (
-                        <div
-                          className="btn btn-circle"
-                          onClick={() => onClickDelete(row, index)}
-                        >
+                        <Button onClick={() => onClickDelete(row, index)}>
                           <BsTrash2Fill className="h-4 w-4 bg-blue-500" />
-                        </div>
+                        </Button>
                       )}
                       {onClickDetail && (
-                        <div
-                          className="btn btn-outline bg-primary btn-sm"
+                        <Button
+                          variant="outline"
+                          size="sm"
                           onClick={() => onClickDetail(row, index)}
                         >
                           Chi tiết
-                        </div>
+                        </Button>
                       )}
                     </div>
                   </td>

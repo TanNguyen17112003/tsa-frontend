@@ -56,10 +56,10 @@ export const SideNavItem: FC<SideNavItemProps> = (props) => {
   if (children) {
     return (
       <li>
-        <button
+        <Button
           disabled={disabled}
           onClick={handleToggle}
-          className={clsx("btn w-full justify-start text-text-secondary")}
+          className={clsx("w-full justify-start text-text-secondary")}
         >
           {startIcon && <div>{startIcon}</div>}
 
@@ -67,7 +67,7 @@ export const SideNavItem: FC<SideNavItemProps> = (props) => {
           <div className="text-nav-item-chevron-color text-sm ml-2">
             {open ? "▼" : "▶"}
           </div>
-        </button>
+        </Button>
         <Collapse in={open} className="mt-2">
           {children}
         </Collapse>

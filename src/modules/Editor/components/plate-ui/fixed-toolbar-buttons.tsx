@@ -34,6 +34,7 @@ import { isContainNote, updateNoteIndexes } from "../../utils";
 import { useNotesContext } from "../NoteProvider/NoteProvider";
 import { MarkToolbarButton } from "./mark-toolbar-button";
 import { ToolbarButton } from "./toolbar";
+import { Button } from "src/components/shadcn/ui/button";
 
 const alignmentItems = [
   {
@@ -78,7 +79,7 @@ export function FixedToolbarButtons() {
   );
 
   const handleChangeHighlight = useCallback(
-    (mark: { fontSize: number; color: string }) => {
+    (mark: { fontSize: string; color: string }) => {
       setMarks(editorState, mark);
       focusEditor(editorState);
     },
@@ -126,8 +127,9 @@ export function FixedToolbarButtons() {
                     className="tooltip tooltip-bottom"
                     data-tip={highlightOption.tooltip}
                   >
-                    <button
-                      className={clsx("btn btn-circle btn-sm border-none")}
+                    <Button
+                      size="icon"
+                      className={clsx("rounded-full")}
                       style={{ backgroundColor: highlightOption.color }}
                       onClick={() => handleChangeHighlight(highlightOption)}
                     />
@@ -188,13 +190,10 @@ export function FixedToolbarButtons() {
                 ></Autocomplete>
               </div>
               <div className="flex gap-1 items-center">
-                <button
-                  className="btn p-3 btn-md border-secondary shadow-none"
-                  onClick={handleAddNote}
-                >
+                <Button variant="outline" onClick={handleAddNote}>
                   Thêm ghi chú
-                  <BsCardText className="h-4 w-4" />
-                </button>
+                  <BsCardText className="h-4 w-4 ml-2" />
+                </Button>
               </div>
             </div>
           </>

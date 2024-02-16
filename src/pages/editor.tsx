@@ -58,16 +58,15 @@ const Page: PageType = () => {
     <div>
       <div className="flex items-center py-1 px-2">
         <input type="file" onChange={handleUpload} />
-        <Button>Reset</Button>
-        <button
-          className="btn btn-primary btn-outline btn-xs"
+        <Button
           onClick={() => {
             setPlateValue([{ type: "p", children: [{ text: "" }] }]);
             setNotes([]);
           }}
         >
           Reset
-        </button>
+        </Button>
+
         {/* <input
           className="input input-sm input-bordered w-full max-w-xs"
           placeholder="search"

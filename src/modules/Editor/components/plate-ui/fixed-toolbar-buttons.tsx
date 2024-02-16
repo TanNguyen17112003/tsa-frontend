@@ -72,7 +72,12 @@ export function FixedToolbarButtons() {
   > | null>(null);
 
   useEffect(() => {
-    setSelectionMark(editorState.getMarks());
+    const mark = editorState.getMarks();
+    if ((!mark || Object.keys(mark).length == 0) && selectionMark) {
+      setMarks(editorState, selectionMark);
+    } else {
+      setSelectionMark(mark);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editorState.selection]);
 

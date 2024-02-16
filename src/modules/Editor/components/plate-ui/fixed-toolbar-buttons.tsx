@@ -35,6 +35,12 @@ import { useNotesContext } from "../NoteProvider/NoteProvider";
 import { MarkToolbarButton } from "./mark-toolbar-button";
 import { ToolbarButton } from "./toolbar";
 import { Button } from "src/components/shadcn/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "src/components/shadcn/ui/tooltip";
 
 const alignmentItems = [
   {
@@ -72,14 +78,20 @@ export function FixedToolbarButtons() {
 
   const handleChangeFontSize = useCallback(
     (value: string) => {
-      setMarks(editorState, { fontSize: value, note: "abc" });
+      console.log("value", value);
+      const fontSize = value.replaceAll(/[^0-9]/g, "") + "pt";
+      setMarks(editorState, {
+        fontSize,
+        note: "abc",
+      });
+      setSelectionMark({ ...selectionMark, fontSize });
       focusEditor(editorState);
     },
-    [editorState]
+    [editorState, selectionMark]
   );
 
   const handleChangeHighlight = useCallback(
-    (mark: { fontSize: string; color: string }) => {
+    (mark: { fontSize?: string; color: string }) => {
       setMarks(editorState, mark);
       focusEditor(editorState);
     },
@@ -122,18 +134,21 @@ export function FixedToolbarButtons() {
             <div className="flex gap-4 px-3">
               <div className="flex gap-1 items-center">
                 {highlightOptions.map((highlightOption) => (
-                  <div
+                  <TooltipProvider
                     key={highlightOption.color + highlightOption.fontSize}
-                    className="tooltip tooltip-bottom"
-                    data-tip={highlightOption.tooltip}
                   >
-                    <Button
-                      size="icon"
-                      className={clsx("rounded-full")}
-                      style={{ backgroundColor: highlightOption.color }}
-                      onClick={() => handleChangeHighlight(highlightOption)}
-                    />
-                  </div>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Button
+                          size="icon"
+                          className={clsx("rounded-full")}
+                          style={{ backgroundColor: highlightOption.color }}
+                          onClick={() => handleChangeHighlight(highlightOption)}
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent>{highlightOption.tooltip}</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 ))}
               </div>
               <div className="flex gap-1">
@@ -174,6 +189,7 @@ export function FixedToolbarButtons() {
               </div>
               <div className="flex gap-1 items-center">
                 <Autocomplete
+                  freeSolo
                   className="w-[120px]"
                   placeholder="Kích thước"
                   options={fontSizeOptions.map((fontSize) => ({

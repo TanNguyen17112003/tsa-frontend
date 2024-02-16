@@ -6,9 +6,10 @@ export const fontSizeOptions: number[] = [
 
 export const highlightOptions: {
   color: string;
-  fontSize: string;
+  fontSize?: string;
   tooltip: string;
 }[] = [
+  { color: "#000000", tooltip: `Chữ thường` },
   {
     color: "#000080",
     fontSize: "20pt",

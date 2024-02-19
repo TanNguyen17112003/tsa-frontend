@@ -7,6 +7,15 @@ import { HiMagnifyingGlass, HiMiniArrowSmallRight } from "react-icons/hi2";
 import { PiBookOpen } from "react-icons/pi";
 import { BookshelfIcon } from "src/components/icons/BookshelfIcon";
 import { LuClock } from "react-icons/lu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "src/components/shadcn/ui/select";
+import { Button } from "src/components/shadcn/ui/button";
+import { Input } from "src/components/shadcn/ui/input";
 
 const children = [
   { title: "Bài dịch số 23", time: "15:30 - 01/12/2023" },
@@ -37,40 +46,39 @@ const Page: PageType = () => {
       className="flex bg-cover bg-center min-h-screen"
       style={{
         backgroundImage: 'url("/background.png")',
-        width: "calc(100vw - 605px)",
+        width: "calc(100vw - 600px)",
       }}
     >
       <div className="flex-1 w-full p-6">
         <div className="text-2xl font-semibold leading-relaxed">
           Tổng quan hệ thống
         </div>
-        <div className="flex bg-white h-15 pr-auto my-5">
-          <div className="flex p-2 items-center border border-gray-300 rounded-md h-12 w-full">
-            <div className="flex w-full">
-              <HiMagnifyingGlass
-                style={{ fontSize: "2rem", marginRight: "5px" }}
-              />
-              <input
+        <div className="flex bg-white h-15 my-5 ">
+          <div className="flex p-2 items-center border border-gray-300 rounded-md h-12 w-full divide-x-2">
+            <div className="flex w-full items-center">
+              <HiMagnifyingGlass style={{ fontSize: "1.5rem" }} />
+              <Input
                 type="text"
                 placeholder="Nhập từ khóa tìm kiếm..."
-                className="outline-none w-full text-sm/normal"
+                className="border-none outline-none w-full text-sm/normal"
               />
             </div>
-            <div className="border-l-2 h-full relative">
-              <select
-                value={searchMode}
-                onChange={(e) => handleModeChange(e.target.value)}
-                className="text-md text-black-600 bg-white m-1.5"
-              >
-                <option value="basic">Tìm kiếm cơ bản</option>
-                <option value="advanced">Tìm kiếm nâng cao</option>
-                <option value="adjacent">Tìm kiếm từ liền kề</option>
-              </select>
+            <div className="items-center">
+              <Select>
+                <SelectTrigger className="w-[180px] f-full border-none">
+                  <SelectValue placeholder="Tìm kiếm cơ bản" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="basic">Tìm kiếm cơ bản</SelectItem>
+                  <SelectItem value="advanced">Tìm kiếm nâng cao</SelectItem>
+                  <SelectItem value="adjacent">Tìm kiếm từ liền kề</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
-          <button className="ml-2 bg-orange-500 text-white px-4 my-1 rounded-lg whitespace-nowrap">
+          <Button className="ml-2 bg-orange-500 text-white px-4 my-1 rounded-lg whitespace-nowrap hover:bg-orange-800">
             <div>Tìm kiếm</div>
-          </button>
+          </Button>
         </div>
         <div className="relative w-full h-64">
           <div
@@ -94,12 +102,12 @@ const Page: PageType = () => {
                   <p className="text-4xl font-bold">2406</p>
                 </div>
               </div>
-              <button className="flex items-end justify-items-end text-nowrap pr-4 pb-4 ">
-                <div className="flex border ml-auto border-gray-300 rounded-lg px-2">
+              <div className="flex items-end justify-items-end text-nowrap pr-4 pb-4 cursor-pointer">
+                <div className="flex border ml-auto border-gray-300 rounded-lg px-2 hover:bg-gray-100">
                   <p className="text-xs font-semibold m-1 ml-3">Chi tiết</p>
                   <HiMiniArrowSmallRight style={{ fontSize: "1.4em" }} />
                 </div>
-              </button>
+              </div>
             </div>
             <div className="flex flex-col bg-white rounded-2xl shadow-md w-[35%] ml-4 overflow-hidden">
               <div className="flex items-center w-full pt-7 pl-[8%]">
@@ -113,25 +121,25 @@ const Page: PageType = () => {
                   <p className="text-4xl font-bold">2406</p>
                 </div>
               </div>
-              <button className="flex items-end justify-items-end text-nowrap pr-4 pb-4 ">
-                <div className="flex border ml-auto border-gray-300 rounded-lg px-2">
+              <div className="flex items-end justify-items-end text-nowrap pr-4 pb-4 cursor-pointer">
+                <div className="flex border ml-auto border-gray-300 rounded-lg px-2  hover:bg-gray-100">
                   <p className="text-xs font-semibold m-1 ml-3">Chi tiết</p>
                   <HiMiniArrowSmallRight style={{ fontSize: "1.4em" }} />
                 </div>
-              </button>
+              </div>
             </div>
           </div>
         </div>
         <div className="flex mt-4">
           <div className="flex bg-white border border-gray-300 rounded-2xl mt-4 p-5 overflow-auto h-full">
             <div className="flex space-x-64">
-              <p className="text-lg font-semibold w-full text-nowrap">
+              <p className="text-lg font-semibold w-full text-nowrap p-3">
                 Khiếu nại chưa giải quyết (3)
               </p>
-              <button className="flex text-orange-500 mt-0.5 text-nowrap">
+              <div className="flex text-orange-500 mt-0.5 text-nowrap hover:bg-orange-200 p-3 rounded-lg cursor-pointer">
                 Xem tất cả{" "}
                 <HiMiniArrowSmallRight style={{ fontSize: "1.4em" }} />
-              </button>
+              </div>
             </div>
             {/* <CustomTable /> */}
           </div>

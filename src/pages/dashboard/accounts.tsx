@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { HiMagnifyingGlass } from "react-icons/hi2";
 import { CustomTable } from "src/components/custom-table";
 import { Button } from "src/components/shadcn/ui/button";
@@ -7,10 +7,17 @@ import { useAuth } from "src/hooks/use-auth";
 import { Layout as DashboardLayout } from "src/layouts/dashboard";
 import type { Page as PageType } from "src/types/page";
 import { User, initialUser } from "src/types/user";
-import accountTableConfig from "./account-table-config/account-table-config";
+import getAccountTableConfig from "./account-table-config/account-table-config";
 
 const Page: PageType = () => {
-  const account: User = initialUser;
+  const account: User[] = [initialUser];
+
+  const accountTableConfig = useMemo(() => {
+    return getAccountTableConfig({
+      onClickDelete: (data) => {},
+    });
+  }, []);
+
   return (
     <div className="flex flex-col divide-y-[1px] space-y-4 min-h-screen">
       <div className="flex items-center px-7 pt-7 pb-2 ">
@@ -32,13 +39,12 @@ const Page: PageType = () => {
             <HiMagnifyingGlass style={{ fontSize: "1.5rem", color: "gray" }} />
           </div>
         </div>
-        <div className="flex bg-gray-50 border h-2/3 items-center justify-center">
+        {/* <div className="flex bg-gray-50 border h-2/3 items-center justify-center">
           Table
-        </div>
+        </div> */}
         <CustomTable
           rows={account}
           configs={accountTableConfig}
-          indexColumn
           flexible
         ></CustomTable>
       </div>

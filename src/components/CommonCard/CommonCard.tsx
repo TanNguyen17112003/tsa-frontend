@@ -18,7 +18,7 @@ const CommonCard = ({
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold  mr-4">{title}</h2>
         {link && (
-          <Link href={link} className="flex text-orange-500">
+          <Link href={link} className="flex text-orange-500 text-nowrap">
             {linkLabel} <HiMiniArrowSmallRight style={{ fontSize: "1.4em" }} />
           </Link>
         )}

@@ -3,8 +3,10 @@ import { useAuth } from "src/hooks/use-auth";
 import { Layout as DashboardLayout } from "src/layouts/dashboard";
 import type { Page as PageType } from "src/types/page";
 import CommonCard from "src/components/CommonCard";
-import { HiMagnifyingGlass } from "react-icons/hi2";
+import { HiMagnifyingGlass, HiMiniArrowSmallRight } from "react-icons/hi2";
 import { PiBookOpen } from "react-icons/pi";
+import { BookshelfIcon } from "src/components/icons/BookshelfIcon";
+import { LuClock } from "react-icons/lu";
 
 const children = [
   { title: "Bài dịch số 23", time: "15:30 - 01/12/2023" },
@@ -32,16 +34,19 @@ const Page: PageType = () => {
   };
   return (
     <div
-      className="flex p-6 bg-cover bg-center h-screen"
-      style={{ backgroundImage: 'url("/background.png")' }}
+      className="flex bg-cover bg-center min-h-screen"
+      style={{
+        backgroundImage: 'url("/background.png")',
+        width: "calc(100vw - 605px)",
+      }}
     >
-      <div className="w-full">
-        <div className="text-2xl font-semibold bg-white my-4">
+      <div className="flex-1 w-full p-6">
+        <div className="text-2xl font-semibold leading-relaxed">
           Tổng quan hệ thống
         </div>
-        <div className="flex bg-white h-15 pr-auto">
+        <div className="flex bg-white h-15 pr-auto my-5">
           <div className="flex p-2 items-center border border-gray-300 rounded-md h-12 w-full">
-            <div className="flex">
+            <div className="flex w-full">
               <HiMagnifyingGlass
                 style={{ fontSize: "2rem", marginRight: "5px" }}
               />
@@ -55,7 +60,7 @@ const Page: PageType = () => {
               <select
                 value={searchMode}
                 onChange={(e) => handleModeChange(e.target.value)}
-                className="text-md text-black-600 bg-white m-2"
+                className="text-md text-black-600 bg-white m-1.5"
               >
                 <option value="basic">Tìm kiếm cơ bản</option>
                 <option value="advanced">Tìm kiếm nâng cao</option>
@@ -63,26 +68,80 @@ const Page: PageType = () => {
               </select>
             </div>
           </div>
-          <button className="ml-2 bg-orange-500 text-white px-4 py-2 rounded-md">
-            <div>Tìm_kiếm</div>
+          <button className="ml-2 bg-orange-500 text-white px-4 my-1 rounded-lg whitespace-nowrap">
+            <div>Tìm kiếm</div>
           </button>
         </div>
-        <div
-          className="flex p-4 bg-cover bg-center w-auto h-auto"
-          style={{ backgroundImage: 'url("/image_overview.png")' }}
-        >
-          <div>Bài kinh</div>
-          <div>Tài khoản dịch giả</div>
+        <div className="relative w-full h-64">
+          <div
+            className="absolute top-0 right-0 bg-cover bg-center  rounded-2xl"
+            style={{
+              backgroundImage: 'url("/image_overview.png")',
+              width: "97%",
+              height: "90%",
+            }}
+          ></div>
+          <div className="flex absolute bottom-0 left-0 w-full h-[60%]">
+            <div className="flex flex-col bg-white rounded-2xl shadow-md w-[35%] overflow-hidden">
+              <div className="flex items-center w-full pt-7 pl-[8%]">
+                <div className="px-[2%]">
+                  <BookshelfIcon className="h-4 w-4" />
+                </div>
+                <div className="p-3">
+                  <h2 className="text-base text-[#374151] text-nowrap">
+                    Bài kinh
+                  </h2>
+                  <p className="text-4xl font-bold">2406</p>
+                </div>
+              </div>
+              <button className="flex items-end justify-items-end text-nowrap pr-4 pb-4 ">
+                <div className="flex border ml-auto border-gray-300 rounded-lg px-2">
+                  <p className="text-xs font-semibold m-1 ml-3">Chi tiết</p>
+                  <HiMiniArrowSmallRight style={{ fontSize: "1.4em" }} />
+                </div>
+              </button>
+            </div>
+            <div className="flex flex-col bg-white rounded-2xl shadow-md w-[35%] ml-4 overflow-hidden">
+              <div className="flex items-center w-full pt-7 pl-[8%]">
+                <div className="px-[2%]">
+                  <BookshelfIcon className="h-4 w-4" />
+                </div>
+                <div className="p-3">
+                  <h2 className="text-base text-[#374151] text-nowrap">
+                    Tài khoản dịch giả
+                  </h2>
+                  <p className="text-4xl font-bold">2406</p>
+                </div>
+              </div>
+              <button className="flex items-end justify-items-end text-nowrap pr-4 pb-4 ">
+                <div className="flex border ml-auto border-gray-300 rounded-lg px-2">
+                  <p className="text-xs font-semibold m-1 ml-3">Chi tiết</p>
+                  <HiMiniArrowSmallRight style={{ fontSize: "1.4em" }} />
+                </div>
+              </button>
+            </div>
+          </div>
         </div>
-        <div style={{ display: "flex", flexDirection: "row" }}>
-          <div className="w-">AAA</div>
+        <div className="flex mt-4">
+          <div className="flex bg-white border border-gray-300 rounded-2xl mt-4 p-5 overflow-auto h-full">
+            <div className="flex space-x-64">
+              <p className="text-lg font-semibold w-full text-nowrap">
+                Khiếu nại chưa giải quyết (3)
+              </p>
+              <button className="flex text-orange-500 mt-0.5 text-nowrap">
+                Xem tất cả{" "}
+                <HiMiniArrowSmallRight style={{ fontSize: "1.4em" }} />
+              </button>
+            </div>
+            {/* <CustomTable /> */}
+          </div>
           <CommonCard
             link="/dashboard"
             linkLabel="Xem tất cả"
             title="Bài dịch mới nhất"
           >
             {children.map((c, index) => (
-              <div className="pb-4" key={c.title}>
+              <div key={index} className="pb-4">
                 <PiBookOpen style={{ fontSize: "1.4em" }} />
                 <div key={index} className="text-black-700">
                   {c.title}
@@ -95,29 +154,15 @@ const Page: PageType = () => {
           </CommonCard>
         </div>
       </div>
-      <div className="p-4 border border-gray-300 rounded-3xl bg-white w-auto h-auto ml-3 divide-y-2 min-w-96">
-        <div className="mb-4">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-          >
-            <path
-              d="M12 6V12H16.5M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
-              stroke="black"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-          <h2 className="font-semibold">Lịch sử hoạt động hệ thống</h2>
+      <div className="fixed flex-1 right-0 border border-gray-300 overflow-auto rounded-tl-3xl rounded-bl-3xl bg-white h-full ml-3 divide-y-2 min-w-80">
+        <div className="mb-4 m-6">
+          <LuClock style={{ fontSize: "1.3em", margin: "10px 0" }} />
+          <h2 className="text-lg font-semibold">Lịch sử hoạt động hệ thống</h2>
         </div>
         <div className="space-y-8">
           <div className="mt-4"></div>
-          {history.map((h) => (
-            <div key={h.title}>
+          {history.map((h, index) => (
+            <div key={index} className="m-6">
               <div className="text-cyan-500">{h.title}</div>
               <div className="text-gray-500 text-xs">{h.time}</div>
             </div>

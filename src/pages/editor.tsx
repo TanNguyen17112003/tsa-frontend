@@ -13,6 +13,7 @@ const PlateEditor = dynamic(() => import("src/modules/Editor"), {
 import { Note } from "src/modules/Editor/types/note";
 import { convertDocx2Editor } from "src/modules/Editor/utils";
 import type { Page as PageType } from "src/types/page";
+import { Button } from "src/components/shadcn/ui/button";
 
 const Page: PageType = () => {
   const docxContainer = useRef<HTMLDivElement | null>(null);
@@ -57,15 +58,15 @@ const Page: PageType = () => {
     <div>
       <div className="flex items-center py-1 px-2">
         <input type="file" onChange={handleUpload} />
-        <button
-          className="btn btn-primary btn-outline btn-xs"
+        <Button
           onClick={() => {
             setPlateValue([{ type: "p", children: [{ text: "" }] }]);
             setNotes([]);
           }}
         >
           Reset
-        </button>
+        </Button>
+
         {/* <input
           className="input input-sm input-bordered w-full max-w-xs"
           placeholder="search"

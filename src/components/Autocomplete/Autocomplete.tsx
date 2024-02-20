@@ -1,23 +1,34 @@
 import { ChevronUpDownIcon } from "@heroicons/react/24/solid";
 import clsx from "clsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Popover, PopoverContent, PopoverTrigger } from "../shadcn/ui/popover";
+import { Input } from "../shadcn/ui/input";
+import {
+  Command,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "../shadcn/ui/command";
+import { ChevronsUpDown } from "lucide-react";
+import { Button } from "../shadcn/ui/button";
 
-export interface AutocompleteOption<T extends number | string> {
-  value: T;
+export interface AutocompleteOption {
+  value: string;
   label: string;
 }
 
-interface AutocompleteProps<T extends number | string> {
-  options: AutocompleteOption<T>[];
-  value?: T;
-  onChange: (value: T) => void;
+interface AutocompleteProps {
+  options: AutocompleteOption[];
+  value?: string;
+  onChange: (value: string) => void;
   placeholder?: string;
   className?: string;
   freeSolo?: boolean;
   disabled?: boolean;
 }
 
-const Autocomplete = <T extends number | string>({
+const Autocomplete = ({
   value,
   options,
   onChange,
@@ -25,142 +36,70 @@ const Autocomplete = <T extends number | string>({
   placeholder,
   freeSolo,
   disabled,
-}: AutocompleteProps<T>) => {
-  const [query, setQuery] = useState("");
-  const ref = useRef<HTMLDivElement>(null);
-  const ulRef = useRef<HTMLUListElement>(null);
+}: AutocompleteProps) => {
   const [open, setOpen] = useState(false);
-  const [focusedIndex, setFocusedIndex] = useState<number>(-1);
+  const [search, setSearch] = useState("");
 
-  const handleChooseOption = useCallback(
-    (value: T) => {
-      onChange(value);
-      setOpen(false);
-      ulRef.current?.blur();
-    },
-    [onChange]
-  );
-
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (!ulRef.current) return;
-      switch (event.key) {
-        case "ArrowDown":
-          event.preventDefault();
-          setFocusedIndex((prevIndex) =>
-            prevIndex < options.length - 1 ? prevIndex + 1 : prevIndex
-          );
-          break;
-        case "ArrowUp":
-          event.preventDefault();
-          setFocusedIndex((prevIndex) =>
-            prevIndex > 0 ? prevIndex - 1 : prevIndex
-          );
-          break;
-        case "Enter":
-          event.preventDefault();
-          if (focusedIndex !== -1) {
-            const selectedOption = options[focusedIndex];
-            if (selectedOption) {
-              handleChooseOption(selectedOption.value);
-            }
-            setOpen(false);
-          }
-          break;
-        default:
-          break;
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [focusedIndex, options, onChange]);
-
-  useEffect(() => {
-    if (query && options.length > 0) {
-      setFocusedIndex(
-        options.findIndex((option) =>
-          option.label
-            .toLowerCase()
-            .replace(/\s+/g, "")
-            .includes(query.toLowerCase().replace(/\s+/g, ""))
-        )
-      );
-    } else {
-      setFocusedIndex(-1);
-    }
-  }, [query, options]);
-
-  useEffect(() => {
-    setQuery(value?.toString() || "");
-  }, [value]);
-
-  useEffect(() => {
-    if (ulRef.current && focusedIndex !== -1) {
-      const listItem = ulRef.current.children[focusedIndex] as HTMLElement;
-      listItem?.focus();
-    }
-  }, [focusedIndex]);
+  const filteredOptions = useMemo(() => {
+    return options.filter((option) => option.label.includes(search));
+  }, [options, search]);
 
   return (
-    <div
-      className={clsx(
-        "dropdown border-[1px] rounded-lg inline-block",
-        open && !disabled && "dropdown-open",
-        className
-      )}
-      ref={ref}
-    >
-      <div
-        tabIndex={0}
-        role="button"
-        className="relative cursor-default overflow-hidden rounded-lg bg-white text-left"
-      >
-        <input
-          className={clsx(
-            "input input-sm focus-visible:border-none -webkit-outer-spin-button:-webkit-appearance-[none]",
-            disabled && "input-disabled"
-          )}
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder={placeholder}
-          disabled={disabled}
-        />
-        <div className="btn btn-sm btn-ghost absolute inset-y-0 right-0 flex items-center pr-2">
-          <ChevronUpDownIcon className="w-5 text-gray-400" aria-hidden="true" />
-        </div>
-      </div>
-      {!disabled && (
-        <ul
-          tabIndex={0}
-          className={clsx(
-            "dropdown-content z-[100] inline-block menu w-full bg-white border-[1px] p-0 rounded-lg max-h-[50vh] overflow-y-scroll"
-          )}
-          ref={ulRef}
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className={clsx("w-[200px] justify-between", className)}
         >
-          {options.map((option, index) => (
-            <li
-              key={option.value}
-              className={clsx(
-                "btn btn-ghost btn-sm hover:bg-orange-300 text-left w-full relative select-none pl-2 py-1",
-                option.value == value
-                  ? "bg-orange-500 text-white"
-                  : "text-gray-900",
-                index === focusedIndex && "bg-orange-200"
+          {value
+            ? options.find((option) => option.value === value)?.label || value
+            : placeholder}
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className={clsx("p-0 border-none", className)}>
+        <Command
+          className={clsx("border-[1px] rounded-lg w-full")}
+          shouldFilter={false}
+        >
+          <CommandInput value={search} onValueChange={setSearch} />
+          <CommandList
+            tabIndex={0}
+            className={clsx(
+              "z-[100] inline-block menu w-full bg-white border-[1px] p-0 rounded-lg max-h-[50vh] overflow-y-scroll"
+            )}
+          >
+            <CommandGroup>
+              {filteredOptions.map((option, index) => (
+                <CommandItem
+                  key={option.value}
+                  value={option.value}
+                  onSelect={(currentValue) => {
+                    onChange(currentValue === value ? "" : currentValue);
+                    setOpen(false);
+                  }}
+                >
+                  {option.label}
+                </CommandItem>
+              ))}
+              {filteredOptions.length == 0 && freeSolo && (
+                <CommandItem
+                  value={search}
+                  onSelect={(currentValue) => {
+                    onChange(currentValue === value ? "" : currentValue);
+                    setOpen(false);
+                  }}
+                >
+                  {search}
+                </CommandItem>
               )}
-              value={option.value}
-              onClick={() => handleChooseOption(option.value)}
-            >
-              {option.label}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
 };
 

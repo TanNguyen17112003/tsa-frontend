@@ -5,6 +5,7 @@ import { CustomTableConfig } from "./custom-table.types";
 import useFunction from "src/hooks/use-function";
 import { BsPencilFill } from "react-icons/bs";
 import clsx from "clsx";
+import { Button } from "../shadcn/ui/button";
 
 export function CustomTableCell<P, T extends { id: P; [key: string]: any }>({
   data,
@@ -96,9 +97,9 @@ export function CustomTableCell<P, T extends { id: P; [key: string]: any }>({
       {config.renderEditingCell ? (
         <div className="flex items-center justify-end -my-1">
           {content}
-          <div className="btn btn-circle btn-outline" onClick={handleStartEdit}>
+          <Button variant="outline" onClick={handleStartEdit}>
             <BsPencilFill fontSize="small" />
-          </div>
+          </Button>
         </div>
       ) : (
         <>{content}</>

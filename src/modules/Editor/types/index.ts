@@ -9,7 +9,7 @@ export interface EditorFormat {
   bold?: boolean;
   italic?: boolean;
   underline?: boolean;
-  fontSize?: number;
+  fontSize?: number | string;
   color?: string;
   superscript?: boolean;
 }

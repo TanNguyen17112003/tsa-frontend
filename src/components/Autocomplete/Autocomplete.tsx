@@ -62,7 +62,6 @@ const Autocomplete = ({
       <PopoverContent className={clsx("p-0 border-none", className)}>
         <Command
           className={clsx("border-[1px] rounded-lg w-full")}
-          onValueChange={(value) => console.log("value", value)}
           shouldFilter={false}
         >
           <CommandInput value={search} onValueChange={setSearch} />

@@ -8,6 +8,7 @@ import { Layout as DashboardLayout } from "src/layouts/dashboard";
 import type { Page as PageType } from "src/types/page";
 import { User, initialUser } from "src/types/user";
 import getAccountTableConfig from "./account-table-config/account-table-config";
+import PageHeader from "src/components/PageHeader";
 
 const Page: PageType = () => {
   const account: User[] = [initialUser];
@@ -20,14 +21,23 @@ const Page: PageType = () => {
 
   return (
     <div className="flex flex-col divide-y-[1px] space-y-4 min-h-screen">
-      <div className="flex items-center px-7 pt-7 pb-2 ">
+      {/* <div className="flex items-center px-7 pt-7 pb-2 ">
         <div className="text-2xl font-semibold">Quản lý tài khoản</div>
+
         <div className="ml-auto">
           <Button className=" bg-[#F97316] py-[22px] px-[16px] rounded-lg text-white text-nowrap">
             Thêm tài khoản
           </Button>
         </div>
+      </div> */}
+      <div className="flex items-center px-7 pt-7 pb-2 ">
+        <PageHeader
+          title="Quản lý tài khoản"
+          buttonLabel="Thêm tài khoản"
+          link="/dashboard/accounts"
+        ></PageHeader>
       </div>
+
       <div className="flex-grow space-y-7 mb-4 px-7 pt-7 pb-2 ">
         <div className="flex p-2  border border-gray-300 rounded-md h-12 w-full">
           <div className="flex w-full items-center">
@@ -39,9 +49,6 @@ const Page: PageType = () => {
             <HiMagnifyingGlass style={{ fontSize: "1.5rem", color: "gray" }} />
           </div>
         </div>
-        {/* <div className="flex bg-gray-50 border h-2/3 items-center justify-center">
-          Table
-        </div> */}
         <CustomTable
           rows={account}
           configs={accountTableConfig}

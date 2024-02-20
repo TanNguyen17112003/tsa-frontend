@@ -8,15 +8,17 @@ import { Layout as DashboardLayout } from "src/layouts/dashboard";
 import type { Page as PageType } from "src/types/page";
 import { User, initialUser, users } from "src/types/user";
 import getAccountTableConfig from "./account-table-config/account-table-config";
+import usePagination from "src/hooks/use-pagination";
+import Pagination from "src/components/Pagination";
 
 const Page: PageType = () => {
-  const account: User[] = [initialUser];
-
   const accountTableConfig = useMemo(() => {
     return getAccountTableConfig({
       onClickDelete: (data) => {},
     });
   }, []);
+
+  const pagination = usePagination({ count: users.length });
 
   return (
     <div className="flex flex-col divide-y-[1px] space-y-4 min-h-screen">
@@ -45,40 +47,11 @@ const Page: PageType = () => {
           tableClassName="rounded-xl border-2"
         ></CustomTable>
       </div>
-      <div className="flex px-7 ">
+      <div className="flex px-7 justify-between py-2">
         <div className="flex text-sm text-gray-500 font-normal items-center overflow-hidden text-nowrap">
           Đang hiển thị kết quả thứ 1 tới 10 trên 97 kết quả
         </div>
-        <div className="flex items-center border rounded-lg ml-auto divide-x-2 my-2">
-          <a href="#" className="border px-3 py-1.5">
-            &lt;
-          </a>
-          <a
-            href="#"
-            className="border border-orange-500 px-3 py-1.5 bg-[#F97316]"
-          >
-            1
-          </a>
-          <a href="#" className="border px-3 py-1.5">
-            2
-          </a>
-          <a href="#" className="border px-3 py-1.5">
-            3
-          </a>
-          <span className="border px-3 py-1.5">...</span>
-          <a href="#" className="border px-3 py-1.5">
-            8
-          </a>
-          <a href="#" className="border px-3 py-1.5">
-            9
-          </a>
-          <a href="#" className="border px-2 py-1.5">
-            10
-          </a>
-          <a href="#" className="border px-3 py-1.5">
-            &gt;
-          </a>
-        </div>
+        <Pagination {...pagination} onChange={pagination.onPageChange} />
       </div>
     </div>
   );

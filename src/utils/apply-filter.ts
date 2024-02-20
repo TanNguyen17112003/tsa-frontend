@@ -1,5 +1,9 @@
-import { DateRange } from "mui-daterange-picker";
 import { getObjectValue } from "./obj-helper";
+
+export interface DateRange {
+  startDate?: Date | null;
+  endDate?: Date | null;
+}
 
 export interface FilterOption<P, T> {
   compare:

@@ -101,7 +101,7 @@ function useFunction<P, T>(
         }
         setError(error as Error);
         options?.onError?.();
-        return { error: error };
+        return { error: String(error) };
       } finally {
         setLoading(false);
       }

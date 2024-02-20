@@ -5,10 +5,10 @@ import { CustomTableCell } from "./custom-table-cell";
 import { CustomTableHeader } from "./custom-table-header";
 import { CustomTableProps, CustomTableSortModel } from "./custom-table.types";
 import SimpleBar from "simplebar-react";
-import { BsPencilFill, BsTrash2Fill } from "react-icons/bs";
+import { BsPencilSquare, BsTrash2Fill } from "react-icons/bs";
 import clsx from "clsx";
 import { IoWarning } from "react-icons/io5";
-import Pagination from "../Pagination";
+import Pagination from "../ui/Pagination";
 import { Button } from "../shadcn/ui/button";
 
 export function CustomTable<P, T extends { id: P; [key: string]: any }>(
@@ -35,6 +35,7 @@ export function CustomTable<P, T extends { id: P; [key: string]: any }>(
     indexColumn,
     select,
     pagination,
+    hidePagination,
     additionalTopRow,
     additionalBottomRow,
     loading,
@@ -79,8 +80,8 @@ export function CustomTable<P, T extends { id: P; [key: string]: any }>(
   const pagedRows = useMemo(() => {
     return pagination
       ? sortedRows.slice(
-          pagination.rowsPerPage * (pagination.page - 1),
-          pagination.rowsPerPage * pagination.page
+          pagination.rowsPerPage * pagination.page,
+          pagination.rowsPerPage * (pagination.page + 1)
         )
       : sortedRows;
   }, [pagination, sortedRows]);
@@ -181,12 +182,12 @@ export function CustomTable<P, T extends { id: P; [key: string]: any }>(
                       {renderRowActions?.(row, index)}
                       {onClickEdit && (
                         <Button onClick={() => onClickEdit(row, index)}>
-                          <BsPencilFill className="h-4 w-4 bg-blue-500" />
+                          <BsPencilSquare className="h-4 w-4 bg-cyan" />
                         </Button>
                       )}
                       {onClickDelete && (
                         <Button onClick={() => onClickDelete(row, index)}>
-                          <BsTrash2Fill className="h-4 w-4 bg-blue-500" />
+                          <BsTrash2Fill className="h-4 w-4 bg-destructive" />
                         </Button>
                       )}
                       {onClickDetail && (
@@ -219,7 +220,7 @@ export function CustomTable<P, T extends { id: P; [key: string]: any }>(
           )}
         </div>
       )}
-      {pagination && (
+      {pagination && !hidePagination && (
         <Pagination
           page={pagination.page}
           count={pagination.totalPages}

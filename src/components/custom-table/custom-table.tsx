@@ -112,7 +112,7 @@ export function CustomTable<P, T extends { id: P; [key: string]: any }>(
       <SimpleBar {...scrollbarProps} ref={scrollBar}>
         <table
           className={clsx(
-            "relative min-w-[700px]",
+            "relative min-w-[700px] w-full border-2 border-collapse",
             isMounted && flexible ? "table-fixed" : undefined,
             tableClassName
           )}
@@ -128,7 +128,7 @@ export function CustomTable<P, T extends { id: P; [key: string]: any }>(
               <tr
                 key={row.id + "-key-" + index}
                 className={clsx(
-                  "text-nowrap px-2",
+                  "text-nowrap px-2 border-2 border-collapse",
                   row.error ? "bg-error-900" : undefined,
                   onClickRow ? "cursor-pointer hover:bg-orange-900" : undefined
                 )}

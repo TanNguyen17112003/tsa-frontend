@@ -6,7 +6,7 @@ import { Input } from "src/components/shadcn/ui/input";
 import { useAuth } from "src/hooks/use-auth";
 import { Layout as DashboardLayout } from "src/layouts/dashboard";
 import type { Page as PageType } from "src/types/page";
-import { User, initialUser } from "src/types/user";
+import { User, initialUser, users } from "src/types/user";
 import getAccountTableConfig from "./account-table-config/account-table-config";
 
 const Page: PageType = () => {
@@ -39,13 +39,10 @@ const Page: PageType = () => {
             <HiMagnifyingGlass style={{ fontSize: "1.5rem", color: "gray" }} />
           </div>
         </div>
-        {/* <div className="flex bg-gray-50 border h-2/3 items-center justify-center">
-          Table
-        </div> */}
         <CustomTable
-          rows={account}
+          rows={users}
           configs={accountTableConfig}
-          flexible
+          tableClassName="rounded-xl border-2"
         ></CustomTable>
       </div>
       <div className="flex px-7 ">

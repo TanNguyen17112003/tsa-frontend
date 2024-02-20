@@ -40,11 +40,10 @@ export const NoteElement = withRef<typeof PlateLeaf, TText>(
           </span>
 
           <Button
-            size="sm"
             variant="ghost"
             id={NOTE_BUTTON_ID}
             onClick={handleClick}
-            className="absolute h-[18px] min-h-0 top-0 left-0  text-xs px-0.5 py-0 border-primary bg-primary/10 hover:bg-primary/20"
+            className="absolute h-[18px] min-h-0 top-0 left-0 -translate-y-1 text-xs px-0.5 py-0 border-primary bg-primary/10 hover:bg-primary/20"
           >
             [{children.props.leaf.noteIndex}]
           </Button>

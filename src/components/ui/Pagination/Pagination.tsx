@@ -1,5 +1,5 @@
 import { useMemo, type FC } from "react";
-import { Button } from "../shadcn/ui/button";
+import { Button } from "../../shadcn/ui/button";
 import _ from "lodash";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 

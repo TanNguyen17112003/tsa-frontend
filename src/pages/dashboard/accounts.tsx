@@ -1,15 +1,14 @@
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { HiMagnifyingGlass } from "react-icons/hi2";
 import { CustomTable } from "src/components/custom-table";
-import { Button } from "src/components/shadcn/ui/button";
 import { Input } from "src/components/shadcn/ui/input";
-import { useAuth } from "src/hooks/use-auth";
-import { Layout as DashboardLayout } from "src/layouts/dashboard";
-import type { Page as PageType } from "src/types/page";
-import { User, initialUser, users } from "src/types/user";
-import getAccountTableConfig from "./account-table-config/account-table-config";
+import Pagination from "src/components/ui/Pagination";
 import usePagination from "src/hooks/use-pagination";
-import Pagination from "src/components/Pagination";
+import { Layout as DashboardLayout } from "src/layouts/dashboard";
+import AccountEditSheet from "src/sections/admin/accounts/AccountEditSheet";
+import type { Page as PageType } from "src/types/page";
+import { users } from "src/types/user";
+import getAccountTableConfig from "./account-table-config/account-table-config";
 
 const Page: PageType = () => {
   const accountTableConfig = useMemo(() => {
@@ -25,9 +24,7 @@ const Page: PageType = () => {
       <div className="flex items-center px-7 pt-7 pb-2 ">
         <div className="text-2xl font-semibold">Quản lý tài khoản</div>
         <div className="ml-auto">
-          <Button className=" bg-[#F97316] py-[22px] px-[16px] rounded-lg text-white text-nowrap">
-            Thêm tài khoản
-          </Button>
+          <AccountEditSheet />
         </div>
       </div>
       <div className="flex-grow space-y-7 mb-4 px-7 pt-7 pb-2 ">
@@ -45,6 +42,8 @@ const Page: PageType = () => {
           rows={users}
           configs={accountTableConfig}
           tableClassName="rounded-xl border-2"
+          pagination={pagination}
+          hidePagination
         ></CustomTable>
       </div>
       <div className="flex px-7 justify-between py-2">

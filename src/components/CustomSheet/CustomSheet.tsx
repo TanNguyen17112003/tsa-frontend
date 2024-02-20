@@ -24,7 +24,7 @@ const CustomSheet: FC<CustomSheetProps> = ({
 }) => {
   return (
     <Sheet>
-      <SheetTrigger>{sheetTrigger}</SheetTrigger>
+      <SheetTrigger asChild>{sheetTrigger}</SheetTrigger>
       <SheetContent className="p-0 w-[700px]">
         <div className="flex p-3">
           <div className="flex-1">

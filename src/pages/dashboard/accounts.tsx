@@ -6,9 +6,9 @@ import Pagination from "src/components/ui/Pagination";
 import usePagination from "src/hooks/use-pagination";
 import { Layout as DashboardLayout } from "src/layouts/dashboard";
 import AccountEditSheet from "src/sections/admin/accounts/AccountEditSheet";
+import getAccountTableConfig from "src/sections/admin/accounts/account-table-config";
 import type { Page as PageType } from "src/types/page";
 import { users } from "src/types/user";
-import getAccountTableConfig from "./account-table-config/account-table-config";
 
 const Page: PageType = () => {
   const accountTableConfig = useMemo(() => {

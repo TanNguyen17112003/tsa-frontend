@@ -73,7 +73,7 @@ export function CustomTableCell<P, T extends { id: P; [key: string]: any }>({
 
   if (editing && config.renderEditingCell) {
     return (
-      <td className={clsx(cellClassName, config.cellClassName)}>
+      <td className={clsx("py-3 px-2", cellClassName, config.cellClassName)}>
         {config.renderEditingCell(
           editingValue,
           setEditingValue,
@@ -92,7 +92,11 @@ export function CustomTableCell<P, T extends { id: P; [key: string]: any }>({
       align={
         config.type == "number" || config.type == "float" ? "right" : "left"
       }
-      className={clsx("overflow-hidden", cellClassName, config.cellClassName)}
+      className={clsx(
+        "overflow-x-hidden py-3 px-2",
+        cellClassName,
+        config.cellClassName
+      )}
     >
       {config.renderEditingCell ? (
         <div className="flex items-center justify-end -my-1">

@@ -10,7 +10,6 @@ const PasswordInput = ({
   showPassword: boolean;
   togglePasswordVisibility: () => void;
 } & FormInputProps) => {
-  console.log("FormInputProps", FormInputProps);
   return (
     <div className="relative">
       <FormInput

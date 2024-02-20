@@ -12,7 +12,6 @@ const FormInput: FC<FormInputProps> = ({
   helperText,
   ...InputProps
 }) => {
-  console.log("error, helperText", error, helperText);
   return (
     <>
       <Input

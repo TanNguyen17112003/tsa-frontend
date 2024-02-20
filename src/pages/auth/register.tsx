@@ -59,9 +59,6 @@ const Page: PageType = () => {
     },
   });
 
-  console.log("formik.touched", formik.touched);
-  console.log("formik.errors", formik.errors);
-
   return (
     <>
       <div className="h-screen flex ">

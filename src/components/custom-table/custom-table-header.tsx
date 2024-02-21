@@ -76,7 +76,7 @@ export function CustomTableHeader<P, T extends { id: P; [key: string]: any }>(
           onClickEdit ||
           renderRowActions) && (
           <th
-            className="w-[120px] py-1"
+            className="w-[120px] py-3 px-2"
             align="center"
             rowSpan={hasGroupedHeaderLabel ? 2 : 1}
           >
@@ -90,7 +90,10 @@ export function CustomTableHeader<P, T extends { id: P; [key: string]: any }>(
             config.groupedHeaderLabel ? (
               <th
                 key={config.key.toString()}
-                className={clsx("text-nowrap px-2", config.headerCellClassName)}
+                className={clsx(
+                  "text-nowrap py-3 px-2",
+                  config.headerCellClassName
+                )}
               >
                 <div className="flex gap-1 items-center">
                   {config.headerIcon}

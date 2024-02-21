@@ -30,7 +30,12 @@ const CustomTableSortLabel: React.FC<TableSortLabelProps> = ({
   });
 
   return (
-    <div onClick={onClick} style={style} className={mergedClassName} {...rest}>
+    <div
+      onClick={onClick}
+      style={style}
+      className={clsx("flex gap-2", mergedClassName)}
+      {...rest}
+    >
       {children}
       {active && (
         <span

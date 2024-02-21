@@ -24,7 +24,7 @@ export function CustomTableHeaderCell<
   return (
     <CustomTableResizableCell
       onResized={props.onResize}
-      className="text-nowrap relative"
+      className="text-nowrap relative py-4 px-2"
       rowSpan={!config.groupedHeaderLabel && hasGroupedHeaderLabel ? 2 : 1}
       colSpan={
         !config.groupedHeaderLabel
@@ -40,9 +40,9 @@ export function CustomTableHeaderCell<
           active={sortModel?.key == config.key}
           direction={sortModel?.key == config.key ? sortModel.direction : "asc"}
           onClick={() => onClickSort?.(config.key)}
-          className="w-full justify-center"
+          className="w-full"
         >
-          <div className="flex items-center gap-1 justify-center">
+          <div className="flex items-center gap-1">
             {config.headerIcon}
             <div>{config.headerLabel}</div>
           </div>

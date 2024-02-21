@@ -15,6 +15,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "src/components/shadcn/ui/sheet";
+import AccountEditSheet from "./AccountEditSheet";
 
 const AccountManagement = () => {
   const user = [initialUser];
@@ -36,40 +37,10 @@ const AccountManagement = () => {
             <HiMagnifyingGlass style={{ fontSize: "1.5rem", color: "gray" }} />
           </div>
         </div>
-        <div className="ml-auto">
-          <Button className=" bg-[#F97316] py-[22px] px-[16px] rounded-lg text-white text-nowrap">
-            <Sheet>
-              <SheetTrigger>Thêm tài khoản</SheetTrigger>
-              <SheetContent>
-                <SheetHeader className="divide-y-2">
-                  <div className="divide-y-2">
-                    <div className="flex justify-between">
-                      <div>
-                        <div className="flex text-xs font-semibold text-orange-500 item-center">
-                          <FaLongArrowAltLeft
-                            style={{ marginTop: "3px", marginRight: "5px" }}
-                          />
-                          <div>Quay lại</div>
-                        </div>
-                        <SheetTitle>Thêm tác giả</SheetTitle>
-                      </div>
-                      <Button>Xác nhận thêm</Button>
-                    </div>
-                  </div>
-
-                  <SheetDescription>
-                    <div className="pt-4">
-                      <Input
-                        type="text"
-                        name="AAA"
-                        placeholder="Nhập tên tác giả"
-                      />
-                    </div>
-                  </SheetDescription>
-                </SheetHeader>
-              </SheetContent>
-            </Sheet>
-          </Button>
+        <div className="ml-auto flex">
+          <div className="flex items-center">
+            <AccountEditSheet />
+          </div>
         </div>
       </div>
       <CustomTable rows={user} configs={accountTableConfig}></CustomTable>

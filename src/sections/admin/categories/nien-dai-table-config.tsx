@@ -16,7 +16,7 @@ const getCircasTableConfig = ({
     headerLabel: "Thời gian",
     type: "string",
     renderCell: (data) => (
-      <div className="flex justify-center">
+      <div>
         {data.start_year}-{data.end_year}
       </div>
     ),

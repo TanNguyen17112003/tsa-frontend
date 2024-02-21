@@ -5,11 +5,11 @@ import { Button } from "src/components/shadcn/ui/button";
 import { Input } from "src/components/shadcn/ui/input";
 import { useAuth } from "src/hooks/use-auth";
 import { Layout as DashboardLayout } from "src/layouts/dashboard";
-import PageFormat from "src/section/danh-muc/dinh-dang-trang";
-import Chronology from "src/section/danh-muc/nien-dai";
-import AccountManagement from "src/section/danh-muc/quan-ly-tac-gia";
-import CollectionAbbreviation from "src/section/danh-muc/ten-viet-tat-tuyen-tap";
-import Abbreviation from "src/section/danh-muc/tu-viet-tat";
+import PageFormat from "src/sections/admin/categories/dinh-dang-trang";
+import Chronology from "src/sections/admin/categories/nien-dai";
+import AccountManagement from "src/sections/admin/categories/quan-ly-tac-gia";
+import CollectionAbbreviation from "src/sections/admin/categories/ten-viet-tat-tuyen-tap";
+import Abbreviation from "src/sections/admin/categories/tu-viet-tat";
 import type { Page as PageType } from "src/types/page";
 
 const tabs = [
@@ -113,41 +113,6 @@ const Page: PageType = () => {
         {tab == "4" && <Abbreviation></Abbreviation>}
         {tab == "5" && <Chronology></Chronology>}
       </div>
-      {/* <div className="flex px-7">
-        <div className="flex text-sm text-gray-500 font-normal items-center overflow-hidden text-nowrap">
-          Đang hiển thị kết quả thứ 1 tới 10 trên 97 kết quả
-        </div>
-        <div className="flex items-center border rounded-lg ml-auto divide-x-2 my-2">
-          <a href="#" className="border px-3 py-1.5">
-            &lt;
-          </a>
-          <a
-            href="#"
-            className="border border-orange-500 px-3 py-1.5 bg-[#F97316]"
-          >
-            1
-          </a>
-          <a href="#" className="border px-3 py-1.5">
-            2
-          </a>
-          <a href="#" className="border px-3 py-1.5">
-            3
-          </a>
-          <span className="border px-3 py-1.5">...</span>
-          <a href="#" className="border px-3 py-1.5">
-            8
-          </a>
-          <a href="#" className="border px-3 py-1.5">
-            9
-          </a>
-          <a href="#" className="border px-2 py-1.5">
-            10
-          </a>
-          <a href="#" className="border px-3 py-1.5">
-            &gt;
-          </a>
-        </div>
-      </div> */}
     </div>
   );
 };

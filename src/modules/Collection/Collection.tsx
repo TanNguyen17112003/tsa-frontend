@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import type { FC } from "react";
 import SearchNavigator from "./components/SearchNavigator";
 import ViewNavigator from "./components/ViewNavigator";
-import AuthorSearchPage from "./components/pages/search/AuthorSearchPage";
+import AuthorSearchPage from "./components/pages/search/AuthorSearchPage/AuthorSearchPage";
 import CircaSearchPage from "./components/pages/search/CircaSearchPage";
 import SutraSearchPage from "./components/pages/search/SutraSearchPage/SutraSearchPage";
 import TextSearchPage from "./components/pages/search/TextSearchPage/TextSearchPage";
@@ -18,7 +18,7 @@ const Collection: FC<CollectionProps> = ({}) => {
 
   return (
     <div className="flex">
-      <div className="w-[300px] border">
+      <div className="w-[300px] border-r">
         <div className="sticky top-0 p-3">
           <SearchNavigator />
         </div>

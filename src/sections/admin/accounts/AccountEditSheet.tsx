@@ -50,8 +50,12 @@ const AccountEditSheet: FC<AccountEditSheetProps> = ({}) => {
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectItem value="1">Chỉ xem được khiếu nại</SelectItem>
-                <SelectItem value="2">Được xử lý khiếu nại</SelectItem>
+                <SelectItem value="view-reports">
+                  Chỉ xem được khiếu nại
+                </SelectItem>
+                <SelectItem value="handle-reports">
+                  Được xử lý khiếu nại
+                </SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>

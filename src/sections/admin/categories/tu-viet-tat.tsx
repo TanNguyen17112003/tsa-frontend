@@ -4,6 +4,7 @@ import { Button } from "src/components/shadcn/ui/button";
 import { Input } from "src/components/shadcn/ui/input";
 import { initialFormat } from "src/types/formats";
 import getSortWordTableConfig from "./tu-viet-tat-table-config";
+import SortWordEditSheet from "./SortWordEditSheet";
 
 const Abbreviation = () => {
   const word = [initialFormat];
@@ -20,10 +21,8 @@ const Abbreviation = () => {
             <HiMagnifyingGlass style={{ fontSize: "1.5rem", color: "gray" }} />
           </div>
         </div>
-        <div className="ml-auto">
-          <Button className=" bg-[#F97316] py-[22px] px-[16px] rounded-lg text-white text-nowrap">
-            Thêm tài khoản
-          </Button>
+        <div className="flex ml-auto items-center">
+          <SortWordEditSheet />
         </div>
       </div>
       <CustomTable rows={word} configs={getSortWordTableConfig}></CustomTable>

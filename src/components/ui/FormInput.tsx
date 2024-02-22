@@ -5,15 +5,18 @@ import clsx from "clsx";
 export interface FormInputProps extends InputProps {
   error?: boolean;
   helperText?: ReactNode;
+  label?: string;
 }
 
 const FormInput: FC<FormInputProps> = ({
   error,
   helperText,
+  label,
   ...InputProps
 }) => {
   return (
     <>
+      {label && <div className="text-xs font-semibold mb-1">{label}</div>}
       <Input
         {...InputProps}
         className={clsx(error && "border-destructive ring-destructive")}

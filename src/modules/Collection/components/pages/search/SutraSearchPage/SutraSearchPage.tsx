@@ -1,5 +1,6 @@
 import type { FC } from "react";
-import CollectionBreadcrumb from "../../components/CollectionBreadcrumb";
+import CollectionBreadcrumb from "../../../CollectionBreadcrumb";
+import SutraSearchForm from "./SutraSearchForm";
 
 interface SutraSearchPageProps {}
 
@@ -11,7 +12,7 @@ const SutraSearchPage: FC<SutraSearchPageProps> = ({}) => {
         <div></div>
       </div>
       <hr />
-      <div>SutraSearchPage</div>
+      <SutraSearchForm className={"py-4 px-6"} />
     </>
   );
 };

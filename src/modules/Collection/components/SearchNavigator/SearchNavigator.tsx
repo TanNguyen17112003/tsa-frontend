@@ -18,9 +18,13 @@ const SearchNavigator: FC<SearchNavigatorProps> = ({}) => {
 
   const handleChange = useCallback(
     (value: string) => {
+      const newQuery: any = {};
+      Object.keys(router.query).forEach((key) =>
+        key.startsWith("q") ? null : (newQuery[key] = router.query[key])
+      );
       router.replace({
         pathname: router.pathname,
-        query: { ...router.query, searchType: value },
+        query: { ...newQuery, searchType: value },
       });
     },
     [router]

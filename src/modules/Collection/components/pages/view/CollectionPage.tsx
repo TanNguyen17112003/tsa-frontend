@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import CollectionBreadcrumb from "../../components/CollectionBreadcrumb";
+import CollectionBreadcrumb from "../../CollectionBreadcrumb";
 
 interface CollectionPageProps {}
 

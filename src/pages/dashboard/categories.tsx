@@ -38,7 +38,7 @@ const tabs = [
 const Page: PageType = () => {
   const [tab, setTab] = useState(tabs[0].key);
   const tabsMenu = (
-    <div className="flex space-x-8 overflow-hidden mt-4">
+    <div className="flex space-x-8 overflow-hidden">
       {tab == "author" ? (
         <div
           onClick={() => setTab("author")}
@@ -117,11 +117,9 @@ const Page: PageType = () => {
     </div>
   );
   return (
-    <div className="flex flex-col divide-y-2">
+    <div className="flex flex-col">
       <div className="w-full ">
-        <div className="mt-[32px] mx-[10%]">
-          <PageHeader title="Danh mục" tabs={tabsMenu}></PageHeader>
-        </div>
+        <PageHeader title="Danh mục" tabs={tabsMenu}></PageHeader>
         {tab == "author" && <AuthorTab />}
         {tab == "format" && <FormatTab />}
         {tab == "acronym-name" && <AcronymsNameTab />}

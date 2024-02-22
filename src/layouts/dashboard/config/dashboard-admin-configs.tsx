@@ -31,7 +31,7 @@ export const getDashboardAdminConfigs = () => {
         },
         {
           title: "Quản lý khiếu nại",
-          path: paths.dashboard.complaints,
+          path: paths.dashboard.reports,
           icon: <IoFlag className="h-6 w-6" />,
         },
         {

@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "src/hooks/use-auth";
 import { Layout as DashboardLayout } from "src/layouts/dashboard";
-import DeletedComplaint from "src/sections/admin/complaints/khieu-nai-da-xoa";
-import ComplaintManagement from "src/sections/admin/complaints/quan-ly-khieu-nai";
+import DeletedReport from "src/sections/admin/reports/DeletedReportTab";
+import ReportManagement from "src/sections/admin/reports/ReportManagementTab";
 import type { Page as PageType } from "src/types/page";
 
 const tabs = [
@@ -55,9 +55,7 @@ const Page: PageType = () => {
           )}
         </div>
       </div>
-      <div className="pt-8 px-8">
-        {tab == "1" ? <ComplaintManagement /> : <DeletedComplaint />}
-      </div>
+      <div>{tab == "1" ? <ReportManagement /> : <DeletedReport />}</div>
     </div>
   );
 };

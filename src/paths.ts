@@ -11,7 +11,7 @@ export const paths = {
     collections: "/dashboard/collections",
     accounts: "/dashboard/accounts",
     categories: "/dashboard/categories",
-    complaints: "/dashboard/complaints",
+    reports: "/dashboard/reports",
     "add-complaint": "/dashboard/add-complaint",
     logout: "/dang-xuat",
   },

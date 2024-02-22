@@ -19,7 +19,10 @@ const FormInput: FC<FormInputProps> = ({
       {label && <div className="text-xs font-semibold mb-1">{label}</div>}
       <Input
         {...InputProps}
-        className={clsx(error && "border-destructive ring-destructive")}
+        className={clsx(
+          error && "border-destructive ring-destructive",
+          InputProps.className
+        )}
       />
       {helperText && (
         <div className={clsx("text-xs", error && "text-destructive")}>

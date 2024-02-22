@@ -7,6 +7,9 @@ import CircaSearchPage from "./components/pages/search/CircaSearchPage";
 import SutraSearchPage from "./components/pages/search/SutraSearchPage/SutraSearchPage";
 import TextSearchPage from "./components/pages/search/TextSearchPage/TextSearchPage";
 import CollectionPage from "./components/pages/view/CollectionPage";
+import BasicSearchPage from "./components/pages/search/BasicSearchPage";
+import AdvanceSearchPage from "./components/pages/search/AdvanceSearchPage";
+import AdjacentSearchPage from "./components/pages/search/AdjacentSearchPage";
 
 interface CollectionProps {}
 
@@ -35,6 +38,12 @@ const Collection: FC<CollectionProps> = ({}) => {
           <AuthorSearchPage />
         ) : query.searchType == "circa" ? (
           <CircaSearchPage />
+        ) : query.searchType == "basic" ? (
+          <BasicSearchPage />
+        ) : query.searchType == "advance" ? (
+          <AdvanceSearchPage />
+        ) : query.searchType == "adjacent" ? (
+          <AdjacentSearchPage />
         ) : (
           <div>Not found</div>
         )}

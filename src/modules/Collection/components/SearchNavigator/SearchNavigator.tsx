@@ -4,7 +4,7 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "src/components/shadcn/ui/accordion";
-import { useCallback, type FC } from "react";
+import { useCallback, type FC, useMemo } from "react";
 import { BsFunnel } from "react-icons/bs";
 import { Button } from "src/components/shadcn/ui/button";
 import { useRouter } from "next/router";
@@ -30,6 +30,15 @@ const SearchNavigator: FC<SearchNavigatorProps> = ({}) => {
     [router]
   );
 
+  const acceptSearchTypes = useMemo(
+    () =>
+      searchTypes.filter(
+        (searchType) =>
+          !["basic", "advance", "adjacent"].includes(searchType.value)
+      ),
+    []
+  );
+
   return (
     <Accordion type="single" collapsible className="w-full">
       <AccordionItem value="item-1" className="border-b-0">
@@ -41,7 +50,7 @@ const SearchNavigator: FC<SearchNavigatorProps> = ({}) => {
         </AccordionTrigger>
         <AccordionContent className="pt-2 pb-0">
           <div className="bg-slate-50 rounded-md p-2 flex flex-col gap-2">
-            {searchTypes.map((searchType) => (
+            {acceptSearchTypes.map((searchType) => (
               <Button
                 variant={
                   searchType.value == currentSearchType

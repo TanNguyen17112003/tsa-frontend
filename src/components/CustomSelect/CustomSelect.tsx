@@ -6,6 +6,7 @@ import {
   SelectItem,
 } from "src/components/shadcn/ui/select";
 import type { FC } from "react";
+import clsx from "clsx";
 
 export interface SelectOption {
   label: string;
@@ -13,6 +14,7 @@ export interface SelectOption {
 }
 
 interface CustomSelectProps {
+  className?: string;
   label?: string;
   placeholder?: string;
   onValueChange: (value: string) => void;
@@ -21,6 +23,7 @@ interface CustomSelectProps {
 }
 
 const CustomSelect: FC<CustomSelectProps> = ({
+  className,
   label,
   placeholder,
   onValueChange,
@@ -31,7 +34,7 @@ const CustomSelect: FC<CustomSelectProps> = ({
     <div>
       {label && <div className="text-xs font-semibold mb-1">{label}</div>}
       <Select onValueChange={onValueChange} value={value}>
-        <SelectTrigger className="h-10 shadow-none">
+        <SelectTrigger className={clsx("h-10 shadow-none", className)}>
           <SelectValue placeholder={placeholder} className="py-4" />
         </SelectTrigger>
         <SelectContent>

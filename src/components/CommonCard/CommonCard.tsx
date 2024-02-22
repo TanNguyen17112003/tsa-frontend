@@ -9,8 +9,8 @@ const CommonCard = ({
   children,
 }: {
   title: string;
-  link: string;
-  linkLabel: string;
+  link?: string;
+  linkLabel?: string;
   children: ReactNode;
 }) => {
   return (

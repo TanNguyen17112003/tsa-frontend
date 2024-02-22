@@ -25,14 +25,14 @@ const CustomSheet: FC<CustomSheetProps> = ({
   return (
     <Sheet>
       <SheetTrigger asChild>{sheetTrigger}</SheetTrigger>
-      <SheetContent className="p-0 w-[700px]">
+      <SheetContent className="p-0 w-[700px] sm:max-w-[36rem]">
         <div className="flex p-3">
           <div className="flex-1">
             <Button variant="ghost" size="sm" className="text-primary gap-2">
               <FaArrowLeftLong />
               <span className="label">Quay lại</span>
             </Button>
-            <div className="text-2xl font-bold">{title}</div>
+            <div className="text-2xl font-bold text-nowrap">{title}</div>
           </div>
           <div>{actions}</div>
         </div>

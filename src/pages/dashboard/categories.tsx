@@ -5,97 +5,112 @@ import { Button } from "src/components/shadcn/ui/button";
 import { Input } from "src/components/shadcn/ui/input";
 import { useAuth } from "src/hooks/use-auth";
 import { Layout as DashboardLayout } from "src/layouts/dashboard";
-import PageFormat from "src/sections/admin/categories/dinh-dang-trang";
-import Chronology from "src/sections/admin/categories/nien-dai";
-import AccountManagement from "src/sections/admin/categories/quan-ly-tac-gia";
-import CollectionAbbreviation from "src/sections/admin/categories/ten-viet-tat-tuyen-tap";
-import Abbreviation from "src/sections/admin/categories/tu-viet-tat";
+import CollectionAbbreviation from "src/sections/admin/categories/AcronymsNameTab";
+import Abbreviation from "src/sections/admin/categories/AcronymsWordTab";
+import AccountManagement from "src/sections/admin/categories/AuthorTab";
+import Circa from "src/sections/admin/categories/CircaTab";
+import PageFormat from "src/sections/admin/categories/FormatTab";
 import type { Page as PageType } from "src/types/page";
 
 const tabs = [
   {
     label: "Quản lý tác giả",
-    key: "1",
+    key: "author",
   },
   {
     label: "Định dạng trang",
-    key: "2",
+    key: "format",
   },
   {
     label: "Tên viết tắt tuyển tập",
-    key: "3",
+    key: "sort-name",
   },
   {
     label: "Từ viết tắt",
-    key: "4",
+    key: "sort-word",
   },
   {
     label: "Niên đại",
-    key: "5",
+    key: "circa",
   },
 ];
 
 const Page: PageType = () => {
   const [tab, setTab] = useState(tabs[0].key);
   const tabsMenu = (
-    <div className="flex space-x-4 overflow-hidden mt-4">
-      {tab == "1" ? (
+    <div className="flex space-x-8 overflow-hidden mt-4">
+      {tab == "author" ? (
         <div
-          onClick={() => setTab("1")}
+          onClick={() => setTab("author")}
           className="text-nowrap text-orange-600 border-b border-orange-500 pb-5 cursor-pointer"
         >
           {tabs[0].label}
         </div>
       ) : (
-        <div onClick={() => setTab("1")} className="text-nowrap cursor-pointer">
+        <div
+          onClick={() => setTab("author")}
+          className="text-nowrap cursor-pointer"
+        >
           {tabs[0].label}
         </div>
       )}
-      {tab == "2" ? (
+      {tab == "format" ? (
         <div
-          onClick={() => setTab("2")}
+          onClick={() => setTab("format")}
           className="text-nowrap text-orange-600 border-b border-orange-500 pb-5   cursor-pointer"
         >
           {tabs[1].label}
         </div>
       ) : (
-        <div onClick={() => setTab("2")} className="text-nowrap cursor-pointer">
+        <div
+          onClick={() => setTab("format")}
+          className="text-nowrap cursor-pointer"
+        >
           {tabs[1].label}
         </div>
       )}
-      {tab == "3" ? (
+      {tab == "sort-name" ? (
         <div
-          onClick={() => setTab("3")}
+          onClick={() => setTab("sort-name")}
           className="text-nowrap text-orange-600 border-b border-orange-500 pb-5  cursor-pointer"
         >
           {tabs[2].label}
         </div>
       ) : (
-        <div onClick={() => setTab("3")} className="text-nowrap cursor-pointer">
+        <div
+          onClick={() => setTab("sort-name")}
+          className="text-nowrap cursor-pointer"
+        >
           {tabs[2].label}
         </div>
       )}
-      {tab == "4" ? (
+      {tab == "sort-word" ? (
         <div
-          onClick={() => setTab("4")}
+          onClick={() => setTab("sort-word")}
           className="text-nowrap text-orange-600 border-b border-orange-500 pb-5  cursor-pointer"
         >
           {tabs[3].label}
         </div>
       ) : (
-        <div onClick={() => setTab("4")} className="text-nowrap cursor-pointer">
+        <div
+          onClick={() => setTab("sort-word")}
+          className="text-nowrap cursor-pointer"
+        >
           {tabs[3].label}
         </div>
       )}
-      {tab == "5" ? (
+      {tab == "circa" ? (
         <div
-          onClick={() => setTab("5")}
+          onClick={() => setTab("circa")}
           className="text-nowrap text-orange-600 border-b border-orange-500 pb-5  cursor-pointer"
         >
           {tabs[4].label}
         </div>
       ) : (
-        <div onClick={() => setTab("5")} className="text-nowrap cursor-pointer">
+        <div
+          onClick={() => setTab("circa")}
+          className="text-nowrap cursor-pointer"
+        >
           {tabs[4].label}
         </div>
       )}
@@ -103,15 +118,15 @@ const Page: PageType = () => {
   );
   return (
     <div className="flex flex-col divide-y-2">
-      <div className="flex-grow mx-[10%]">
-        <div className="mt-[32px]">
+      <div className="flex-grow ">
+        <div className="mt-[32px] mx-[10%]">
           <PageHeader title="Danh mục" tabs={tabsMenu}></PageHeader>
         </div>
-        {tab == "1" && <AccountManagement></AccountManagement>}
-        {tab == "2" && <PageFormat></PageFormat>}
-        {tab == "3" && <CollectionAbbreviation></CollectionAbbreviation>}
-        {tab == "4" && <Abbreviation></Abbreviation>}
-        {tab == "5" && <Chronology></Chronology>}
+        {tab == "author" && <AccountManagement />}
+        {tab == "format" && <PageFormat />}
+        {tab == "sort-name" && <CollectionAbbreviation />}
+        {tab == "sort-word" && <Abbreviation />}
+        {tab == "circa" && <Circa />}
       </div>
     </div>
   );

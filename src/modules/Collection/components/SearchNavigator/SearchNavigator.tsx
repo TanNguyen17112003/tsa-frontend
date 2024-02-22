@@ -35,7 +35,7 @@ const SearchNavigator: FC<SearchNavigatorProps> = ({}) => {
             <div className="text-sm font-semibold">Bộ lọc</div>
           </div>
         </AccordionTrigger>
-        <AccordionContent className="pt-2">
+        <AccordionContent className="pt-2 pb-0">
           <div className="bg-slate-50 rounded-md p-2 flex flex-col gap-2">
             {searchTypes.map((searchType) => (
               <Button

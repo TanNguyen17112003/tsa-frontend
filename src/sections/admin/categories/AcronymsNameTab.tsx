@@ -8,7 +8,7 @@ import SortNameEditSheet from "./AcronymsNameEditSheet";
 import usePagination from "src/hooks/use-pagination";
 import Pagination from "src/components/ui/Pagination";
 
-const CollectionAbbreviation = () => {
+const AcronymsNameTab = () => {
   const name = [initialFormat];
   const pagination = usePagination({ count: name.length });
   return (
@@ -41,7 +41,7 @@ const CollectionAbbreviation = () => {
           hidePagination
         ></CustomTable>
       </div>
-      <div className="flex px-7 justify-between py-2">
+      <div className="fixed bg-white flex bottom-0 px-7 justify-between py-2 w-[calc(100vw-280px)]">
         <div className="flex text-sm text-gray-500 font-normal items-center overflow-hidden text-nowrap">
           Đang hiển thị kết quả thứ 1 tới 10 trên 97 kết quả
         </div>
@@ -51,4 +51,4 @@ const CollectionAbbreviation = () => {
   );
 };
 
-export default CollectionAbbreviation;
+export default AcronymsNameTab;

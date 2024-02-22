@@ -6,7 +6,7 @@ import getFormatTableConfig from "./format-table-config";
 import Pagination from "src/components/ui/Pagination";
 import usePagination from "src/hooks/use-pagination";
 
-const PageFormat = () => {
+const FormatTab = () => {
   const format = [initialFormat];
   const pagination = usePagination({ count: format.length });
   return (
@@ -34,7 +34,7 @@ const PageFormat = () => {
           hidePagination
         ></CustomTable>
       </div>
-      <div className="flex px-7 justify-between py-2">
+      <div className="fixed bg-white flex bottom-0 px-7 justify-between py-2 w-[calc(100vw-280px)]">
         <div className="flex text-sm text-gray-500 font-normal items-center overflow-hidden text-nowrap">
           Đang hiển thị kết quả thứ 1 tới 10 trên 97 kết quả
         </div>
@@ -44,4 +44,4 @@ const PageFormat = () => {
   );
 };
 
-export default PageFormat;
+export default FormatTab;

@@ -23,11 +23,11 @@ const tabs = [
   },
   {
     label: "Tên viết tắt tuyển tập",
-    key: "sort-name",
+    key: "acronym-name",
   },
   {
     label: "Từ viết tắt",
-    key: "sort-word",
+    key: "acronym-word",
   },
   {
     label: "Niên đại",
@@ -69,31 +69,31 @@ const Page: PageType = () => {
           {tabs[1].label}
         </div>
       )}
-      {tab == "sort-name" ? (
+      {tab == "acronym-name" ? (
         <div
-          onClick={() => setTab("sort-name")}
+          onClick={() => setTab("acronym-name")}
           className="text-nowrap text-orange-600 border-b border-orange-500 pb-5  cursor-pointer"
         >
           {tabs[2].label}
         </div>
       ) : (
         <div
-          onClick={() => setTab("sort-name")}
+          onClick={() => setTab("acronym-name")}
           className="text-nowrap cursor-pointer"
         >
           {tabs[2].label}
         </div>
       )}
-      {tab == "sort-word" ? (
+      {tab == "acronym-word" ? (
         <div
-          onClick={() => setTab("sort-word")}
+          onClick={() => setTab("acronym-word")}
           className="text-nowrap text-orange-600 border-b border-orange-500 pb-5  cursor-pointer"
         >
           {tabs[3].label}
         </div>
       ) : (
         <div
-          onClick={() => setTab("sort-word")}
+          onClick={() => setTab("acronym-word")}
           className="text-nowrap cursor-pointer"
         >
           {tabs[3].label}
@@ -124,8 +124,8 @@ const Page: PageType = () => {
         </div>
         {tab == "author" && <AccountManagement />}
         {tab == "format" && <PageFormat />}
-        {tab == "sort-name" && <CollectionAbbreviation />}
-        {tab == "sort-word" && <Abbreviation />}
+        {tab == "acronym-name" && <CollectionAbbreviation />}
+        {tab == "acronym-word" && <Abbreviation />}
         {tab == "circa" && <Circa />}
       </div>
     </div>

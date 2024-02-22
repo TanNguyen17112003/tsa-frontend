@@ -22,7 +22,7 @@ const getReportManagementTableConfig: CustomTableConfig<
     ),
   },
   {
-    key: "create_at",
+    key: "created_at",
     headerLabel: "Thời gian khiếu nại",
     type: "string",
   },

@@ -8,11 +8,11 @@ import type { Page as PageType } from "src/types/page";
 const tabs = [
   {
     label: "Quản lý khiếu nại",
-    key: "1",
+    key: "handle-report",
   },
   {
     label: "Khiếu nại đã xóa",
-    key: "2",
+    key: "deleted-report",
   },
 ];
 
@@ -23,31 +23,31 @@ const Page: PageType = () => {
       <div className="pt-8 px-8">
         <div className="text-2xl font-semibold">Quản lý khiếu nại</div>
         <div className="flex space-x-4 overflow-hidden mt-4">
-          {tab == "1" ? (
+          {tab == "handle-report" ? (
             <div
-              onClick={() => setTab("1")}
+              onClick={() => setTab("handle-report")}
               className="text-nowrap text-orange-600 border-b border-orange-500 pb-5 cursor-pointer"
             >
               {tabs[0].label}
             </div>
           ) : (
             <div
-              onClick={() => setTab("1")}
+              onClick={() => setTab("handle-report")}
               className="text-nowrap cursor-pointer"
             >
               {tabs[0].label}
             </div>
           )}
-          {tab == "2" ? (
+          {tab == "deleted-report" ? (
             <div
-              onClick={() => setTab("2")}
+              onClick={() => setTab("deleted-report")}
               className="text-nowrap text-orange-600 border-b border-orange-500 pb-5   cursor-pointer"
             >
               {tabs[1].label}
             </div>
           ) : (
             <div
-              onClick={() => setTab("2")}
+              onClick={() => setTab("deleted-report")}
               className="text-nowrap cursor-pointer"
             >
               {tabs[1].label}
@@ -55,7 +55,9 @@ const Page: PageType = () => {
           )}
         </div>
       </div>
-      <div>{tab == "1" ? <ReportManagement /> : <DeletedReport />}</div>
+      <div>
+        {tab == "handle-report" ? <ReportManagement /> : <DeletedReport />}
+      </div>
     </div>
   );
 };

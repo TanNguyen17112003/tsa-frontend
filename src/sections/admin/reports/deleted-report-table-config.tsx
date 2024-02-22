@@ -20,7 +20,7 @@ const getDeletedReportTableConfig: CustomTableConfig<Report["id"], Report>[] = [
     ),
   },
   {
-    key: "create_at",
+    key: "created_at",
     headerLabel: "Thời gian khiếu nại",
     type: "string",
   },
@@ -40,7 +40,7 @@ const getDeletedReportTableConfig: CustomTableConfig<Report["id"], Report>[] = [
     type: "string",
     renderCell: (data) => (
       <div>
-        <BsArrowRepeat />
+        <BsArrowRepeat style={{ fontSize: "1.5rem", color: "#06B6D4" }} />
       </div>
     ),
   },

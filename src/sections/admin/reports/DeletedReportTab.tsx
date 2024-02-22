@@ -16,7 +16,56 @@ import getDeletedReportTableConfig from "./deleted-report-table-config";
 import usePagination from "src/hooks/use-pagination";
 
 const DeletedReport = () => {
-  const report = [initialReport];
+  const report = [
+    {
+      id: "",
+      email: "pngiahan3010",
+      content:
+        "Sai thông tin ở đoạn: “nghĩa là từ chỗ ngồi, và nói迦里梨道場,結跏趺坐。 時諸苾芻,...",
+      title: "Sai thông tin trong bài kinh",
+      report_status: "Chưa xử lý",
+      created_at: "21/12/2023 10:47:56",
+      orison_id: "",
+      user_id: "",
+      updated_s: "",
+    },
+    {
+      id: "",
+      email: "pngiahan3010",
+      content:
+        "Sai thông tin ở đoạn: “nghĩa là từ chỗ ngồi, và nói迦里梨道場,結跏趺坐。 時諸苾芻,...",
+      title: "Sai thông tin trong bài kinh",
+      report_status: "Đã xử lý",
+      created_at: "21/12/2023 10:47:56",
+      orison_id: "",
+      user_id: "",
+      updated_s: "",
+    },
+    {
+      id: "",
+      email: "pngiahan3010",
+      content:
+        "Sai thông tin ở đoạn: “nghĩa là từ chỗ ngồi, và nói迦里梨道場,結跏趺坐。 時諸苾芻,...",
+      title: "Sai thông tin trong bài kinh",
+      report_status: "Chưa xử lý",
+      created_at: "21/12/2023 10:47:56",
+      orison_id: "",
+      user_id: "",
+      updated_s: "",
+    },
+    {
+      id: "",
+      email: "pngiahan3010",
+      content:
+        "Sai thông tin ở đoạn: “nghĩa là từ chỗ ngồi, và nói迦里梨道場,結跏趺坐。 時諸苾芻,...",
+      title: "Sai thông tin trong bài kinh",
+      report_status: "Đã xử lý",
+      created_at: "21/12/2023 10:47:56",
+      orison_id: "",
+      user_id: "",
+      updated_s: "",
+    },
+  ];
   const pagination = usePagination({ count: report.length });
   return (
     <div className="flex flex-col divide-y-2 min-h-[88vh]">

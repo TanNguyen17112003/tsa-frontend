@@ -22,7 +22,7 @@ const AuthorSearchPage: FC<AuthorSearchPageProps> = ({}) => {
       <hr />
       <div className="p-6">
         <div className="max-w-[928px] mx-auto">
-          <Tabs>
+          <Tabs defaultValue="author">
             <TabsList>
               <TabsTrigger value="author">Tác giả</TabsTrigger>
               <TabsTrigger value="translator">Dịch giả</TabsTrigger>

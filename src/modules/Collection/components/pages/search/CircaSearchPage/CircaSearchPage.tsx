@@ -1,5 +1,6 @@
 import type { FC } from "react";
-import CollectionBreadcrumb from "../../CollectionBreadcrumb";
+import CollectionBreadcrumb from "../../../CollectionBreadcrumb";
+import CircaSearchForm from "./CircaSearchForm";
 
 interface CircaSearchPageProps {}
 
@@ -11,7 +12,11 @@ const CircaSearchPage: FC<CircaSearchPageProps> = ({}) => {
         <div></div>
       </div>
       <hr />
-      <div>CircaSearchPage</div>
+      <div className="p-6">
+        <div className="max-w-[928px] mx-auto">
+          <CircaSearchForm />
+        </div>
+      </div>
     </>
   );
 };

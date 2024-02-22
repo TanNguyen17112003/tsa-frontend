@@ -4,7 +4,7 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "src/components/shadcn/ui/accordion";
-import { useCallback, type FC, useMemo } from "react";
+import { useCallback, type FC, useMemo, useState, useEffect } from "react";
 import { BsFunnel } from "react-icons/bs";
 import { Button } from "src/components/shadcn/ui/button";
 import { useRouter } from "next/router";
@@ -15,6 +15,7 @@ interface SearchNavigatorProps {}
 const SearchNavigator: FC<SearchNavigatorProps> = ({}) => {
   const router = useRouter();
   const currentSearchType = router.query.searchType;
+  const [open, setOpen] = useState("");
 
   const handleChange = useCallback(
     (value: string) => {
@@ -39,9 +40,22 @@ const SearchNavigator: FC<SearchNavigatorProps> = ({}) => {
     []
   );
 
+  useEffect(() => {
+    if (router.query.searchType) {
+      setOpen("item");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
-    <Accordion type="single" collapsible className="w-full">
-      <AccordionItem value="item-1" className="border-b-0">
+    <Accordion
+      type="single"
+      // collapsible={router.query.searchType ? false : true}
+      className="w-full"
+      value={open}
+      onValueChange={setOpen}
+    >
+      <AccordionItem value="item" className="border-b-0">
         <AccordionTrigger className="bg-primary text-white px-3 py-3 rounded-md">
           <div className="flex gap-2 items-center">
             <BsFunnel />

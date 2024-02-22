@@ -3,7 +3,7 @@ import type { FC } from "react";
 import SearchNavigator from "./components/SearchNavigator";
 import ViewNavigator from "./components/ViewNavigator";
 import AuthorSearchPage from "./components/pages/search/AuthorSearchPage/AuthorSearchPage";
-import CircaSearchPage from "./components/pages/search/CircaSearchPage";
+import CircaSearchPage from "./components/pages/search/CircaSearchPage/CircaSearchPage";
 import SutraSearchPage from "./components/pages/search/SutraSearchPage/SutraSearchPage";
 import TextSearchPage from "./components/pages/search/TextSearchPage/TextSearchPage";
 import CollectionPage from "./components/pages/view/CollectionPage";

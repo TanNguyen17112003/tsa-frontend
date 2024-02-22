@@ -1,22 +1,21 @@
-import { FunnelIcon } from "@heroicons/react/24/solid";
+import { useRouter } from "next/router";
 import type { FC } from "react";
-import { BsFunnel } from "react-icons/bs";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "src/components/shadcn/ui/accordion";
-import { Button } from "src/components/shadcn/ui/button";
 import SearchNavigator from "./components/SearchNavigator";
 import ViewNavigator from "./components/ViewNavigator";
+import AuthorSearchPage from "./pages/search/AuthorSearchPage";
+import CircaSearchPage from "./pages/search/CircaSearchPage";
+import SutraSearchPage from "./pages/search/SutraSearchPage";
+import TextSearchPage from "./pages/search/TextSearchPage";
+import CollectionPage from "./pages/view/CollectionPage";
 
 interface CollectionProps {}
 
 const Collection: FC<CollectionProps> = ({}) => {
+  const { query } = useRouter();
+
   return (
     <div className="flex">
-      <div className="w-[300px]">
+      <div className="w-[300px] border">
         <div className="sticky top-0 p-3">
           <SearchNavigator />
         </div>
@@ -25,7 +24,21 @@ const Collection: FC<CollectionProps> = ({}) => {
           <ViewNavigator />
         </div>
       </div>
-      <div className="flex-1"></div>
+      <div className="flex-1">
+        {!query.searchType && !query.collectionId ? (
+          <CollectionPage />
+        ) : query.searchType == "text" ? (
+          <TextSearchPage />
+        ) : query.searchType == "sutra" ? (
+          <SutraSearchPage />
+        ) : query.searchType == "author" ? (
+          <AuthorSearchPage />
+        ) : query.searchType == "circa" ? (
+          <CircaSearchPage />
+        ) : (
+          <div>Not found</div>
+        )}
+      </div>
     </div>
   );
 };

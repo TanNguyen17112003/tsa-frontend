@@ -131,7 +131,7 @@ export function CustomTable<P, T extends { id: P; [key: string]: any }>(
                 className={clsx(
                   "text-nowrap px-2 border-2 border-collapse",
                   row.error ? "bg-error-900" : undefined,
-                  onClickRow ? "cursor-pointer hover:bg-orange-900" : undefined
+                  onClickRow ? "cursor-pointer hover:bg-gray-100" : undefined
                 )}
               >
                 {(indexColumn || select) && (

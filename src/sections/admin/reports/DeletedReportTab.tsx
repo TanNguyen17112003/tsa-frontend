@@ -68,7 +68,7 @@ const DeletedReport = () => {
   ];
   const pagination = usePagination({ count: report.length });
   return (
-    <div className="flex flex-col divide-y-2 min-h-[88vh]">
+    <div className="flex flex-col divide-y-2">
       <div className="flex-grow pt-8 px-8">
         <div className="flex w-full space-x-4">
           <div className="flex items-center border rounded-md w-full">
@@ -104,7 +104,7 @@ const DeletedReport = () => {
           ></CustomTable>
         </div>
       </div>
-      <div className="flex px-7 justify-between py-2">
+      <div className="fixed flex bottom-0 justify-between px-7 py-2 w-[calc(100vw-280px)]">
         <div className="flex text-sm text-gray-500 font-normal items-center overflow-hidden text-nowrap">
           Đang hiển thị kết quả thứ 1 tới 10 trên 97 kết quả
         </div>

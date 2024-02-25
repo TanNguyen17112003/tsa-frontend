@@ -128,6 +128,7 @@ export function CustomTable<P, T extends { id: P; [key: string]: any }>(
             {pagedRows.map((row, index) => (
               <tr
                 key={row.id + "-key-" + index}
+                onClick={() => onClickRow && onClickRow(row, index)}
                 className={clsx(
                   "text-nowrap px-2 border-2 border-collapse",
                   row.error ? "bg-error-900" : undefined,

@@ -25,10 +25,11 @@ import {
 } from "src/components/shadcn/ui/dialog";
 import { Button } from "src/components/shadcn/ui/button";
 import { Label } from "src/components/shadcn/ui/label";
+import { useState } from "react";
 
-const RowDetail = () => {
+const RowDetail = ({ state = false, onClose }: { state: boolean, onClose: () => void }) => {
   return (
-    <Dialog defaultOpen={true}>
+    <Dialog open={state} onOpenChange={(value) => !value && onClose()}>
       <DialogTrigger asChild>
         <Button variant="outline">Chi tiết khiếu nại</Button>
       </DialogTrigger>
@@ -71,7 +72,7 @@ const RowDetail = () => {
           </div>
         </div>
         <DialogFooter className="flex">
-          <Button type="submit" variant={"outline"}>
+          <Button type="submit" variant={"outline"} onClick={onClose}>
             Đóng
           </Button>
           <Button type="submit">
@@ -142,6 +143,8 @@ const DeletedReport = () => {
     },
   ];
   const pagination = usePagination({ count: report.length });
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
   return (
     <div className="flex flex-col divide-y-2">
       <div className="flex-grow pt-8 px-8">
@@ -179,11 +182,14 @@ const DeletedReport = () => {
             tableClassName="rounded-xl border-2"
             pagination={pagination}
             hidePagination
-            onClickRow={RowDetail}
+            onClickRow={(item, index) => setIsOpen(true)}
           ></CustomTable>
         </div>
       </div>
-      <Dialog>
+
+      <RowDetail state={isOpen} onClose={() => setIsOpen(false)} />
+
+      {/* <Dialog>
         <DialogTrigger asChild>
           <Button variant="outline">Chi tiết khiếu nại</Button>
         </DialogTrigger>
@@ -241,7 +247,7 @@ const DeletedReport = () => {
             </Button>
           </DialogFooter>
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
       <div className="fixed flex bottom-0 bg-white justify-between px-7 py-2 w-[calc(100vw-280px)]">
         <div className="flex text-sm text-gray-500 font-normal items-center overflow-hidden text-nowrap">
           Đang hiển thị kết quả thứ 1 tới 10 trên 97 kết quả

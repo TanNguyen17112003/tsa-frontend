@@ -216,8 +216,8 @@ const OverviewUserPage = () => {
             </div>
           </div>
         </div>
-        <div className="my-4 flex overflow-hidden">
-          <div className="w-full border rounded-3xl mt-4 bg-white">
+        <div className="my-8 flex overflow-hidden space-x-5">
+          <div className="w-full max-w-[80%] border rounded-3xl bg-white">
             <div className="flex p-5 ">
               <div className="text-lg font-semibold w-full">
                 Danh sách tuyển tập kinh

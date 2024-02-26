@@ -181,16 +181,16 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
     async (user_name: string, password: string): Promise<UserDetail> => {
       const response = await UsersApi.signIn({ user_name, password });
 
-      localStorage.setItem(CookieKeys.TOKEN, response.data.token);
-      localStorage.setItem("user_data", JSON.stringify(response.data));
+      localStorage.setItem(CookieKeys.TOKEN, response.token);
+      localStorage.setItem("user_data", JSON.stringify(response));
 
       dispatch({
         type: ActionType.SIGN_IN,
         payload: {
-          user: response.data,
+          user: response,
         },
       });
-      return response.data;
+      return response;
     },
     [dispatch]
   );
@@ -203,7 +203,7 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
       password: string,
       confirm_password: string
     ): Promise<void> => {
-      const { accessToken } = await UsersApi.signUp({
+      await UsersApi.signUp({
         email,
         user_name,
         password,

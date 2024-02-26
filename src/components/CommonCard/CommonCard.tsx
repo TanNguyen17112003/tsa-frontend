@@ -16,7 +16,7 @@ const CommonCard = ({
   return (
     <div className="p-5 border border-gray-300 rounded-3xl m-4 bg-white">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-semibold  mr-4">{title}</h2>
+        <h2 className="text-lg font-semibold mr-4 text-nowrap">{title}</h2>
         {link && (
           <Link
             href={link}

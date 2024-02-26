@@ -25,76 +25,8 @@ import Pagination from "src/components/ui/Pagination";
 import usePagination from "src/hooks/use-pagination";
 import { Button } from "src/components/shadcn/ui/button";
 import { useState } from "react";
-
-const RowDetail = ({
-  state = false,
-  onClose,
-  data,
-}: {
-  state: boolean;
-  onClose: () => void;
-  data: Report;
-}) => {
-  return (
-    <Dialog open={state} onOpenChange={(value) => !value && onClose()}>
-      <DialogTrigger asChild>
-        {/* <Button variant="outline">Chi tiết khiếu nại</Button> */}
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[50%]">
-        <DialogHeader>
-          <DialogTitle className="py-4">Chi tiết khiếu nại</DialogTitle>
-        </DialogHeader>
-        <div className="border rounded-xl p-6 my-4">
-          <div className="flex justify-between items-center">
-            <div className="flex space-x-2">
-              <img src="/logos/logo.png" alt="avt" />
-              <div>
-                <div className="text-base font-normal">{data.email}</div>
-                <div className="text-xs font-normal text-gray-500">
-                  {data.created_at}
-                </div>
-              </div>
-            </div>
-            {data.report_status == "Chưa xử lý" ? (
-              <div className="text-xs font-medium text-[#BE123C] bg-[#FFF1F2] border border-[#FECACA] mb-5 px-2 rounded-md">
-                {data.report_status}
-              </div>
-            ) : (
-              <div className="text-xs font-medium text-[#16A34A] bg-[#F0FDF4] border border-[#BBF7D0] mb-5 px-2 rounded-md">
-                {data.report_status}
-              </div>
-            )}
-          </div>
-          <div className="p-[20px] space-y-4">
-            <div>
-              <div className="text-md font-medium">TIÊU ĐỀ KHIẾU NẠI</div>
-              <div className="text-sm font-normal">{data.title}</div>
-            </div>
-            <div>
-              <div className="text-md font-medium">NỘI DUNG CHI TIẾT</div>
-              <div className="text-sm font-normal">{data.content}</div>
-            </div>
-          </div>
-        </div>
-        <DialogFooter className="flex">
-          <Button type="submit" variant={"outline"} onClick={onClose}>
-            Đóng
-          </Button>
-          <Button type="submit">
-            Đến trang xử lý{" "}
-            <HiMiniArrowSmallRight
-              style={{
-                fontSize: "1.4em",
-                marginLeft: "5px",
-                marginTop: "2px",
-              }}
-            />
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-};
+import { SIDE_NAV_WIDTH } from "src/config";
+import ReportDialog from "./ReportDialog";
 
 const ReportManagement = () => {
   const report = [
@@ -193,9 +125,15 @@ const ReportManagement = () => {
         </div>
       </div>
 
-      <RowDetail state={isOpen} onClose={() => setIsOpen(false)} data={data} />
+      <ReportDialog
+        state={isOpen}
+        onClose={() => setIsOpen(false)}
+        data={data}
+      />
 
-      <div className="fixed flex bottom-0 bg-white justify-between px-7 py-2 w-[calc(100vw-280px)]">
+      <div
+        className={`fixed flex bottom-0 bg-white justify-between px-7 py-2 w-[calc(100vw-${SIDE_NAV_WIDTH}px)]`}
+      >
         <div className="flex text-sm text-gray-500 font-normal items-center overflow-hidden text-nowrap">
           Đang hiển thị kết quả thứ 1 tới 10 trên 97 kết quả
         </div>

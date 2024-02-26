@@ -181,7 +181,7 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
     async (user_name: string, password: string): Promise<UserDetail> => {
       const response = await UsersApi.signIn({ user_name, password });
 
-      localStorage.setItem(CookieKeys.TOKEN, response.token);
+      localStorage.setItem(CookieKeys.TOKEN, response.data.token);
       localStorage.setItem("user_data", JSON.stringify(response.data));
 
       dispatch({

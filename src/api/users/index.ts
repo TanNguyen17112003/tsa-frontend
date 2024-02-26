@@ -13,8 +13,7 @@ type SignInRequest = {
 };
 
 type SignInResponse = Promise<{
-  data: UserDetail;
-  token: string;
+  data: UserDetail & { token: string };
 }>;
 
 type SignUpRequest = {

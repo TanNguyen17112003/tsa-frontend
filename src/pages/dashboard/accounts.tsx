@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { HiMagnifyingGlass } from "react-icons/hi2";
+import PageHeader from "src/components/PageHeader";
 import { CustomTable } from "src/components/custom-table";
 import { Input } from "src/components/shadcn/ui/input";
 import Pagination from "src/components/ui/Pagination";
@@ -20,13 +21,16 @@ const Page: PageType = () => {
   const pagination = usePagination({ count: users.length });
 
   return (
-    <div className="flex flex-col divide-y-[1px] space-y-4 min-h-screen">
-      <div className="flex items-center px-7 pt-7 pb-2 ">
-        <div className="text-2xl font-semibold">Quản lý tài khoản</div>
-        <div className="ml-auto">
-          <AccountEditSheet />
-        </div>
-      </div>
+    <div className="flex flex-col space-y-4 min-h-screen">
+      <PageHeader
+        title="Quản lý tài khoản"
+        button={
+          <div className="ml-auto">
+            <AccountEditSheet />
+          </div>
+        }
+        variant="full-divide"
+      />
       <div className="flex-grow space-y-7 mb-4 px-7 pt-7 pb-2 ">
         <div className="flex p-2  border border-gray-300 rounded-md h-12 w-full">
           <div className="flex w-full items-center">
@@ -46,7 +50,7 @@ const Page: PageType = () => {
           hidePagination
         ></CustomTable>
       </div>
-      <div className="flex px-7 justify-between py-2">
+      <div className="fixed bg-white flex bottom-0 px-7 justify-between py-2 w-[calc(100vw-280px)]">
         <div className="flex text-sm text-gray-500 font-normal items-center overflow-hidden text-nowrap">
           Đang hiển thị kết quả thứ 1 tới 10 trên 97 kết quả
         </div>

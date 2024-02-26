@@ -9,7 +9,7 @@ const Page: PageType = () => {
   return (
     <div className="px-[10%]">
       <div className="text-2xl font-semibold py-8">Khiếu nại</div>
-      <div className="flex border border-[#E5E7EB] py-8 px-7 space-x-8 w-full rounded-3xl">
+      <div className="flex border py-8 px-7 space-x-8 w-full rounded-3xl">
         <div className="w-full space-y-2">
           <div className="text-xs font-semibold">Email</div>
           <Input placeholder="Nhập email của bạn tại đây" />
@@ -22,7 +22,7 @@ const Page: PageType = () => {
           <div className="space-y-2">
             <div className="text-xs font-semibold">Nội dung</div>
             <Input placeholder="Nhập nội dung feedback tại đây." />
-            <div className="text-xs font-normal text-[#4B5563]">
+            <div className="text-xs font-normal text-gray-500">
               Tối đa 500 ký tự
             </div>
           </div>

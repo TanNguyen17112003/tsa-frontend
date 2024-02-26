@@ -7,8 +7,9 @@ import getSortWordTableConfig from "./acronyms-word-table-config";
 import SortWordEditSheet from "./AcronymsWordEditSheet";
 import Pagination from "src/components/ui/Pagination";
 import usePagination from "src/hooks/use-pagination";
+import { SIDE_NAV_WIDTH } from "src/config";
 
-const Abbreviation = () => {
+const AcronymsWordTab = () => {
   const word = [initialFormat];
   const pagination = usePagination({ count: word.length });
   return (
@@ -39,7 +40,9 @@ const Abbreviation = () => {
           hidePagination
         ></CustomTable>
       </div>
-      <div className="flex px-7 justify-between py-2">
+      <div
+        className={`fixed bg-white flex bottom-0 px-7 justify-between py-2 w-[calc(100vw-${SIDE_NAV_WIDTH}px)]`}
+      >
         <div className="flex text-sm text-gray-500 font-normal items-center overflow-hidden text-nowrap">
           Đang hiển thị kết quả thứ 1 tới 10 trên 97 kết quả
         </div>
@@ -49,4 +52,4 @@ const Abbreviation = () => {
   );
 };
 
-export default Abbreviation;
+export default AcronymsWordTab;

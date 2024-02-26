@@ -1,33 +1,30 @@
 import { ReactNode } from "react";
 import { Button } from "../shadcn/ui/button";
 import Link from "next/link";
+import clsx from "clsx";
 
 const PageHeader = ({
   title,
-  buttonLabel,
-  link,
+  variant,
+  button,
   tabs,
 }: {
   title: string;
-  buttonLabel?: string;
-  link?: string;
+  variant?: string;
+  button?: ReactNode;
   tabs?: ReactNode;
 }) => {
   return (
-    <div className="w-full divide-y">
-      <div className="w-full">
-        <div className="flex items-center w-full">
+    <div
+      className={clsx(
+        "pt-7 w-full divide-y",
+        variant == "full-divide" ? "" : "px-[10%]"
+      )}
+    >
+      <div className={clsx("w-full", variant == "full-divide" ? "px-7" : "")}>
+        <div className="flex pb-7 items-center w-full">
           <div className="text-2xl font-semibold">{title}</div>
-          {link && (
-            <Link
-              href={link}
-              className="flex ml-auto text-orange-500 text-nowrap hover:bg-orange-200 rounded-lg"
-            >
-              <Button className=" bg-[#F97316] py-[22px] px-[16px] rounded-lg text-white text-nowrap">
-                {buttonLabel}
-              </Button>
-            </Link>
-          )}
+          {button}
         </div>
         <div>{tabs}</div>
       </div>

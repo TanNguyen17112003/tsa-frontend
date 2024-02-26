@@ -5,11 +5,11 @@ import { Button } from "src/components/shadcn/ui/button";
 import { Input } from "src/components/shadcn/ui/input";
 import { useAuth } from "src/hooks/use-auth";
 import { Layout as DashboardLayout } from "src/layouts/dashboard";
-import CollectionAbbreviation from "src/sections/admin/categories/AcronymsNameTab";
-import Abbreviation from "src/sections/admin/categories/AcronymsWordTab";
-import AccountManagement from "src/sections/admin/categories/AuthorTab";
-import Circa from "src/sections/admin/categories/CircaTab";
-import PageFormat from "src/sections/admin/categories/FormatTab";
+import AcronymsNameTab from "src/sections/admin/categories/AcronymsNameTab";
+import AcronymsWordTab from "src/sections/admin/categories/AcronymsWordTab";
+import AuthorTab from "src/sections/admin/categories/AuthorTab";
+import CircaTab from "src/sections/admin/categories/CircaTab";
+import FormatTab from "src/sections/admin/categories/FormatTab";
 import type { Page as PageType } from "src/types/page";
 
 const tabs = [
@@ -38,7 +38,7 @@ const tabs = [
 const Page: PageType = () => {
   const [tab, setTab] = useState(tabs[0].key);
   const tabsMenu = (
-    <div className="flex space-x-8 overflow-hidden mt-4">
+    <div className="flex space-x-8 overflow-hidden">
       {tab == "author" ? (
         <div
           onClick={() => setTab("author")}
@@ -117,16 +117,14 @@ const Page: PageType = () => {
     </div>
   );
   return (
-    <div className="flex flex-col divide-y-2">
-      <div className="flex-grow ">
-        <div className="mt-[32px] mx-[10%]">
-          <PageHeader title="Danh mục" tabs={tabsMenu}></PageHeader>
-        </div>
-        {tab == "author" && <AccountManagement />}
-        {tab == "format" && <PageFormat />}
-        {tab == "acronym-name" && <CollectionAbbreviation />}
-        {tab == "acronym-word" && <Abbreviation />}
-        {tab == "circa" && <Circa />}
+    <div className="flex flex-col">
+      <div className="w-full ">
+        <PageHeader title="Danh mục" tabs={tabsMenu}></PageHeader>
+        {tab == "author" && <AuthorTab />}
+        {tab == "format" && <FormatTab />}
+        {tab == "acronym-name" && <AcronymsNameTab />}
+        {tab == "acronym-word" && <AcronymsWordTab />}
+        {tab == "circa" && <CircaTab />}
       </div>
     </div>
   );

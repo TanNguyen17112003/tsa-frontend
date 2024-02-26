@@ -18,8 +18,9 @@ import {
 import AccountEditSheet from "./AccountEditSheet";
 import Pagination from "src/components/ui/Pagination";
 import usePagination from "src/hooks/use-pagination";
+import { SIDE_NAV_WIDTH } from "src/config";
 
-const AccountManagement = () => {
+const AuthorTab = () => {
   const user = [initialUser];
   const accountTableConfig = useMemo(() => {
     return getAccountTableConfig({
@@ -28,8 +29,8 @@ const AccountManagement = () => {
   }, []);
   const pagination = usePagination({ count: user.length });
   return (
-    <div className="flex flex-col divide-y-2 min-h-[87.5vh]">
-      <div className="flex-grow flex-col mx-[10%]">
+    <div className="divide-y-2">
+      <div className="flex-col mx-[10%]">
         <div className="flex py-[32px] space-x-3">
           <div className="flex p-2  border border-gray-300 rounded-md h-12 w-full">
             <div className="flex w-full items-center">
@@ -59,7 +60,9 @@ const AccountManagement = () => {
           ></CustomTable>
         </div>
       </div>
-      <div className="flex px-7 justify-between py-2">
+      <div
+        className={`fixed bg-white flex bottom-0 px-7 justify-between py-2 w-[calc(100vw-${SIDE_NAV_WIDTH}px)]`}
+      >
         <div className="flex text-sm text-gray-500 font-normal items-center overflow-hidden text-nowrap">
           Đang hiển thị kết quả thứ 1 tới 10 trên 97 kết quả
         </div>
@@ -69,4 +72,4 @@ const AccountManagement = () => {
   );
 };
 
-export default AccountManagement;
+export default AuthorTab;

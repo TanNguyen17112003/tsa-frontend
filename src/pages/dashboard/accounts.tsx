@@ -19,14 +19,18 @@ const Page: PageType = () => {
   }, []);
 
   const pagination = usePagination({ count: users.length });
-  const button = (
-    <div className="ml-auto">
-      <AccountEditSheet />
-    </div>
-  );
+
   return (
     <div className="flex flex-col space-y-4 min-h-screen">
-      <PageHeader title="Quản lý tài khoản" button={button} variant="full-divide"/>
+      <PageHeader
+        title="Quản lý tài khoản"
+        button={
+          <div className="ml-auto">
+            <AccountEditSheet />
+          </div>
+        }
+        variant="full-divide"
+      />
       <div className="flex-grow space-y-7 mb-4 px-7 pt-7 pb-2 ">
         <div className="flex p-2  border border-gray-300 rounded-md h-12 w-full">
           <div className="flex w-full items-center">

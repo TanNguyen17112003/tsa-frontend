@@ -14,7 +14,7 @@ const CommonCard = ({
   children: ReactNode;
 }) => {
   return (
-    <div className="p-5 border border-gray-300 rounded-3xl bg-white">
+    <div className="p-5 border border-gray-300 rounded-3xl bg-white w-full max-w-[30%]">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold mr-4 text-nowrap">{title}</h2>
         {link && (
@@ -26,7 +26,7 @@ const CommonCard = ({
           </Link>
         )}
       </div>
-      <div>{children}</div>
+      {children}
     </div>
   );
 };

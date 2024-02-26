@@ -114,19 +114,19 @@ const OverviewUserPage = () => {
             }}
           >
             <div
-              className="absolute z-0 bg-cover bg-center rounded-2xl"
+              className="absolute z-0 bg-cover bg-center rounded-xl"
               style={{
                 backgroundImage:
-                  "linear-gradient(to right, rgba(190, 79, 2, 0.7), transparent)",
+                  "linear-gradient(to right, rgba(170, 79, 2, 1), transparent)",
                 width: "30%",
                 height: "100%",
               }}
             ></div>
             <div className="z-10 px-[42px] py-[82px] space-y-8">
-              <div className="text-4xl font-semibold text-[#FFFFFF]">
+              <div className="text-4xl font-semibold text-white">
                 HỆ THỐNG <br /> ĐẠI TẠNG KINH <br /> VIỆT NAM
               </div>
-              <Button className="flex bg-[#06B6D4] hover:bg-cyan-800 space-x-2">
+              <Button className="flex bg-cyan-500 hover:bg-cyan-800 space-x-2">
                 <div className="text-sm font-semibold">Khám phá</div>
                 <FaLongArrowAltRight
                   style={{ fontSize: "1rem", marginTop: "2px" }}
@@ -163,7 +163,57 @@ const OverviewUserPage = () => {
           </Button>
         </div>
         <div className="flex space-x-6">
-          <div className="flex flex-col bg-white rounded-2xl shadow-md w-[35%] overflow-hidden">
+          <CommonCard title="">
+            <div className="flex w-full pb-2">
+              <div className="flex mt-3">
+                <BookshelfFillIcon className="h-8 w-8" />
+              </div>
+              <div className="px-3">
+                <h2 className="text-base text-nowrap">Bộ kinh</h2>
+                <p className="text-4xl font-bold">172</p>
+              </div>
+            </div>
+          </CommonCard>
+          <CommonCard title="">
+            <div className="flex w-full pb-1">
+              <div className="flex mt-3">
+                <BookshelfFillIcon className="h-8 w-8" />
+              </div>
+              <div className="px-3">
+                <h2 className="text-base text-[#374151] text-nowrap">
+                  Bài kinh
+                </h2>
+                <p className="text-4xl font-bold">172</p>
+              </div>
+            </div>
+          </CommonCard>
+          <CommonCard title="">
+            <div className="flex w-full pb-1">
+              <div className="flex mt-3">
+                <BookshelfFillIcon className="h-8 w-8" />
+              </div>
+              <div className="px-3">
+                <h2 className="text-base text-[#374151] text-nowrap">
+                  Số tác giả
+                </h2>
+                <p className="text-4xl font-bold">52</p>
+              </div>
+            </div>
+          </CommonCard>
+          <CommonCard title="">
+            <div className="flex w-full pb-1">
+              <div className="flex mt-3">
+                <BookshelfFillIcon className="h-8 w-8" />
+              </div>
+              <div className="px-3">
+                <h2 className="text-base text-[#374151] text-nowrap">
+                  Số dịch giả
+                </h2>
+                <p className="text-4xl font-bold">32</p>
+              </div>
+            </div>
+          </CommonCard>
+          {/* <div className="flex flex-col bg-white rounded-2xl shadow-md w-[35%] overflow-hidden">
             <div className="flex items-center w-full py-7 pl-[8%]">
               <div className="px-[2%]">
                 <BookshelfFillIcon className="h-8 w-8" />
@@ -214,7 +264,7 @@ const OverviewUserPage = () => {
                 <p className="text-4xl font-bold">32</p>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
         <div className="my-8 flex overflow-hidden space-x-5">
           <div className="w-full max-w-[80%] border rounded-3xl bg-white">

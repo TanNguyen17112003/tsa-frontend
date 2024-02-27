@@ -37,7 +37,6 @@ const CollectionTreeProvider = ({ children }: { children: ReactNode }) => {
     try {
       const raw = localStorage.getItem(storageKey);
       const data = raw ? JSON.parse(raw) : null;
-      console.log("data", data);
       if (data && Array.isArray(data)) {
         setExpandedIds(data);
       }

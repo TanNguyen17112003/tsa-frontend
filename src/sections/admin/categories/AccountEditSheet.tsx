@@ -4,11 +4,19 @@ import CustomSheet from "src/components/CustomSheet";
 import { Button } from "src/components/shadcn/ui/button";
 import { Input } from "src/components/shadcn/ui/input";
 
-export interface AccountEditSheetProps {}
+export interface AccountEditSheetProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
 
-const AccountEditSheet: FC<AccountEditSheetProps> = ({}) => {
+const AccountEditSheet: FC<AccountEditSheetProps> = ({
+  open,
+  onOpenChange,
+}) => {
   return (
     <CustomSheet
+      open={open}
+      onOpenChange={onOpenChange}
       sheetTrigger={<Button>Thêm tài khoản</Button>}
       title={"Thêm tài khoản"}
       actions={<Button>Xác nhận thêm</Button>}

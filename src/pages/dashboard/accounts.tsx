@@ -4,12 +4,13 @@ import PageHeader from "src/components/PageHeader";
 import { CustomTable } from "src/components/custom-table";
 import { Input } from "src/components/shadcn/ui/input";
 import Pagination from "src/components/ui/Pagination";
+import { useDrawer } from "src/hooks/use-drawer";
 import usePagination from "src/hooks/use-pagination";
 import { Layout as DashboardLayout } from "src/layouts/dashboard";
 import AccountEditSheet from "src/sections/admin/accounts/AccountEditSheet";
 import getAccountTableConfig from "src/sections/admin/accounts/account-table-config";
 import type { Page as PageType } from "src/types/page";
-import { users } from "src/types/user";
+import { UserDetail, users } from "src/types/user";
 
 const Page: PageType = () => {
   const accountTableConfig = useMemo(() => {
@@ -17,6 +18,8 @@ const Page: PageType = () => {
       onClickDelete: (data) => {},
     });
   }, []);
+
+  const editDrawer = useDrawer<UserDetail>();
 
   const pagination = usePagination({ count: users.length });
 
@@ -26,7 +29,12 @@ const Page: PageType = () => {
         title="Quản lý tài khoản"
         button={
           <div className="ml-auto">
-            <AccountEditSheet />
+            <AccountEditSheet
+              open={editDrawer.open}
+              onOpenChange={(open) =>
+                open ? editDrawer.handleOpen() : editDrawer.handleClose()
+              }
+            />
           </div>
         }
         variant="full-divide"

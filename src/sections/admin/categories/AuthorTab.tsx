@@ -1,24 +1,15 @@
+import { useMemo } from "react";
 import { HiMagnifyingGlass } from "react-icons/hi2";
 import { CustomTable } from "src/components/custom-table";
-import { Button } from "src/components/shadcn/ui/button";
 import { Input } from "src/components/shadcn/ui/input";
-import { initialUser } from "src/types/user";
+import { UserDetail, initialUser } from "src/types/user";
 import getAccountTableConfig from "./author-table-config";
-import { useMemo } from "react";
-import { FaLongArrowAltLeft } from "react-icons/fa";
 
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "src/components/shadcn/ui/sheet";
-import AccountEditSheet from "./AccountEditSheet";
 import Pagination from "src/components/ui/Pagination";
-import usePagination from "src/hooks/use-pagination";
 import { SIDE_NAV_WIDTH } from "src/config";
+import { useDrawer } from "src/hooks/use-drawer";
+import usePagination from "src/hooks/use-pagination";
+import AccountEditSheet from "./AccountEditSheet";
 
 const AuthorTab = () => {
   const user = [initialUser];
@@ -27,6 +18,7 @@ const AuthorTab = () => {
       onClickDelete: (data) => {},
     });
   }, []);
+  const editDrawer = useDrawer<UserDetail>();
   const pagination = usePagination({ count: user.length });
   return (
     <div className="divide-y-2">
@@ -46,7 +38,12 @@ const AuthorTab = () => {
           </div>
           <div className="ml-auto flex">
             <div className="flex items-center">
-              <AccountEditSheet />
+              <AccountEditSheet
+                open={editDrawer.open}
+                onOpenChange={(open) =>
+                  open ? editDrawer.handleOpen() : editDrawer.handleClose()
+                }
+              />
             </div>
           </div>
         </div>

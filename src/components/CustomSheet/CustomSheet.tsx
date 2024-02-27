@@ -1,5 +1,5 @@
 "use client";
-import type { FC, ReactNode } from "react";
+import { useState, type FC, type ReactNode } from "react";
 import {
   Sheet,
   SheetContent,
@@ -14,21 +14,31 @@ interface CustomSheetProps {
   children: ReactNode;
   title: string;
   actions: ReactNode;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
 const CustomSheet: FC<CustomSheetProps> = ({
   sheetTrigger,
   title,
   actions,
+
+  open,
+  onOpenChange,
   children,
 }) => {
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetTrigger asChild>{sheetTrigger}</SheetTrigger>
       <SheetContent className="p-0 w-[700px] sm:max-w-[36rem]">
         <div className="flex p-3">
           <div className="flex-1">
-            <Button variant="ghost" size="sm" className="text-primary gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-primary gap-2"
+              onClick={() => onOpenChange(false)}
+            >
               <FaArrowLeftLong />
               <span className="label">Quay lại</span>
             </Button>

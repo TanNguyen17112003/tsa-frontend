@@ -32,9 +32,12 @@ export function CustomTableHeader<P, T extends { id: P; [key: string]: any }>(
 
   return (
     <thead
-      className={clsx("bg-slate-100", stickyHeader ? "sticky -top-1 z-10" : "")}
+      className={clsx(
+        "bg-slate-100 rounded-md border",
+        stickyHeader ? "sticky -top-1 z-10" : ""
+      )}
     >
-      <tr>
+      <tr className="rounded-md border">
         {(indexColumn || select) && (
           <CustomTableResizableCell
             className="text-nowrap py-2"
@@ -85,7 +88,7 @@ export function CustomTableHeader<P, T extends { id: P; [key: string]: any }>(
         )}
       </tr>
       {hasGroupedHeaderLabel && (
-        <tr>
+        <tr className="rounded-md border">
           {configs.map((config) =>
             config.groupedHeaderLabel ? (
               <th

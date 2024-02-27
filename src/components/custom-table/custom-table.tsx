@@ -113,7 +113,7 @@ export function CustomTable<P, T extends { id: P; [key: string]: any }>(
       <SimpleBar {...scrollbarProps} ref={scrollBar}>
         <table
           className={clsx(
-            "relative min-w-[700px] w-full border border-collapse",
+            "relative min-w-[700px] w-full rounded-md border-collapse",
             isMounted && flexible ? "table-fixed" : undefined,
             tableClassName
           )}

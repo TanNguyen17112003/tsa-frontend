@@ -164,6 +164,4 @@ const Page: PageType = () => {
   );
 };
 
-Page.getLayout = (page) => <>{page}</>;
-
 export default Page;

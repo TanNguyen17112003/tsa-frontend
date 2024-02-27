@@ -33,6 +33,10 @@
     --ring: 25 95% 53%;
  
     --radius: 0.5rem;
+
+    --text-primary: 221 39% 11%;
+    --text-secondary: 217 19% 27%;
+    --text-tetiary: 220 9% 46%
   }
  
   .dark {
@@ -65,12 +69,26 @@
     --ring: 212.7 26.8% 83.9%;
   }
 }
+
+.text-secondary {
+  color: hsl(var(--text-secondary))
+}
+
+.text-tetiary {
+  color: hsl(var(--text-tetiary))
+}
+
  
 @layer base {
   * {
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-text-primary;
+    
   }
 }
+
+
+
+

@@ -9,6 +9,7 @@ import CircaEditSheet from "./CircaEditSheet";
 import usePagination from "src/hooks/use-pagination";
 import Pagination from "src/components/ui/Pagination";
 import { SIDE_NAV_WIDTH } from "src/config";
+import { useDrawer } from "src/hooks/use-drawer";
 
 const circa = [initialCirca];
 
@@ -19,6 +20,7 @@ const CircaTab = () => {
     });
   }, []);
   const pagination = usePagination({ count: circa.length });
+  const editDrawer = useDrawer();
   return (
     <div className="flex flex-col divide-y-2 min-h-[87.5vh]">
       <div className=" flex-grow flex-col px-[10%]">
@@ -36,7 +38,12 @@ const CircaTab = () => {
             </div>
           </div>
           <div className="flex ml-auto items-center">
-            <CircaEditSheet />
+            <CircaEditSheet
+              open={editDrawer.open}
+              onOpenChange={(open) =>
+                open ? editDrawer.handleOpen() : editDrawer.handleClose()
+              }
+            />
           </div>
         </div>
         <CustomTable

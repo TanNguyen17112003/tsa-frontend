@@ -4,11 +4,19 @@ import CustomSheet from "src/components/CustomSheet";
 import { Button } from "src/components/shadcn/ui/button";
 import { Input } from "src/components/shadcn/ui/input";
 
-export interface SortNameEditSheetProps {}
+export interface SortNameEditSheetProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
 
-const SortNameEditSheet: FC<SortNameEditSheetProps> = ({}) => {
+const SortNameEditSheet: FC<SortNameEditSheetProps> = ({
+  open,
+  onOpenChange,
+}) => {
   return (
     <CustomSheet
+      open={open}
+      onOpenChange={onOpenChange}
       sheetTrigger={<Button>Thêm tên viết tắt</Button>}
       title={"Thêm tên viết tắt tuyển tập"}
       actions={<Button>Xác nhận thêm</Button>}

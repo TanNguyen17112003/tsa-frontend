@@ -4,11 +4,16 @@ import CustomSheet from "src/components/CustomSheet";
 import { Button } from "src/components/shadcn/ui/button";
 import { Input } from "src/components/shadcn/ui/input";
 
-export interface CircaEditSheetProps {}
+export interface CircaEditSheetProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
 
-const CircaEditSheet: FC<CircaEditSheetProps> = ({}) => {
+const CircaEditSheet: FC<CircaEditSheetProps> = ({ open, onOpenChange }) => {
   return (
     <CustomSheet
+      open={open}
+      onOpenChange={onOpenChange}
       sheetTrigger={<Button>Thêm tên viết tắt</Button>}
       title={"Thêm tên viết tắt"}
       actions={<Button>Xác nhận thêm</Button>}

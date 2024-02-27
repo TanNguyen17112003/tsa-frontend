@@ -8,10 +8,12 @@ import SortNameEditSheet from "./AcronymsNameEditSheet";
 import usePagination from "src/hooks/use-pagination";
 import Pagination from "src/components/ui/Pagination";
 import { SIDE_NAV_WIDTH } from "src/config";
+import { useDrawer } from "src/hooks/use-drawer";
 
 const AcronymsNameTab = () => {
   const name = [initialFormat];
   const pagination = usePagination({ count: name.length });
+  const editDrawer = useDrawer();
   return (
     <div className="flex flex-col divide-y-2 min-h-[87.5vh]">
       <div className="flex-col flex-grow px-[10%]">
@@ -30,7 +32,12 @@ const AcronymsNameTab = () => {
           </div>
           <div className="ml-auto flex">
             <div className="flex items-center">
-              <SortNameEditSheet />
+              <SortNameEditSheet
+                open={editDrawer.open}
+                onOpenChange={(open) =>
+                  open ? editDrawer.handleOpen() : editDrawer.handleClose()
+                }
+              />
             </div>
           </div>
         </div>

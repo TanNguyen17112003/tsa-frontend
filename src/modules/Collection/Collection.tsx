@@ -11,6 +11,7 @@ import AdvanceSearchPage from "./components/pages/search/AdvanceSearchPage";
 import AdjacentSearchPage from "./components/pages/search/AdjacentSearchPage";
 import CollectionExplorePage from "./components/pages/explore/CollectionExplorePage";
 import clsx from "clsx";
+import CollectionTree from "./components/CollectionTree";
 
 interface CollectionProps {
   sideNavClassName: string;
@@ -35,6 +36,7 @@ const Collection: FC<CollectionProps> = ({ sideNavClassName }) => {
         <div className="p-4">
           <ViewNavigator />
         </div>
+        <CollectionTree />
       </div>
       <div className="pl-[300px] relative">
         {!query.searchType && !query.collectionId ? (

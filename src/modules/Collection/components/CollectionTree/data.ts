@@ -1,31 +1,31 @@
 import { v4 as uuidv4 } from "uuid";
 
 // Define interface for each data type
-interface CollectionMin {
+export interface CollectionMin {
   id: string;
   name: string;
 }
 
-interface SutraMin {
+export interface SutraMin {
   id: string;
   name: string;
   collection_id: string;
 }
 
-interface VolumeMin {
+export interface VolumeMin {
   id: string;
   name: string;
   sutra_id: string;
 }
 
-interface OrisonMin {
+export interface OrisonMin {
   id: string;
   name: string;
   volume_id: string;
 }
 
 // Define interface for the entire data structure
-interface Data {
+export interface CollectionTreeResponse {
   collections: CollectionMin[];
   sutras: SutraMin[];
   volumes: VolumeMin[];
@@ -42,7 +42,7 @@ const vietnameseNames: string[] = [
 ];
 
 // Generate sample data
-const data: Data = {
+const data: CollectionTreeResponse = {
   collections: [],
   sutras: [],
   volumes: [],

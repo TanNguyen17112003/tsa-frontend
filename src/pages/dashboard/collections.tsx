@@ -3,6 +3,10 @@ import { useCallback } from "react";
 import { BiSearch } from "react-icons/bi";
 import PageHeader from "src/components/PageHeader";
 import { Button } from "src/components/shadcn/ui/button";
+import CollectionsProvider from "src/contexts/collections/collections-context";
+import OrisonsProvider from "src/contexts/orisons/orisons-context";
+import SutrasProvider from "src/contexts/sutras/sutras-context";
+import VolumesProvider from "src/contexts/volumes/volumes-context";
 import Collection from "src/modules/Collection";
 import { paths } from "src/paths";
 import type { Page as PageType } from "src/types/page";
@@ -35,10 +39,18 @@ const Page: PageType = () => {
         }
       />
       <div className="h-[calc(100vh_-_116px)] relative overflow-y-scroll">
-        <Collection
-          sideNavClassName="fixed top-[116px] left-0 z-10"
-          className=""
-        ></Collection>
+        <CollectionsProvider>
+          <SutrasProvider>
+            <VolumesProvider>
+              <OrisonsProvider>
+                <Collection
+                  sideNavClassName="fixed top-[116px] left-0 z-10"
+                  className=""
+                ></Collection>
+              </OrisonsProvider>
+            </VolumesProvider>
+          </SutrasProvider>
+        </CollectionsProvider>
       </div>
     </div>
   );

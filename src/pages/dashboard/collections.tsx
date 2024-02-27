@@ -7,6 +7,7 @@ import CollectionsProvider from "src/contexts/collections/collections-context";
 import OrisonsProvider from "src/contexts/orisons/orisons-context";
 import SutrasProvider from "src/contexts/sutras/sutras-context";
 import VolumesProvider from "src/contexts/volumes/volumes-context";
+import { AuthGuard } from "src/guards/auth-guard";
 import Collection from "src/modules/Collection";
 import { paths } from "src/paths";
 import type { Page as PageType } from "src/types/page";
@@ -56,6 +57,6 @@ const Page: PageType = () => {
   );
 };
 
-Page.getLayout = (page) => <>{page}</>;
+Page.getLayout = (page) => <AuthGuard>{page}</AuthGuard>;
 
 export default Page;

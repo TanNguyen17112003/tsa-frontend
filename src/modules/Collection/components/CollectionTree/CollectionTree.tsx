@@ -61,7 +61,7 @@ const CollectionTreeProvider = ({ children }: { children: ReactNode }) => {
         setExpandedIds,
       }}
     >
-      {expandedIds ? <>{children}</> : <></>}
+      {children}
     </CollectionTreeContext.Provider>
   );
 };

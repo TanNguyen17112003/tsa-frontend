@@ -12,6 +12,9 @@ import AdjacentSearchPage from "./components/pages/search/AdjacentSearchPage";
 import CollectionExplorePage from "./components/pages/explore/CollectionExplorePage";
 import clsx from "clsx";
 import CollectionTree from "./components/CollectionTree";
+import OrisonPage from "./components/pages/explore/OrisonPage";
+import VolumnExplorePage from "./components/pages/explore/VolumnExplorePage";
+import SutraExplorePage from "./components/pages/explore/SutraExplorePage";
 
 interface CollectionProps {
   sideNavClassName: string;
@@ -39,9 +42,7 @@ const Collection: FC<CollectionProps> = ({ sideNavClassName }) => {
         <CollectionTree />
       </div>
       <div className="pl-[300px] relative">
-        {!query.searchType && !query.collectionId ? (
-          <CollectionExplorePage />
-        ) : query.searchType == "text" ? (
+        {query.searchType == "text" ? (
           <TextSearchPage />
         ) : query.searchType == "sutra" ? (
           <SutraSearchPage />
@@ -57,8 +58,14 @@ const Collection: FC<CollectionProps> = ({ sideNavClassName }) => {
           <AdjacentSearchPage />
         ) : !query.collectionId ? (
           <CollectionExplorePage />
+        ) : query.volumeId ? (
+          <OrisonPage />
+        ) : query.sutraId ? (
+          <VolumnExplorePage />
+        ) : query.collectionId ? (
+          <SutraExplorePage />
         ) : (
-          <div>Not found</div>
+          <AdjacentSearchPage />
         )}
       </div>
     </>

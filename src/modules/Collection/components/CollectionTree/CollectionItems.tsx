@@ -27,21 +27,19 @@ const CollectionItems: FC<CollectionItemsProps> = (props) => {
         pathname: router.pathname,
         query: {
           ...router.query,
-          collection_id: id == router.query.collection_id ? "" : id,
-          sutra_id: "",
-          volume_id: "",
-          orison_id: "",
+          collectionId: id == router.query.collectionId ? "" : id,
+          sutraId: "",
+          volumeId: "",
+          orisonId: "",
         },
       });
-      if (id != router.query.collection_id && expandedIds.includes(id)) {
+      if (id != router.query.collectionId && expandedIds.includes(id)) {
         e.preventDefault();
         e.stopPropagation();
       }
     },
     [expandedIds, router]
   );
-
-  console.log("expandedIds", expandedIds);
 
   return (
     <Accordion
@@ -54,7 +52,7 @@ const CollectionItems: FC<CollectionItemsProps> = (props) => {
         <AccordionItem key={item.id} value={item.id} className="border-b-0">
           <AccordionTrigger
             className={clsx(
-              router.query.collection_id == item.id &&
+              router.query.collectionId == item.id &&
                 "font-semibold fill-primary"
             )}
             onClick={(e) => handleClick(e, item.id)}
@@ -62,7 +60,7 @@ const CollectionItems: FC<CollectionItemsProps> = (props) => {
             {item.name}
           </AccordionTrigger>
           <AccordionContent>
-            <SutraItems collection_id={item.id} />
+            <SutraItems collectionId={item.id} />
           </AccordionContent>
         </AccordionItem>
       ))}

@@ -11,7 +11,7 @@ import { useRouter } from "next/router";
 import clsx from "clsx";
 
 interface SutraItemsProps {
-  collection_id: string;
+  collectionId: string;
 }
 
 const SutraItems: FC<SutraItemsProps> = (props) => {
@@ -22,24 +22,28 @@ const SutraItems: FC<SutraItemsProps> = (props) => {
   const items = useMemo(() => {
     return (
       getCollectionTreeApi.data?.sutras.filter(
-        (sutra) => sutra.collection_id == props.collection_id
+        (sutra) => sutra.collection_id == props.collectionId
       ) || []
     );
-  }, [getCollectionTreeApi.data?.sutras, props.collection_id]);
+  }, [getCollectionTreeApi.data?.sutras, props.collectionId]);
 
   const handleClick = useCallback(
-    (id: string) => {
+    (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: string) => {
       router.replace({
         pathname: router.pathname,
         query: {
           ...router.query,
-          sutra_id: id == router.query.sutra_id ? "" : id,
-          volume_id: "",
-          orison_id: "",
+          sutraId: id == router.query.sutraId ? "" : id,
+          volumeId: "",
+          orisonId: "",
         },
       });
+      if (id != router.query.sutraId && expandedIds.includes(id)) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
     },
-    [router]
+    [expandedIds, router]
   );
 
   return (
@@ -53,15 +57,14 @@ const SutraItems: FC<SutraItemsProps> = (props) => {
         <AccordionItem key={item.id} value={item.id} className="border-b-0">
           <AccordionTrigger
             className={clsx(
-              router.query.collection_id == item.id &&
-                "font-semibold fill-primary"
+              router.query.sutraId == item.id && "font-semibold fill-primary"
             )}
-            onClick={() => handleClick(item.id)}
+            onClick={(e) => handleClick(e, item.id)}
           >
             {item.name}
           </AccordionTrigger>
           <AccordionContent>
-            <VolumeItems sutra_id={item.id} />
+            <VolumeItems sutraId={item.id} />
           </AccordionContent>
         </AccordionItem>
       ))}

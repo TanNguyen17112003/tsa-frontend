@@ -7,7 +7,7 @@ import { Accordion } from "./CollectionTreeAccordion";
 import clsx from "clsx";
 
 interface VolumeItemsProps {
-  sutra_id: string;
+  sutraId: string;
 }
 
 const VolumeItems: FC<VolumeItemsProps> = (props) => {
@@ -17,10 +17,10 @@ const VolumeItems: FC<VolumeItemsProps> = (props) => {
   const items = useMemo(() => {
     return (
       getCollectionTreeApi.data?.volumes.filter(
-        (volume) => volume.sutra_id == props.sutra_id
+        (volume) => volume.sutra_id == props.sutraId
       ) || []
     );
-  }, [getCollectionTreeApi.data?.volumes, props.sutra_id]);
+  }, [getCollectionTreeApi.data?.volumes, props.sutraId]);
 
   const handleClick = useCallback(
     (id: string) => {
@@ -28,8 +28,8 @@ const VolumeItems: FC<VolumeItemsProps> = (props) => {
         pathname: router.pathname,
         query: {
           ...router.query,
-          volume_id: id == router.query.volume_id ? "" : id,
-          orison_id: "",
+          volumeId: id == router.query.volumeId ? "" : id,
+          orisonId: "",
         },
       });
     },
@@ -44,7 +44,7 @@ const VolumeItems: FC<VolumeItemsProps> = (props) => {
           value={item.id}
           className={clsx(
             "border-b-0 py-0 gap-2 hover:text-gray hover:bg-white hover:underline",
-            router.query.volume_id == item.id && "text-semibold"
+            router.query.volumeId == item.id && "text-semibold"
           )}
           variant="ghost"
           onClick={() => handleClick(item.id)}
@@ -52,7 +52,7 @@ const VolumeItems: FC<VolumeItemsProps> = (props) => {
           <BsFileText
             className={clsx(
               "h-6 w-6",
-              router.query.volume_id == item.id
+              router.query.volumeId == item.id
                 ? "fill-secondary"
                 : "fill-gray-400"
             )}

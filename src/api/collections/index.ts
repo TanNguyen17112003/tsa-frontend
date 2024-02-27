@@ -31,7 +31,7 @@ export class CollectionsApi {
     return await apiPatch(`/collections/${request.id}`, request);
   }
 
-  static async deleteCollection(id: Collection["id"]) {
-    return await apiDelete(`/collections/${id}`, { id });
+  static async deleteCollection(ids: Collection["id"][]) {
+    return await apiDelete(`/collections`, { ids });
   }
 }

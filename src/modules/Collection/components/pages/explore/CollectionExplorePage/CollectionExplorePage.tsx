@@ -1,17 +1,24 @@
-import { useMemo, type FC } from "react";
-import CollectionBreadcrumb from "../../../CollectionBreadcrumb";
-import { useCollectionsContext } from "src/contexts/collections/collections-context";
+import { useMemo, type FC, useCallback } from "react";
+import { BiDownload } from "react-icons/bi";
+import { PiTrashBold } from "react-icons/pi";
 import { CustomTable } from "src/components/custom-table";
-import usePagination from "src/hooks/use-pagination";
-import collectionTableConfigs from "./collectionTableConfigs";
+import { Button } from "src/components/shadcn/ui/button";
 import Pagination from "src/components/ui/Pagination";
+import { useCollectionsContext } from "src/contexts/collections/collections-context";
+import { useDrawer } from "src/hooks/use-drawer";
+import usePagination from "src/hooks/use-pagination";
 import { useSelection } from "src/hooks/use-selection";
 import { CollectionDetail } from "src/types/collection";
+import CollectionBreadcrumb from "../../../CollectionBreadcrumb";
+import CollectionEditSheet from "./CollectionEditSheet";
+import collectionTableConfigs from "./collectionTableConfigs";
+import useFunction from "src/hooks/use-function";
 
 interface CollectionExplorePageProps {}
 
 const CollectionExplorePage: FC<CollectionExplorePageProps> = ({}) => {
-  const { getCollectionsApi } = useCollectionsContext();
+  const { getCollectionsApi, deleteCollection } = useCollectionsContext();
+  const editDrawer = useDrawer<CollectionDetail>();
 
   const collections = useMemo(() => {
     return getCollectionsApi.data || [];
@@ -20,24 +27,61 @@ const CollectionExplorePage: FC<CollectionExplorePageProps> = ({}) => {
   const pagination = usePagination({ count: collections.length });
   const select = useSelection<CollectionDetail>(collections);
 
+  const handleDelete = useCallback(
+    async ({}) => {
+      await deleteCollection(select.selected.map((select) => select.id));
+    },
+    [deleteCollection, select.selected]
+  );
+  const handleDeleteHelper = useFunction(handleDelete, {
+    successMessage: "Xoá tuyển tập kinh thành công!",
+  });
+
   return (
     <>
       <div className="flex justify-between p-5 py-6 sticky top-0 z-10 bg-white">
         <CollectionBreadcrumb />
-        <div></div>
+        <div className="flex gap-2">
+          <Button
+            variant="ghost"
+            color="destructive"
+            className="gap-2 text-destructive hover:bg-destructive/20 hover:text-destructive"
+            disabled={select.selected.length == 0 || handleDeleteHelper.loading}
+            onClick={handleDeleteHelper.call}
+          >
+            <PiTrashBold className="w-5 h-5" /> Xoá
+          </Button>
+          <Button variant="outline" className="gap-2">
+            Xuất báo cáo <BiDownload className="w-5 h-5" />
+          </Button>
+          <CollectionEditSheet
+            open={editDrawer.open}
+            onOpenChange={(open) =>
+              open ? editDrawer.handleOpen() : editDrawer.handleClose()
+            }
+            collection={editDrawer.data}
+          />
+        </div>
       </div>
-      <div className="px-4 flex-1 h-full">
+      <div className="px-4 flex-1 pb-6">
         <CustomTable
           select={select}
           rows={collections}
           configs={collectionTableConfigs}
           pagination={pagination}
+          onClickEdit={editDrawer.handleOpen}
           hidePagination
         />
       </div>
       <div className="sticky bg-white flex bottom-0 px-7 justify-between py-2 border-t">
         <div className="flex text-sm text-gray-500 font-normal items-center overflow-hidden text-nowrap">
-          Đang hiển thị kết quả thứ 1 tới 10 trên 97 kết quả
+          Đang hiển thị kết quả thứ{" "}
+          {pagination.page * pagination.rowsPerPage + 1} tới{" "}
+          {Math.min(
+            pagination.count,
+            pagination.rowsPerPage * (pagination.page + 1)
+          )}{" "}
+          trên {pagination.count} kết quả
         </div>
         <Pagination {...pagination} onChange={pagination.onPageChange} />
       </div>

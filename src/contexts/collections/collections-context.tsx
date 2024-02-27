@@ -1,4 +1,3 @@
-
 import {
   createContext,
   ReactNode,
@@ -44,6 +43,7 @@ const CollectionsProvider = ({ children }: { children: ReactNode }) => {
             },
             ...(getCollectionsApi.data || []),
           ];
+          console.log("newCollections", newCollections);
           getCollectionsApi.setData(newCollections);
         }
       } catch (error) {
@@ -72,28 +72,12 @@ const CollectionsProvider = ({ children }: { children: ReactNode }) => {
   const deleteCollection = useCallback(
     async (ids: Collection["id"][]) => {
       try {
-        const results = await Promise.allSettled(
-          ids.map((id) => CollectionsApi.deleteCollection(id))
-        );
+        await CollectionsApi.deleteCollection(ids);
         getCollectionsApi.setData([
           ...(getCollectionsApi.data || []).filter(
-            (Collection) =>
-              !results.find(
-                (result, index) =>
-                  result.status == "fulfilled" && ids[index] == Collection.id
-              )
+            (collection) => !ids.includes(collection.id)
           ),
         ]);
-        results.forEach((result, index) => {
-          if (result.status == "rejected") {
-            throw new Error(
-              "Không thể xoá danh mục: " +
-                ids[index] +
-                ". " +
-                result.reason.toString()
-            );
-          }
-        });
       } catch (error) {
         throw error;
       }

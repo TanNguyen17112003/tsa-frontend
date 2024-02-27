@@ -19,8 +19,6 @@ export interface CollectionDetail extends Collection {
 export const collectionSchema = yup.object().shape({
   name: yup.string().required("Vui lòng nhập name"),
   code: yup.string().required("Vui lòng nhập code"),
-  circa: yup.string().required("Vui lòng nhập circa"),
-  user_id: yup.string().required("Vui lòng nhập user_id"),
 });
 
 export const initialCollection: CollectionDetail = {

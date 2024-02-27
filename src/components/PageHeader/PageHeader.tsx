@@ -10,18 +10,21 @@ const PageHeader = ({
   button,
   tabs,
   backLink,
+  className,
 }: {
   title: string;
   variant?: string;
   button?: ReactNode;
   tabs?: ReactNode;
   backLink?: string;
+  className?: string;
 }) => {
   return (
     <div
       className={clsx(
         "pt-7 w-full divide-y",
-        variant == "full-divide" ? "" : "px-[10%]"
+        variant == "full-divide" ? "" : "px-[10%]",
+        className
       )}
     >
       <div className={clsx("w-full", variant == "full-divide" ? "px-7" : "")}>
@@ -33,7 +36,7 @@ const PageHeader = ({
                 variant="ghost"
                 color="primary"
                 size="sm"
-                className="text-primary gap-2"
+                className="text-primary gap-2 -mt-2"
               >
                 <Link href={backLink}>
                   <FaArrowLeftLong />

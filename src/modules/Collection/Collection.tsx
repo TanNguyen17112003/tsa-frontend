@@ -6,20 +6,29 @@ import AuthorSearchPage from "./components/pages/search/AuthorSearchPage/AuthorS
 import CircaSearchPage from "./components/pages/search/CircaSearchPage/CircaSearchPage";
 import SutraSearchPage from "./components/pages/search/SutraSearchPage/SutraSearchPage";
 import TextSearchPage from "./components/pages/search/TextSearchPage/TextSearchPage";
-import CollectionPage from "./components/pages/view/CollectionPage";
 import BasicSearchPage from "./components/pages/search/BasicSearchPage";
 import AdvanceSearchPage from "./components/pages/search/AdvanceSearchPage";
 import AdjacentSearchPage from "./components/pages/search/AdjacentSearchPage";
+import CollectionExplorePage from "./components/pages/explore/CollectionExplorePage";
+import clsx from "clsx";
 
-interface CollectionProps {}
+interface CollectionProps {
+  sideNavClassName: string;
+  className: string;
+}
 
-const Collection: FC<CollectionProps> = ({}) => {
+const Collection: FC<CollectionProps> = ({ sideNavClassName }) => {
   const { query } = useRouter();
 
   return (
-    <div className="flex">
-      <div className="w-[300px] border-r">
-        <div className="sticky top-0 p-3">
+    <>
+      <div
+        className={clsx(
+          "w-[300px] border-r h-full overflow-y-auto",
+          sideNavClassName
+        )}
+      >
+        <div className="p-3">
           <SearchNavigator />
         </div>
         <hr />
@@ -27,9 +36,9 @@ const Collection: FC<CollectionProps> = ({}) => {
           <ViewNavigator />
         </div>
       </div>
-      <div className="flex-1">
+      <div className="pl-[300px] relative">
         {!query.searchType && !query.collectionId ? (
-          <CollectionPage />
+          <CollectionExplorePage />
         ) : query.searchType == "text" ? (
           <TextSearchPage />
         ) : query.searchType == "sutra" ? (
@@ -44,11 +53,13 @@ const Collection: FC<CollectionProps> = ({}) => {
           <AdvanceSearchPage />
         ) : query.searchType == "adjacent" ? (
           <AdjacentSearchPage />
+        ) : !query.collectionId ? (
+          <CollectionExplorePage />
         ) : (
           <div>Not found</div>
         )}
       </div>
-    </div>
+    </>
   );
 };
 

@@ -22,19 +22,25 @@ const Page: PageType = () => {
   }, [router]);
 
   return (
-    <>
+    <div className="h-screen relative min-h-0">
       <PageHeader
         title="Kho dữ liệu"
         variant="full-divide"
         backLink={paths.dashboard.index}
+        className="relative h-[116px] py-0"
         button={
           <Button variant="outline" onClick={handleClickSearch}>
             <BiSearch className="w-6 h-6" />
           </Button>
         }
       />
-      <Collection></Collection>
-    </>
+      <div className="h-[calc(100vh_-_116px)] relative overflow-y-scroll">
+        <Collection
+          sideNavClassName="fixed top-[116px] left-0 z-10"
+          className=""
+        ></Collection>
+      </div>
+    </div>
   );
 };
 

@@ -6,49 +6,67 @@ import AuthorSearchPage from "./components/pages/search/AuthorSearchPage/AuthorS
 import CircaSearchPage from "./components/pages/search/CircaSearchPage/CircaSearchPage";
 import SutraSearchPage from "./components/pages/search/SutraSearchPage/SutraSearchPage";
 import TextSearchPage from "./components/pages/search/TextSearchPage/TextSearchPage";
-import CollectionPage from "./components/pages/view/CollectionPage";
 import BasicSearchPage from "./components/pages/search/BasicSearchPage";
 import AdvanceSearchPage from "./components/pages/search/AdvanceSearchPage";
 import AdjacentSearchPage from "./components/pages/search/AdjacentSearchPage";
+import CollectionExplorePage from "./components/pages/explore/CollectionExplorePage";
+import clsx from "clsx";
+import CollectionTree from "./components/CollectionTree";
+import OrisonPage from "./components/pages/explore/OrisonPage";
+import VolumnExplorePage from "./components/pages/explore/VolumnExplorePage";
+import SutraExplorePage from "./components/pages/explore/SutraExplorePage";
 
-interface CollectionProps {}
+interface CollectionProps {
+  sideNavClassName: string;
+  className: string;
+}
 
-const Collection: FC<CollectionProps> = ({}) => {
+const Collection: FC<CollectionProps> = ({ sideNavClassName }) => {
   const { query } = useRouter();
 
   return (
-    <div className="flex">
-      <div className="w-[300px] border-r">
-        <div className="sticky top-0 p-3">
+    <>
+      <div
+        className={clsx(
+          "w-[300px] border-r h-full overflow-y-auto",
+          sideNavClassName
+        )}
+      >
+        <div className="p-3">
           <SearchNavigator />
         </div>
         <hr />
         <div className="p-4">
           <ViewNavigator />
         </div>
+        <CollectionTree />
       </div>
-      <div className="flex-1">
-        {!query.searchType && !query.collectionId ? (
-          <CollectionPage />
-        ) : query.searchType == "text" ? (
-          <TextSearchPage />
-        ) : query.searchType == "sutra" ? (
-          <SutraSearchPage />
-        ) : query.searchType == "author" ? (
-          <AuthorSearchPage />
-        ) : query.searchType == "circa" ? (
-          <CircaSearchPage />
-        ) : query.searchType == "basic" ? (
-          <BasicSearchPage />
-        ) : query.searchType == "advance" ? (
-          <AdvanceSearchPage />
-        ) : query.searchType == "adjacent" ? (
-          <AdjacentSearchPage />
-        ) : (
-          <div>Not found</div>
-        )}
-      </div>
-    </div>
+      {query.searchType == "text" ? (
+        <TextSearchPage />
+      ) : query.searchType == "sutra" ? (
+        <SutraSearchPage />
+      ) : query.searchType == "author" ? (
+        <AuthorSearchPage />
+      ) : query.searchType == "circa" ? (
+        <CircaSearchPage />
+      ) : query.searchType == "basic" ? (
+        <BasicSearchPage />
+      ) : query.searchType == "advance" ? (
+        <AdvanceSearchPage />
+      ) : query.searchType == "adjacent" ? (
+        <AdjacentSearchPage />
+      ) : !query.collectionId ? (
+        <CollectionExplorePage />
+      ) : query.volumeId ? (
+        <OrisonPage />
+      ) : query.sutraId ? (
+        <VolumnExplorePage />
+      ) : query.collectionId ? (
+        <SutraExplorePage />
+      ) : (
+        <AdjacentSearchPage />
+      )}
+    </>
   );
 };
 

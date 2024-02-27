@@ -53,10 +53,15 @@ const SearchNavigator: FC<SearchNavigatorProps> = ({}) => {
       // collapsible={router.query.searchType ? false : true}
       className="w-full"
       value={open}
-      onValueChange={setOpen}
+      // onValueChange={() => setOpen(open ? "" : "item")}
     >
       <AccordionItem value="item" className="border-b-0">
-        <AccordionTrigger className="bg-primary text-white px-3 py-3 rounded-md">
+        <AccordionTrigger
+          className="bg-primary text-white px-3 py-3 rounded-md"
+          onClick={() => {
+            setOpen(open ? "" : "item");
+          }}
+        >
           <div className="flex gap-2 items-center">
             <BsFunnel />
             <div className="text-sm font-semibold">Bộ lọc</div>

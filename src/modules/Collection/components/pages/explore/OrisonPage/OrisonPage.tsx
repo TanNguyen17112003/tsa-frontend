@@ -1,19 +1,18 @@
 import type { FC } from "react";
 import CollectionBreadcrumb from "../../../CollectionBreadcrumb";
-import TextSearchForm from "./TextSearchForm";
 
-interface TextSearchPageProps {}
+interface OrisonPageProps {}
 
-const TextSearchPage: FC<TextSearchPageProps> = ({}) => {
+const OrisonPage: FC<OrisonPageProps> = ({}) => {
   return (
     <>
       <div className="flex justify-between p-5">
         <CollectionBreadcrumb />
         <div></div>
       </div>
-      <TextSearchForm className={"py-4 px-6"} />
+      <div>OrisonPage</div>
     </>
   );
 };
 
-export default TextSearchPage;
+export default OrisonPage;

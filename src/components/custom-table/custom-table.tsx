@@ -11,6 +11,7 @@ import { IoWarning } from "react-icons/io5";
 import Pagination from "../ui/Pagination";
 import { Button } from "../shadcn/ui/button";
 import { Checkbox } from "../shadcn/ui/checkbox";
+import { PiNotePencilBold, PiPencilBold } from "react-icons/pi";
 
 export function CustomTable<P, T extends { id: P; [key: string]: any }>(
   props: CustomTableProps<P, T> &
@@ -181,13 +182,21 @@ export function CustomTable<P, T extends { id: P; [key: string]: any }>(
                     <div className="flex justify-end -my-1">
                       {renderRowActions?.(row, index)}
                       {onClickEdit && (
-                        <Button onClick={() => onClickEdit(row, index)}>
-                          <BsPencilSquare className="h-4 w-4 bg-cyan" />
+                        <Button
+                          onClick={() => onClickEdit(row, index)}
+                          variant="ghost"
+                          className="hover:bg-secondary/15"
+                        >
+                          <PiNotePencilBold className="h-5 w-5 fill-secondary" />
                         </Button>
                       )}
                       {onClickDelete && (
-                        <Button onClick={() => onClickDelete(row, index)}>
-                          <BsTrash2Fill className="h-4 w-4 bg-destructive" />
+                        <Button
+                          onClick={() => onClickDelete(row, index)}
+                          variant="ghost"
+                          className="hover:bg-destructive/15"
+                        >
+                          <BsTrash2Fill className="h-5 w-5 fill-destructive" />
                         </Button>
                       )}
                       {onClickDetail && (

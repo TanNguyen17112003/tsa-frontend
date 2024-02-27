@@ -38,7 +38,7 @@ const Page: PageType = () => {
           </Button>
         }
       />
-      <div className="h-[calc(100vh_-_116px)] relative overflow-y-scroll">
+      <div className="h-[calc(100vh_-_116px)] relative overflow-y-scroll pl-[300px]">
         <CollectionsProvider>
           <SutrasProvider>
             <VolumesProvider>

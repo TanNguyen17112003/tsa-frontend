@@ -41,33 +41,31 @@ const Collection: FC<CollectionProps> = ({ sideNavClassName }) => {
         </div>
         <CollectionTree />
       </div>
-      <div className="pl-[300px] relative">
-        {query.searchType == "text" ? (
-          <TextSearchPage />
-        ) : query.searchType == "sutra" ? (
-          <SutraSearchPage />
-        ) : query.searchType == "author" ? (
-          <AuthorSearchPage />
-        ) : query.searchType == "circa" ? (
-          <CircaSearchPage />
-        ) : query.searchType == "basic" ? (
-          <BasicSearchPage />
-        ) : query.searchType == "advance" ? (
-          <AdvanceSearchPage />
-        ) : query.searchType == "adjacent" ? (
-          <AdjacentSearchPage />
-        ) : !query.collectionId ? (
-          <CollectionExplorePage />
-        ) : query.volumeId ? (
-          <OrisonPage />
-        ) : query.sutraId ? (
-          <VolumnExplorePage />
-        ) : query.collectionId ? (
-          <SutraExplorePage />
-        ) : (
-          <AdjacentSearchPage />
-        )}
-      </div>
+      {query.searchType == "text" ? (
+        <TextSearchPage />
+      ) : query.searchType == "sutra" ? (
+        <SutraSearchPage />
+      ) : query.searchType == "author" ? (
+        <AuthorSearchPage />
+      ) : query.searchType == "circa" ? (
+        <CircaSearchPage />
+      ) : query.searchType == "basic" ? (
+        <BasicSearchPage />
+      ) : query.searchType == "advance" ? (
+        <AdvanceSearchPage />
+      ) : query.searchType == "adjacent" ? (
+        <AdjacentSearchPage />
+      ) : !query.collectionId ? (
+        <CollectionExplorePage />
+      ) : query.volumeId ? (
+        <OrisonPage />
+      ) : query.sutraId ? (
+        <VolumnExplorePage />
+      ) : query.collectionId ? (
+        <SutraExplorePage />
+      ) : (
+        <AdjacentSearchPage />
+      )}
     </>
   );
 };

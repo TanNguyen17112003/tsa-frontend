@@ -48,7 +48,7 @@ const CollectionBreadcrumb: FC<CollectionBreadcrumbProps> = ({}) => {
 
   return (
     <div className="flex gap-2 flex-wrap items-center">
-      <RectangleStackIcon className="w-4 h-4" />
+      <RectangleStackIcon className="w-4 h-4 fill-text-tetiary" />
       {items.map((item, index) => (
         <div className="flex gap-2 items-center" key={item.label}>
           {index > 0 && <BsChevronCompactRight className="w-4 h-4" />}

@@ -1,4 +1,3 @@
-import { CustomTableConfig } from "src/components/custom-table";
 import * as yup from "yup";
 
 export interface Collection {
@@ -10,7 +9,12 @@ export interface Collection {
   user_id: string;
 }
 
-export interface CollectionDetail extends Collection {}
+export interface CollectionDetail extends Collection {
+  num_authors: number;
+  num_translators: number;
+  num_sutras: number;
+  num_orisons: number;
+}
 
 export const collectionSchema = yup.object().shape({
   name: yup.string().required("Vui lòng nhập name"),
@@ -19,46 +23,14 @@ export const collectionSchema = yup.object().shape({
   user_id: yup.string().required("Vui lòng nhập user_id"),
 });
 
-const collectionTableConfigs: CustomTableConfig<
-  Collection["id"],
-  CollectionDetail
->[] = [
-  {
-    key: "id",
-    headerLabel: "id",
-    type: "string",
-  },
-  {
-    key: "name",
-    headerLabel: "name",
-    type: "string",
-  },
-  {
-    key: "code",
-    headerLabel: "code",
-    type: "string",
-  },
-  {
-    key: "circa",
-    headerLabel: "circa",
-    type: "string",
-  },
-  {
-    key: "created_at",
-    headerLabel: "created_at",
-    type: "date",
-  },
-  {
-    key: "user_id",
-    headerLabel: "user_id",
-    type: "string",
-  },
-];
-
 export const initialCollection: CollectionDetail = {
   id: "",
   name: "",
   code: "",
   circa: "",
   user_id: "",
+  num_authors: 0,
+  num_translators: 0,
+  num_sutras: 0,
+  num_orisons: 0,
 };

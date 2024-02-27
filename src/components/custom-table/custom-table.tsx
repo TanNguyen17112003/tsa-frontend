@@ -10,6 +10,7 @@ import clsx from "clsx";
 import { IoWarning } from "react-icons/io5";
 import Pagination from "../ui/Pagination";
 import { Button } from "../shadcn/ui/button";
+import { Checkbox } from "../shadcn/ui/checkbox";
 
 export function CustomTable<P, T extends { id: P; [key: string]: any }>(
   props: CustomTableProps<P, T> &
@@ -140,14 +141,12 @@ export function CustomTable<P, T extends { id: P; [key: string]: any }>(
                     onClick={(e) => e.stopPropagation()}
                     className={cellClassName}
                   >
-                    <div className="flex gap-1 items-center">
+                    <div className="flex gap-1 items-center pl-3">
                       {select && (
-                        <input
-                          type="checkbox"
-                          className={clsx("checkbox -my-1 -mx-1")}
+                        <Checkbox
                           checked={select.selected.includes(row)}
-                          onChange={(e) =>
-                            e.target.checked
+                          onCheckedChange={(checked) =>
+                            checked
                               ? select.handleSelectOne(row)
                               : select.handleDeselectOne(row)
                           }

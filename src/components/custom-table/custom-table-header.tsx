@@ -3,6 +3,7 @@ import { CustomTableHeaderCell } from "./custom-table-header-cell";
 import { CustomTableProps, CustomTableSortModel } from "./custom-table.types";
 import { CustomTableResizableCell } from "./custom-table-resizable-cell";
 import clsx from "clsx";
+import { Checkbox } from "../shadcn/ui/checkbox";
 
 export function CustomTableHeader<P, T extends { id: P; [key: string]: any }>(
   props: CustomTableProps<P, T> & {
@@ -43,14 +44,12 @@ export function CustomTableHeader<P, T extends { id: P; [key: string]: any }>(
             className="text-nowrap py-2"
             rowSpan={hasGroupedHeaderLabel ? 2 : 1}
           >
-            <div className="flex gap-1 items-center">
+            <div className="flex gap-1 items-center pl-1">
               {select && (
-                <input
-                  type="checkbox"
-                  className={clsx("checkbox -my-1 -mx-1")}
+                <Checkbox
                   checked={select.selected.length >= rows.length}
-                  onChange={(e) =>
-                    e.target.checked
+                  onCheckedChange={(checked) =>
+                    checked
                       ? select.handleSelectAll()
                       : select.handleDeselectAll()
                   }

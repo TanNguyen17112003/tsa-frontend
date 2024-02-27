@@ -12,6 +12,7 @@ import PasswordInput from "src/sections/auth/PasswordInput";
 import type { Page as PageType } from "src/types/page";
 import * as Yup from "yup";
 import backgroundImage from "../../../public/ui/background-siu.png";
+import Link from "next/link";
 
 export const loginSchema = Yup.object({
   username: Yup.string().required("Tên đăng nhập không được để trống"),
@@ -21,9 +22,6 @@ export const loginSchema = Yup.object({
 const Page: PageType = () => {
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSignUp = () => {
-    router.push(paths.auth.register);
-  };
   const router = useRouter();
   const { signIn } = useAuth<AuthContextType>();
 
@@ -53,7 +51,8 @@ const Page: PageType = () => {
     if (formik.values.username || formik.values.password) {
       formik.setFieldError("general", "");
     }
-  }, [formik.values.username, formik.values.password, formik]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formik.values.username, formik.values.password]);
 
   return (
     <div className="h-screen flex ">
@@ -111,11 +110,11 @@ const Page: PageType = () => {
         </form>
         <div className="flex items-center gap-0">
           <Button
+            asChild
             variant="ghost"
             className="px-4 pt-1 pb-1 max-w-max h-[24px] text-xs text-primary hover:text-primary"
-            onClick={() => handleSignUp()}
           >
-            Đăng ký tài khoản
+            <Link href={paths.auth.register}>Đăng ký tài khoản</Link>
           </Button>
           <span>/</span>
           <Button
@@ -130,7 +129,5 @@ const Page: PageType = () => {
     </div>
   );
 };
-
-Page.getLayout = (page) => <>{page}</>;
 
 export default Page;

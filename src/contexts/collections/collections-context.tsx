@@ -43,7 +43,6 @@ const CollectionsProvider = ({ children }: { children: ReactNode }) => {
             },
             ...(getCollectionsApi.data || []),
           ];
-          console.log("newCollections", newCollections);
           getCollectionsApi.setData(newCollections);
         }
       } catch (error) {

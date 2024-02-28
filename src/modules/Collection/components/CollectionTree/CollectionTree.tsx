@@ -7,12 +7,12 @@ import {
   useEffect,
   useState,
 } from "react";
-import { CollectionsApi } from "src/api/collections";
+import { CollectionTreeResponse, CollectionsApi } from "src/api/collections";
 import useFunction, {
   DEFAULT_FUNCTION_RETURN,
   UseFunctionReturnType,
 } from "src/hooks/use-function";
-import data, { CollectionTreeResponse } from "./data";
+import data from "./data";
 import CollectionItems from "./CollectionItems";
 
 interface ContextValue {

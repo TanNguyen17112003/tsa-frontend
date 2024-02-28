@@ -12,6 +12,7 @@ import Pagination from "../ui/Pagination";
 import { Button } from "../shadcn/ui/button";
 import { Checkbox } from "../shadcn/ui/checkbox";
 import { PiNotePencilBold, PiPencilBold } from "react-icons/pi";
+import Loading from "../Loading";
 
 export function CustomTable<P, T extends { id: P; [key: string]: any }>(
   props: CustomTableProps<P, T> &
@@ -221,7 +222,7 @@ export function CustomTable<P, T extends { id: P; [key: string]: any }>(
       {(loading || rows.length == 0) && (
         <div className="-mt-2 h-[100px] w-full flex items-center justify-center sticky left-0">
           {loading ? (
-            <div className="loading loading-spinner loading-sm" />
+            <Loading />
           ) : emptyState ? (
             emptyState
           ) : (

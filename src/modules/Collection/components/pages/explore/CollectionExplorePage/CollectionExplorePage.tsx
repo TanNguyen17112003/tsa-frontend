@@ -65,6 +65,7 @@ const CollectionExplorePage: FC<CollectionExplorePageProps> = ({}) => {
       </div>
       <div className="px-4 flex-1 pb-6">
         <CustomTable
+          loading={getCollectionsApi.loading}
           select={select}
           rows={collections}
           configs={collectionTableConfigs}

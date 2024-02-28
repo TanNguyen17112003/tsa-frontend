@@ -1,36 +1,12 @@
+import { CollectionTreeResponse } from "src/api/collections";
+import { Author } from "src/types/author";
+import { Circa } from "src/types/circas";
+import { FormatPage } from "src/types/format-page";
+import { FormatSutra } from "src/types/format-sutra";
+import { FormatWord } from "src/types/format-word";
 import { v4 as uuidv4 } from "uuid";
 
 // Define interface for each data type
-export interface CollectionMin {
-  id: string;
-  name: string;
-}
-
-export interface SutraMin {
-  id: string;
-  name: string;
-  collection_id: string;
-}
-
-export interface VolumeMin {
-  id: string;
-  name: string;
-  sutra_id: string;
-}
-
-export interface OrisonMin {
-  id: string;
-  name: string;
-  volume_id: string;
-}
-
-// Define interface for the entire data structure
-export interface CollectionTreeResponse {
-  collections: CollectionMin[];
-  sutras: SutraMin[];
-  volumes: VolumeMin[];
-  orisons: OrisonMin[];
-}
 
 // Generate Vietnamese names using sample data
 const vietnameseNames: string[] = [

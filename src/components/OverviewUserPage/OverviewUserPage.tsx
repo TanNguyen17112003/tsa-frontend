@@ -22,10 +22,10 @@ import { FaLongArrowAltRight } from "react-icons/fa";
 import { BookshelfFillIcon } from "../icons/BookshelfFillIcon";
 import { BsExclamationCircle, BsPersonCircle } from "react-icons/bs";
 import { CustomTable } from "../custom-table";
-import { Collection } from "src/types/collections";
 import getDashboardTableConfig from "src/sections/user/dashboard/dashboard-table-config";
 import { IoSearch } from "react-icons/io5";
 import { FaBookOpen } from "react-icons/fa6";
+import { Collection } from "src/types/collection";
 
 const history = [
   { title: "Đọc bài kinh 1: Bài dịch số 2", time: "15:30 - 01/12/2023" },
@@ -48,7 +48,6 @@ const OverviewUserPage = () => {
       name: "Kinh A Hàm",
       code: "",
       circa: "250 TCN - 360 TCN",
-      created_at: "",
       user_id: "Nguyễn Văn A",
     },
     {
@@ -56,7 +55,6 @@ const OverviewUserPage = () => {
       name: "Kinh A Hàm",
       code: "",
       circa: "250 TCN - 360 TCN",
-      created_at: "",
       user_id: "Nguyễn Văn A",
     },
     {
@@ -64,7 +62,6 @@ const OverviewUserPage = () => {
       name: "Kinh A Hàm",
       code: "",
       circa: "250 TCN - 360 TCN",
-      created_at: "",
       user_id: "Nguyễn Văn A",
     },
     {
@@ -72,7 +69,6 @@ const OverviewUserPage = () => {
       name: "Kinh A Hàm",
       code: "",
       circa: "250 TCN - 360 TCN",
-      created_at: "",
       user_id: "Nguyễn Văn A",
     },
     {
@@ -80,7 +76,6 @@ const OverviewUserPage = () => {
       name: "Kinh A Hàm",
       code: "",
       circa: "250 TCN - 360 TCN",
-      created_at: "",
       user_id: "Nguyễn Văn A",
     },
     {
@@ -88,7 +83,6 @@ const OverviewUserPage = () => {
       name: "Kinh A Hàm",
       code: "",
       circa: "250 TCN - 360 TCN",
-      created_at: "",
       user_id: "Nguyễn Văn A",
     },
   ];

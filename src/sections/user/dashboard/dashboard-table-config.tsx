@@ -1,7 +1,7 @@
 import { HiMiniArrowSmallRight } from "react-icons/hi2";
 import { CustomTableConfig } from "src/components/custom-table";
 import { Button } from "src/components/shadcn/ui/button";
-import { Collection } from "src/types/collections";
+import { Collection } from "src/types/collection";
 const getDashboardTableConfig: CustomTableConfig<
   Collection["id"],
   Collection

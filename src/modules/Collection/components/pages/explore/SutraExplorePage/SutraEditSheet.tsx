@@ -114,12 +114,10 @@ const SutraEditSheet: FC<SutraEditSheetProps> = ({
     <CustomSheet
       open={open}
       onOpenChange={onOpenChange}
-      sheetTrigger={<Button>Tạo tuyển tập kinh</Button>}
-      title="Tạo tuyển tập kinh"
+      sheetTrigger={<Button>Tạo bộ kinh</Button>}
+      title="Tạo bộ kinh"
       actions={
-        <Button onClick={() => formik.handleSubmit()}>
-          Tạo tuyển tập kinh
-        </Button>
+        <Button onClick={() => formik.handleSubmit()}>Tạo bộ kinh</Button>
       }
     >
       <form onSubmit={formik.submitForm} className="grid grid-cols-2 gap-4">

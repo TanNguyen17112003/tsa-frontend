@@ -3,45 +3,49 @@ import { useCallback, useEffect, useState, type FC } from "react";
 import CustomSheet from "src/components/CustomSheet";
 import { Button } from "src/components/shadcn/ui/button";
 import FormInput from "src/components/ui/FormInput";
-import { useVolumesContext } from "src/contexts/volumes/volumes-context";
+import { useOrisonsContext } from "src/contexts/orisons/orisons-context";
 import { useAuth } from "src/hooks/use-auth";
 import useFunction from "src/hooks/use-function";
 import { SutraDetail } from "src/types/sutra";
 import {
-  Volume,
-  VolumeDetail,
-  initialVolume,
-  volumeSchema,
-} from "src/types/volume";
+  Orison,
+  OrisonDetail,
+  initialOrison,
+  orisonSchema,
+} from "src/types/orison";
+import { VolumeDetail } from "src/types/volume";
 
-export interface VolumeEditSheetProps {
+export interface OrisonEditSheetProps {
   sutra: SutraDetail;
-  volume?: VolumeDetail;
+  volume: VolumeDetail;
+  orison?: OrisonDetail;
+
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-const VolumeEditSheet: FC<VolumeEditSheetProps> = ({
-  sutra,
+const OrisonEditSheet: FC<OrisonEditSheetProps> = ({
   volume,
+  sutra,
+  orison,
   open,
   onOpenChange,
 }) => {
   const { user } = useAuth();
-  const { updateVolume, createVolume } = useVolumesContext();
+  const { updateOrison, createOrison } = useOrisonsContext();
   const [files, setFiles] = useState<File[]>([]);
 
   const handleSubmit = useCallback(
-    async (values: Volume) => {
-      if (volume) {
-        await updateVolume({
+    async (values: Orison) => {
+      if (orison) {
+        await updateOrison({
           ...values,
         });
       } else if (sutra.id) {
-        await createVolume({
+        await createOrison({
           ...values,
           created_at: new Date(),
-          sutras_id: sutra.id,
+          volume_id: volume.id,
           sutra: sutra,
         });
       } else {
@@ -49,36 +53,36 @@ const VolumeEditSheet: FC<VolumeEditSheetProps> = ({
       }
       onOpenChange(false);
     },
-    [volume, sutra, onOpenChange, updateVolume, createVolume]
+    [orison, sutra, onOpenChange, updateOrison, createOrison, volume.id]
   );
   const handleSubmitHelper = useFunction(handleSubmit, {
-    successMessage: (volume ? "Sửa" : "Thêm") + " quyển kinh thành công!",
+    successMessage: (orison ? "Sửa" : "Thêm") + " quyển kinh thành công!",
   });
 
   const formik = useFormik({
-    initialValues: initialVolume,
-    validationSchema: volumeSchema,
+    initialValues: initialOrison,
+    validationSchema: orisonSchema,
     onSubmit: handleSubmitHelper.call,
   });
 
   useEffect(() => {
-    if (volume?.id && open) {
-      formik.setValues(volume);
+    if (orison?.id && open) {
+      formik.setValues(orison);
     } else {
       formik.resetForm();
-      formik.setValues(initialVolume);
+      formik.setValues(initialOrison);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [volume?.id, open]);
+  }, [orison?.id, open]);
 
   return (
     <CustomSheet
       open={open}
       onOpenChange={onOpenChange}
-      sheetTrigger={<Button>Tạo quyển kinh</Button>}
-      title="Tạo quyển kinh"
+      sheetTrigger={<Button>Tạo bài kinh</Button>}
+      title="Tạo bài kinh"
       actions={
-        <Button onClick={() => formik.handleSubmit()}>Tạo quyển kinh</Button>
+        <Button onClick={() => formik.handleSubmit()}>Tạo bài kinh</Button>
       }
     >
       <form onSubmit={formik.submitForm} className="grid grid-cols-2 gap-4">
@@ -86,8 +90,8 @@ const VolumeEditSheet: FC<VolumeEditSheetProps> = ({
           <FormInput
             autoFocus
             type="text"
-            label="Mã quyển kinh (*)"
-            placeholder="Nhập mã quyển kinh..."
+            label="Mã bài kinh (*)"
+            placeholder="Nhập mã bài kinh..."
             className="w-full px-3"
             {...formik.getFieldProps("code")}
             error={formik.touched.code && !!formik.errors.code}
@@ -97,8 +101,8 @@ const VolumeEditSheet: FC<VolumeEditSheetProps> = ({
         <div>
           <FormInput
             type="text"
-            label="Tên quyển kinh"
-            placeholder="Nhập tên quyển kinh..."
+            label="Tên bài kinh"
+            placeholder="Nhập tên bài kinh..."
             className="w-full px-3"
             {...formik.getFieldProps("name")}
             error={formik.touched.name && !!formik.errors.name}
@@ -110,4 +114,4 @@ const VolumeEditSheet: FC<VolumeEditSheetProps> = ({
   );
 };
 
-export default VolumeEditSheet;
+export default OrisonEditSheet;

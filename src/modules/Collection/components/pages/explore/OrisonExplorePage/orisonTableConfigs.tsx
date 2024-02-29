@@ -1,18 +1,18 @@
 import { CustomTableConfig } from "src/components/custom-table";
-import { Volume, VolumeDetail } from "src/types/volume";
+import { Orison, OrisonDetail } from "src/types/orison";
 
-export const volumeTableConfigs: CustomTableConfig<
-  Volume["id"],
-  VolumeDetail
+export const orisonTableConfigs: CustomTableConfig<
+  Orison["id"],
+  OrisonDetail
 >[] = [
   {
     key: "name",
-    headerLabel: "Tên quyển kinh",
+    headerLabel: "Tên bài kinh",
     type: "string",
   },
   {
     key: "code",
-    headerLabel: "Mã quyển kinh",
+    headerLabel: "Mã bài kinh",
     type: "string",
   },
   {

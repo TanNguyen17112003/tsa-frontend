@@ -27,7 +27,6 @@ interface ContextValue {
 }
 
 export const VolumesContext = createContext<ContextValue>({
-  sutra: initialSutra,
   getVolumesApi: DEFAULT_FUNCTION_RETURN,
 
   createVolume: async () => {},
@@ -103,7 +102,7 @@ const VolumesProvider = ({ children }: { children: ReactNode }) => {
         await VolumesApi.deleteVolume(ids);
         getVolumesApi.setData([
           ...(getVolumesApi.data || []).filter(
-            (sutra) => !ids.includes(sutra.id)
+            (volume) => !ids.includes(volume.id)
           ),
         ]);
         updateTree((tree) => ({

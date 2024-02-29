@@ -29,11 +29,18 @@ const SutraItems: FC<SutraItemsProps> = (props) => {
 
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: string) => {
+      const sutra = getCollectionTreeApi.data?.sutras?.find(
+        (sutra) => sutra.id == id
+      );
+      const collection = getCollectionTreeApi.data?.collections?.find(
+        (collection) => collection.id == sutra?.collection_id
+      );
       router.replace({
         pathname: router.pathname,
         query: {
           ...router.query,
           searchType: "",
+          collectionId: collection?.id || "",
           sutraId: id == router.query.sutraId ? "" : id,
           volumeId: "",
           orisonId: "",
@@ -44,7 +51,12 @@ const SutraItems: FC<SutraItemsProps> = (props) => {
         e.stopPropagation();
       }
     },
-    [expandedIds, router]
+    [
+      expandedIds,
+      getCollectionTreeApi.data?.collections,
+      getCollectionTreeApi.data?.sutras,
+      router,
+    ]
   );
 
   return (

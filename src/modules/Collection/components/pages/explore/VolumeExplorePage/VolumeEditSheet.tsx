@@ -71,8 +71,6 @@ const VolumeEditSheet: FC<VolumeEditSheetProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [volume?.id, open]);
 
-  console.log("formik.errors", formik.errors);
-
   return (
     <CustomSheet
       open={open}

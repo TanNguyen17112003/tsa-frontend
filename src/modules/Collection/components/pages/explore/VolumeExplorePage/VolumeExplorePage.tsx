@@ -11,7 +11,6 @@ import { VolumeDetail } from "src/types/volume";
 import useFunction from "src/hooks/use-function";
 import { useRouter } from "next/router";
 import { volumeTableConfigs } from "./volumeTableConfigs";
-import { useSutrasContext } from "src/contexts/sutras/sutras-context";
 import { initialSutra } from "src/types/sutra";
 import VolumeEditSheet from "./VolumeEditSheet";
 import CollectionBreadcrumb from "../../../CollectionBreadcrumb";
@@ -22,19 +21,16 @@ interface VolumeExplorePageProps {
 
 const VolumeExplorePage: FC<VolumeExplorePageProps> = ({ sutraId }) => {
   const router = useRouter();
-  const { getSutrasApi } = useSutrasContext();
-  const sutra = useMemo(() => {
-    return (
-      getSutrasApi.data?.find((sutra) => sutra.id == sutraId) || initialSutra
-    );
-  }, [sutraId, getSutrasApi.data]);
-  const { getVolumesApi, deleteVolume } = useVolumesContext();
+
+  const { getVolumesApi, deleteVolume, sutra } = useVolumesContext();
   const editDrawer = useDrawer<VolumeDetail>();
 
   const volumes = useMemo(() => {
-    return (getVolumesApi.data || []).map((volume) => ({ ...volume, sutra }));
+    return (getVolumesApi.data || []).map((volume) => ({
+      ...volume,
+      sutra: sutra || initialSutra,
+    }));
   }, [getVolumesApi.data, sutra]);
-  console.log("volumes", volumes);
 
   const pagination = usePagination({ count: volumes.length });
   const select = useSelection<VolumeDetail>(volumes);
@@ -60,11 +56,6 @@ const VolumeExplorePage: FC<VolumeExplorePageProps> = ({ sutraId }) => {
     successMessage: "Xoá bộ kinh thành công!",
   });
 
-  useEffect(() => {
-    getVolumesApi.call({ sutra_id: sutraId });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sutraId]);
-
   return (
     <>
       <div className="flex justify-between p-5 py-6 sticky top-0 z-10 bg-white">
@@ -81,7 +72,7 @@ const VolumeExplorePage: FC<VolumeExplorePageProps> = ({ sutraId }) => {
           </Button>
 
           <VolumeEditSheet
-            sutra={sutra}
+            sutra={sutra || initialSutra}
             open={editDrawer.open}
             onOpenChange={(open) =>
               open ? editDrawer.handleOpen() : editDrawer.handleClose()

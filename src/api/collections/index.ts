@@ -62,7 +62,7 @@ export interface SutraMin {
 export interface VolumeMin {
   id: string;
   name: string;
-  sutra_id: string;
+  sutras_id: string;
 }
 
 export interface OrisonMin {

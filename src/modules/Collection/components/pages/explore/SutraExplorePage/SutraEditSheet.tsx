@@ -110,7 +110,6 @@ const SutraEditSheet: FC<SutraEditSheetProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sutra?.id, open]);
 
-  console.log("formik.values", formik.values);
   return (
     <CustomSheet
       open={open}

@@ -27,6 +27,7 @@ const CollectionItems: FC<CollectionItemsProps> = (props) => {
         pathname: router.pathname,
         query: {
           ...router.query,
+          searchType: "",
           collectionId: id == router.query.collectionId ? "" : id,
           sutraId: "",
           volumeId: "",

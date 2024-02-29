@@ -33,6 +33,7 @@ const SutraItems: FC<SutraItemsProps> = (props) => {
         pathname: router.pathname,
         query: {
           ...router.query,
+          searchType: "",
           sutraId: id == router.query.sutraId ? "" : id,
           volumeId: "",
           orisonId: "",

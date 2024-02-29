@@ -28,6 +28,7 @@ const VolumeItems: FC<VolumeItemsProps> = (props) => {
         pathname: router.pathname,
         query: {
           ...router.query,
+          searchType: "",
           volumeId: id == router.query.volumeId ? "" : id,
           orisonId: "",
         },

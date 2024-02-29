@@ -1,5 +1,5 @@
-import { CustomTableConfig } from "src/components/custom-table";
 import * as yup from "yup";
+import { SutraDetail, initialSutra } from "./sutra";
 
 export interface Volume {
   id: string;
@@ -9,45 +9,19 @@ export interface Volume {
   created_at?: Date;
 }
 
-export interface VolumeDetail extends Volume {}
+export interface VolumeDetail extends Volume {
+  sutra: SutraDetail;
+}
 
 export const volumeSchema = yup.object().shape({
   name: yup.string().required("Vui lòng nhập name"),
   code: yup.string().required("Vui lòng nhập code"),
-  sutras_id: yup.string().required("Vui lòng nhập sutras_id"),
 });
-
-const volumeTableConfigs: CustomTableConfig<Volume["id"], VolumeDetail>[] = [
-  {
-    key: "id",
-    headerLabel: "id",
-    type: "string",
-  },
-  {
-    key: "name",
-    headerLabel: "name",
-    type: "string",
-  },
-  {
-    key: "code",
-    headerLabel: "code",
-    type: "string",
-  },
-  {
-    key: "sutras_id",
-    headerLabel: "sutras_id",
-    type: "string",
-  },
-  {
-    key: "created_at",
-    headerLabel: "created_at",
-    type: "date",
-  },
-];
 
 export const initialVolume: VolumeDetail = {
   id: "",
   name: "",
   code: "",
   sutras_id: "",
+  sutra: initialSutra,
 };

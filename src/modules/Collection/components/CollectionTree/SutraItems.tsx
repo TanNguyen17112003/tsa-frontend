@@ -9,30 +9,37 @@ import { useCollectionTreeContext } from "./CollectionTree";
 import VolumeItems from "./VolumeItems";
 import { useRouter } from "next/router";
 import clsx from "clsx";
+import { useCollectionCategoriesContext } from "src/contexts/collections/collection-categories-context";
 
 interface SutraItemsProps {
   collectionId: string;
 }
 
 const SutraItems: FC<SutraItemsProps> = (props) => {
-  const { expandedIds, setExpandedIds, getCollectionTreeApi } =
-    useCollectionTreeContext();
+  const { tree } = useCollectionCategoriesContext();
+  const { expandedIds, setExpandedIds } = useCollectionTreeContext();
   const router = useRouter();
 
   const items = useMemo(() => {
     return (
-      getCollectionTreeApi.data?.sutras.filter(
+      tree?.sutras.filter(
         (sutra) => sutra.collection_id == props.collectionId
       ) || []
     );
-  }, [getCollectionTreeApi.data?.sutras, props.collectionId]);
+  }, [tree?.sutras, props.collectionId]);
 
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: string) => {
+      const sutra = tree?.sutras?.find((sutra) => sutra.id == id);
+      const collection = tree?.collections?.find(
+        (collection) => collection.id == sutra?.collection_id
+      );
       router.replace({
         pathname: router.pathname,
         query: {
           ...router.query,
+          searchType: "",
+          collectionId: collection?.id || "",
           sutraId: id == router.query.sutraId ? "" : id,
           volumeId: "",
           orisonId: "",
@@ -43,7 +50,7 @@ const SutraItems: FC<SutraItemsProps> = (props) => {
         e.stopPropagation();
       }
     },
-    [expandedIds, router]
+    [expandedIds, tree?.collections, tree?.sutras, router]
   );
 
   return (

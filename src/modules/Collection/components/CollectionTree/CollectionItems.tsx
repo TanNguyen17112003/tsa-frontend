@@ -9,17 +9,18 @@ import {
 } from "./CollectionTreeAccordion";
 import SutraItems from "./SutraItems";
 import clsx from "clsx";
+import { useCollectionCategoriesContext } from "src/contexts/collections/collection-categories-context";
 
 interface CollectionItemsProps {}
 
 const CollectionItems: FC<CollectionItemsProps> = (props) => {
-  const { expandedIds, setExpandedIds, getCollectionTreeApi } =
-    useCollectionTreeContext();
+  const { tree } = useCollectionCategoriesContext();
+  const { expandedIds, setExpandedIds } = useCollectionTreeContext();
   const router = useRouter();
 
   const items = useMemo(() => {
-    return getCollectionTreeApi.data?.collections || [];
-  }, [getCollectionTreeApi.data?.collections]);
+    return tree?.collections || [];
+  }, [tree?.collections]);
 
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: string) => {
@@ -27,6 +28,7 @@ const CollectionItems: FC<CollectionItemsProps> = (props) => {
         pathname: router.pathname,
         query: {
           ...router.query,
+          searchType: "",
           collectionId: id == router.query.collectionId ? "" : id,
           sutraId: "",
           volumeId: "",

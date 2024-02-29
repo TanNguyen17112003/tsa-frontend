@@ -8,11 +8,11 @@ import {
 } from "src/utils/api-request";
 
 export class VolumesApi {
-  static async postVolume(request: Omit<Volume, "id">): Promise<Volume["id"]> {
+  static async postVolume(request: Omit<Volume, "id">): Promise<Volume> {
     return await apiPost("/volumes", request);
   }
 
-  static async getVolumes(request: {}): Promise<VolumeDetail[]> {
+  static async getVolumes(request: GetVolumesPayload): Promise<VolumeDetail[]> {
     const response = await apiGet("/volumes", getFormData(request));
     return response;
   }
@@ -21,7 +21,11 @@ export class VolumesApi {
     return await apiPatch(`/volumes/${request.id}`, request);
   }
 
-  static async deleteVolume(id: Volume["id"]) {
-    return await apiDelete(`/volumes/${id}`, { id });
+  static async deleteVolume(ids: Volume["id"][]) {
+    return await apiDelete(`/volumes`, { ids });
   }
+}
+
+export interface GetVolumesPayload {
+  sutra_id: string;
 }

@@ -7,16 +7,9 @@ import {
   useEffect,
   useState,
 } from "react";
-import { CollectionsApi } from "src/api/collections";
-import useFunction, {
-  DEFAULT_FUNCTION_RETURN,
-  UseFunctionReturnType,
-} from "src/hooks/use-function";
-import data, { CollectionTreeResponse } from "./data";
 import CollectionItems from "./CollectionItems";
 
 interface ContextValue {
-  getCollectionTreeApi: UseFunctionReturnType<FormData, CollectionTreeResponse>;
   expandedIds: string[];
   setExpandedIds: Dispatch<SetStateAction<string[] | undefined>>;
 }
@@ -24,13 +17,11 @@ interface ContextValue {
 const storageKey = "collectionExpandedIds";
 
 export const CollectionTreeContext = createContext<ContextValue>({
-  getCollectionTreeApi: DEFAULT_FUNCTION_RETURN,
   expandedIds: [],
   setExpandedIds: () => {},
 });
 
 const CollectionTreeProvider = ({ children }: { children: ReactNode }) => {
-  const getCollectionTreeApi = useFunction(CollectionsApi.getCollectionTree);
   const [expandedIds, setExpandedIds] = useState<string[]>();
 
   useEffect(() => {
@@ -49,14 +40,9 @@ const CollectionTreeProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [expandedIds]);
 
-  useEffect(() => {
-    getCollectionTreeApi.setData(data);
-  }, [getCollectionTreeApi]);
-
   return (
     <CollectionTreeContext.Provider
       value={{
-        getCollectionTreeApi,
         expandedIds: expandedIds || [],
         setExpandedIds,
       }}

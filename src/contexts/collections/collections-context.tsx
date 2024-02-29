@@ -11,6 +11,7 @@ import useFunction, {
   UseFunctionReturnType,
 } from "src/hooks/use-function";
 import { Collection, CollectionDetail } from "src/types/collection";
+import { useCollectionCategoriesContext } from "./collection-categories-context";
 
 interface ContextValue {
   getCollectionsApi: UseFunctionReturnType<FormData, CollectionDetail[]>;
@@ -29,28 +30,32 @@ export const CollectionsContext = createContext<ContextValue>({
 });
 
 const CollectionsProvider = ({ children }: { children: ReactNode }) => {
+  const { updateTree } = useCollectionCategoriesContext();
   const getCollectionsApi = useFunction(CollectionsApi.getCollections);
 
   const createCollection = useCallback(
     async (request: Omit<CollectionDetail, "id">) => {
       try {
-        const id = await CollectionsApi.postCollection(request);
-        if (id) {
+        const collection = await CollectionsApi.postCollection(request);
+        if (collection) {
           const newCollections: CollectionDetail[] = [
             {
               ...request,
-              id: id,
+              id: collection.id,
             },
             ...(getCollectionsApi.data || []),
           ];
-          console.log("newCollections", newCollections);
           getCollectionsApi.setData(newCollections);
+          updateTree((tree) => ({
+            ...tree,
+            collections: [...tree.collections, collection],
+          }));
         }
       } catch (error) {
         throw error;
       }
     },
-    [getCollectionsApi]
+    [getCollectionsApi, updateTree]
   );
 
   const updateCollection = useCallback(
@@ -62,11 +67,17 @@ const CollectionsProvider = ({ children }: { children: ReactNode }) => {
             c.id == Collection.id ? Object.assign(c, Collection) : c
           )
         );
+        updateTree((tree) => ({
+          ...tree,
+          collections: tree.collections.map((c) =>
+            c.id == Collection.id ? Object.assign(c, Collection) : c
+          ),
+        }));
       } catch (error) {
         throw error;
       }
     },
-    [getCollectionsApi]
+    [getCollectionsApi, updateTree]
   );
 
   const deleteCollection = useCallback(
@@ -78,11 +89,17 @@ const CollectionsProvider = ({ children }: { children: ReactNode }) => {
             (collection) => !ids.includes(collection.id)
           ),
         ]);
+        updateTree((tree) => ({
+          ...tree,
+          collections: tree.collections.filter(
+            (collection) => !ids.includes(collection.id)
+          ),
+        }));
       } catch (error) {
         throw error;
       }
     },
-    [getCollectionsApi]
+    [getCollectionsApi, updateTree]
   );
 
   useEffect(() => {

@@ -1,5 +1,9 @@
-import { CollectionTreeResponse } from "src/modules/Collection/components/CollectionTree/data";
+import { Author } from "src/types/author";
+import { Circa } from "src/types/circas";
 import { Collection, CollectionDetail } from "src/types/collection";
+import { FormatPage } from "src/types/format-page";
+import { FormatSutra } from "src/types/format-sutra";
+import { FormatWord } from "src/types/format-word";
 import {
   apiGet,
   apiPost,
@@ -11,7 +15,7 @@ import {
 export class CollectionsApi {
   static async postCollection(
     request: Omit<Collection, "id">
-  ): Promise<Collection["id"]> {
+  ): Promise<Collection> {
     return await apiPost("/collections", request);
   }
 
@@ -21,7 +25,15 @@ export class CollectionsApi {
   }
 
   static async getCollectionTree(request: {}): Promise<CollectionTreeResponse> {
-    const response = await apiGet("/collections", getFormData(request));
+    const response = await apiGet("/collections/tree", getFormData(request));
+    return response;
+  }
+
+  static async getCollectionCategories(request: {}): Promise<CollectionCategoriesResponse> {
+    const response = await apiGet(
+      "/collections/categories",
+      getFormData(request)
+    );
     return response;
   }
 
@@ -34,4 +46,49 @@ export class CollectionsApi {
   static async deleteCollection(ids: Collection["id"][]) {
     return await apiDelete(`/collections`, { ids });
   }
+}
+
+export interface CollectionMin {
+  id: string;
+  name: string;
+}
+
+export interface SutraMin {
+  id: string;
+  name: string;
+  collection_id: string;
+}
+
+export interface VolumeMin {
+  id: string;
+  name: string;
+  sutras_id: string;
+}
+
+export interface OrisonMin {
+  id: string;
+  name: string;
+  volume_id: string;
+}
+
+export interface UserMin {
+  id: string;
+  full_name: string;
+}
+
+// Define interface for the entire data structure
+export interface CollectionTreeResponse {
+  collections: CollectionMin[];
+  sutras: SutraMin[];
+  volumes: VolumeMin[];
+  orisons: OrisonMin[];
+}
+
+export interface CollectionCategoriesResponse {
+  authors: Author[];
+  format_sutras: FormatSutra[];
+  format_words: FormatWord[];
+  format_pages: FormatPage[];
+  circas: Circa[];
+  translators: UserMin[];
 }

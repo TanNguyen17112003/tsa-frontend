@@ -5,7 +5,7 @@ import {
   SelectContent,
   SelectItem,
 } from "src/components/shadcn/ui/select";
-import type { FC } from "react";
+import type { FC, ReactNode } from "react";
 import clsx from "clsx";
 
 export interface SelectOption {
@@ -20,6 +20,8 @@ interface CustomSelectProps {
   onValueChange: (value: string) => void;
   value?: string;
   options: SelectOption[];
+  error?: boolean;
+  helperText?: ReactNode;
 }
 
 const CustomSelect: FC<CustomSelectProps> = ({
@@ -29,6 +31,8 @@ const CustomSelect: FC<CustomSelectProps> = ({
   onValueChange,
   value,
   options,
+  error,
+  helperText,
 }) => {
   return (
     <div>
@@ -49,6 +53,11 @@ const CustomSelect: FC<CustomSelectProps> = ({
           ))}
         </SelectContent>
       </Select>
+      {helperText && (
+        <div className={clsx("text-xs", error && "text-destructive")}>
+          {helperText}
+        </div>
+      )}
     </div>
   );
 };

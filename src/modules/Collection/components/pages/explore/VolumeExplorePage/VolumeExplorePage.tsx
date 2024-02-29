@@ -1,48 +1,52 @@
-import { useRouter } from "next/router";
-import { useCallback, useMemo, type FC } from "react";
+import { useMemo, type FC, useCallback, useEffect } from "react";
 import { PiTrashBold } from "react-icons/pi";
 import { CustomTable } from "src/components/custom-table";
 import { Button } from "src/components/shadcn/ui/button";
 import Pagination from "src/components/ui/Pagination";
-import { useSutrasContext } from "src/contexts/sutras/sutras-context";
+import { useVolumesContext } from "src/contexts/volumes/volumes-context";
 import { useDrawer } from "src/hooks/use-drawer";
-import useFunction from "src/hooks/use-function";
 import usePagination from "src/hooks/use-pagination";
 import { useSelection } from "src/hooks/use-selection";
-import { initialCollection } from "src/types/collection";
-import { SutraDetail } from "src/types/sutra";
+import { VolumeDetail } from "src/types/volume";
+import useFunction from "src/hooks/use-function";
+import { useRouter } from "next/router";
+import { volumeTableConfigs } from "./volumeTableConfigs";
+import { initialSutra } from "src/types/sutra";
+import VolumeEditSheet from "./VolumeEditSheet";
 import CollectionBreadcrumb from "../../../CollectionBreadcrumb";
-import SutraEditSheet from "./SutraEditSheet";
-import { sutraTableConfigs } from "./sutraTableConfigs";
 
-interface SutraExplorePageProps {}
+interface VolumeExplorePageProps {
+  sutraId: string;
+}
 
-const SutraExplorePage: FC<SutraExplorePageProps> = ({}) => {
+const VolumeExplorePage: FC<VolumeExplorePageProps> = ({ sutraId }) => {
   const router = useRouter();
-  const { collection } = useSutrasContext();
 
-  const { getSutrasApi, deleteSutra } = useSutrasContext();
-  const editDrawer = useDrawer<SutraDetail>();
+  const { getVolumesApi, deleteVolume, sutra } = useVolumesContext();
+  const editDrawer = useDrawer<VolumeDetail>();
 
-  const sutras = useMemo(() => {
-    return getSutrasApi.data || [];
-  }, [getSutrasApi.data]);
+  const volumes = useMemo(() => {
+    return (getVolumesApi.data || []).map((volume) => ({
+      ...volume,
+      sutra: sutra || initialSutra,
+    }));
+  }, [getVolumesApi.data, sutra]);
 
-  const pagination = usePagination({ count: sutras.length });
-  const select = useSelection<SutraDetail>(sutras);
+  const pagination = usePagination({ count: volumes.length });
+  const select = useSelection<VolumeDetail>(volumes);
 
   const handleDelete = useCallback(
     async ({}) => {
-      await deleteSutra(select.selected.map((select) => select.id));
+      await deleteVolume(select.selected.map((select) => select.id));
     },
-    [deleteSutra, select.selected]
+    [deleteVolume, select.selected]
   );
 
   const handleClickRow = useCallback(
-    (row: SutraDetail) => {
+    (row: VolumeDetail) => {
       router.replace({
         pathname: router.pathname,
-        query: { ...router.query, sutraId: row.id },
+        query: { ...router.query, volumeId: row.id },
       });
     },
     [router]
@@ -67,22 +71,22 @@ const SutraExplorePage: FC<SutraExplorePageProps> = ({}) => {
             <PiTrashBold className="w-5 h-5" /> Xoá
           </Button>
 
-          <SutraEditSheet
-            collection={collection || initialCollection}
+          <VolumeEditSheet
+            sutra={sutra || initialSutra}
             open={editDrawer.open}
             onOpenChange={(open) =>
               open ? editDrawer.handleOpen() : editDrawer.handleClose()
             }
-            sutra={editDrawer.data}
+            volume={editDrawer.data}
           />
         </div>
       </div>
       <div className="px-4 flex-1 pb-6">
         <CustomTable
-          loading={getSutrasApi.loading}
+          loading={getVolumesApi.loading}
           select={select}
-          rows={sutras}
-          configs={sutraTableConfigs}
+          rows={volumes}
+          configs={volumeTableConfigs}
           pagination={pagination}
           onClickEdit={editDrawer.handleOpen}
           onClickRow={handleClickRow}
@@ -105,4 +109,4 @@ const SutraExplorePage: FC<SutraExplorePageProps> = ({}) => {
   );
 };
 
-export default SutraExplorePage;
+export default VolumeExplorePage;

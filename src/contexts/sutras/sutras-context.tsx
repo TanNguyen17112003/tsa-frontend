@@ -1,20 +1,25 @@
-
+import { useRouter } from "next/router";
 import {
   createContext,
   ReactNode,
   useCallback,
   useEffect,
   useContext,
+  useMemo,
 } from "react";
-import { SutrasApi } from "src/api/sutras";
+import { GetSutrasPayload, SutrasApi } from "src/api/sutras";
 import useFunction, {
   DEFAULT_FUNCTION_RETURN,
   UseFunctionReturnType,
 } from "src/hooks/use-function";
 import { Sutra, SutraDetail } from "src/types/sutra";
+import { useCollectionsContext } from "../collections/collections-context";
+import { CollectionDetail } from "src/types/collection";
+import { useCollectionCategoriesContext } from "../collections/collection-categories-context";
 
 interface ContextValue {
-  getSutrasApi: UseFunctionReturnType<FormData, SutraDetail[]>;
+  collection?: CollectionDetail;
+  getSutrasApi: UseFunctionReturnType<GetSutrasPayload, SutraDetail[]>;
 
   createSutra: (requests: Omit<SutraDetail, "id">) => Promise<void>;
   updateSutra: (Sutra: Partial<SutraDetail>) => Promise<void>;
@@ -30,27 +35,47 @@ export const SutrasContext = createContext<ContextValue>({
 });
 
 const SutrasProvider = ({ children }: { children: ReactNode }) => {
+  const router = useRouter();
+  const { updateTree } = useCollectionCategoriesContext();
+  const { getCollectionsApi } = useCollectionsContext();
+  const collection = useMemo(() => {
+    const collectionId = (
+      router.query.collectionId ||
+      router.query.qCollectionId ||
+      ""
+    )?.toString();
+    return getCollectionsApi.data?.find((c) => c.id == collectionId);
+  }, [
+    getCollectionsApi.data,
+    router.query.collectionId,
+    router.query.qCollectionId,
+  ]);
+
   const getSutrasApi = useFunction(SutrasApi.getSutras);
 
   const createSutra = useCallback(
     async (request: Omit<SutraDetail, "id">) => {
       try {
-        const id = await SutrasApi.postSutra(request);
-        if (id) {
+        const sutra = await SutrasApi.postSutra(request);
+        if (sutra) {
           const newSutras: SutraDetail[] = [
             {
               ...request,
-              id: id,
+              id: sutra.id,
             },
             ...(getSutrasApi.data || []),
           ];
           getSutrasApi.setData(newSutras);
+          updateTree((tree) => ({
+            ...tree,
+            sutras: [...tree.sutras, sutra],
+          }));
         }
       } catch (error) {
         throw error;
       }
     },
-    [getSutrasApi]
+    [getSutrasApi, updateTree]
   );
 
   const updateSutra = useCallback(
@@ -62,53 +87,50 @@ const SutrasProvider = ({ children }: { children: ReactNode }) => {
             c.id == Sutra.id ? Object.assign(c, Sutra) : c
           )
         );
+        updateTree((tree) => ({
+          ...tree,
+          sutras: tree.sutras.map((c) =>
+            c.id == Sutra.id ? Object.assign(c, Sutra) : c
+          ),
+        }));
       } catch (error) {
         throw error;
       }
     },
-    [getSutrasApi]
+    [getSutrasApi, updateTree]
   );
 
   const deleteSutra = useCallback(
     async (ids: Sutra["id"][]) => {
       try {
-        const results = await Promise.allSettled(
-          ids.map((id) => SutrasApi.deleteSutra(id))
-        );
+        await SutrasApi.deleteSutra(ids);
         getSutrasApi.setData([
           ...(getSutrasApi.data || []).filter(
-            (Sutra) =>
-              !results.find(
-                (result, index) =>
-                  result.status == "fulfilled" && ids[index] == Sutra.id
-              )
+            (sutra) => !ids.includes(sutra.id)
           ),
         ]);
-        results.forEach((result, index) => {
-          if (result.status == "rejected") {
-            throw new Error(
-              "Không thể xoá danh mục: " +
-                ids[index] +
-                ". " +
-                result.reason.toString()
-            );
-          }
-        });
+        updateTree((tree) => ({
+          ...tree,
+          sutras: tree.sutras.filter((sutra) => !ids.includes(sutra.id)),
+        }));
       } catch (error) {
         throw error;
       }
     },
-    [getSutrasApi]
+    [getSutrasApi, updateTree]
   );
 
   useEffect(() => {
-    getSutrasApi.call(new FormData());
+    if (collection) {
+      getSutrasApi.call({ collection_id: collection.id });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [collection]);
 
   return (
     <SutrasContext.Provider
       value={{
+        collection,
         getSutrasApi,
 
         createSutra,

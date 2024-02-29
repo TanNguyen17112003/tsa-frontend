@@ -1,4 +1,6 @@
 import * as yup from "yup";
+import { Author, initialAuthor } from "./author";
+import { Circa, initialCirca } from "./circas";
 
 export interface Sutra {
   id: string;
@@ -12,7 +14,17 @@ export interface Sutra {
   user_id: string;
 }
 
-export interface SutraDetail extends Sutra {}
+export interface SutraTransaltor {
+  id: string;
+  full_name: string;
+}
+
+export interface SutraDetail extends Sutra {
+  num_orisons: number;
+  author: Author;
+  circa: Circa;
+  translator: SutraTransaltor;
+}
 
 export const sutraSchema = yup.object().shape({
   name: yup.string().required("Vui lòng nhập name"),
@@ -31,4 +43,8 @@ export const initialSutra: SutraDetail = {
   circa_id: "",
   author_id: "",
   user_id: "",
+  num_orisons: 0,
+  author: initialAuthor,
+  circa: initialCirca,
+  translator: { id: "", full_name: "" },
 };

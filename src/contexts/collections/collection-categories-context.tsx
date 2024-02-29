@@ -14,6 +14,7 @@ export const CollectionCategoriesContext = createContext<ContextValue>({
   format_words: [],
   format_pages: [],
   circas: [],
+  translators: [],
 });
 
 const CollectionCategoriesProvider = ({
@@ -31,7 +32,7 @@ const CollectionCategoriesProvider = ({
   if (!getCategoriesApi.data) {
     return (
       <div className="h-[200px] flex items-center justify-center">
-        <Loading size="h-[100px] w-[100px]" />
+        <Loading />
       </div>
     );
   }

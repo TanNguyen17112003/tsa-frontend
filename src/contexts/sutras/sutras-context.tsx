@@ -1,4 +1,3 @@
-
 import {
   createContext,
   ReactNode,
@@ -6,7 +5,7 @@ import {
   useEffect,
   useContext,
 } from "react";
-import { SutrasApi } from "src/api/sutras";
+import { GetSutrasPayload, SutrasApi } from "src/api/sutras";
 import useFunction, {
   DEFAULT_FUNCTION_RETURN,
   UseFunctionReturnType,
@@ -14,7 +13,7 @@ import useFunction, {
 import { Sutra, SutraDetail } from "src/types/sutra";
 
 interface ContextValue {
-  getSutrasApi: UseFunctionReturnType<FormData, SutraDetail[]>;
+  getSutrasApi: UseFunctionReturnType<GetSutrasPayload, SutraDetail[]>;
 
   createSutra: (requests: Omit<SutraDetail, "id">) => Promise<void>;
   updateSutra: (Sutra: Partial<SutraDetail>) => Promise<void>;
@@ -72,39 +71,18 @@ const SutrasProvider = ({ children }: { children: ReactNode }) => {
   const deleteSutra = useCallback(
     async (ids: Sutra["id"][]) => {
       try {
-        const results = await Promise.allSettled(
-          ids.map((id) => SutrasApi.deleteSutra(id))
-        );
+        await SutrasApi.deleteSutra(ids);
         getSutrasApi.setData([
           ...(getSutrasApi.data || []).filter(
-            (Sutra) =>
-              !results.find(
-                (result, index) =>
-                  result.status == "fulfilled" && ids[index] == Sutra.id
-              )
+            (sutra) => !ids.includes(sutra.id)
           ),
         ]);
-        results.forEach((result, index) => {
-          if (result.status == "rejected") {
-            throw new Error(
-              "Không thể xoá danh mục: " +
-                ids[index] +
-                ". " +
-                result.reason.toString()
-            );
-          }
-        });
       } catch (error) {
         throw error;
       }
     },
     [getSutrasApi]
   );
-
-  useEffect(() => {
-    getSutrasApi.call(new FormData());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <SutrasContext.Provider

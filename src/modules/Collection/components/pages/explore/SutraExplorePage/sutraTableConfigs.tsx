@@ -5,33 +5,39 @@ export const sutraTableConfigs: CustomTableConfig<Sutra["id"], SutraDetail>[] =
   [
     {
       key: "name",
-      headerLabel: "name",
+      headerLabel: "Tên bộ kinh",
       type: "string",
     },
     {
       key: "code",
-      headerLabel: "code",
+      headerLabel: "Mã bộ kinh",
       type: "string",
     },
     {
       key: "original_text",
-      headerLabel: "original_text",
+      headerLabel: "Văn bản gốc",
       type: "string",
     },
 
     {
-      key: "circa_id",
-      headerLabel: "circa_id",
+      key: "num_orisons",
+      headerLabel: "Số lượng bài kinh",
+      type: "number",
+    },
+    {
+      key: "author.author",
+      headerLabel: "Tác giả",
       type: "string",
     },
     {
-      key: "author_id",
-      headerLabel: "author_id",
+      key: "translator.full_name",
+      headerLabel: "Dịch giả",
       type: "string",
     },
     {
-      key: "user_id",
-      headerLabel: "user_id",
+      key: "circa",
+      headerLabel: "Niên đại",
       type: "string",
+      renderCell: (data) => `${data.circa.start_year} - ${data.circa.end_year}`,
     },
   ];

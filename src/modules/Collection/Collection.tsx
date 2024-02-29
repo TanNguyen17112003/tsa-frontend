@@ -41,7 +41,13 @@ const Collection: FC<CollectionProps> = ({ sideNavClassName }) => {
         </div>
         <CollectionTree />
       </div>
-      {query.searchType == "text" ? (
+      {query.volumeId ? (
+        <OrisonPage />
+      ) : query.sutraId ? (
+        <VolumnExplorePage />
+      ) : query.collectionId ? (
+        <SutraExplorePage collectionId={query.collectionId.toString()} />
+      ) : query.searchType == "text" ? (
         <TextSearchPage />
       ) : query.searchType == "sutra" ? (
         <SutraSearchPage />
@@ -57,14 +63,8 @@ const Collection: FC<CollectionProps> = ({ sideNavClassName }) => {
         <AdjacentSearchPage />
       ) : !query.collectionId ? (
         <CollectionExplorePage />
-      ) : query.volumeId ? (
-        <OrisonPage />
-      ) : query.sutraId ? (
-        <VolumnExplorePage />
-      ) : query.collectionId ? (
-        <SutraExplorePage />
       ) : (
-        <AdjacentSearchPage />
+        <> not found</>
       )}
     </>
   );

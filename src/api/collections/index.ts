@@ -1,4 +1,4 @@
-import { Author } from "next/dist/lib/metadata/types/metadata-types";
+import { Author } from "src/types/author";
 import { Circa } from "src/types/circas";
 import { Collection, CollectionDetail } from "src/types/collection";
 import { FormatPage } from "src/types/format-page";
@@ -71,6 +71,11 @@ export interface OrisonMin {
   volume_id: string;
 }
 
+export interface UserMin {
+  id: string;
+  full_name: string;
+}
+
 // Define interface for the entire data structure
 export interface CollectionTreeResponse {
   collections: CollectionMin[];
@@ -85,4 +90,5 @@ export interface CollectionCategoriesResponse {
   format_words: FormatWord[];
   format_pages: FormatPage[];
   circas: Circa[];
+  translators: UserMin[];
 }

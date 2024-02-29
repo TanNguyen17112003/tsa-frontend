@@ -12,7 +12,7 @@ export class SutrasApi {
     return await apiPost("/sutras", request);
   }
 
-  static async getSutras(request: {}): Promise<SutraDetail[]> {
+  static async getSutras(request: GetSutrasPayload): Promise<SutraDetail[]> {
     const response = await apiGet("/sutras", getFormData(request));
     return response;
   }
@@ -21,7 +21,11 @@ export class SutrasApi {
     return await apiPatch(`/sutras/${request.id}`, request);
   }
 
-  static async deleteSutra(id: Sutra["id"]) {
-    return await apiDelete(`/sutras/${id}`, { id });
+  static async deleteSutra(ids: Sutra["id"][]) {
+    return await apiDelete(`/sutras`, { ids });
   }
+}
+
+export interface GetSutrasPayload {
+  collection_id?: string;
 }

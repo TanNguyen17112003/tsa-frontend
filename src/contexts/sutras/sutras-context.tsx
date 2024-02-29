@@ -15,6 +15,7 @@ import useFunction, {
 import { Sutra, SutraDetail } from "src/types/sutra";
 import { useCollectionsContext } from "../collections/collections-context";
 import { CollectionDetail } from "src/types/collection";
+import { useCollectionCategoriesContext } from "../collections/collection-categories-context";
 
 interface ContextValue {
   collection?: CollectionDetail;
@@ -35,6 +36,7 @@ export const SutrasContext = createContext<ContextValue>({
 
 const SutrasProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
+  const { updateTree } = useCollectionCategoriesContext();
   const { getCollectionsApi } = useCollectionsContext();
   const collection = useMemo(() => {
     const collectionId = (
@@ -54,22 +56,26 @@ const SutrasProvider = ({ children }: { children: ReactNode }) => {
   const createSutra = useCallback(
     async (request: Omit<SutraDetail, "id">) => {
       try {
-        const id = await SutrasApi.postSutra(request);
-        if (id) {
+        const sutra = await SutrasApi.postSutra(request);
+        if (sutra) {
           const newSutras: SutraDetail[] = [
             {
               ...request,
-              id: id,
+              id: sutra.id,
             },
             ...(getSutrasApi.data || []),
           ];
           getSutrasApi.setData(newSutras);
+          updateTree((tree) => ({
+            ...tree,
+            sutras: [...tree.sutras, sutra],
+          }));
         }
       } catch (error) {
         throw error;
       }
     },
-    [getSutrasApi]
+    [getSutrasApi, updateTree]
   );
 
   const updateSutra = useCallback(
@@ -81,11 +87,17 @@ const SutrasProvider = ({ children }: { children: ReactNode }) => {
             c.id == Sutra.id ? Object.assign(c, Sutra) : c
           )
         );
+        updateTree((tree) => ({
+          ...tree,
+          sutras: tree.sutras.map((c) =>
+            c.id == Sutra.id ? Object.assign(c, Sutra) : c
+          ),
+        }));
       } catch (error) {
         throw error;
       }
     },
-    [getSutrasApi]
+    [getSutrasApi, updateTree]
   );
 
   const deleteSutra = useCallback(
@@ -97,11 +109,15 @@ const SutrasProvider = ({ children }: { children: ReactNode }) => {
             (sutra) => !ids.includes(sutra.id)
           ),
         ]);
+        updateTree((tree) => ({
+          ...tree,
+          sutras: tree.sutras.filter((sutra) => !ids.includes(sutra.id)),
+        }));
       } catch (error) {
         throw error;
       }
     },
-    [getSutrasApi]
+    [getSutrasApi, updateTree]
   );
 
   useEffect(() => {

@@ -8,7 +8,7 @@ import {
 } from "src/utils/api-request";
 
 export class SutrasApi {
-  static async postSutra(request: Omit<Sutra, "id">): Promise<Sutra["id"]> {
+  static async postSutra(request: Omit<Sutra, "id">): Promise<Sutra> {
     return await apiPost("/sutras", request);
   }
 

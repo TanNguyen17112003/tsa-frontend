@@ -15,6 +15,7 @@ import useFunction, {
 import { SutraDetail, initialSutra } from "src/types/sutra";
 import { Volume, VolumeDetail } from "src/types/volume";
 import { useSutrasContext } from "../sutras/sutras-context";
+import { useCollectionCategoriesContext } from "../collections/collection-categories-context";
 
 interface ContextValue {
   sutra?: SutraDetail;
@@ -36,6 +37,7 @@ export const VolumesContext = createContext<ContextValue>({
 
 const VolumesProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
+  const { updateTree } = useCollectionCategoriesContext();
   const { getSutrasApi } = useSutrasContext();
   const sutra = useMemo(() => {
     const sutraId = (
@@ -51,22 +53,26 @@ const VolumesProvider = ({ children }: { children: ReactNode }) => {
   const createVolume = useCallback(
     async (request: Omit<VolumeDetail, "id">) => {
       try {
-        const id = await VolumesApi.postVolume(request);
-        if (id) {
+        const volume = await VolumesApi.postVolume(request);
+        if (volume) {
           const newVolumes: VolumeDetail[] = [
             {
               ...request,
-              id: id,
+              id: volume.id,
             },
             ...(getVolumesApi.data || []),
           ];
           getVolumesApi.setData(newVolumes);
+          updateTree((tree) => ({
+            ...tree,
+            volumes: [...tree.volumes, volume],
+          }));
         }
       } catch (error) {
         throw error;
       }
     },
-    [getVolumesApi]
+    [getVolumesApi, updateTree]
   );
 
   const updateVolume = useCallback(
@@ -78,11 +84,17 @@ const VolumesProvider = ({ children }: { children: ReactNode }) => {
             c.id == Volume.id ? Object.assign(c, Volume) : c
           )
         );
+        updateTree((tree) => ({
+          ...tree,
+          volumes: tree.volumes.map((c) =>
+            c.id == Volume.id ? Object.assign(c, Volume) : c
+          ),
+        }));
       } catch (error) {
         throw error;
       }
     },
-    [getVolumesApi]
+    [getVolumesApi, updateTree]
   );
 
   const deleteVolume = useCallback(
@@ -94,11 +106,15 @@ const VolumesProvider = ({ children }: { children: ReactNode }) => {
             (sutra) => !ids.includes(sutra.id)
           ),
         ]);
+        updateTree((tree) => ({
+          ...tree,
+          volumes: tree.volumes.filter((volume) => !ids.includes(volume.id)),
+        }));
       } catch (error) {
         throw error;
       }
     },
-    [getVolumesApi]
+    [getVolumesApi, updateTree]
   );
 
   useEffect(() => {

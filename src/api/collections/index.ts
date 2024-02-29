@@ -15,7 +15,7 @@ import {
 export class CollectionsApi {
   static async postCollection(
     request: Omit<Collection, "id">
-  ): Promise<Collection["id"]> {
+  ): Promise<Collection> {
     return await apiPost("/collections", request);
   }
 

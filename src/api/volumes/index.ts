@@ -8,7 +8,7 @@ import {
 } from "src/utils/api-request";
 
 export class VolumesApi {
-  static async postVolume(request: Omit<Volume, "id">): Promise<Volume["id"]> {
+  static async postVolume(request: Omit<Volume, "id">): Promise<Volume> {
     return await apiPost("/volumes", request);
   }
 

@@ -1,8 +1,9 @@
 import { useFormik } from "formik";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, type FC, useMemo } from "react";
+import { useCallback, useEffect, type FC, useMemo, useState } from "react";
 import CustomSelect from "src/components/CustomSelect";
 import CustomSheet from "src/components/CustomSheet";
+import FileDropzone from "src/components/FileDropzone";
 import { Button } from "src/components/shadcn/ui/button";
 import FormInput from "src/components/ui/FormInput";
 import { useCollectionCategoriesContext } from "src/contexts/collections/collection-categories-context";
@@ -27,6 +28,7 @@ const SutraEditSheet: FC<SutraEditSheetProps> = ({
 }) => {
   const { user } = useAuth();
   const { updateSutra, createSutra } = useSutrasContext();
+  const [files, setFiles] = useState<File[]>([]);
   const { authors, circas, translators } = useCollectionCategoriesContext();
 
   const authorOptions = useMemo(() => {
@@ -180,6 +182,13 @@ const SutraEditSheet: FC<SutraEditSheetProps> = ({
             error={formik.touched.circa_id && !!formik.errors.circa_id}
             helperText={!!formik.touched.circa_id && formik.errors.circa_id}
             options={circaOptions}
+          />
+        </div>
+        <div className="col-span-2">
+          <FileDropzone
+            onUpload={(newFiles) => setFiles([...files, ...newFiles])}
+            onClear={() => setFiles([])}
+            fileCount={files.length}
           />
         </div>
       </form>

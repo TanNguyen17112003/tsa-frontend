@@ -50,8 +50,9 @@ const CollectionTreeProvider = ({ children }: { children: ReactNode }) => {
   }, [expandedIds]);
 
   useEffect(() => {
-    getCollectionTreeApi.setData(data);
-  }, [getCollectionTreeApi]);
+    getCollectionTreeApi.call({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <CollectionTreeContext.Provider

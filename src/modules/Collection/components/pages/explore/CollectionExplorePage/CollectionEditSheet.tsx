@@ -68,7 +68,6 @@ const CollectionEditSheet: FC<CollectionEditSheetProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [collection?.id, open]);
 
-  console.log("formik.values", formik.values);
   return (
     <CustomSheet
       open={open}

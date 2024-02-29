@@ -8,12 +8,12 @@ import CollectionsProvider from "src/contexts/collections/collections-context";
 import OrisonsProvider from "src/contexts/orisons/orisons-context";
 import SutrasProvider from "src/contexts/sutras/sutras-context";
 import VolumesProvider from "src/contexts/volumes/volumes-context";
-import { AuthGuard } from "src/guards/auth-guard";
+import { withAuthGuard } from "src/hocs/with-auth-guard";
 import Collection from "src/modules/Collection";
 import { paths } from "src/paths";
 import type { Page as PageType } from "src/types/page";
 
-const Page: PageType = () => {
+const Page: PageType = withAuthGuard(() => {
   const router = useRouter();
 
   const handleClickSearch = useCallback(() => {
@@ -58,8 +58,6 @@ const Page: PageType = () => {
       </div>
     </div>
   );
-};
-
-Page.getLayout = (page) => <AuthGuard>{page}</AuthGuard>;
+});
 
 export default Page;

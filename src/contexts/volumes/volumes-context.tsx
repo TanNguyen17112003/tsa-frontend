@@ -45,7 +45,6 @@ const VolumesProvider = ({ children }: { children: ReactNode }) => {
     )?.toString();
     return getSutrasApi.data?.find((c) => c.id == sutraId);
   }, [getSutrasApi.data, router.query.sutraId, router.query.qSutraId]);
-  console.log("sutra", sutra);
 
   const getVolumesApi = useFunction(VolumesApi.getVolumes);
 

@@ -1,12 +1,15 @@
 import { ReactNode, createContext, useContext, useEffect } from "react";
 import {
   CollectionCategoriesResponse,
+  CollectionTreeResponse,
   CollectionsApi,
 } from "src/api/collections";
 import Loading from "src/components/Loading";
 import useFunction from "src/hooks/use-function";
 
-interface ContextValue extends CollectionCategoriesResponse {}
+interface ContextValue extends CollectionCategoriesResponse {
+  tree?: CollectionTreeResponse;
+}
 
 export const CollectionCategoriesContext = createContext<ContextValue>({
   authors: [],
@@ -22,14 +25,16 @@ const CollectionCategoriesProvider = ({
 }: {
   children: ReactNode;
 }) => {
+  const getCollectionTreeApi = useFunction(CollectionsApi.getCollectionTree);
   const getCategoriesApi = useFunction(CollectionsApi.getCollectionCategories);
 
   useEffect(() => {
     getCategoriesApi.call({});
+    getCollectionTreeApi.call({});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (!getCategoriesApi.data) {
+  if (!getCategoriesApi.data || !getCollectionTreeApi.data) {
     return (
       <div className="h-[200px] flex items-center justify-center">
         <Loading />
@@ -41,6 +46,7 @@ const CollectionCategoriesProvider = ({
     <CollectionCategoriesContext.Provider
       value={{
         ...getCategoriesApi.data,
+        tree: getCollectionTreeApi.data,
       }}
     >
       {children}

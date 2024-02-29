@@ -5,32 +5,30 @@ import { Button } from "src/components/shadcn/ui/button";
 import { useCollectionTreeContext } from "./CollectionTree";
 import { Accordion } from "./CollectionTreeAccordion";
 import clsx from "clsx";
+import { useCollectionCategoriesContext } from "src/contexts/collections/collection-categories-context";
 
 interface VolumeItemsProps {
   sutraId: string;
 }
 
 const VolumeItems: FC<VolumeItemsProps> = (props) => {
-  const { expandedIds, getCollectionTreeApi } = useCollectionTreeContext();
+  const { tree } = useCollectionCategoriesContext();
+  const { expandedIds } = useCollectionTreeContext();
   const router = useRouter();
 
   const items = useMemo(() => {
     return (
-      getCollectionTreeApi.data?.volumes.filter(
-        (volume) => volume.sutras_id == props.sutraId
-      ) || []
+      tree?.volumes.filter((volume) => volume.sutras_id == props.sutraId) || []
     );
-  }, [getCollectionTreeApi.data?.volumes, props.sutraId]);
+  }, [tree?.volumes, props.sutraId]);
 
   const handleClick = useCallback(
     (id: string) => {
-      const volume = getCollectionTreeApi.data?.volumes.find(
-        (volume) => volume.id == id
-      );
-      const sutra = getCollectionTreeApi.data?.sutras?.find(
+      const volume = tree?.volumes.find((volume) => volume.id == id);
+      const sutra = tree?.sutras?.find(
         (sutra) => sutra.id == volume?.sutras_id
       );
-      const collection = getCollectionTreeApi.data?.collections?.find(
+      const collection = tree?.collections?.find(
         (collection) => collection.id == sutra?.collection_id
       );
       router.replace({
@@ -45,12 +43,7 @@ const VolumeItems: FC<VolumeItemsProps> = (props) => {
         },
       });
     },
-    [
-      getCollectionTreeApi.data?.collections,
-      getCollectionTreeApi.data?.sutras,
-      getCollectionTreeApi.data?.volumes,
-      router,
-    ]
+    [tree?.collections, tree?.sutras, tree?.volumes, router]
   );
 
   return (

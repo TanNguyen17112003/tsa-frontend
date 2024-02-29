@@ -1,5 +1,4 @@
 import { useFormik } from "formik";
-import { useRouter } from "next/router";
 import { useCallback, useEffect, type FC, useMemo, useState } from "react";
 import CustomSelect from "src/components/CustomSelect";
 import CustomSheet from "src/components/CustomSheet";
@@ -184,7 +183,7 @@ const SutraEditSheet: FC<SutraEditSheetProps> = ({
             options={circaOptions}
           />
         </div>
-        <div className="col-span-2">
+        <div className="col-span-2 mt-4">
           <FileDropzone
             onUpload={(newFiles) => setFiles([...files, ...newFiles])}
             onClear={() => setFiles([])}

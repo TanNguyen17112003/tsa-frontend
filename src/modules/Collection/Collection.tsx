@@ -13,7 +13,7 @@ import CollectionExplorePage from "./components/pages/explore/CollectionExploreP
 import clsx from "clsx";
 import CollectionTree from "./components/CollectionTree";
 import OrisonPage from "./components/pages/explore/OrisonPage";
-import VolumnExplorePage from "./components/pages/explore/VolumnExplorePage";
+import VolumnExplorePage from "./components/pages/explore/VolumeExplorePage";
 import SutraExplorePage from "./components/pages/explore/SutraExplorePage";
 
 interface CollectionProps {
@@ -58,9 +58,9 @@ const Collection: FC<CollectionProps> = ({ sideNavClassName }) => {
       ) : query.volumeId ? (
         <OrisonPage />
       ) : query.sutraId ? (
-        <VolumnExplorePage />
+        <VolumnExplorePage sutraId={query.sutraId.toString()} />
       ) : query.collectionId ? (
-        <SutraExplorePage collectionId={query.collectionId.toString()} />
+        <SutraExplorePage />
       ) : !query.collectionId ? (
         <CollectionExplorePage />
       ) : (

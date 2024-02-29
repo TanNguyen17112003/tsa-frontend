@@ -1,20 +1,24 @@
-
+import { useRouter } from "next/router";
 import {
   createContext,
   ReactNode,
   useCallback,
   useEffect,
   useContext,
+  useMemo,
 } from "react";
-import { VolumesApi } from "src/api/volumes";
+import { GetVolumesPayload, VolumesApi } from "src/api/volumes";
 import useFunction, {
   DEFAULT_FUNCTION_RETURN,
   UseFunctionReturnType,
 } from "src/hooks/use-function";
+import { SutraDetail, initialSutra } from "src/types/sutra";
 import { Volume, VolumeDetail } from "src/types/volume";
+import { useSutrasContext } from "../sutras/sutras-context";
 
 interface ContextValue {
-  getVolumesApi: UseFunctionReturnType<FormData, VolumeDetail[]>;
+  sutra?: SutraDetail;
+  getVolumesApi: UseFunctionReturnType<GetVolumesPayload, VolumeDetail[]>;
 
   createVolume: (requests: Omit<VolumeDetail, "id">) => Promise<void>;
   updateVolume: (Volume: Partial<VolumeDetail>) => Promise<void>;
@@ -22,6 +26,7 @@ interface ContextValue {
 }
 
 export const VolumesContext = createContext<ContextValue>({
+  sutra: initialSutra,
   getVolumesApi: DEFAULT_FUNCTION_RETURN,
 
   createVolume: async () => {},
@@ -30,6 +35,17 @@ export const VolumesContext = createContext<ContextValue>({
 });
 
 const VolumesProvider = ({ children }: { children: ReactNode }) => {
+  const router = useRouter();
+  const { getSutrasApi } = useSutrasContext();
+  const sutra = useMemo(() => {
+    const sutraId = (
+      router.query.sutraId ||
+      router.query.qSutraId ||
+      ""
+    )?.toString();
+    return getSutrasApi.data?.find((c) => c.id == sutraId);
+  }, [getSutrasApi.data, router.query.sutraId, router.query.qSutraId]);
+
   const getVolumesApi = useFunction(VolumesApi.getVolumes);
 
   const createVolume = useCallback(
@@ -72,28 +88,12 @@ const VolumesProvider = ({ children }: { children: ReactNode }) => {
   const deleteVolume = useCallback(
     async (ids: Volume["id"][]) => {
       try {
-        const results = await Promise.allSettled(
-          ids.map((id) => VolumesApi.deleteVolume(id))
-        );
+        await VolumesApi.deleteVolume(ids);
         getVolumesApi.setData([
           ...(getVolumesApi.data || []).filter(
-            (Volume) =>
-              !results.find(
-                (result, index) =>
-                  result.status == "fulfilled" && ids[index] == Volume.id
-              )
+            (sutra) => !ids.includes(sutra.id)
           ),
         ]);
-        results.forEach((result, index) => {
-          if (result.status == "rejected") {
-            throw new Error(
-              "Không thể xoá danh mục: " +
-                ids[index] +
-                ". " +
-                result.reason.toString()
-            );
-          }
-        });
       } catch (error) {
         throw error;
       }
@@ -102,13 +102,16 @@ const VolumesProvider = ({ children }: { children: ReactNode }) => {
   );
 
   useEffect(() => {
-    getVolumesApi.call(new FormData());
+    if (sutra) {
+      getVolumesApi.call({ sutra_id: sutra.id });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [sutra]);
 
   return (
     <VolumesContext.Provider
       value={{
+        sutra,
         getVolumesApi,
 
         createVolume,

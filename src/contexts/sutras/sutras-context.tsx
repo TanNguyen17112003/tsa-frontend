@@ -1,9 +1,11 @@
+import { useRouter } from "next/router";
 import {
   createContext,
   ReactNode,
   useCallback,
   useEffect,
   useContext,
+  useMemo,
 } from "react";
 import { GetSutrasPayload, SutrasApi } from "src/api/sutras";
 import useFunction, {
@@ -11,8 +13,11 @@ import useFunction, {
   UseFunctionReturnType,
 } from "src/hooks/use-function";
 import { Sutra, SutraDetail } from "src/types/sutra";
+import { useCollectionsContext } from "../collections/collections-context";
+import { CollectionDetail } from "src/types/collection";
 
 interface ContextValue {
+  collection?: CollectionDetail;
   getSutrasApi: UseFunctionReturnType<GetSutrasPayload, SutraDetail[]>;
 
   createSutra: (requests: Omit<SutraDetail, "id">) => Promise<void>;
@@ -29,6 +34,21 @@ export const SutrasContext = createContext<ContextValue>({
 });
 
 const SutrasProvider = ({ children }: { children: ReactNode }) => {
+  const router = useRouter();
+  const { getCollectionsApi } = useCollectionsContext();
+  const collection = useMemo(() => {
+    const collectionId = (
+      router.query.collectionId ||
+      router.query.qCollectionId ||
+      ""
+    )?.toString();
+    return getCollectionsApi.data?.find((c) => c.id == collectionId);
+  }, [
+    getCollectionsApi.data,
+    router.query.collectionId,
+    router.query.qCollectionId,
+  ]);
+
   const getSutrasApi = useFunction(SutrasApi.getSutras);
 
   const createSutra = useCallback(
@@ -84,9 +104,17 @@ const SutrasProvider = ({ children }: { children: ReactNode }) => {
     [getSutrasApi]
   );
 
+  useEffect(() => {
+    if (collection) {
+      getSutrasApi.call({ collection_id: collection.id });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [collection]);
+
   return (
     <SutrasContext.Provider
       value={{
+        collection,
         getSutrasApi,
 
         createSutra,

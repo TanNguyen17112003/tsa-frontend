@@ -1,20 +1,24 @@
-
+import router from "next/router";
 import {
-  createContext,
   ReactNode,
+  createContext,
   useCallback,
-  useEffect,
   useContext,
+  useEffect,
+  useMemo,
 } from "react";
-import { OrisonsApi } from "src/api/orisons";
+import { GetOrisonPayload, OrisonsApi } from "src/api/orisons";
 import useFunction, {
   DEFAULT_FUNCTION_RETURN,
   UseFunctionReturnType,
 } from "src/hooks/use-function";
 import { Orison, OrisonDetail } from "src/types/orison";
+import { VolumeDetail } from "src/types/volume";
+import { useVolumesContext } from "../volumes/volumes-context";
 
 interface ContextValue {
-  getOrisonsApi: UseFunctionReturnType<FormData, OrisonDetail[]>;
+  volume?: VolumeDetail;
+  getOrisonsApi: UseFunctionReturnType<GetOrisonPayload, OrisonDetail[]>;
 
   createOrison: (requests: Omit<OrisonDetail, "id">) => Promise<void>;
   updateOrison: (Orison: Partial<OrisonDetail>) => Promise<void>;
@@ -30,17 +34,26 @@ export const OrisonsContext = createContext<ContextValue>({
 });
 
 const OrisonsProvider = ({ children }: { children: ReactNode }) => {
+  const { getVolumesApi } = useVolumesContext();
+  const volume = useMemo(() => {
+    const volumeId = (
+      router.query.volumeId ||
+      router.query.qVolumeId ||
+      ""
+    )?.toString();
+    return getVolumesApi.data?.find((c) => c.id == volumeId);
+  }, [getVolumesApi.data]);
   const getOrisonsApi = useFunction(OrisonsApi.getOrisons);
 
   const createOrison = useCallback(
     async (request: Omit<OrisonDetail, "id">) => {
       try {
-        const id = await OrisonsApi.postOrison(request);
-        if (id) {
+        const orison = await OrisonsApi.postOrison(request);
+        if (orison) {
           const newOrisons: OrisonDetail[] = [
             {
               ...request,
-              id: id,
+              id: orison.id,
             },
             ...(getOrisonsApi.data || []),
           ];
@@ -72,28 +85,12 @@ const OrisonsProvider = ({ children }: { children: ReactNode }) => {
   const deleteOrison = useCallback(
     async (ids: Orison["id"][]) => {
       try {
-        const results = await Promise.allSettled(
-          ids.map((id) => OrisonsApi.deleteOrison(id))
-        );
+        await OrisonsApi.deleteOrison(ids);
         getOrisonsApi.setData([
           ...(getOrisonsApi.data || []).filter(
-            (Orison) =>
-              !results.find(
-                (result, index) =>
-                  result.status == "fulfilled" && ids[index] == Orison.id
-              )
+            (orison) => !ids.includes(orison.id)
           ),
         ]);
-        results.forEach((result, index) => {
-          if (result.status == "rejected") {
-            throw new Error(
-              "Không thể xoá danh mục: " +
-                ids[index] +
-                ". " +
-                result.reason.toString()
-            );
-          }
-        });
       } catch (error) {
         throw error;
       }
@@ -102,13 +99,16 @@ const OrisonsProvider = ({ children }: { children: ReactNode }) => {
   );
 
   useEffect(() => {
-    getOrisonsApi.call(new FormData());
+    if (volume) {
+      getOrisonsApi.call({ volume_id: volume.id });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [volume]);
 
   return (
     <OrisonsContext.Provider
       value={{
+        volume,
         getOrisonsApi,
 
         createOrison,

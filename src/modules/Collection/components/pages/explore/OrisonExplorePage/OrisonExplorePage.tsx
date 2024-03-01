@@ -3,48 +3,51 @@ import { PiTrashBold } from "react-icons/pi";
 import { CustomTable } from "src/components/custom-table";
 import { Button } from "src/components/shadcn/ui/button";
 import Pagination from "src/components/ui/Pagination";
-import { useVolumesContext } from "src/contexts/volumes/volumes-context";
+import { useOrisonsContext } from "src/contexts/orisons/orisons-context";
 import { useDrawer } from "src/hooks/use-drawer";
 import usePagination from "src/hooks/use-pagination";
 import { useSelection } from "src/hooks/use-selection";
-import { VolumeDetail } from "src/types/volume";
+import { OrisonDetail } from "src/types/orison";
 import useFunction from "src/hooks/use-function";
 import { useRouter } from "next/router";
-import { volumeTableConfigs } from "./volumeTableConfigs";
+import { orisonTableConfigs } from "./orisonTableConfigs";
 import { initialSutra } from "src/types/sutra";
-import VolumeEditSheet from "./VolumeEditSheet";
+import OrisonEditSheet from "./OrisonEditSheet";
 import CollectionBreadcrumb from "../../../CollectionBreadcrumb";
+import { useVolumesContext } from "src/contexts/volumes/volumes-context";
+import { initialVolume } from "src/types/volume";
 
-interface VolumeExplorePageProps {}
+interface OrisonExplorePageProps {}
 
-const VolumeExplorePage: FC<VolumeExplorePageProps> = ({}) => {
+const OrisonExplorePage: FC<OrisonExplorePageProps> = ({}) => {
   const router = useRouter();
 
-  const { getVolumesApi, deleteVolume, sutra } = useVolumesContext();
-  const editDrawer = useDrawer<VolumeDetail>();
+  const { sutra } = useVolumesContext();
+  const { getOrisonsApi, deleteOrison, volume } = useOrisonsContext();
+  const editDrawer = useDrawer<OrisonDetail>();
 
-  const volumes = useMemo(() => {
-    return (getVolumesApi.data || []).map((volume) => ({
-      ...volume,
+  const orisons = useMemo(() => {
+    return (getOrisonsApi.data || []).map((orison) => ({
+      ...orison,
       sutra: sutra || initialSutra,
     }));
-  }, [getVolumesApi.data, sutra]);
+  }, [getOrisonsApi.data, sutra]);
 
-  const pagination = usePagination({ count: volumes.length });
-  const select = useSelection<VolumeDetail>(volumes);
+  const pagination = usePagination({ count: orisons.length });
+  const select = useSelection<OrisonDetail>(orisons);
 
   const handleDelete = useCallback(
     async ({}) => {
-      await deleteVolume(select.selected.map((select) => select.id));
+      await deleteOrison(select.selected.map((select) => select.id));
     },
-    [deleteVolume, select.selected]
+    [deleteOrison, select.selected]
   );
 
   const handleClickRow = useCallback(
-    (row: VolumeDetail) => {
+    (row: OrisonDetail) => {
       router.replace({
         pathname: router.pathname,
-        query: { ...router.query, volumeId: row.id },
+        query: { ...router.query, orisonId: row.id },
       });
     },
     [router]
@@ -69,22 +72,23 @@ const VolumeExplorePage: FC<VolumeExplorePageProps> = ({}) => {
             <PiTrashBold className="w-5 h-5" /> Xoá
           </Button>
 
-          <VolumeEditSheet
+          <OrisonEditSheet
+            volume={volume || initialVolume}
             sutra={sutra || initialSutra}
             open={editDrawer.open}
             onOpenChange={(open) =>
               open ? editDrawer.handleOpen() : editDrawer.handleClose()
             }
-            volume={editDrawer.data}
+            orison={editDrawer.data}
           />
         </div>
       </div>
       <div className="px-4 flex-1 pb-6">
         <CustomTable
-          loading={getVolumesApi.loading}
+          loading={getOrisonsApi.loading}
           select={select}
-          rows={volumes}
-          configs={volumeTableConfigs}
+          rows={orisons}
+          configs={orisonTableConfigs}
           pagination={pagination}
           onClickEdit={editDrawer.handleOpen}
           onClickRow={handleClickRow}
@@ -107,4 +111,4 @@ const VolumeExplorePage: FC<VolumeExplorePageProps> = ({}) => {
   );
 };
 
-export default VolumeExplorePage;
+export default OrisonExplorePage;

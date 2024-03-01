@@ -8,10 +8,13 @@ import {
   useState,
 } from "react";
 import CollectionItems from "./CollectionItems";
+import SearchInput from "./SearchInput";
 
 interface ContextValue {
   expandedIds: string[];
   setExpandedIds: Dispatch<SetStateAction<string[] | undefined>>;
+  search: string;
+  setSearch: (value: string) => void;
 }
 
 const storageKey = "collectionExpandedIds";
@@ -19,10 +22,13 @@ const storageKey = "collectionExpandedIds";
 export const CollectionTreeContext = createContext<ContextValue>({
   expandedIds: [],
   setExpandedIds: () => {},
+  search: "",
+  setSearch: () => {},
 });
 
 const CollectionTreeProvider = ({ children }: { children: ReactNode }) => {
   const [expandedIds, setExpandedIds] = useState<string[]>();
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     try {
@@ -45,6 +51,8 @@ const CollectionTreeProvider = ({ children }: { children: ReactNode }) => {
       value={{
         expandedIds: expandedIds || [],
         setExpandedIds,
+        search,
+        setSearch,
       }}
     >
       {children}
@@ -59,6 +67,7 @@ interface CollectionTreeProps {}
 const CollectionTree: FC<CollectionTreeProps> = ({}) => {
   return (
     <CollectionTreeProvider>
+      <SearchInput />
       <CollectionItems />
     </CollectionTreeProvider>
   );

@@ -1,7 +1,7 @@
 const viewTypes = [
-  { value: "sutra", label: "Tuyển tập" },
-  { value: "volume", label: "Bộ kinh" },
-  { value: "orison", label: "Quyển kinh" },
+  { value: "collection", label: "Tuyển tập" },
+  { value: "sutra", label: "Bộ kinh" },
+  { value: "volume", label: "Quyển kinh" },
   { value: "all", label: "Tất cả" },
 ];
 

@@ -20,6 +20,8 @@ const SutraItems: FC<SutraItemsProps> = (props) => {
   const { expandedIds, setExpandedIds } = useCollectionTreeContext();
   const router = useRouter();
 
+  const viewType = router.query.viewType;
+
   const items = useMemo(() => {
     return (
       tree?.sutras.filter(
@@ -53,6 +55,16 @@ const SutraItems: FC<SutraItemsProps> = (props) => {
     [expandedIds, tree?.collections, tree?.sutras, router]
   );
 
+  if (viewType != "all" && viewType != "sutra") {
+    return (
+      <>
+        {items.map((item) => (
+          <VolumeItems key={item.id} sutraId={item.id} />
+        ))}
+      </>
+    );
+  }
+
   return (
     <Accordion
       type="multiple"
@@ -70,9 +82,11 @@ const SutraItems: FC<SutraItemsProps> = (props) => {
           >
             {item.name}
           </AccordionTrigger>
-          <AccordionContent>
-            <VolumeItems sutraId={item.id} />
-          </AccordionContent>
+          {viewType != "sutra" && (
+            <AccordionContent>
+              <VolumeItems sutraId={item.id} />
+            </AccordionContent>
+          )}
         </AccordionItem>
       ))}
     </Accordion>

@@ -1,3 +1,3 @@
-import VolumnExplorePage from "./VolumeExplorePage";
+import VolumeExplorePage from "./VolumeExplorePage";
 
-export default VolumnExplorePage;
+export default VolumeExplorePage;

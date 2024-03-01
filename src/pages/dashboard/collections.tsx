@@ -1,17 +1,21 @@
+import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useCallback } from "react";
 import { BiSearch } from "react-icons/bi";
+import Loading from "src/components/Loading";
 import PageHeader from "src/components/PageHeader";
 import { Button } from "src/components/shadcn/ui/button";
-import CollectionCategoriesProvider from "src/contexts/collections/collection-categories-context";
-import CollectionsProvider from "src/contexts/collections/collections-context";
-import OrisonsProvider from "src/contexts/orisons/orisons-context";
-import SutrasProvider from "src/contexts/sutras/sutras-context";
-import VolumesProvider from "src/contexts/volumes/volumes-context";
 import { withAuthGuard } from "src/hocs/with-auth-guard";
-import Collection from "src/modules/Collection";
 import { paths } from "src/paths";
 import type { Page as PageType } from "src/types/page";
+const Collection = dynamic(() => import("src/modules/Collection"), {
+  ssr: false,
+  loading: () => (
+    <div className="flex items-center justify-center h-[100px]">
+      <Loading />
+    </div>
+  ),
+});
 
 const Page: PageType = withAuthGuard(() => {
   const router = useRouter();
@@ -40,22 +44,7 @@ const Page: PageType = withAuthGuard(() => {
           </Button>
         }
       />
-      <div className="h-[calc(100vh_-_116px)] relative overflow-y-auto pl-[300px] flex flex-col">
-        <CollectionCategoriesProvider>
-          <CollectionsProvider>
-            <SutrasProvider>
-              <VolumesProvider>
-                <OrisonsProvider>
-                  <Collection
-                    sideNavClassName="fixed top-[116px] left-0 z-10"
-                    className=""
-                  ></Collection>
-                </OrisonsProvider>
-              </VolumesProvider>
-            </SutrasProvider>
-          </CollectionsProvider>
-        </CollectionCategoriesProvider>
-      </div>
+      <Collection />
     </div>
   );
 });

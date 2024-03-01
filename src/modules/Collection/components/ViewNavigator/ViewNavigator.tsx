@@ -24,7 +24,7 @@ const ViewNavigator: FC<ViewNavigatorProps> = ({}) => {
       <div className="text-xs font-semibold mb-2">Xem theo</div>
       <CustomSelect
         onValueChange={handleChange}
-        value={currentViewType ? currentViewType.toString() : ""}
+        value={currentViewType ? currentViewType.toString() : "all"}
         options={viewTypes}
       />
     </div>

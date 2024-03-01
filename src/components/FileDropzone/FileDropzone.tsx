@@ -15,16 +15,19 @@ interface FileDropzoneProps {
   fileCount: number;
   onUpload: (files: File[]) => void;
   onClear?: () => void;
+  multiple?: boolean;
 }
 
 const FileDropzone: React.FC<FileDropzoneProps> = ({
   fileCount,
   onUpload,
   onClear,
+  multiple,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null); // Create a ref for the input element
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    multiple,
     accept: {
       "image/*": [".png", ".jpg", ".jpeg"],
       "application/pdf": [".pdf"],
@@ -42,7 +45,7 @@ const FileDropzone: React.FC<FileDropzoneProps> = ({
   return (
     <div
       className={clsx(
-        "w-full p-8 border border-dashed rounded-md flex flex-col items-center justify-center cursor-pointer ease-in duration-200 hover:bg-primary/5",
+        "w-full p-8 border border-dashed rounded-xl flex flex-col items-center justify-center cursor-pointer ease-in duration-200 hover:bg-primary/5",
         isDragActive && "bg-primary/5"
       )}
       {...getRootProps()}

@@ -1,5 +1,6 @@
 import { CustomTableConfig } from "src/components/custom-table";
 import * as yup from "yup";
+import { SutraDetail, initialSutra } from "./sutra";
 
 export interface Orison {
   id: string;
@@ -11,13 +12,13 @@ export interface Orison {
   updated_at?: Date;
 }
 
-export interface OrisonDetail extends Orison {}
+export interface OrisonDetail extends Orison {
+  sutra: SutraDetail;
+}
 
 export const orisonSchema = yup.object().shape({
   name: yup.string().required("Vui lòng nhập name"),
   code: yup.string().required("Vui lòng nhập code"),
-  volume_id: yup.string().required("Vui lòng nhập volume_id"),
-  content: yup.string().required("Vui lòng nhập content"),
 });
 
 const orisonTableConfigs: CustomTableConfig<Orison["id"], OrisonDetail>[] = [
@@ -64,4 +65,5 @@ export const initialOrison: OrisonDetail = {
   code: "",
   volume_id: "",
   content: "",
+  sutra: initialSutra,
 };

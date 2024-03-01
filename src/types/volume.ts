@@ -1,5 +1,6 @@
 import * as yup from "yup";
 import { SutraDetail, initialSutra } from "./sutra";
+import { FileData, initialFileData } from "./file-data";
 
 export interface Volume {
   id: string;
@@ -7,10 +8,12 @@ export interface Volume {
   code: string;
   sutras_id: string;
   created_at?: Date;
+  file_id?: string;
 }
 
 export interface VolumeDetail extends Volume {
   sutra: SutraDetail;
+  file?: FileData;
 }
 
 export const volumeSchema = yup.object().shape({
@@ -24,4 +27,5 @@ export const initialVolume: VolumeDetail = {
   code: "",
   sutras_id: "",
   sutra: initialSutra,
+  file: initialFileData,
 };

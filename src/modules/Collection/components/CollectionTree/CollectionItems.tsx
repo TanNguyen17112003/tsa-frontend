@@ -15,12 +15,16 @@ interface CollectionItemsProps {}
 
 const CollectionItems: FC<CollectionItemsProps> = (props) => {
   const { tree } = useCollectionCategoriesContext();
-  const { expandedIds, setExpandedIds } = useCollectionTreeContext();
+  const { expandedIds, setExpandedIds, search } = useCollectionTreeContext();
   const router = useRouter();
 
+  const viewType = router.query.viewType;
+
   const items = useMemo(() => {
-    return tree?.collections || [];
-  }, [tree?.collections]);
+    return (tree?.collections || []).filter((item) =>
+      item.name.toLowerCase().includes(search)
+    );
+  }, [search, tree?.collections]);
 
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: string) => {
@@ -43,6 +47,16 @@ const CollectionItems: FC<CollectionItemsProps> = (props) => {
     [expandedIds, router]
   );
 
+  if (viewType != "all" && viewType != "collection") {
+    return (
+      <>
+        {items.map((item) => (
+          <SutraItems key={item.id} collectionId={item.id} />
+        ))}
+      </>
+    );
+  }
+
   return (
     <Accordion
       type="multiple"
@@ -61,9 +75,11 @@ const CollectionItems: FC<CollectionItemsProps> = (props) => {
           >
             {item.name}
           </AccordionTrigger>
-          <AccordionContent>
-            <SutraItems collectionId={item.id} />
-          </AccordionContent>
+          {viewType != "collection" && (
+            <AccordionContent>
+              <SutraItems collectionId={item.id} />
+            </AccordionContent>
+          )}
         </AccordionItem>
       ))}
     </Accordion>

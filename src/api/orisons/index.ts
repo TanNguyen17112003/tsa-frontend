@@ -8,11 +8,11 @@ import {
 } from "src/utils/api-request";
 
 export class OrisonsApi {
-  static async postOrison(request: Omit<Orison, "id">): Promise<Orison["id"]> {
+  static async postOrison(request: Omit<Orison, "id">): Promise<Orison> {
     return await apiPost("/orisons", request);
   }
 
-  static async getOrisons(request: {}): Promise<OrisonDetail[]> {
+  static async getOrisons(request: GetOrisonPayload): Promise<OrisonDetail[]> {
     const response = await apiGet("/orisons", getFormData(request));
     return response;
   }
@@ -21,7 +21,11 @@ export class OrisonsApi {
     return await apiPatch(`/orisons/${request.id}`, request);
   }
 
-  static async deleteOrison(id: Orison["id"]) {
-    return await apiDelete(`/orisons/${id}`, { id });
+  static async deleteOrison(ids: Orison["id"][]) {
+    return await apiDelete(`/orisons`, { ids });
   }
+}
+
+export interface GetOrisonPayload {
+  volume_id: string;
 }

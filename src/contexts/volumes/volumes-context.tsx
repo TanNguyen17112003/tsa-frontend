@@ -16,11 +16,16 @@ import { SutraDetail, initialSutra } from "src/types/sutra";
 import { Volume, VolumeDetail } from "src/types/volume";
 import { useSutrasContext } from "../sutras/sutras-context";
 import { useCollectionCategoriesContext } from "../collections/collection-categories-context";
+import { FileDatasApi } from "src/api/files";
 
 interface ContextValue {
   sutra?: SutraDetail;
   getVolumesApi: UseFunctionReturnType<GetVolumesPayload, VolumeDetail[]>;
 
+  createVolumesByFile: (
+    files: File[],
+    onProgress?: (value: number) => void
+  ) => Promise<void>;
   createVolume: (requests: Omit<VolumeDetail, "id">) => Promise<void>;
   updateVolume: (Volume: Partial<VolumeDetail>) => Promise<void>;
   deleteVolume: (ids: Volume["id"][]) => Promise<void>;
@@ -29,6 +34,7 @@ interface ContextValue {
 export const VolumesContext = createContext<ContextValue>({
   getVolumesApi: DEFAULT_FUNCTION_RETURN,
 
+  createVolumesByFile: async () => {},
   createVolume: async () => {},
   updateVolume: async () => {},
   deleteVolume: async () => {},
@@ -48,6 +54,60 @@ const VolumesProvider = ({ children }: { children: ReactNode }) => {
   }, [getSutrasApi.data, router.query.sutraId, router.query.qSutraId]);
 
   const getVolumesApi = useFunction(VolumesApi.getVolumes);
+
+  const createVolumesByFile = useCallback(
+    async (files: File[], onProgress?: (value: number) => void) => {
+      try {
+        if (sutra) {
+          const newVolumes: VolumeDetail[] = [];
+          for (let index = 0; index < files.length; index++) {
+            const file = files[index];
+            const [code, name] = file.name.split("_");
+            if (!code || !name) {
+              throw new Error(`Tên file ${file.name} sai cấu trúc`);
+            }
+            try {
+              const fileData = await FileDatasApi.uploadFileData({
+                file: file,
+              });
+              if (fileData) {
+                const newVolume = await VolumesApi.postVolume({
+                  code,
+                  name,
+                  created_at: new Date(),
+                  sutras_id: sutra.id,
+                  file_id: fileData?.id,
+                });
+                if (newVolume) {
+                  newVolumes.push({
+                    id: newVolume.id,
+                    code,
+                    name,
+                    created_at: new Date(),
+                    sutras_id: sutra.id,
+                    sutra: sutra,
+                    file_id: fileData?.id,
+                    file: fileData || undefined,
+                  });
+                }
+              }
+              onProgress?.((index + 1) / files.length);
+            } catch (error) {
+              getVolumesApi.setData([
+                ...(getVolumesApi.data || []),
+                ...newVolumes,
+              ]);
+              throw error;
+            }
+          }
+          getVolumesApi.setData([...(getVolumesApi.data || []), ...newVolumes]);
+        }
+      } catch (error) {
+        throw error;
+      }
+    },
+    [getVolumesApi, sutra]
+  );
 
   const createVolume = useCallback(
     async (request: Omit<VolumeDetail, "id">) => {
@@ -129,6 +189,7 @@ const VolumesProvider = ({ children }: { children: ReactNode }) => {
         sutra,
         getVolumesApi,
 
+        createVolumesByFile,
         createVolume,
         updateVolume,
         deleteVolume,

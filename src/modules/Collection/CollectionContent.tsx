@@ -27,8 +27,6 @@ const CollectionContent: FC<CollectionContentProps> = ({
 }) => {
   const { query } = useRouter();
 
-  console.log("query", query);
-
   return (
     <>
       <div

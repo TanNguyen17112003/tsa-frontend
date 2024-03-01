@@ -33,7 +33,7 @@ const CollectionContent: FC<CollectionContentProps> = ({
     <>
       <div
         className={clsx(
-          "w-[300px] border-r h-full overflow-y-auto",
+          "w-[300px] border-r h-full overflow-y-auto pb-[160px]",
           sideNavClassName
         )}
       >

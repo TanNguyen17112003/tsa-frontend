@@ -210,7 +210,7 @@ const VolumeEditSheet: FC<VolumeEditSheetProps> = ({
                 <Progress value={progress * 100} className="bg-gray-300 h-3" />
               </div>
               <div className="w-[160px] text-text-secondary">
-                Đang upload... {progress * 100}%
+                Đang upload... {Math.floor(progress * 100)}%
               </div>
             </div>
           )

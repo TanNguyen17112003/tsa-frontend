@@ -45,7 +45,7 @@ const FileDropzone: React.FC<FileDropzoneProps> = ({
   return (
     <div
       className={clsx(
-        "w-full p-8 border border-dashed rounded-md flex flex-col items-center justify-center cursor-pointer ease-in duration-200 hover:bg-primary/5",
+        "w-full p-8 border border-dashed rounded-xl flex flex-col items-center justify-center cursor-pointer ease-in duration-200 hover:bg-primary/5",
         isDragActive && "bg-primary/5"
       )}
       {...getRootProps()}

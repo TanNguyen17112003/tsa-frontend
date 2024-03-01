@@ -15,12 +15,14 @@ interface CollectionItemsProps {}
 
 const CollectionItems: FC<CollectionItemsProps> = (props) => {
   const { tree } = useCollectionCategoriesContext();
-  const { expandedIds, setExpandedIds } = useCollectionTreeContext();
+  const { expandedIds, setExpandedIds, search } = useCollectionTreeContext();
   const router = useRouter();
 
   const items = useMemo(() => {
-    return tree?.collections || [];
-  }, [tree?.collections]);
+    return (tree?.collections || []).filter((item) =>
+      item.name.toLowerCase().includes(search)
+    );
+  }, [search, tree?.collections]);
 
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: string) => {

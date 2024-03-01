@@ -1,14 +1,13 @@
 import type { FC } from "react";
-import CollectionBreadcrumb from "../../../CollectionBreadcrumb";
-import { Input } from "src/components/shadcn/ui/input";
-import { CustomTable } from "src/components/custom-table";
 import { BsSearch } from "react-icons/bs";
+import { Input } from "src/components/shadcn/ui/input";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "src/components/shadcn/ui/tabs";
+import CollectionBreadcrumb from "../../../CollectionBreadcrumb";
 
 interface AuthorSearchPageProps {}
 

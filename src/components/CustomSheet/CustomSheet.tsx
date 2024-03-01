@@ -4,6 +4,9 @@ import { FaArrowLeftLong } from "react-icons/fa6";
 import { Button } from "../shadcn/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "../shadcn/ui/sheet";
 import React from "react";
+import CustomTabs from "../CustomTabs";
+import { CustomTabsProps } from "../CustomTabs/CustomTabs";
+import clsx from "clsx";
 
 interface CustomSheetProps {
   sheetTrigger: ReactNode;
@@ -12,16 +15,17 @@ interface CustomSheetProps {
   actions: ReactNode;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  tabs?: CustomTabsProps;
 }
 
 const CustomSheet: FC<CustomSheetProps> = ({
   sheetTrigger,
   title,
   actions,
-
   open,
   onOpenChange,
   children,
+  tabs,
 }) => {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -42,7 +46,8 @@ const CustomSheet: FC<CustomSheetProps> = ({
           </div>
           <div className="flex gap-2">{actions}</div>
         </div>
-        <hr />
+        {tabs && <CustomTabs {...tabs} />}
+        <hr className={clsx(tabs && "-mt-1")} />
         <div className="p-3">{children}</div>
       </SheetContent>
     </Sheet>

@@ -12,6 +12,12 @@ export class VolumesApi {
     return await apiPost("/volumes", request);
   }
 
+  static async postVolumeFile(
+    request: Omit<Volume, "id"> & { file: File }
+  ): Promise<Volume> {
+    return await apiPost("/volumes", getFormData(request));
+  }
+
   static async getVolumes(request: GetVolumesPayload): Promise<VolumeDetail[]> {
     const response = await apiGet("/volumes", getFormData(request));
     return response;

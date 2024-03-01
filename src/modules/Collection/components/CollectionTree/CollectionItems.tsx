@@ -18,7 +18,7 @@ const CollectionItems: FC<CollectionItemsProps> = (props) => {
   const { expandedIds, setExpandedIds, search } = useCollectionTreeContext();
   const router = useRouter();
 
-  const viewType = router.query.viewType;
+  const viewType = (router.query.viewType || "all").toString();
 
   const items = useMemo(() => {
     return (tree?.collections || []).filter((item) =>

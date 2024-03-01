@@ -63,7 +63,7 @@ const VolumesProvider = ({ children }: { children: ReactNode }) => {
           for (let index = 0; index < files.length; index++) {
             try {
               const file = files[index];
-              const [code, name] = file.name.split("_");
+              const [code, name] = file.name.split(".")[0]?.split("_");
               if (!code || !name) {
                 throw new Error(`Tên file ${file.name} sai cấu trúc`);
               }

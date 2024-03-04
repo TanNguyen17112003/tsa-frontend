@@ -143,7 +143,7 @@ export function FixedToolbarButtons() {
                     key={highlightOption.color + highlightOption.fontSize}
                   >
                     <Tooltip>
-                      <TooltipTrigger>
+                      <TooltipTrigger asChild>
                         <Button
                           size="icon"
                           className={clsx("rounded-full")}

@@ -25,6 +25,7 @@ export interface UseFunctionReturnType<P, T> {
   error: Error | null;
   data: T | undefined;
   setData: (_: T | undefined) => void;
+  reset: () => void;
 }
 
 export const DEFAULT_FUNCTION_RETURN: UseFunctionReturnType<any, any> = {
@@ -33,6 +34,7 @@ export const DEFAULT_FUNCTION_RETURN: UseFunctionReturnType<any, any> = {
   error: null,
   data: undefined,
   setData: () => {},
+  reset: () => {},
 };
 
 function useFunction<P, T>(
@@ -128,7 +130,13 @@ function useFunction<P, T>(
     [options?.cacheKey]
   );
 
-  return { call, loading, error, data, setData };
+  const reset = useCallback(() => {
+    setLoading(false);
+    setError(null);
+    setData(undefined);
+  }, [setData]);
+
+  return { call, loading, error, data, setData, reset };
 }
 
 export default useFunction;

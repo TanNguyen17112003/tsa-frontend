@@ -86,6 +86,9 @@ const PlateEditor: FC<PlateEditorProps> = ({
           <FixedToolbarButtons />
         </FixedToolbar>
         <Editor
+          style={{
+            fontFamily: `"Times New Roman", Times, serif`,
+          }}
           renderLeaf={(props) => <Leaf {...props} />}
           decorate={decorate}
         />

@@ -1,80 +1,130 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { HiMagnifyingGlass } from "react-icons/hi2";
+import PageHeader from "src/components/PageHeader";
 import { Button } from "src/components/shadcn/ui/button";
 import { Input } from "src/components/shadcn/ui/input";
 import { useAuth } from "src/hooks/use-auth";
 import { Layout as DashboardLayout } from "src/layouts/dashboard";
+import AcronymsNameTab from "src/sections/admin/categories/AcronymsNameTab";
+import AcronymsWordTab from "src/sections/admin/categories/AcronymsWordTab";
+import AuthorTab from "src/sections/admin/categories/AuthorTab";
+import CircaTab from "src/sections/admin/categories/CircaTab";
+import FormatTab from "src/sections/admin/categories/FormatTab";
 import type { Page as PageType } from "src/types/page";
 
+const tabs = [
+  {
+    label: "Quản lý tác giả",
+    key: "author",
+  },
+  {
+    label: "Định dạng trang",
+    key: "format",
+  },
+  {
+    label: "Tên viết tắt tuyển tập",
+    key: "acronym-name",
+  },
+  {
+    label: "Từ viết tắt",
+    key: "acronym-word",
+  },
+  {
+    label: "Niên đại",
+    key: "circa",
+  },
+];
+
 const Page: PageType = () => {
+  const [tab, setTab] = useState(tabs[0].key);
+  const tabsMenu = (
+    <div className="flex space-x-8 overflow-hidden">
+      {tab == "author" ? (
+        <div
+          onClick={() => setTab("author")}
+          className="text-nowrap text-orange-600 border-b border-orange-500 pb-5 cursor-pointer"
+        >
+          {tabs[0].label}
+        </div>
+      ) : (
+        <div
+          onClick={() => setTab("author")}
+          className="text-nowrap cursor-pointer"
+        >
+          {tabs[0].label}
+        </div>
+      )}
+      {tab == "format" ? (
+        <div
+          onClick={() => setTab("format")}
+          className="text-nowrap text-orange-600 border-b border-orange-500 pb-5   cursor-pointer"
+        >
+          {tabs[1].label}
+        </div>
+      ) : (
+        <div
+          onClick={() => setTab("format")}
+          className="text-nowrap cursor-pointer"
+        >
+          {tabs[1].label}
+        </div>
+      )}
+      {tab == "acronym-name" ? (
+        <div
+          onClick={() => setTab("acronym-name")}
+          className="text-nowrap text-orange-600 border-b border-orange-500 pb-5  cursor-pointer"
+        >
+          {tabs[2].label}
+        </div>
+      ) : (
+        <div
+          onClick={() => setTab("acronym-name")}
+          className="text-nowrap cursor-pointer"
+        >
+          {tabs[2].label}
+        </div>
+      )}
+      {tab == "acronym-word" ? (
+        <div
+          onClick={() => setTab("acronym-word")}
+          className="text-nowrap text-orange-600 border-b border-orange-500 pb-5  cursor-pointer"
+        >
+          {tabs[3].label}
+        </div>
+      ) : (
+        <div
+          onClick={() => setTab("acronym-word")}
+          className="text-nowrap cursor-pointer"
+        >
+          {tabs[3].label}
+        </div>
+      )}
+      {tab == "circa" ? (
+        <div
+          onClick={() => setTab("circa")}
+          className="text-nowrap text-orange-600 border-b border-orange-500 pb-5  cursor-pointer"
+        >
+          {tabs[4].label}
+        </div>
+      ) : (
+        <div
+          onClick={() => setTab("circa")}
+          className="text-nowrap cursor-pointer"
+        >
+          {tabs[4].label}
+        </div>
+      )}
+    </div>
+  );
   return (
-    <div className="flex flex-col divide-y-[1px] min-h-screen">
-      <div className="flex-grow px-7 pt-7 pb-2 divide-">
-        <div className="items-center">
-          <div className="text-2xl font-semibold">Danh mục</div>
-          <div className="flex space-x-4 my-4">
-            <div>Quản lý tác giả</div>
-            <div>Định dạng trang</div>
-            <div>Tên viết tắt tuyển tập</div>
-            <div>Từ viết tắt</div>
-            <div>Niên đại</div>
-          </div>
-        </div>
-        <div className="flex space-x-4 ">
-          <div className="flex border border-gray-300 rounded-md h-11 w-full">
-            <div className="flex w-full items-center">
-              <Input
-                type="text"
-                placeholder="Tìm kiếm"
-                className="border-none outline-none w-full text-sm/normal"
-              />
-              <HiMagnifyingGlass
-                style={{ fontSize: "1.5rem", color: "gray" }}
-              />
-            </div>
-          </div>
-          <div className="">
-            <Button className=" bg-[#F97316] py-[22px] px-[16px] rounded-lg text-white text-nowrap">
-              Thêm tác giả
-            </Button>
-          </div>
-        </div>
-        <div>Table</div>
-      </div>
-      <div className="flex px-7 ">
-        <div className="flex text-sm text-gray-500 font-normal items-center overflow-hidden text-nowrap">
-          Đang hiển thị kết quả thứ 1 tới 10 trên 97 kết quả
-        </div>
-        <div className="flex items-center border rounded-lg ml-auto divide-x-2 my-2">
-          <a href="#" className="border px-3 py-1.5">
-            &lt;
-          </a>
-          <a
-            href="#"
-            className="border border-orange-500 px-3 py-1.5 bg-[#F97316]"
-          >
-            1
-          </a>
-          <a href="#" className="border px-3 py-1.5">
-            2
-          </a>
-          <a href="#" className="border px-3 py-1.5">
-            3
-          </a>
-          <span className="border px-3 py-1.5">...</span>
-          <a href="#" className="border px-3 py-1.5">
-            8
-          </a>
-          <a href="#" className="border px-3 py-1.5">
-            9
-          </a>
-          <a href="#" className="border px-2 py-1.5">
-            10
-          </a>
-          <a href="#" className="border px-3 py-1.5">
-            &gt;
-          </a>
-        </div>
+    <div className="flex flex-col">
+      <div className="w-full ">
+        <PageHeader title="Danh mục" tabs={tabsMenu}></PageHeader>
+        {tab == "author" && <AuthorTab />}
+        {tab == "format" && <FormatTab />}
+        {tab == "acronym-name" && <AcronymsNameTab />}
+        {tab == "acronym-word" && <AcronymsWordTab />}
+        {tab == "circa" && <CircaTab />}
       </div>
     </div>
   );

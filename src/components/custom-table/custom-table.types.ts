@@ -53,6 +53,7 @@ export interface CustomTableProps<P, T extends { id: P; [key: string]: any }> {
   indexColumn?: boolean;
   select?: Selection<T>;
   pagination?: UsePaginationResult;
+  hidePagination?: boolean;
   stickyHeader?: boolean;
   additionalTopRow?: ReactNode;
   additionalBottomRow?: ReactNode;

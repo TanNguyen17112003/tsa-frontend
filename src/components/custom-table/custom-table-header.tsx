@@ -3,6 +3,7 @@ import { CustomTableHeaderCell } from "./custom-table-header-cell";
 import { CustomTableProps, CustomTableSortModel } from "./custom-table.types";
 import { CustomTableResizableCell } from "./custom-table-resizable-cell";
 import clsx from "clsx";
+import { Checkbox } from "../shadcn/ui/checkbox";
 
 export function CustomTableHeader<P, T extends { id: P; [key: string]: any }>(
   props: CustomTableProps<P, T> & {
@@ -32,22 +33,23 @@ export function CustomTableHeader<P, T extends { id: P; [key: string]: any }>(
 
   return (
     <thead
-      className={clsx("bg-slate-100", stickyHeader ? "sticky -top-1 z-10" : "")}
+      className={clsx(
+        "bg-slate-100 rounded-md border",
+        stickyHeader ? "sticky -top-1 z-10" : ""
+      )}
     >
-      <tr>
+      <tr className="rounded-md border">
         {(indexColumn || select) && (
           <CustomTableResizableCell
             className="text-nowrap py-2"
             rowSpan={hasGroupedHeaderLabel ? 2 : 1}
           >
-            <div className="flex gap-1 items-center">
+            <div className="flex gap-1 items-center pl-1">
               {select && (
-                <input
-                  type="checkbox"
-                  className={clsx("checkbox -my-1 -mx-1")}
+                <Checkbox
                   checked={select.selected.length >= rows.length}
-                  onChange={(e) =>
-                    e.target.checked
+                  onCheckedChange={(checked) =>
+                    checked
                       ? select.handleSelectAll()
                       : select.handleDeselectAll()
                   }
@@ -76,7 +78,7 @@ export function CustomTableHeader<P, T extends { id: P; [key: string]: any }>(
           onClickEdit ||
           renderRowActions) && (
           <th
-            className="w-[120px] py-1"
+            className="w-[120px] py-3 px-2"
             align="center"
             rowSpan={hasGroupedHeaderLabel ? 2 : 1}
           >
@@ -85,12 +87,15 @@ export function CustomTableHeader<P, T extends { id: P; [key: string]: any }>(
         )}
       </tr>
       {hasGroupedHeaderLabel && (
-        <tr>
+        <tr className="rounded-md border">
           {configs.map((config) =>
             config.groupedHeaderLabel ? (
               <th
                 key={config.key.toString()}
-                className={clsx("text-nowrap px-2", config.headerCellClassName)}
+                className={clsx(
+                  "text-nowrap py-3 px-2",
+                  config.headerCellClassName
+                )}
               >
                 <div className="flex gap-1 items-center">
                   {config.headerIcon}

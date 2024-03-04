@@ -1,6 +1,5 @@
 import type { AppProps } from "next/app";
 import Head from "next/head";
-import { Layout as DashboardLayout } from "src/layouts/dashboard";
 
 import { AuthConsumer, AuthProvider } from "src/contexts/auth/jwt-context";
 
@@ -9,6 +8,7 @@ import "src/styles/globals.css";
 
 import { SnackbarProvider } from "notistack";
 import { useNProgress } from "src/hooks/use-nprogress";
+import SplashScreen from "src/components/ui/SplashScreen";
 
 const App = (props: AppProps) => {
   const { Component, pageProps } = props;
@@ -25,7 +25,14 @@ const App = (props: AppProps) => {
 
       <SnackbarProvider>
         <AuthProvider>
-          <>{getLayout(<Component {...pageProps} />)}</>
+          <AuthConsumer>
+            {(auth) => {
+              if (!auth.isInitialized) {
+                return <SplashScreen />;
+              }
+              return <>{getLayout(<Component {...pageProps} />)}</>;
+            }}
+          </AuthConsumer>
         </AuthProvider>
       </SnackbarProvider>
     </>

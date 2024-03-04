@@ -1,7 +1,7 @@
 import * as yup from "yup";
 
 export interface User {
-  id: number;
+  id: string;
   username: string;
   email: string;
   name: string;
@@ -23,10 +23,31 @@ export const userSchema = yup.object().shape({
 });
 
 export const initialUser: UserDetail = {
-  id: 0,
+  id: "",
   username: "",
   email: "",
   name: "",
   password: "",
   role: "",
 };
+
+export const users: UserDetail[] = [
+  {
+    id: "10",
+    username: "username 1",
+    email: "email 1",
+    name: "name 1",
+    password: "password 1",
+    role: "role 1",
+    deleted_at: null,
+  },
+  {
+    id: "20",
+    username: "username 2",
+    email: "email 2",
+    name: "name 2",
+    password: "password 2",
+    role: "role 2",
+    deleted_at: null,
+  },
+];

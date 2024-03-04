@@ -38,7 +38,7 @@ const NoteCard: FC<NoteCardProps> = ({ noteIndex }) => {
     const note = notes.find((note) => note.id == activeNoteId);
     if (ref.current) {
       ref.current.value = note?.note || "";
-      // setTimeout(() => ref.current?.focus(), 200);
+      setTimeout(() => ref.current?.focus(), 200); // setTimeout to prevent unexpected scroll
     }
   }, [activeNoteId, notes]);
 
@@ -57,7 +57,6 @@ const NoteCard: FC<NoteCardProps> = ({ noteIndex }) => {
         </Button>
       </div>
       <textarea
-        autoFocus
         ref={ref}
         className="w-full border-[1px] min-w-[320px] rounded-lg p-1"
         rows={4}

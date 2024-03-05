@@ -109,6 +109,7 @@ const VolumeEditSheet: FC<VolumeEditSheetProps> = ({
       setProgress(0);
       handleSubmitHelper.reset();
       handleSubmitMultipleHelper.reset();
+      setTab("single");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [volume?.id, open]);
@@ -134,7 +135,7 @@ const VolumeEditSheet: FC<VolumeEditSheetProps> = ({
       open={open}
       onOpenChange={onOpenChange}
       sheetTrigger={<Button>Tạo quyển kinh</Button>}
-      title="Tạo quyển kinh"
+      title={volume ? "Sửa quyển kinh" : "Tạo quyển kinh"}
       actions={
         <Button
           onClick={handleClickSubmit}
@@ -197,6 +198,10 @@ const VolumeEditSheet: FC<VolumeEditSheetProps> = ({
             fileCount={files.length}
             onUpload={setFiles}
             onClear={() => setFiles([])}
+            accept={{
+              "image/*": [".png", ".jpg", ".jpeg"],
+              "application/pdf": [".pdf"],
+            }}
           />
         </div>
         {handleSubmitMultipleHelper.error ? (
@@ -204,6 +209,7 @@ const VolumeEditSheet: FC<VolumeEditSheetProps> = ({
             {handleSubmitMultipleHelper.error?.message}
           </div>
         ) : (
+          tab == "multiple" &&
           progress > 0 && (
             <div className="col-span-2 flex gap-2 items-center -mt-2">
               <div className="flex-1">

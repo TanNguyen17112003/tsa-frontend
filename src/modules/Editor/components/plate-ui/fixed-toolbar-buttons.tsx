@@ -137,7 +137,7 @@ export function FixedToolbarButtons() {
             <div className="grow" />
 
             <div className="flex gap-4 px-3">
-              <div className="flex gap-1 items-center">
+              <div className="flex gap-3 items-center">
                 {highlightOptions.map((highlightOption) => (
                   <TooltipProvider
                     key={highlightOption.color + highlightOption.fontSize}
@@ -146,7 +146,7 @@ export function FixedToolbarButtons() {
                       <TooltipTrigger asChild>
                         <Button
                           size="icon"
-                          className={clsx("rounded-full")}
+                          className={clsx("rounded-full w-8 h-8")}
                           style={{ backgroundColor: highlightOption.color }}
                           onClick={() => handleChangeHighlight(highlightOption)}
                         />

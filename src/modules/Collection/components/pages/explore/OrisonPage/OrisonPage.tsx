@@ -61,9 +61,11 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
           <div className="flex h-[100px] items-center justify-center mt-4">
             <Loading />
           </div>
-        ) : getOrisonDetailApi.data ? (
+        ) : getOrisonDetailApi.data &&
+          getOrisonDetailApi.data.id == orisonId ? (
           <PlateEditor
             initialValue={getOrisonDetailApi.data.content}
+            notes={getOrisonDetailApi.data.notes}
             onUpdateNotes={() => {}}
             onChange={() => {}}
           />

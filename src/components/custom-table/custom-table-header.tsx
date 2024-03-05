@@ -43,6 +43,7 @@ export function CustomTableHeader<P, T extends { id: P; [key: string]: any }>(
           <CustomTableResizableCell
             className="text-nowrap py-2"
             rowSpan={hasGroupedHeaderLabel ? 2 : 1}
+            disableResize
           >
             <div className="flex gap-1 items-center pl-1">
               {select && (

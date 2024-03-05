@@ -4,15 +4,12 @@ import CustomSheet from "src/components/CustomSheet";
 import { Button } from "src/components/shadcn/ui/button";
 import { Input } from "src/components/shadcn/ui/input";
 
-export interface AccountEditSheetProps {
+export interface AuthorEditSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-const AccountEditSheet: FC<AccountEditSheetProps> = ({
-  open,
-  onOpenChange,
-}) => {
+const AuthorEditSheet: FC<AuthorEditSheetProps> = ({ open, onOpenChange }) => {
   return (
     <CustomSheet
       open={open}
@@ -29,4 +26,4 @@ const AccountEditSheet: FC<AccountEditSheetProps> = ({
   );
 };
 
-export default AccountEditSheet;
+export default AuthorEditSheet;

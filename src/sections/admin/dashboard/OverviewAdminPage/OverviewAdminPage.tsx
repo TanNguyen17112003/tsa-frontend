@@ -132,8 +132,8 @@ const OverviewAdminPage = () => {
           </div>
         </div>
         <div className="flex mt-4">
-          <div className="flex bg-white border border-gray-300 rounded-2xl mt-4 p-5 overflow-auto h-full">
-            <div className="flex space-x-64">
+          <div className="flex bg-white border border-gray-300 rounded-2xl mr-4 p-5 overflow-auto h-full w-full">
+            <div className="flex space-x-64 w-full">
               <p className="text-lg font-semibold w-full text-nowrap p-3">
                 Khiếu nại chưa giải quyết (3)
               </p>

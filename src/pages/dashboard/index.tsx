@@ -16,8 +16,8 @@ import {
 } from "src/components/shadcn/ui/select";
 import { Button } from "src/components/shadcn/ui/button";
 import { Input } from "src/components/shadcn/ui/input";
-import OverviewAdminPage from "src/components/OverviewAdminPage";
-import OverviewUserPage from "src/components/OverviewUserPage";
+import OverviewAdminPage from "src/sections/admin/dashboard/OverviewAdminPage";
+import OverviewUserPage from "src/sections/user/dashboard/OverviewUserPage";
 
 const Page: PageType = () => {
   const user: string = "user";

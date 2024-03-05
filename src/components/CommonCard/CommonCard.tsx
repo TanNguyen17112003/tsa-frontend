@@ -20,7 +20,7 @@ const CommonCard = ({
         {link && (
           <Link
             href={link}
-            className="flex text-orange-500 text-nowrap  hover:bg-orange-200 p-3 rounded-lg"
+            className="flex text-orange-500 text-nowrap  hover:bg-orange-200 p-3 rounded-lg overflow-hidden"
           >
             {linkLabel} <HiMiniArrowSmallRight style={{ fontSize: "1.4em" }} />
           </Link>

@@ -9,7 +9,7 @@ import Pagination from "src/components/ui/Pagination";
 import { SIDE_NAV_WIDTH } from "src/config";
 import { useDrawer } from "src/hooks/use-drawer";
 import usePagination from "src/hooks/use-pagination";
-import AccountEditSheet from "./AccountEditSheet";
+import AuthorEditSheet from "./AuthorEditSheet";
 
 const AuthorTab = () => {
   const user = [initialUser];
@@ -38,7 +38,7 @@ const AuthorTab = () => {
           </div>
           <div className="ml-auto flex">
             <div className="flex items-center">
-              <AccountEditSheet
+              <AuthorEditSheet
                 open={editDrawer.open}
                 onOpenChange={(open) =>
                   open ? editDrawer.handleOpen() : editDrawer.handleClose()

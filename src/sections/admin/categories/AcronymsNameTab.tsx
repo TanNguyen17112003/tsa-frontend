@@ -3,8 +3,8 @@ import { CustomTable } from "src/components/custom-table";
 import { Button } from "src/components/shadcn/ui/button";
 import { Input } from "src/components/shadcn/ui/input";
 import { initialFormat } from "src/types/formats";
-import getSortNameTableConfig from "./acronyms-name-table-config";
-import SortNameEditSheet from "./AcronymsNameEditSheet";
+import getAcronymsNameTableConfig from "./acronyms-name-table-config";
+import AcronymsNameEditSheet from "./AcronymsNameEditSheet";
 import usePagination from "src/hooks/use-pagination";
 import Pagination from "src/components/ui/Pagination";
 import { SIDE_NAV_WIDTH } from "src/config";
@@ -32,7 +32,7 @@ const AcronymsNameTab = () => {
           </div>
           <div className="ml-auto flex">
             <div className="flex items-center">
-              <SortNameEditSheet
+              <AcronymsNameEditSheet
                 open={editDrawer.open}
                 onOpenChange={(open) =>
                   open ? editDrawer.handleOpen() : editDrawer.handleClose()
@@ -43,7 +43,7 @@ const AcronymsNameTab = () => {
         </div>
         <CustomTable
           rows={name}
-          configs={getSortNameTableConfig}
+          configs={getAcronymsNameTableConfig}
           tableClassName="rounded-xl border-2"
           pagination={pagination}
           hidePagination

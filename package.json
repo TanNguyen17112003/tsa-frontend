@@ -7,7 +7,7 @@
     "dev": "next dev",
     "build": "next build",
     "build-staging": "NODE_ENV=staging next build",
-    "start": "next start",
+    "start": "next start -p 8081",
     "lint": "next lint"
   },
   "dependencies": {

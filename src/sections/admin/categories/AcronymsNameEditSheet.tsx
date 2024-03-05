@@ -4,12 +4,12 @@ import CustomSheet from "src/components/CustomSheet";
 import { Button } from "src/components/shadcn/ui/button";
 import { Input } from "src/components/shadcn/ui/input";
 
-export interface SortNameEditSheetProps {
+export interface AcronymsNameEditSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-const SortNameEditSheet: FC<SortNameEditSheetProps> = ({
+const AcronymsNameEditSheet: FC<AcronymsNameEditSheetProps> = ({
   open,
   onOpenChange,
 }) => {
@@ -37,4 +37,4 @@ const SortNameEditSheet: FC<SortNameEditSheetProps> = ({
   );
 };
 
-export default SortNameEditSheet;
+export default AcronymsNameEditSheet;

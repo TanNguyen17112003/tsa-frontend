@@ -4,12 +4,12 @@ import CustomSheet from "src/components/CustomSheet";
 import { Button } from "src/components/shadcn/ui/button";
 import { Input } from "src/components/shadcn/ui/input";
 
-export interface SortWordEditSheetProps {
+export interface AcronymsWordEditSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-const SortWordEditSheet: FC<SortWordEditSheetProps> = ({
+const AcronymsWordEditSheet: FC<AcronymsWordEditSheetProps> = ({
   open,
   onOpenChange,
 }) => {
@@ -33,4 +33,4 @@ const SortWordEditSheet: FC<SortWordEditSheetProps> = ({
   );
 };
 
-export default SortWordEditSheet;
+export default AcronymsWordEditSheet;

@@ -2,8 +2,8 @@ import { HiMagnifyingGlass } from "react-icons/hi2";
 import { CustomTable } from "src/components/custom-table";
 import { Input } from "src/components/shadcn/ui/input";
 import { initialFormat } from "src/types/formats";
-import getSortWordTableConfig from "./acronyms-word-table-config";
-import SortWordEditSheet from "./AcronymsWordEditSheet";
+import getAcronymsWordTableConfig from "./acronyms-word-table-config";
+import AcronymsWordEditSheet from "./AcronymsWordEditSheet";
 import Pagination from "src/components/ui/Pagination";
 import usePagination from "src/hooks/use-pagination";
 import { SIDE_NAV_WIDTH } from "src/config";
@@ -30,7 +30,7 @@ const AcronymsWordTab = () => {
             </div>
           </div>
           <div className="flex ml-auto items-center">
-            <SortWordEditSheet
+            <AcronymsWordEditSheet
               open={editDrawer.open}
               onOpenChange={(open) =>
                 open ? editDrawer.handleOpen() : editDrawer.handleClose()
@@ -40,7 +40,7 @@ const AcronymsWordTab = () => {
         </div>
         <CustomTable
           rows={word}
-          configs={getSortWordTableConfig}
+          configs={getAcronymsWordTableConfig}
           tableClassName="rounded-xl border-2"
           pagination={pagination}
           hidePagination

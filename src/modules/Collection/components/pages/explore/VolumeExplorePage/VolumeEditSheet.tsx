@@ -197,6 +197,10 @@ const VolumeEditSheet: FC<VolumeEditSheetProps> = ({
             fileCount={files.length}
             onUpload={setFiles}
             onClear={() => setFiles([])}
+            accept={{
+              "image/*": [".png", ".jpg", ".jpeg"],
+              "application/pdf": [".pdf"],
+            }}
           />
         </div>
         {handleSubmitMultipleHelper.error ? (

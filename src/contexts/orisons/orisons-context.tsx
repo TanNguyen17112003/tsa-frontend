@@ -15,12 +15,20 @@ import useFunction, {
 import { Orison, OrisonDetail } from "src/types/orison";
 import { VolumeDetail } from "src/types/volume";
 import { useVolumesContext } from "../volumes/volumes-context";
+import { convertDocx2Editor } from "src/modules/Editor/utils";
+import { initialSutra } from "src/types/sutra";
 
 interface ContextValue {
   volume?: VolumeDetail;
   getOrisonsApi: UseFunctionReturnType<GetOrisonPayload, OrisonDetail[]>;
 
-  createOrison: (requests: Omit<OrisonDetail, "id">) => Promise<void>;
+  createOrisonsByFile: (
+    files: File[],
+    onProgress?: (value: number) => void
+  ) => Promise<void>;
+  createOrison: (
+    requests: Omit<OrisonDetail, "id"> & { file: File }
+  ) => Promise<void>;
   updateOrison: (Orison: Partial<OrisonDetail>) => Promise<void>;
   deleteOrison: (ids: Orison["id"][]) => Promise<void>;
 }
@@ -28,6 +36,7 @@ interface ContextValue {
 export const OrisonsContext = createContext<ContextValue>({
   getOrisonsApi: DEFAULT_FUNCTION_RETURN,
 
+  createOrisonsByFile: async () => {},
   createOrison: async () => {},
   updateOrison: async () => {},
   deleteOrison: async () => {},
@@ -45,10 +54,67 @@ const OrisonsProvider = ({ children }: { children: ReactNode }) => {
   }, [getVolumesApi.data]);
   const getOrisonsApi = useFunction(OrisonsApi.getOrisons);
 
-  const createOrison = useCallback(
-    async (request: Omit<OrisonDetail, "id">) => {
+  const createOrisonsByFile = useCallback(
+    async (files: File[], onProgress?: (value: number) => void) => {
       try {
-        const orison = await OrisonsApi.postOrison(request);
+        if (volume) {
+          const newOrisons: OrisonDetail[] = [];
+          for (let index = 0; index < files.length; index++) {
+            try {
+              const file = files[index];
+              const [code, name] = file.name.split(".")[0]?.split("_");
+              if (!code || !name) {
+                throw new Error(`Tên file ${file.name} sai cấu trúc`);
+              }
+              const { blocks, notes, plainText } = await convertDocx2Editor(
+                file
+              );
+              const newOrison = await OrisonsApi.postOrison({
+                code,
+                name,
+                volume_id: volume.id,
+                content: blocks,
+                plain_text: plainText,
+                notes: notes.map((note, index) => ({
+                  ...note,
+                  num: index + 1,
+                })),
+              });
+              newOrisons.push({ ...newOrison, sutra: initialSutra });
+
+              onProgress?.((index + 1) / files.length);
+            } catch (error) {
+              getOrisonsApi.setData([
+                ...(getOrisonsApi.data || []),
+                ...newOrisons,
+              ]);
+              throw error;
+            }
+          }
+          getOrisonsApi.setData([...(getOrisonsApi.data || []), ...newOrisons]);
+        }
+      } catch (error) {
+        throw error;
+      }
+    },
+    [getOrisonsApi, volume]
+  );
+
+  const createOrison = useCallback(
+    async (request: Omit<OrisonDetail, "id"> & { file: File }) => {
+      try {
+        const { blocks, notes, plainText } = await convertDocx2Editor(
+          request.file
+        );
+        const orison = await OrisonsApi.postOrison({
+          ...request,
+          content: blocks,
+          notes: notes.map((note, index) => ({
+            ...note,
+            num: index + 1,
+          })),
+          plain_text: plainText,
+        });
         if (orison) {
           const newOrisons: OrisonDetail[] = [
             {
@@ -111,6 +177,7 @@ const OrisonsProvider = ({ children }: { children: ReactNode }) => {
         volume,
         getOrisonsApi,
 
+        createOrisonsByFile,
         createOrison,
         updateOrison,
         deleteOrison,

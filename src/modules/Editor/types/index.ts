@@ -17,4 +17,5 @@ export interface EditorFormat {
 export interface ConvertDocx2EditorResult {
   notes: Note[];
   blocks: any[];
+  plainText: string;
 }

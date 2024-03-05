@@ -81,6 +81,14 @@ const OrisonEditSheet: FC<OrisonEditSheetProps> = ({
     onSubmit: handleSubmitHelper.call,
   });
 
+  const handleClickSubmit = useCallback(() => {
+    if (tab == "single") {
+      formik.handleSubmit();
+    } else {
+      handleSubmitMultipleHelper.call({});
+    }
+  }, [formik, handleSubmitMultipleHelper, tab]);
+
   useEffect(() => {
     if (orison?.id && open) {
       formik.setValues(orison);
@@ -101,11 +109,9 @@ const OrisonEditSheet: FC<OrisonEditSheetProps> = ({
       onOpenChange={onOpenChange}
       sheetTrigger={<Button>Tạo bài kinh</Button>}
       title="Tạo bài kinh"
-      actions={
-        <Button onClick={() => formik.handleSubmit()}>Tạo bài kinh</Button>
-      }
+      actions={<Button onClick={handleClickSubmit}>Tạo bài kinh</Button>}
       tabs={
-        volume
+        orison
           ? undefined
           : {
               defaultValue: "single",
@@ -119,29 +125,37 @@ const OrisonEditSheet: FC<OrisonEditSheetProps> = ({
       }
     >
       <form onSubmit={formik.submitForm} className="grid grid-cols-2 gap-4">
-        <div>
-          <FormInput
-            autoFocus
-            type="text"
-            label="Mã bài kinh (*)"
-            placeholder="Nhập mã bài kinh..."
-            className="w-full px-3"
-            {...formik.getFieldProps("code")}
-            error={formik.touched.code && !!formik.errors.code}
-            helperText={!!formik.touched.code && formik.errors.code}
-          />
-        </div>
-        <div>
-          <FormInput
-            type="text"
-            label="Tên bài kinh"
-            placeholder="Nhập tên bài kinh..."
-            className="w-full px-3"
-            {...formik.getFieldProps("name")}
-            error={formik.touched.name && !!formik.errors.name}
-            helperText={!!formik.touched.name && formik.errors.name}
-          />
-        </div>
+        {tab == "single" ? (
+          <>
+            <div>
+              <FormInput
+                autoFocus
+                type="text"
+                label="Mã bài kinh (*)"
+                placeholder="Nhập mã bài kinh..."
+                className="w-full px-3"
+                {...formik.getFieldProps("code")}
+                error={formik.touched.code && !!formik.errors.code}
+                helperText={!!formik.touched.code && formik.errors.code}
+              />
+            </div>
+            <div>
+              <FormInput
+                type="text"
+                label="Tên bài kinh"
+                placeholder="Nhập tên bài kinh..."
+                className="w-full px-3"
+                {...formik.getFieldProps("name")}
+                error={formik.touched.name && !!formik.errors.name}
+                helperText={!!formik.touched.name && formik.errors.name}
+              />
+            </div>{" "}
+          </>
+        ) : (
+          <div className="col-span-2 text-text-secondary">
+            {"Tải lên file đặt tên theo cú pháp <Mã bài>_<Tên bài>"}
+          </div>
+        )}
         <div className="col-span-2">
           <FileDropzone
             multiple={tab == "multiple"}
@@ -159,13 +173,17 @@ const OrisonEditSheet: FC<OrisonEditSheetProps> = ({
             {handleSubmitMultipleHelper.error?.message}
           </div>
         ) : (
+          tab == "multiple" &&
           progress > 0 && (
             <div className="col-span-2 flex gap-2 items-center -mt-2">
               <div className="flex-1">
                 <Progress value={progress * 100} className="bg-gray-300 h-3" />
               </div>
               <div className="w-[160px] text-text-secondary">
-                Đang upload... {Math.floor(progress * 100)}%
+                {handleSubmitMultipleHelper.loading
+                  ? "Đang upload..."
+                  : "Hoàn thành"}{" "}
+                {Math.floor(progress * 100)}%
               </div>
             </div>
           )

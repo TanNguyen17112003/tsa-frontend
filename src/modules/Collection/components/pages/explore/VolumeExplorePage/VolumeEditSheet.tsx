@@ -208,6 +208,7 @@ const VolumeEditSheet: FC<VolumeEditSheetProps> = ({
             {handleSubmitMultipleHelper.error?.message}
           </div>
         ) : (
+          tab == "multiple" &&
           progress > 0 && (
             <div className="col-span-2 flex gap-2 items-center -mt-2">
               <div className="flex-1">

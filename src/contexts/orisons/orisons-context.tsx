@@ -80,7 +80,12 @@ const OrisonsProvider = ({ children }: { children: ReactNode }) => {
                   num: index + 1,
                 })),
               });
-              newOrisons.push({ ...newOrison, sutra: initialSutra });
+              newOrisons.push({
+                ...newOrison,
+                code,
+                name,
+                sutra: initialSutra,
+              });
 
               onProgress?.((index + 1) / files.length);
             } catch (error) {

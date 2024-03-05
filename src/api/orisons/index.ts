@@ -17,6 +17,10 @@ export class OrisonsApi {
     return response;
   }
 
+  static async getOrisonById(id: Orison["id"]): Promise<OrisonEditor> {
+    return await apiGet(`/orisons/${id}`, {});
+  }
+
   static async putOrisons(request: Partial<Orison & Pick<Orison, "id">>) {
     return await apiPatch(`/orisons/${request.id}`, request);
   }

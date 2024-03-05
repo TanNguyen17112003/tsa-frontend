@@ -17,7 +17,7 @@ const Collection: FC<CollectionProps> = ({}) => {
             <VolumesProvider>
               <OrisonsProvider>
                 <CollectionContent
-                  sideNavClassName="fixed top-[116px] left-0 z-10"
+                  sideNavClassName="fixed top-[116px] left-0 z-10 bg-white"
                   className=""
                 ></CollectionContent>
               </OrisonsProvider>

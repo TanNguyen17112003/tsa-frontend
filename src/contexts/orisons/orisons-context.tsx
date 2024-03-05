@@ -11,7 +11,7 @@ import useFunction, {
   DEFAULT_FUNCTION_RETURN,
   UseFunctionReturnType,
 } from "src/hooks/use-function";
-import { Orison, OrisonDetail } from "src/types/orison";
+import { Orison, OrisonDetail, OrisonEditor } from "src/types/orison";
 import { VolumeDetail } from "src/types/volume";
 import { useVolumesContext } from "../volumes/volumes-context";
 import { convertDocx2Editor } from "src/modules/Editor/utils";
@@ -20,7 +20,9 @@ import { useRouter } from "next/router";
 
 interface ContextValue {
   volume?: VolumeDetail;
+  orisonId?: string;
   getOrisonsApi: UseFunctionReturnType<GetOrisonPayload, OrisonDetail[]>;
+  getOrisonDetailApi: UseFunctionReturnType<Orison["id"], OrisonEditor>;
 
   createOrisonsByFile: (
     files: File[],
@@ -35,6 +37,7 @@ interface ContextValue {
 
 export const OrisonsContext = createContext<ContextValue>({
   getOrisonsApi: DEFAULT_FUNCTION_RETURN,
+  getOrisonDetailApi: DEFAULT_FUNCTION_RETURN,
 
   createOrisonsByFile: async () => {},
   createOrison: async () => {},
@@ -45,6 +48,7 @@ export const OrisonsContext = createContext<ContextValue>({
 const OrisonsProvider = ({ children }: { children: ReactNode }) => {
   const { getVolumesApi } = useVolumesContext();
   const router = useRouter();
+
   const volume = useMemo(() => {
     const volumeId = (
       router.query.volumeId ||
@@ -55,6 +59,10 @@ const OrisonsProvider = ({ children }: { children: ReactNode }) => {
   }, [getVolumesApi.data, router.query]);
 
   const getOrisonsApi = useFunction(OrisonsApi.getOrisons);
+  const getOrisonDetailApi = useFunction(OrisonsApi.getOrisonById);
+  const orisonId = useMemo(() => {
+    return (router.query.orisonId || router.query.qOrisonId || "")?.toString();
+  }, [router.query]);
 
   const createOrisonsByFile = useCallback(
     async (files: File[], onProgress?: (value: number) => void) => {
@@ -178,11 +186,20 @@ const OrisonsProvider = ({ children }: { children: ReactNode }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [volume]);
 
+  useEffect(() => {
+    if (orisonId) {
+      getOrisonDetailApi.call(orisonId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orisonId]);
+
   return (
     <OrisonsContext.Provider
       value={{
         volume,
+        orisonId,
         getOrisonsApi,
+        getOrisonDetailApi,
 
         createOrisonsByFile,
         createOrison,

@@ -10,6 +10,9 @@ import clsx from "clsx";
 import { IoWarning } from "react-icons/io5";
 import Pagination from "../ui/Pagination";
 import { Button } from "../shadcn/ui/button";
+import { Checkbox } from "../shadcn/ui/checkbox";
+import { PiNotePencilBold, PiPencilBold } from "react-icons/pi";
+import Loading from "../Loading";
 
 export function CustomTable<P, T extends { id: P; [key: string]: any }>(
   props: CustomTableProps<P, T> &
@@ -113,7 +116,7 @@ export function CustomTable<P, T extends { id: P; [key: string]: any }>(
       <SimpleBar {...scrollbarProps} ref={scrollBar}>
         <table
           className={clsx(
-            "relative min-w-[700px] w-full border-2 border-collapse",
+            "relative min-w-[700px] w-full rounded-md border-collapse",
             isMounted && flexible ? "table-fixed" : undefined,
             tableClassName
           )}
@@ -128,10 +131,11 @@ export function CustomTable<P, T extends { id: P; [key: string]: any }>(
             {pagedRows.map((row, index) => (
               <tr
                 key={row.id + "-key-" + index}
+                onClick={() => onClickRow && onClickRow(row, index)}
                 className={clsx(
-                  "text-nowrap px-2 border-2 border-collapse",
+                  "text-nowrap px-2 border border-collapse",
                   row.error ? "bg-error-900" : undefined,
-                  onClickRow ? "cursor-pointer hover:bg-orange-900" : undefined
+                  onClickRow ? "cursor-pointer hover:bg-gray-100" : undefined
                 )}
               >
                 {(indexColumn || select) && (
@@ -139,14 +143,12 @@ export function CustomTable<P, T extends { id: P; [key: string]: any }>(
                     onClick={(e) => e.stopPropagation()}
                     className={cellClassName}
                   >
-                    <div className="flex gap-1 items-center">
+                    <div className="flex gap-1 items-center pl-3">
                       {select && (
-                        <input
-                          type="checkbox"
-                          className={clsx("checkbox -my-1 -mx-1")}
+                        <Checkbox
                           checked={select.selected.includes(row)}
-                          onChange={(e) =>
-                            e.target.checked
+                          onCheckedChange={(checked) =>
+                            checked
                               ? select.handleSelectOne(row)
                               : select.handleDeselectOne(row)
                           }
@@ -181,13 +183,21 @@ export function CustomTable<P, T extends { id: P; [key: string]: any }>(
                     <div className="flex justify-end -my-1">
                       {renderRowActions?.(row, index)}
                       {onClickEdit && (
-                        <Button onClick={() => onClickEdit(row, index)}>
-                          <BsPencilSquare className="h-4 w-4 bg-cyan" />
+                        <Button
+                          onClick={() => onClickEdit(row, index)}
+                          variant="ghost"
+                          className="hover:bg-secondary/15"
+                        >
+                          <PiNotePencilBold className="h-5 w-5 fill-secondary" />
                         </Button>
                       )}
                       {onClickDelete && (
-                        <Button onClick={() => onClickDelete(row, index)}>
-                          <BsTrash2Fill className="h-4 w-4 bg-destructive" />
+                        <Button
+                          onClick={() => onClickDelete(row, index)}
+                          variant="ghost"
+                          className="hover:bg-destructive/15"
+                        >
+                          <BsTrash2Fill className="h-5 w-5 fill-destructive" />
                         </Button>
                       )}
                       {onClickDetail && (
@@ -212,7 +222,7 @@ export function CustomTable<P, T extends { id: P; [key: string]: any }>(
       {(loading || rows.length == 0) && (
         <div className="-mt-2 h-[100px] w-full flex items-center justify-center sticky left-0">
           {loading ? (
-            <div className="loading loading-spinner loading-sm" />
+            <Loading />
           ) : emptyState ? (
             emptyState
           ) : (

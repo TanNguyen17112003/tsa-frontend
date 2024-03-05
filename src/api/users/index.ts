@@ -5,6 +5,7 @@ import {
   apiPatch,
   apiPost,
   apiPut,
+  getFormData,
 } from "src/utils/api-request";
 
 type SignInRequest = {
@@ -12,10 +13,7 @@ type SignInRequest = {
   password: string;
 };
 
-type SignInResponse = Promise<{
-  data: UserDetail;
-  token: string;
-}>;
+type SignInResponse = UserDetail & { token: string };
 
 type SignUpRequest = {
   email: string;
@@ -37,8 +35,8 @@ export class UsersApi {
   //   return await apiPost("/users/create", request);
   // }
 
-  static async getUsers(request: FormData): Promise<UserDetail[]> {
-    const response = await apiGet("/users", request);
+  static async getUsers(request: {}): Promise<UserDetail[]> {
+    const response = await apiGet("/users", getFormData(request));
     return response;
   }
 

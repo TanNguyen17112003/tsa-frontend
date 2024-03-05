@@ -109,6 +109,7 @@ const VolumeEditSheet: FC<VolumeEditSheetProps> = ({
       setProgress(0);
       handleSubmitHelper.reset();
       handleSubmitMultipleHelper.reset();
+      setTab("single");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [volume?.id, open]);
@@ -134,7 +135,7 @@ const VolumeEditSheet: FC<VolumeEditSheetProps> = ({
       open={open}
       onOpenChange={onOpenChange}
       sheetTrigger={<Button>Tạo quyển kinh</Button>}
-      title="Tạo quyển kinh"
+      title={volume ? "Sửa quyển kinh" : "Tạo quyển kinh"}
       actions={
         <Button
           onClick={handleClickSubmit}

@@ -99,6 +99,7 @@ const OrisonEditSheet: FC<OrisonEditSheetProps> = ({
       setProgress(0);
       handleSubmitHelper.reset();
       handleSubmitMultipleHelper.reset();
+      setTab("single");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orison?.id, open]);
@@ -108,7 +109,7 @@ const OrisonEditSheet: FC<OrisonEditSheetProps> = ({
       open={open}
       onOpenChange={onOpenChange}
       sheetTrigger={<Button>Tạo bài kinh</Button>}
-      title="Tạo bài kinh"
+      title={volume ? "Sửa bài kinh" : "Tạo bài kinh"}
       actions={<Button onClick={handleClickSubmit}>Tạo bài kinh</Button>}
       tabs={
         orison

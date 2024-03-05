@@ -1,4 +1,3 @@
-import router from "next/router";
 import {
   ReactNode,
   createContext,
@@ -17,6 +16,7 @@ import { VolumeDetail } from "src/types/volume";
 import { useVolumesContext } from "../volumes/volumes-context";
 import { convertDocx2Editor } from "src/modules/Editor/utils";
 import { initialSutra } from "src/types/sutra";
+import { useRouter } from "next/router";
 
 interface ContextValue {
   volume?: VolumeDetail;
@@ -44,6 +44,7 @@ export const OrisonsContext = createContext<ContextValue>({
 
 const OrisonsProvider = ({ children }: { children: ReactNode }) => {
   const { getVolumesApi } = useVolumesContext();
+  const router = useRouter();
   const volume = useMemo(() => {
     const volumeId = (
       router.query.volumeId ||
@@ -51,7 +52,8 @@ const OrisonsProvider = ({ children }: { children: ReactNode }) => {
       ""
     )?.toString();
     return getVolumesApi.data?.find((c) => c.id == volumeId);
-  }, [getVolumesApi.data]);
+  }, [getVolumesApi.data, router.query]);
+
   const getOrisonsApi = useFunction(OrisonsApi.getOrisons);
 
   const createOrisonsByFile = useCallback(

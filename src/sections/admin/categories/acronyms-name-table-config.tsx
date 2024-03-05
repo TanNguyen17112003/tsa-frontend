@@ -1,7 +1,7 @@
 import { CustomTableConfig } from "src/components/custom-table";
 import { Format } from "src/types/formats";
 
-const getSortNameTableConfig: CustomTableConfig<Format["id"], Format>[] = [
+const getAcronymsNameTableConfig: CustomTableConfig<Format["id"], Format>[] = [
   {
     key: "acronyms_name",
     headerLabel: "Tên viết tắt tuyển tập",
@@ -14,4 +14,4 @@ const getSortNameTableConfig: CustomTableConfig<Format["id"], Format>[] = [
   },
 ];
 
-export default getSortNameTableConfig;
+export default getAcronymsNameTableConfig;

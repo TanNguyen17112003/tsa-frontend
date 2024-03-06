@@ -5,17 +5,19 @@ import CustomSheet from "src/components/CustomSheet";
 import { Button } from "src/components/shadcn/ui/button";
 import { Input } from "src/components/shadcn/ui/input";
 import FormInput from "src/components/ui/FormInput";
-import { initialFormatSutra } from "src/types/format-sutra";
+import { FormatSutra, initialFormatSutra } from "src/types/format-sutra";
 import { formatSutraSchema } from "src/types/format-sutra";
 
 export interface AcronymsNameEditSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  formatSutra?: FormatSutra;
 }
 
 const AcronymsNameEditSheet: FC<AcronymsNameEditSheetProps> = ({
   open,
   onOpenChange,
+  formatSutra,
 }) => {
   const formik = useFormik({
     initialValues: initialFormatSutra,

@@ -5,16 +5,18 @@ import CustomSheet from "src/components/CustomSheet";
 import { Button } from "src/components/shadcn/ui/button";
 import { Input } from "src/components/shadcn/ui/input";
 import FormInput from "src/components/ui/FormInput";
-import { formatWordSchema, initialFormatWord } from "src/types/format-word";
+import { FormatWord, formatWordSchema, initialFormatWord } from "src/types/format-word";
 
 export interface AcronymsWordEditSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  formatWord?: FormatWord;
 }
 
 const AcronymsWordEditSheet: FC<AcronymsWordEditSheetProps> = ({
   open,
   onOpenChange,
+  formatWord,
 }) => {
   const formik = useFormik({
     initialValues: initialFormatWord,

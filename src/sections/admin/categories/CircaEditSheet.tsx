@@ -5,14 +5,19 @@ import CustomSheet from "src/components/CustomSheet";
 import { Button } from "src/components/shadcn/ui/button";
 import { Input } from "src/components/shadcn/ui/input";
 import FormInput from "src/components/ui/FormInput";
-import { circaSchema, initialCirca } from "src/types/circas";
+import { Circa, circaSchema, initialCirca } from "src/types/circas";
 
 export interface CircaEditSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  circa?: Circa;
 }
 
-const CircaEditSheet: FC<CircaEditSheetProps> = ({ open, onOpenChange }) => {
+const CircaEditSheet: FC<CircaEditSheetProps> = ({ 
+  open, 
+  onOpenChange,
+  circa,
+}) => {
   const formik = useFormik({
     initialValues: initialCirca,
     validationSchema: circaSchema,
@@ -60,7 +65,7 @@ const CircaEditSheet: FC<CircaEditSheetProps> = ({ open, onOpenChange }) => {
       <div className="flex flex-col gap-2 mt-4">
         <div className="text-xs font-semibold ml-1">Thời gian bắt đầu</div>
         <FormInput
-          type="text"
+          type="number"
           placeholder="Nhập thời gian bắt đầu"
           className="w-full px-3"
           {...formik.getFieldProps("start_year")}
@@ -71,7 +76,7 @@ const CircaEditSheet: FC<CircaEditSheetProps> = ({ open, onOpenChange }) => {
       <div className="flex flex-col gap-2 mt-4">
         <div className="text-xs font-semibold ml-1">Thời gian kết thúc</div>
         <FormInput
-          type="text"
+          type="number"
           placeholder="Nhập thời gian kết thúc"
           className="w-full px-3"
           {...formik.getFieldProps("end_year")}

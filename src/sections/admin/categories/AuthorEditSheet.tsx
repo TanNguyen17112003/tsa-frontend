@@ -6,14 +6,19 @@ import { Button } from "src/components/shadcn/ui/button";
 import * as Yup from "yup";
 import { Input } from "src/components/shadcn/ui/input";
 import FormInput from "src/components/ui/FormInput";
-import { authorSchema, initialAuthor } from "src/types/author";
+import { Author, authorSchema, initialAuthor } from "src/types/author";
 
 export interface AuthorEditSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  author?: Author;
 }
 
-const AuthorEditSheet: FC<AuthorEditSheetProps> = ({ open, onOpenChange }) => {
+const AuthorEditSheet: FC<AuthorEditSheetProps> = ({ 
+  open, 
+  onOpenChange,
+  author,
+}) => {
   const formik = useFormik({
     initialValues: initialAuthor,
     validationSchema: authorSchema,

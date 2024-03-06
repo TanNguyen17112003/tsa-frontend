@@ -11,8 +11,8 @@ export interface CircaDetail extends Circa {}
 
 export const circaSchema = yup.object().shape({
   circa: yup.string().required("Vui lòng nhập niên đại"),
-  start_year: yup.string().required("Vui lòng nhập năm bắt đầu"),
-  end_year: yup.string().required("Vui lòng nhập năm kết thúc"),
+  start_year: yup.number().required("Vui lòng nhập năm bắt đầu"),
+  end_year: yup.number().required("Vui lòng nhập năm kết thúc"),
 });
 
 export const initialCirca: CircaDetail = {

@@ -14,20 +14,38 @@ import {
   SelectValue,
 } from "src/components/shadcn/ui/select";
 import FormInput from "src/components/ui/FormInput";
-import { initialUser } from "src/types/user";
+import { User, initialUser } from "src/types/user";
 import { userSchema } from "src/types/user";
+import CustomSelect from "src/components/CustomSelect";
 
 export interface AccountEditSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  account?: User;
 }
+
+const roleOptions = [
+  {
+    label: "Chỉ xem được khiếu nại",
+    value: "view-reports",
+  },
+  {
+    label: "Được xử lý khiếu nại",
+    value: "handle-reports",
+  },
+]
 
 const AccountEditSheet: FC<AccountEditSheetProps> = ({
   open,
   onOpenChange,
+  account,
 }) => {
   const formik = useFormik({
-    initialValues: initialUser,
+    initialValues: {
+      ...initialUser, 
+      password: "siu@123", 
+      role: "view-reports",
+    },
     validationSchema: userSchema,
     onSubmit: async (values) => {
       try {
@@ -40,7 +58,11 @@ const AccountEditSheet: FC<AccountEditSheetProps> = ({
 
   useEffect(() => {
     if (!open) {
-      formik.setValues(initialUser);
+      formik.setValues({
+        ...initialUser, 
+        password: "siu@123", 
+        role: "view-reports",
+      });
       formik.resetForm();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -105,29 +127,17 @@ const AccountEditSheet: FC<AccountEditSheetProps> = ({
           />
         </div>
         <div className="text-sm font-semibold pb-2">Thiết lập quyền</div>
-        <div>
-          <div className="text-xs font-semibold pl-1 pb-2">
-            Cho phép dịch giả
-          </div>
-          <Select
-            onValueChange={(value) => {
-              formik.setFieldValue("role", value);
-            }}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Chỉ xem được khiếu nại" />
-            </SelectTrigger>
-            <SelectContent {...formik.getFieldProps("role")}>
-              <SelectGroup>
-                <SelectItem value="view-reports">
-                  Chỉ xem được khiếu nại
-                </SelectItem>
-                <SelectItem value="handle-reports">
-                  Được xử lý khiếu nại
-                </SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+        <div>          
+          <CustomSelect
+            label="Cho phép dịch giả"
+            placeholder="Phân quyền"
+            className="w-full px-3"
+            onValueChange={(value) => formik.setFieldValue("role", value)}
+            value={formik.values.role}
+            error={formik.touched.role && !!formik.errors.role}
+            helperText={!!formik.touched.role && formik.errors.role}
+            options={roleOptions}
+          />
         </div>
       </div>
     </CustomSheet>

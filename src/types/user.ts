@@ -27,8 +27,8 @@ export const initialUser: UserDetail = {
   username: "",
   email: "",
   name: "",
-  password: "siu@123",
-  role: "view-reports",
+  password: "",
+  role: "",
 };
 
 export const users: UserDetail[] = [

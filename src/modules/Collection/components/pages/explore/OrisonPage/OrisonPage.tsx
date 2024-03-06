@@ -31,7 +31,7 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
         <div></div>
         <div
           className={clsx(
-            "w-[220px] border overflow-y-auto pb-[60px] mt-4 mx-4 rounded-lg absolute left-0 top-full"
+            "w-[220px] border overflow-y-auto pb-[60px] mt-[60px] mx-4 rounded-lg absolute left-0 top-full"
           )}
         >
           <div className="p-3 text-lg font-semibold text-text-secondary">
@@ -56,7 +56,7 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
         </div>
       </div>
 
-      <div className="pl-[252px]">
+      <div className="pl-[252px] h-full overflow-y-auto">
         {getOrisonDetailApi.loading ? (
           <div className="flex h-[100px] items-center justify-center mt-4">
             <Loading />

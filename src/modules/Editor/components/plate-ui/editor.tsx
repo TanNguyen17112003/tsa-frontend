@@ -20,15 +20,8 @@ const editorVariants = cva(
         outline: "border border-input",
         ghost: "",
       },
-      focused: {
-        true: "ring-2 ring-ring ring-offset-2",
-      },
       disabled: {
         true: "cursor-not-allowed opacity-50",
-      },
-      focusRing: {
-        true: "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-        false: "",
       },
       size: {
         sm: "text-sm",
@@ -37,7 +30,6 @@ const editorVariants = cva(
     },
     defaultVariants: {
       variant: "outline",
-      focusRing: true,
       size: "sm",
     },
   }
@@ -47,27 +39,13 @@ export type EditorProps = PlateContentProps &
   VariantProps<typeof editorVariants>;
 
 const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
-  (
-    {
-      className,
-      disabled,
-      focused,
-      focusRing,
-      readOnly,
-      size,
-      variant,
-      ...props
-    },
-    ref
-  ) => {
+  ({ className, disabled, readOnly, size, variant, ...props }, ref) => {
     return (
       <div ref={ref} className="relative w-full">
         <PlateContent
           className={cn(
             editorVariants({
               disabled,
-              focused,
-              focusRing,
               size,
               variant,
             }),

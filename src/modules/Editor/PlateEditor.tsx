@@ -59,27 +59,26 @@ const PlateEditor: FC<PlateEditorProps> = ({
         });
       }
 
-      // if (searchText && SlateText.isText(node)) {
-      //   const { text } = node;
-      //   const parts = text.split(searchText);
-      //   let offset = 0;
+      if (searchText && SlateText.isText(node)) {
+        const { text } = node;
+        const parts = text.toLowerCase().split(searchText);
+        let offset = 0;
 
-      //   parts.forEach((part, i) => {
-      //     if (i !== 0) {
-      //       ranges.push({
-      //         anchor: { path, offset: offset - searchText.length },
-      //         focus: { path, offset },
-      //         highlightSearch: true,
-      //       });
-      //     }
+        parts.forEach((part, i) => {
+          if (i !== 0) {
+            ranges.push({
+              anchor: { path, offset: offset - searchText.length },
+              focus: { path, offset },
+              highlightSearch: true,
+            });
+          }
 
-      //     offset = offset + part.length + searchText.length;
-      //   });
-      // }
-      // console.log("ranges", ranges);
+          offset = offset + part.length + searchText.length;
+        });
+      }
       return ranges;
     },
-    [activeNoteId]
+    [activeNoteId, searchText]
   );
 
   const handleChange = useCallback(
@@ -140,8 +139,8 @@ const Leaf = ({
         fontSize: leaf.fontSize,
       }}
       className={clsx(
-        leaf.highlightNote && "bg-orange-200"
-        // leaf.highlightSearch && "bg-orange-200",
+        leaf.highlightNote && "bg-orange-200",
+        leaf.highlightSearch && "bg-cyan-200"
         // leaf.color && `text-[${leaf.color}]`,
         // leaf.fontSize && `text-[${leaf.fontSize}]`
         // leaf.bold && "font-bold",

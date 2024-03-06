@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { useRouter } from "next/router";
-import { useCallback, useState, type FC } from "react";
+import { useCallback, useState, type FC, useRef, FormEvent } from "react";
 import {
   PiDownloadSimpleBold,
   PiFlagBold,
@@ -12,12 +12,15 @@ import { useOrisonsContext } from "src/contexts/orisons/orisons-context";
 import PlateEditor from "src/modules/Editor";
 import CollectionBreadcrumb from "../../../CollectionBreadcrumb";
 import OrisonPagination from "./OrisonPagination";
+import { BiSearch } from "react-icons/bi";
+import FormInput from "src/components/ui/FormInput";
 
 interface OrisonPageProps {}
 
 const OrisonPage: FC<OrisonPageProps> = ({}) => {
   const { getOrisonsApi, orisonId, getOrisonDetailApi } = useOrisonsContext();
   const [isEditting, setIsEditting] = useState(false);
+  const [searchText, setSearchText] = useState("");
   const router = useRouter();
 
   const handleChangeOrison = useCallback(
@@ -29,6 +32,15 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
     },
     [router]
   );
+
+  const handleSearch = useCallback((e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const searchInput: HTMLInputElement = document.getElementById(
+      "search"
+    ) as HTMLInputElement;
+    const searchValue = searchInput?.value;
+    setSearchText(searchValue);
+  }, []);
 
   const handleSave = useCallback((value: any) => {
     setIsEditting(false);
@@ -43,26 +55,43 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
       <div className="flex justify-between p-4 border-b sticky top-0">
         <CollectionBreadcrumb />
         <div className="flex gap-3">
-          <Button size="lg" variant="outline" className="gap-2 px-4">
-            <PiFlagBold className="w-5 h-5" />
-            Khiếu nại
-          </Button>
-          <Button size="lg" variant="outline" className="gap-2 px-4">
-            <PiDownloadSimpleBold className="w-5 h-5" /> Tải văn bản dịch
-          </Button>
-          <Button
-            size="lg"
-            variant="outline"
-            className="gap-2 px-4"
-            onClick={() => {
-              setIsEditting(!isEditting);
-            }}
+          <form
+            className="flex items-center border rounded-md w-full"
+            onSubmit={handleSearch}
           >
-            <PiNotePencilBold className="w-5 h-5" /> Chỉnh sửa
-          </Button>
-          <Button size="lg" className="px-4">
-            Xem văn bản gốc
-          </Button>
+            <FormInput
+              type="text"
+              placeholder="Tìm kiếm văn bản..."
+              name="search"
+              id="search"
+              className="border-none"
+            />
+            <BiSearch className="w-5 h-5 mx-2" />
+          </form>
+          {!isEditting && (
+            <>
+              <Button size="lg" variant="outline" className="gap-2 px-4">
+                <PiFlagBold className="w-5 h-5" />
+                Khiếu nại
+              </Button>
+              <Button size="lg" variant="outline" className="gap-2 px-4">
+                <PiDownloadSimpleBold className="w-5 h-5" /> Tải văn bản dịch
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="gap-2 px-4"
+                onClick={() => {
+                  setIsEditting(!isEditting);
+                }}
+              >
+                <PiNotePencilBold className="w-5 h-5" /> Chỉnh sửa
+              </Button>
+              <Button size="lg" className="px-4">
+                Xem văn bản gốc
+              </Button>
+            </>
+          )}
         </div>
         <div
           className={clsx(
@@ -112,6 +141,7 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
               onChange={() => {}}
               onSave={handleSave}
               onCancel={handleCancel}
+              searchText={searchText.toLowerCase()}
             />
           </>
         ) : null}

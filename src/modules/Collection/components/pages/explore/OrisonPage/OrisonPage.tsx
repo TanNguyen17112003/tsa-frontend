@@ -1,17 +1,23 @@
-import { useCallback, type FC } from "react";
-import CollectionBreadcrumb from "../../../CollectionBreadcrumb";
 import clsx from "clsx";
-import { useOrisonsContext } from "src/contexts/orisons/orisons-context";
-import { Button } from "src/components/shadcn/ui/button";
-import PlateEditor from "src/modules/Editor";
-import Loading from "src/components/Loading";
-import { Note } from "src/modules/Editor/types/note";
 import { useRouter } from "next/router";
+import { useCallback, useState, type FC } from "react";
+import {
+  PiDownloadSimpleBold,
+  PiFlagBold,
+  PiNotePencilBold,
+} from "react-icons/pi";
+import Loading from "src/components/Loading";
+import { Button } from "src/components/shadcn/ui/button";
+import { useOrisonsContext } from "src/contexts/orisons/orisons-context";
+import PlateEditor from "src/modules/Editor";
+import CollectionBreadcrumb from "../../../CollectionBreadcrumb";
+import OrisonPagination from "./OrisonPagination";
 
 interface OrisonPageProps {}
 
 const OrisonPage: FC<OrisonPageProps> = ({}) => {
   const { getOrisonsApi, orisonId, getOrisonDetailApi } = useOrisonsContext();
+  const [isEditting, setIsEditting] = useState(false);
   const router = useRouter();
 
   const handleChangeOrison = useCallback(
@@ -24,11 +30,40 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
     [router]
   );
 
+  const handleSave = useCallback((value: any) => {
+    setIsEditting(false);
+  }, []);
+
+  const handleCancel = useCallback(() => {
+    setIsEditting(false);
+  }, []);
+
   return (
     <>
-      <div className="flex justify-between p-5 border-b sticky top-0">
+      <div className="flex justify-between p-4 border-b sticky top-0">
         <CollectionBreadcrumb />
-        <div></div>
+        <div className="flex gap-3">
+          <Button size="lg" variant="outline" className="gap-2 px-4">
+            <PiFlagBold className="w-5 h-5" />
+            Khiếu nại
+          </Button>
+          <Button size="lg" variant="outline" className="gap-2 px-4">
+            <PiDownloadSimpleBold className="w-5 h-5" /> Tải văn bản dịch
+          </Button>
+          <Button
+            size="lg"
+            variant="outline"
+            className="gap-2 px-4"
+            onClick={() => {
+              setIsEditting(!isEditting);
+            }}
+          >
+            <PiNotePencilBold className="w-5 h-5" /> Chỉnh sửa
+          </Button>
+          <Button size="lg" className="px-4">
+            Xem văn bản gốc
+          </Button>
+        </div>
         <div
           className={clsx(
             "w-[220px] border overflow-y-auto pb-[60px] mt-[60px] mx-4 rounded-lg absolute left-0 top-full"
@@ -57,18 +92,28 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
       </div>
 
       <div className="pl-[252px] h-full overflow-y-auto">
+        {!isEditting && (
+          <div className="flex justify-end p-4 py-3 sticky left-0 top-0 z-50 w-full border-b mb-[-1px] bg-white">
+            <OrisonPagination />
+          </div>
+        )}
         {getOrisonDetailApi.loading ? (
           <div className="flex h-[100px] items-center justify-center mt-4">
             <Loading />
           </div>
         ) : getOrisonDetailApi.data &&
           getOrisonDetailApi.data.id == orisonId ? (
-          <PlateEditor
-            initialValue={getOrisonDetailApi.data.content}
-            notes={getOrisonDetailApi.data.notes}
-            onUpdateNotes={() => {}}
-            onChange={() => {}}
-          />
+          <>
+            <PlateEditor
+              readOnly={!isEditting}
+              initialValue={getOrisonDetailApi.data.content}
+              notes={getOrisonDetailApi.data.notes}
+              onUpdateNotes={() => {}}
+              onChange={() => {}}
+              onSave={handleSave}
+              onCancel={handleCancel}
+            />
+          </>
         ) : null}
       </div>
     </>

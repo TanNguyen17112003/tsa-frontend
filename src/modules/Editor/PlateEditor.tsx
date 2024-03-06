@@ -13,7 +13,7 @@ import { FloatingToolbar } from "./components/plate-ui/floating-toolbar";
 import plugins from "./plugins";
 
 import clsx from "clsx";
-import { useCallback, type FC, useState } from "react";
+import { useCallback, type FC, useState, useRef } from "react";
 import NoteCard from "./components/NoteCard";
 import NotesProvider from "./components/NoteProvider/NoteProvider";
 import { EditorFormat, EditorHighlight } from "./types";
@@ -23,18 +23,25 @@ interface PlateEditorProps {
   initialValue: any;
   searchText?: string;
   notes?: Note[];
+  readOnly?: boolean;
   onUpdateNotes: (notes: Note[]) => void;
+  onCancel?: () => void;
+  onSave?: (value: any) => void;
   onChange: (value: any) => void;
 }
 
 const PlateEditor: FC<PlateEditorProps> = ({
   initialValue,
   searchText,
+  readOnly,
   notes,
   onUpdateNotes,
   onChange,
+  onCancel,
+  onSave,
 }) => {
   const [activeNoteId, setActiveNoteId] = useState("");
+  const valueRef = useRef<any | null>();
   const decorate = useCallback(
     ([node, path]: TNodeEntry): (SlateRange &
       EditorHighlight &
@@ -75,17 +82,36 @@ const PlateEditor: FC<PlateEditorProps> = ({
     [activeNoteId]
   );
 
+  const handleChange = useCallback(
+    (value: any) => {
+      onChange(value);
+      valueRef.current = value;
+    },
+    [onChange]
+  );
+
   return (
-    <Plate plugins={plugins} initialValue={initialValue} onChange={onChange}>
+    <Plate
+      plugins={plugins}
+      initialValue={initialValue}
+      onChange={handleChange}
+      readOnly={readOnly}
+    >
       <NotesProvider
         notes={notes || []}
         onChangeActiveNoteId={setActiveNoteId}
         onUpdateNotes={onUpdateNotes}
       >
-        <FixedToolbar>
-          <FixedToolbarButtons />
-        </FixedToolbar>
+        {!readOnly && (
+          <FixedToolbar>
+            <FixedToolbarButtons
+              onCancel={onCancel}
+              onSave={onSave ? () => onSave?.(valueRef.current) : undefined}
+            />
+          </FixedToolbar>
+        )}
         <Editor
+          readOnly={readOnly}
           style={{
             fontFamily: `"Times New Roman", Times, serif`,
           }}

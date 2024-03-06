@@ -8,7 +8,7 @@ export interface Author {
 export interface AuthorDetail extends Author {}
 
 export const authorSchema = yup.object().shape({
-  author: yup.string().required("Vui lòng nhập name"),
+  author: yup.string().required("Vui lòng nhập tên tác giả"),
 });
 
 export const initialAuthor: AuthorDetail = { id: "", author: "" };

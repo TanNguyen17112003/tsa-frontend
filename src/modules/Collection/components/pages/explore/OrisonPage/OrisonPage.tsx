@@ -54,7 +54,7 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
     <>
       <div className="flex justify-between p-4 border-b sticky top-0">
         <CollectionBreadcrumb />
-        <div className="flex gap-3">
+        <div className="flex gap-3 items-center">
           <form
             className="flex items-center border rounded-md w-full"
             onSubmit={handleSearch}

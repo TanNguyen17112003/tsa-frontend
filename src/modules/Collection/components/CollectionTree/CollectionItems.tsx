@@ -14,7 +14,7 @@ import { useCollectionCategoriesContext } from "src/contexts/collections/collect
 interface CollectionItemsProps {}
 
 const CollectionItems: FC<CollectionItemsProps> = (props) => {
-  const { tree } = useCollectionCategoriesContext();
+  const { tree, goCollection } = useCollectionCategoriesContext();
   const { expandedIds, setExpandedIds, search } = useCollectionTreeContext();
   const router = useRouter();
 
@@ -28,23 +28,13 @@ const CollectionItems: FC<CollectionItemsProps> = (props) => {
 
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: string) => {
-      router.replace({
-        pathname: router.pathname,
-        query: {
-          ...router.query,
-          searchType: "",
-          collectionId: id == router.query.collectionId ? "" : id,
-          sutraId: "",
-          volumeId: "",
-          orisonId: "",
-        },
-      });
+      goCollection(id);
       if (id != router.query.collectionId && expandedIds.includes(id)) {
         e.preventDefault();
         e.stopPropagation();
       }
     },
-    [expandedIds, router]
+    [expandedIds, goCollection, router.query.collectionId]
   );
 
   if (viewType != "all" && viewType != "collection") {

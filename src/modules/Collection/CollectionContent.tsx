@@ -26,12 +26,13 @@ const CollectionContent: FC<CollectionContentProps> = ({
   sideNavClassName,
 }) => {
   const { query } = useRouter();
+  const isFullScreen = query.isFullScreen == "true";
 
   return (
     <>
       <div
         className={clsx(
-          "w-[300px] border-r h-full overflow-y-auto pb-[160px]",
+          "w-[300px] border-r h-full overflow-y-auto pb-[80px] sticky top-0 mb-[-100%] translate-x-[-300px]",
           sideNavClassName
         )}
       >
@@ -44,33 +45,40 @@ const CollectionContent: FC<CollectionContentProps> = ({
         </div>
         <CollectionTree />
       </div>
-      {query.searchType == "text" ? (
-        <TextSearchPage />
-      ) : query.searchType == "sutra" ? (
-        <SutraSearchPage />
-      ) : query.searchType == "author" ? (
-        <AuthorSearchPage />
-      ) : query.searchType == "circa" ? (
-        <CircaSearchPage />
-      ) : query.searchType == "basic" ? (
-        <BasicSearchPage />
-      ) : query.searchType == "advance" ? (
-        <AdvanceSearchPage />
-      ) : query.searchType == "adjacent" ? (
-        <AdjacentSearchPage />
-      ) : query.orisonId ? (
-        <OrisonPage />
-      ) : query.volumeId ? (
-        <OrisonExplorePage />
-      ) : query.sutraId ? (
-        <VolumnExplorePage />
-      ) : query.collectionId ? (
-        <SutraExplorePage />
-      ) : !query.collectionId ? (
-        <CollectionExplorePage />
-      ) : (
-        <> not found</>
-      )}
+      <div
+        className={clsx(
+          "absolute top-0 h-full flex flex-col overflow-y-auto",
+          isFullScreen ? "w-full left-0" : "w-[calc(100%_-_300px)]"
+        )}
+      >
+        {query.searchType == "text" ? (
+          <TextSearchPage />
+        ) : query.searchType == "sutra" ? (
+          <SutraSearchPage />
+        ) : query.searchType == "author" ? (
+          <AuthorSearchPage />
+        ) : query.searchType == "circa" ? (
+          <CircaSearchPage />
+        ) : query.searchType == "basic" ? (
+          <BasicSearchPage />
+        ) : query.searchType == "advance" ? (
+          <AdvanceSearchPage />
+        ) : query.searchType == "adjacent" ? (
+          <AdjacentSearchPage />
+        ) : query.orisonId ? (
+          <OrisonPage />
+        ) : query.volumeId ? (
+          <OrisonExplorePage />
+        ) : query.sutraId ? (
+          <VolumnExplorePage />
+        ) : query.collectionId ? (
+          <SutraExplorePage />
+        ) : !query.collectionId ? (
+          <CollectionExplorePage />
+        ) : (
+          <> not found</>
+        )}
+      </div>
     </>
   );
 };

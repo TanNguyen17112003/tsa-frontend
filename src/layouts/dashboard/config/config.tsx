@@ -23,13 +23,11 @@ export interface Section {
 export const useSections = () => {
   const { user } = useAuth();
 
-  if (user?.role == "admin") {
-    return useMemo(() => {
+  return useMemo(() => {
+    if (user?.role == "admin") {
       return getDashboardAdminConfigs();
-    }, []);
-  } else {
-    return useMemo(() => {
+    } else {
       return getDashboardUserConfigs();
-    }, []);
-  }
+    }
+  }, []);
 };

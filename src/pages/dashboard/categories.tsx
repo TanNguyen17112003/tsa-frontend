@@ -6,6 +6,7 @@ import { Button } from "src/components/shadcn/ui/button";
 import { Input } from "src/components/shadcn/ui/input";
 import { useAuth } from "src/hooks/use-auth";
 import { Layout as DashboardLayout } from "src/layouts/dashboard";
+import { paths } from "src/paths";
 import AcronymsNameTab from "src/sections/admin/categories/AcronymsNameTab";
 import AcronymsWordTab from "src/sections/admin/categories/AcronymsWordTab";
 import AuthorTab from "src/sections/admin/categories/AuthorTab";
@@ -42,7 +43,7 @@ const Page: PageType = () => {
 
   useEffect(() => {
     if (user?.role != "admin") {
-      router.push("/dashboard");
+      router.push(paths.dashboard.index);
     }
   }, []);
 

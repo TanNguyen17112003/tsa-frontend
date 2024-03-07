@@ -24,7 +24,7 @@ import {
 } from "@udecode/plate-alignment";
 import clsx from "clsx";
 import { useCallback, useEffect, useState } from "react";
-import { BsCardText } from "react-icons/bs";
+import { BsCardText, BsSave2 } from "react-icons/bs";
 import { BaseText } from "slate";
 import Autocomplete from "src/components/Autocomplete";
 import { v4 } from "uuid";
@@ -60,7 +60,15 @@ const alignmentItems = [
   },
 ];
 
-export function FixedToolbarButtons() {
+interface FixedToolbarButtonsProps {
+  onSave?: () => void;
+  onCancel?: () => void;
+}
+
+export function FixedToolbarButtons({
+  onSave,
+  onCancel,
+}: FixedToolbarButtonsProps) {
   const { addNote, setActiveNoteId } = useNotesContext();
   const readOnly = useEditorReadOnly();
   const state = useAlignDropdownMenuState();
@@ -70,6 +78,7 @@ export function FixedToolbarButtons() {
     BaseText & EditorFormat,
     "text"
   > | null>(null);
+  const read = useEditorReadOnly();
 
   useEffect(() => {
     const mark = editorState.getMarks();
@@ -83,7 +92,6 @@ export function FixedToolbarButtons() {
 
   const handleChangeFontSize = useCallback(
     (value: string) => {
-      console.log("value", value);
       const fontSize = value.replaceAll(/[^0-9]/g, "") + "pt";
       setMarks(editorState, {
         fontSize,
@@ -125,7 +133,7 @@ export function FixedToolbarButtons() {
   }, [addNote, editorState, setActiveNoteId]);
 
   return (
-    <div className="relative w-full py-2">
+    <div className={clsx("relative w-full", !readOnly && "py-2")}>
       <div
         className="relative flex flex-wrap items-center"
         style={{
@@ -215,6 +223,27 @@ export function FixedToolbarButtons() {
                   Thêm ghi chú
                   <BsCardText className="h-4 w-4 ml-2" />
                 </Button>
+              </div>
+              <div className="flex gap-1 items-center">
+                {onCancel && (
+                  <Button
+                    variant="ghost"
+                    onClick={onCancel}
+                    className="text-primary"
+                  >
+                    Huỷ
+                  </Button>
+                )}
+                {onSave && (
+                  <Button
+                    variant="secondary"
+                    onClick={onSave}
+                    className="gap-2"
+                  >
+                    Lưu
+                    <BsSave2 className="stroke-1" />
+                  </Button>
+                )}
               </div>
             </div>
           </>

@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import {
   ReactNode,
   createContext,
@@ -18,6 +19,10 @@ interface ContextValue extends CollectionCategoriesResponse {
   updateTree: (
     callback: (prev: CollectionTreeResponse) => CollectionTreeResponse
   ) => void;
+  goCollection: (id: string) => void;
+  goSutra: (id: string) => void;
+  goVolume: (id: string) => void;
+  goOrison: (id: string) => void;
 }
 
 export const CollectionCategoriesContext = createContext<ContextValue>({
@@ -28,6 +33,10 @@ export const CollectionCategoriesContext = createContext<ContextValue>({
   circas: [],
   translators: [],
   updateTree: () => {},
+  goCollection: () => {},
+  goSutra: () => {},
+  goVolume: () => {},
+  goOrison: () => {},
 });
 
 const CollectionCategoriesProvider = ({
@@ -35,6 +44,7 @@ const CollectionCategoriesProvider = ({
 }: {
   children: ReactNode;
 }) => {
+  const router = useRouter();
   const getCollectionTreeApi = useFunction(CollectionsApi.getCollectionTree);
   const getCategoriesApi = useFunction(CollectionsApi.getCollectionCategories);
 
@@ -46,6 +56,98 @@ const CollectionCategoriesProvider = ({
       }
     },
     [getCollectionTreeApi]
+  );
+
+  const goCollection = useCallback(
+    (id: string) => {
+      router.replace({
+        pathname: router.pathname,
+        query: {
+          ...router.query,
+          searchType: "",
+          collectionId: id,
+          sutraId: "",
+          volumeId: "",
+          orisonId: "",
+        },
+      });
+    },
+    [router]
+  );
+
+  const goSutra = useCallback(
+    (id: string) => {
+      const tree = getCollectionTreeApi.data;
+      const sutra = tree?.sutras?.find((sutra) => sutra.id == id);
+      const collection = tree?.collections?.find(
+        (collection) => collection.id == sutra?.collection_id
+      );
+      router.replace({
+        pathname: router.pathname,
+        query: {
+          ...router.query,
+          searchType: "",
+          collectionId: collection?.id || "",
+          sutraId: sutra?.id || "",
+          volumeId: "",
+          orisonId: "",
+        },
+      });
+    },
+    [getCollectionTreeApi.data, router]
+  );
+
+  const goVolume = useCallback(
+    (id: string) => {
+      const tree = getCollectionTreeApi.data;
+      const volume = tree?.volumes.find((volume) => volume.id == id);
+      const sutra = tree?.sutras?.find(
+        (sutra) => sutra.id == volume?.sutras_id
+      );
+      const collection = tree?.collections?.find(
+        (collection) => collection.id == sutra?.collection_id
+      );
+      router.replace({
+        pathname: router.pathname,
+        query: {
+          ...router.query,
+          searchType: "",
+          collectionId: collection?.id || "",
+          sutraId: sutra?.id || "",
+          volumeId: volume?.id || "",
+          orisonId: "",
+        },
+      });
+    },
+    [getCollectionTreeApi.data, router]
+  );
+
+  const goOrison = useCallback(
+    (id: string) => {
+      const tree = getCollectionTreeApi.data;
+      const orison = tree?.orisons.find((orison) => orison.id == id);
+      const volume = tree?.volumes.find(
+        (volume) => volume.id == orison?.volume_id
+      );
+      const sutra = tree?.sutras?.find(
+        (sutra) => sutra.id == volume?.sutras_id
+      );
+      const collection = tree?.collections?.find(
+        (collection) => collection.id == sutra?.collection_id
+      );
+      router.replace({
+        pathname: router.pathname,
+        query: {
+          ...router.query,
+          searchType: "",
+          collectionId: collection?.id || "",
+          sutraId: sutra?.id || "",
+          volumeId: volume?.id || "",
+          orisonId: orison?.id || "",
+        },
+      });
+    },
+    [getCollectionTreeApi.data, router]
   );
 
   useEffect(() => {
@@ -68,6 +170,10 @@ const CollectionCategoriesProvider = ({
         updateTree,
         ...getCategoriesApi.data,
         tree: getCollectionTreeApi.data,
+        goCollection,
+        goSutra,
+        goVolume,
+        goOrison,
       }}
     >
       {children}

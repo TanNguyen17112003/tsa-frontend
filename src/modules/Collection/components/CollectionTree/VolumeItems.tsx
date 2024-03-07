@@ -12,7 +12,7 @@ interface VolumeItemsProps {
 }
 
 const VolumeItems: FC<VolumeItemsProps> = (props) => {
-  const { tree } = useCollectionCategoriesContext();
+  const { tree, goVolume } = useCollectionCategoriesContext();
   const { expandedIds } = useCollectionTreeContext();
   const router = useRouter();
 
@@ -24,26 +24,9 @@ const VolumeItems: FC<VolumeItemsProps> = (props) => {
 
   const handleClick = useCallback(
     (id: string) => {
-      const volume = tree?.volumes.find((volume) => volume.id == id);
-      const sutra = tree?.sutras?.find(
-        (sutra) => sutra.id == volume?.sutras_id
-      );
-      const collection = tree?.collections?.find(
-        (collection) => collection.id == sutra?.collection_id
-      );
-      router.replace({
-        pathname: router.pathname,
-        query: {
-          ...router.query,
-          searchType: "",
-          collectionId: collection?.id || "",
-          sutraId: sutra?.id || "",
-          volumeId: id == router.query.volumeId ? "" : id,
-          orisonId: "",
-        },
-      });
+      goVolume(id);
     },
-    [tree?.collections, tree?.sutras, tree?.volumes, router]
+    [goVolume]
   );
 
   return (

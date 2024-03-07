@@ -1,77 +1,175 @@
-import { useCallback, type FC } from "react";
+import { useCallback, type FC, useState, FormEvent } from "react";
 import CollectionBreadcrumb from "../../../CollectionBreadcrumb";
 import clsx from "clsx";
-import { useOrisonsContext } from "src/contexts/orisons/orisons-context";
-import { Button } from "src/components/shadcn/ui/button";
-import PlateEditor from "src/modules/Editor";
-import Loading from "src/components/Loading";
-import { Note } from "src/modules/Editor/types/note";
 import { useRouter } from "next/router";
+import { BiSearch } from "react-icons/bi";
+import FormInput from "src/components/ui/FormInput";
+import { BsArrowsAngleContract, BsArrowsAngleExpand } from "react-icons/bs";
+import OrisonList from "./OrisonList";
+import {
+  PiFlagBold,
+  PiDownloadSimpleBold,
+  PiNotePencilBold,
+} from "react-icons/pi";
+import Loading from "src/components/Loading";
+import { useOrisonsContext } from "src/contexts/orisons/orisons-context";
+import OrisonPagination from "./OrisonPagination";
+import PlateEditor from "src/modules/Editor";
+import { Button } from "src/components/shadcn/ui/button";
 
 interface OrisonPageProps {}
 
 const OrisonPage: FC<OrisonPageProps> = ({}) => {
   const { getOrisonsApi, orisonId, getOrisonDetailApi } = useOrisonsContext();
+  const [searchText, setSearchText] = useState("");
   const router = useRouter();
 
-  const handleChangeOrison = useCallback(
-    (id: string) => {
+  const isEditting = router.query.isEditting == "true";
+  const isFullScreen = router.query.isFullScreen == "true";
+
+  const handleSearch = useCallback((e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const searchInput: HTMLInputElement = document.getElementById(
+      "search"
+    ) as HTMLInputElement;
+    const searchValue = searchInput?.value;
+    setSearchText(searchValue);
+  }, []);
+
+  const handleClickEdit = useCallback(() => {
+    router.replace({
+      pathname: router.pathname,
+      query: { ...router.query, isEditting: "true" },
+    });
+  }, [router]);
+
+  const handleChangeFullScreen = useCallback(() => {
+    router.replace({
+      pathname: router.pathname,
+      query: {
+        ...router.query,
+        isFullScreen: router.query.isFullScreen == "true" ? "" : "true",
+      },
+    });
+  }, [router]);
+
+  const handleSave = useCallback(
+    (value: any) => {
       router.replace({
         pathname: router.pathname,
-        query: { ...router.query, orisonId: id },
+        query: { ...router.query, isEditting: "" },
       });
     },
     [router]
   );
 
+  const handleCancel = useCallback(() => {
+    router.replace({
+      pathname: router.pathname,
+      query: { ...router.query, isEditting: "" },
+    });
+  }, [router]);
+
   return (
-    <>
-      <div className="flex justify-between p-5 border-b sticky top-0">
-        <CollectionBreadcrumb />
-        <div></div>
-        <div
-          className={clsx(
-            "w-[220px] border overflow-y-auto pb-[60px] mt-4 mx-4 rounded-lg absolute left-0 top-full"
-          )}
-        >
-          <div className="p-3 text-lg font-semibold text-text-secondary">
-            Mục lục
-          </div>
-          <hr />
-          <div className="flex flex-col gap-1 pt-4 px-2">
-            {getOrisonsApi.data?.map((orison) => (
-              <Button
-                key={orison.id}
-                variant="ghost"
-                className={clsx(
-                  "w-full justify-start text-primary",
-                  orison.id == orisonId && "bg-accent"
-                )}
-                onClick={() => handleChangeOrison(orison.id)}
+    <div className="h-full flex flex-col">
+      <div
+        className={clsx(
+          "flex justify-between z-50 bg-white sticky top-0",
+          !isFullScreen && "p-4 border-b"
+        )}
+      >
+        {!isFullScreen && (
+          <>
+            <CollectionBreadcrumb />
+            <div className="flex gap-3 items-center">
+              <form
+                className="flex items-center border rounded-md w-full"
+                onSubmit={handleSearch}
               >
-                {orison.name}
-              </Button>
-            ))}
+                <FormInput
+                  type="text"
+                  placeholder="Tìm kiếm văn bản..."
+                  name="search"
+                  id="search"
+                  className="border-none"
+                />
+                <BiSearch className="w-5 h-5 mx-2" />
+              </form>
+              {!isEditting && (
+                <>
+                  <Button size="lg" variant="outline" className="gap-2 px-4">
+                    <PiFlagBold className="w-5 h-5" />
+                    Khiếu nại
+                  </Button>
+                  <Button size="lg" variant="outline" className="gap-2 px-4">
+                    <PiDownloadSimpleBold className="w-5 h-5" /> Tải văn bản
+                    dịch
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="gap-2 px-4"
+                    onClick={handleClickEdit}
+                  >
+                    <PiNotePencilBold className="w-5 h-5" /> Chỉnh sửa
+                  </Button>
+                  <Button size="lg" className="px-4">
+                    Xem văn bản gốc
+                  </Button>
+                </>
+              )}
+            </div>
+          </>
+        )}
+      </div>
+      <div className="flex flex-col flex-1 min-h-0 gap-3">
+        {!isEditting && (
+          <div
+            className={clsx(
+              "flex justify-end w-full bg-white left-0 relative z-40",
+              isFullScreen ? "p-0" : "px-4 pt-3"
+            )}
+          >
+            {!isFullScreen && <OrisonPagination />}
+            <Button
+              variant="ghost"
+              className="absolute top-full right-0 h-auto p-4 hover:bg-blue/60"
+              onClick={handleChangeFullScreen}
+            >
+              {!isFullScreen ? (
+                <BsArrowsAngleExpand className="w-6 h-6 fill-blue-600 stroke-blue-600 stroke-1" />
+              ) : (
+                <BsArrowsAngleContract className="w-6 h-6 fill-blue-600 stroke-blue-600 stroke-1" />
+              )}
+            </Button>
+          </div>
+        )}
+
+        <div className="pl-[260px] flex-1 min-h-0 bg-white">
+          <div className="bg-white absolute left-0 px-4 w-[260px]">
+            <OrisonList />
+          </div>
+          <div className="border rounded-xl h-full overflow-y-auto">
+            {getOrisonDetailApi.loading ? (
+              <div className="flex h-[100px] items-center justify-center mt-4">
+                <Loading />
+              </div>
+            ) : getOrisonDetailApi.data ? (
+              <PlateEditor
+                readOnly={!isEditting}
+                initialValue={getOrisonDetailApi.data.content}
+                notes={getOrisonDetailApi.data.notes}
+                onUpdateNotes={() => {}}
+                onChange={() => {}}
+                onSave={handleSave}
+                onCancel={handleCancel}
+                searchText={searchText.toLowerCase()}
+              />
+            ) : null}
           </div>
         </div>
       </div>
-
-      <div className="pl-[252px]">
-        {getOrisonDetailApi.loading ? (
-          <div className="flex h-[100px] items-center justify-center mt-4">
-            <Loading />
-          </div>
-        ) : getOrisonDetailApi.data &&
-          getOrisonDetailApi.data.id == orisonId ? (
-          <PlateEditor
-            initialValue={getOrisonDetailApi.data.content}
-            notes={getOrisonDetailApi.data.notes}
-            onUpdateNotes={() => {}}
-            onChange={() => {}}
-          />
-        ) : null}
-      </div>
-    </>
+    </div>
   );
 };
 

@@ -4,10 +4,13 @@ import { useMemo, type FC, ReactNode } from "react";
 import searchTypes from "../../constants/searchTypes";
 import { BsChevronCompactRight } from "react-icons/bs";
 import { Button } from "src/components/shadcn/ui/button";
+import { useCollectionCategoriesContext } from "src/contexts/collections/collection-categories-context";
 
 interface CollectionBreadcrumbProps {}
 
 const CollectionBreadcrumb: FC<CollectionBreadcrumbProps> = ({}) => {
+  const { tree, goCollection, goSutra, goVolume, goOrison } =
+    useCollectionCategoriesContext();
   const router = useRouter();
 
   const items = useMemo(() => {
@@ -42,9 +45,49 @@ const CollectionBreadcrumb: FC<CollectionBreadcrumbProps> = ({}) => {
         });
       }
     } else {
+      const collection = tree?.collections.find(
+        (c) => c.id == router.query.collectionId
+      );
+      if (collection) {
+        bItems.push({
+          label: collection.name,
+          onClick: () => goCollection(collection.id),
+        });
+      }
+      const sutra = tree?.sutras.find((c) => c.id == router.query.sutraId);
+      if (sutra) {
+        bItems.push({
+          label: sutra.name,
+          onClick: () => goSutra(sutra.id),
+        });
+      }
+      const volume = tree?.volumes.find((c) => c.id == router.query.volumeId);
+      if (volume) {
+        bItems.push({
+          label: volume.name,
+          onClick: () => goVolume(volume.id),
+        });
+      }
+      const orison = tree?.orisons.find((c) => c.id == router.query.orisonId);
+      if (orison) {
+        bItems.push({
+          label: orison.name,
+          onClick: () => goOrison(orison.id),
+        });
+      }
     }
     return bItems;
-  }, [router]);
+  }, [
+    goCollection,
+    goOrison,
+    goSutra,
+    goVolume,
+    router,
+    tree?.collections,
+    tree?.orisons,
+    tree?.sutras,
+    tree?.volumes,
+  ]);
 
   return (
     <div className="flex gap-2 flex-wrap items-center">

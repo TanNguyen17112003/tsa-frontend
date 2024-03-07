@@ -9,9 +9,22 @@ import usePagination from "src/hooks/use-pagination";
 import Pagination from "src/components/ui/Pagination";
 import { SIDE_NAV_WIDTH } from "src/config";
 import { useDrawer } from "src/hooks/use-drawer";
+import { useEffect, useMemo } from "react";
+import { getFormData } from "src/utils/api-request";
+import useFunction from "src/hooks/use-function";
+import { FormatSutrasApi } from "src/api/format-sutras";
 
 const AcronymsNameTab = () => {
-  const name = [initialFormatSutra];
+  const getFormatSutrasApi = useFunction(FormatSutrasApi.getFormatSutras);
+
+  useEffect(() => {
+    getFormatSutrasApi.call(getFormData({}));
+  }, []);
+
+  const name = useMemo(() => {
+    return getFormatSutrasApi.data || [];
+  }, [getFormatSutrasApi.data]);
+
   const pagination = usePagination({ count: name.length });
   const editDrawer = useDrawer();
   return (

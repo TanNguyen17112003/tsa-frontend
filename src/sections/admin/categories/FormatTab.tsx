@@ -6,10 +6,24 @@ import Pagination from "src/components/ui/Pagination";
 import usePagination from "src/hooks/use-pagination";
 import { SIDE_NAV_WIDTH } from "src/config";
 import { initialFormatPage } from "src/types/format-page";
+import useFunction from "src/hooks/use-function";
+import { FormatPagesApi } from "src/api/format-pages";
+import { useEffect, useMemo } from "react";
+import { getFormData } from "src/utils/api-request";
 
 const FormatTab = () => {
-  const format = [initialFormatPage];
+  const getFormatPagesApi = useFunction(FormatPagesApi.getFormatPages);
+
+  useEffect(() => {
+    getFormatPagesApi.call(getFormData({}));
+  }, []);
+
+  const format = useMemo(() => {
+    return getFormatPagesApi.data || [];
+  }, [getFormatPagesApi.data]);
+
   const pagination = usePagination({ count: format.length });
+
   return (
     <div className="flex flex-col divide-y-2 min-h-[87.5vh]">
       <div className="flex-grow flex-col mx-[10%]">

@@ -8,9 +8,22 @@ import Pagination from "src/components/ui/Pagination";
 import usePagination from "src/hooks/use-pagination";
 import { SIDE_NAV_WIDTH } from "src/config";
 import { useDrawer } from "src/hooks/use-drawer";
+import useFunction from "src/hooks/use-function";
+import { useEffect, useMemo } from "react";
+import { getFormData } from "src/utils/api-request";
+import { FormatWordsApi } from "src/api/format-words";
 
 const AcronymsWordTab = () => {
-  const word = [initialFormatWord];
+  const getFormatWordsApi = useFunction(FormatWordsApi.getFormatWords);
+
+  useEffect(() => {
+    getFormatWordsApi.call(getFormData({}));
+  }, []);
+
+  const word = useMemo(() => {
+    return getFormatWordsApi.data || [];
+  }, [getFormatWordsApi.data]);
+
   const pagination = usePagination({ count: word.length });
   const editDrawer = useDrawer();
   return (

@@ -1,13 +1,14 @@
 import { CustomTableConfig } from "src/components/custom-table";
-import { User } from "src/types/user";
+import { Author } from "src/types/author";
+import { MdDelete } from "react-icons/md";
 
 const getAccountTableConfig = ({
   onClickDelete,
 }: {
-  onClickDelete: (data: User) => void;
-}): CustomTableConfig<User["id"], User>[] => [
+  onClickDelete: (data: Author) => void;
+}): CustomTableConfig<Author["id"], Author>[] => [
   {
-    key: "name",
+    key: "author",
     headerLabel: "Tên tác giả",
     type: "string",
   },
@@ -15,6 +16,7 @@ const getAccountTableConfig = ({
     key: "delete",
     headerLabel: "Xóa",
     type: "string",
+    renderCell: () => <MdDelete style={{ fontSize: "1.3rem" }} />,
   },
 ];
 

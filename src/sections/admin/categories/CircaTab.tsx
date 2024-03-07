@@ -4,14 +4,15 @@ import { Button } from "src/components/shadcn/ui/button";
 import { Input } from "src/components/shadcn/ui/input";
 import { initialCirca } from "src/types/circas";
 import getCircasTableConfig from "./circa-table-config";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import CircaEditSheet from "./CircaEditSheet";
 import usePagination from "src/hooks/use-pagination";
 import Pagination from "src/components/ui/Pagination";
 import { SIDE_NAV_WIDTH } from "src/config";
 import { useDrawer } from "src/hooks/use-drawer";
-
-const circa = [initialCirca];
+import { getFormData } from "src/utils/api-request";
+import useFunction from "src/hooks/use-function";
+import { CircasApi } from "src/api/circas";
 
 const CircaTab = () => {
   const accountCircasConfig = useMemo(() => {
@@ -19,6 +20,17 @@ const CircaTab = () => {
       onClickDelete: (data) => {},
     });
   }, []);
+
+  const getCircasApi = useFunction(CircasApi.getCircas);
+
+  useEffect(() => {
+    getCircasApi.call(getFormData({}));
+  }, []);
+
+  const circa = useMemo(() => {
+    return getCircasApi.data || [];
+  }, [getCircasApi.data]);
+
   const pagination = usePagination({ count: circa.length });
   const editDrawer = useDrawer();
   return (

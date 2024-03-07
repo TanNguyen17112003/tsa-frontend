@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { HiMagnifyingGlass } from "react-icons/hi2";
 import { CustomTable } from "src/components/custom-table";
 import { Input } from "src/components/shadcn/ui/input";
@@ -10,6 +10,10 @@ import { SIDE_NAV_WIDTH } from "src/config";
 import { useDrawer } from "src/hooks/use-drawer";
 import usePagination from "src/hooks/use-pagination";
 import AuthorEditSheet from "./AuthorEditSheet";
+import { useAuthorsContext } from "src/contexts/authors/authors-context";
+import { getFormData } from "src/utils/api-request";
+import useFunction from "src/hooks/use-function";
+import { AuthorsApi } from "src/api/authors";
 
 const AuthorTab = () => {
   const user = [initialUser];
@@ -20,6 +24,17 @@ const AuthorTab = () => {
   }, []);
   const editDrawer = useDrawer<UserDetail>();
   const pagination = usePagination({ count: user.length });
+
+  const getAuthorsApi = useFunction(AuthorsApi.getAuthors);
+
+  useEffect(() => {
+    getAuthorsApi.call(getFormData({}));
+  }, []);
+
+  const author = useMemo(() => {
+    return getAuthorsApi.data || [];
+  }, [getAuthorsApi.data]);
+
   return (
     <div className="divide-y-2">
       <div className="flex-col mx-[10%]">
@@ -49,7 +64,7 @@ const AuthorTab = () => {
         </div>
         <div className="flex-grow pb-5">
           <CustomTable
-            rows={user}
+            rows={author}
             configs={accountTableConfig}
             tableClassName="rounded-xl border-2"
             pagination={pagination}

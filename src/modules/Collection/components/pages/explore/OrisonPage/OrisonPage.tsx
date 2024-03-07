@@ -144,17 +144,17 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
             </Button>
           </div>
         )}
-        {getOrisonDetailApi.loading ? (
-          <div className="flex h-[100px] items-center justify-center mt-4">
-            <Loading />
+
+        <div className="pl-[260px] flex-1 min-h-0 bg-white">
+          <div className="bg-white absolute left-0 px-4 w-[260px]">
+            <OrisonList />
           </div>
-        ) : getOrisonDetailApi.data &&
-          getOrisonDetailApi.data.id == orisonId ? (
-          <div className="pl-[260px] flex-1 min-h-0 bg-white">
-            <div className="bg-white absolute left-0 px-4 w-[260px]">
-              <OrisonList />
-            </div>
-            <div className=" border rounded-xl h-full overflow-y-auto">
+          <div className="border rounded-xl h-full overflow-y-auto">
+            {getOrisonDetailApi.loading ? (
+              <div className="flex h-[100px] items-center justify-center mt-4">
+                <Loading />
+              </div>
+            ) : getOrisonDetailApi.data ? (
               <PlateEditor
                 readOnly={!isEditting}
                 initialValue={getOrisonDetailApi.data.content}
@@ -165,9 +165,9 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
                 onCancel={handleCancel}
                 searchText={searchText.toLowerCase()}
               />
-            </div>
+            ) : null}
           </div>
-        ) : null}
+        </div>
       </div>
     </div>
   );

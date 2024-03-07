@@ -22,7 +22,7 @@ const PageHeader = ({
   return (
     <div
       className={clsx(
-        "pt-7 w-full border-b",
+        "pt-7 w-full divide-y-2",
         variant == "full-divide" ? "" : "px-[10%]",
         className
       )}

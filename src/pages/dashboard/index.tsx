@@ -20,9 +20,11 @@ import OverviewAdminPage from "src/sections/admin/dashboard/OverviewAdminPage";
 import OverviewUserPage from "src/sections/user/dashboard/OverviewUserPage";
 
 const Page: PageType = () => {
-  const user: string = "user";
+  const { user } = useAuth();
   return (
-    <div>{user == "admin" ? <OverviewAdminPage /> : <OverviewUserPage />}</div>
+    <div>
+      {user?.role == "admin" ? <OverviewAdminPage /> : <OverviewUserPage />}
+    </div>
   );
 };
 

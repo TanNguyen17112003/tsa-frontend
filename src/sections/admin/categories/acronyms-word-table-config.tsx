@@ -6,12 +6,12 @@ const getAcronymsWordTableConfig: CustomTableConfig<
   FormatWord
 >[] = [
   {
-    key: "acronyms_word",
+    key: "short",
     headerLabel: "Từ viết tắt",
     type: "string",
   },
   {
-    key: "acronyms_word_full",
+    key: "full",
     headerLabel: "Từ đầy đủ",
     type: "string",
   },

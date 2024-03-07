@@ -4,12 +4,12 @@ import { FormatPage } from "src/types/format-page";
 const getFormatTableConfig: CustomTableConfig<FormatPage["id"], FormatPage>[] =
   [
     {
-      key: "formats_page_name",
+      key: "name",
       headerLabel: "Tên định dạng trang",
       type: "string",
     },
     {
-      key: "formats_page",
+      key: "format",
       headerLabel: "Định dạng",
       type: "string",
     },

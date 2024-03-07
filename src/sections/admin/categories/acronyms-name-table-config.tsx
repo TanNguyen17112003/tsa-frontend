@@ -6,12 +6,12 @@ const getAcronymsNameTableConfig: CustomTableConfig<
   FormatSutra
 >[] = [
   {
-    key: "acronyms_name",
+    key: "short",
     headerLabel: "Tên viết tắt tuyển tập",
     type: "string",
   },
   {
-    key: "acronyms_name_full",
+    key: "full",
     headerLabel: "Tên đầy đủ tuyển tập",
     type: "string",
   },

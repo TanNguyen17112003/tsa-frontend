@@ -1,14 +1,17 @@
 import { CustomTableConfig } from "src/components/custom-table";
-import { Format } from "src/types/formats";
+import { FormatWord } from "src/types/format-word";
 
-const getAcronymsWordTableConfig: CustomTableConfig<Format["id"], Format>[] = [
+const getAcronymsWordTableConfig: CustomTableConfig<
+  FormatWord["id"],
+  FormatWord
+>[] = [
   {
-    key: "acronyms_word",
+    key: "short",
     headerLabel: "Từ viết tắt",
     type: "string",
   },
   {
-    key: "acronyms_word_full",
+    key: "full",
     headerLabel: "Từ đầy đủ",
     type: "string",
   },

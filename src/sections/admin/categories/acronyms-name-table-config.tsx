@@ -1,14 +1,17 @@
 import { CustomTableConfig } from "src/components/custom-table";
-import { Format } from "src/types/formats";
+import { FormatSutra } from "src/types/format-sutra";
 
-const getAcronymsNameTableConfig: CustomTableConfig<Format["id"], Format>[] = [
+const getAcronymsNameTableConfig: CustomTableConfig<
+  FormatSutra["id"],
+  FormatSutra
+>[] = [
   {
-    key: "acronyms_name",
+    key: "short",
     headerLabel: "Tên viết tắt tuyển tập",
     type: "string",
   },
   {
-    key: "acronyms_name_full",
+    key: "full",
     headerLabel: "Tên đầy đủ tuyển tập",
     type: "string",
   },

@@ -2,7 +2,7 @@ import { HiMagnifyingGlass } from "react-icons/hi2";
 import { CustomTable } from "src/components/custom-table";
 import { Button } from "src/components/shadcn/ui/button";
 import { Input } from "src/components/shadcn/ui/input";
-import { initialFormat } from "src/types/formats";
+import { initialFormatSutra } from "src/types/format-sutra";
 import getAcronymsNameTableConfig from "./acronyms-name-table-config";
 import AcronymsNameEditSheet from "./AcronymsNameEditSheet";
 import usePagination from "src/hooks/use-pagination";
@@ -11,7 +11,7 @@ import { SIDE_NAV_WIDTH } from "src/config";
 import { useDrawer } from "src/hooks/use-drawer";
 
 const AcronymsNameTab = () => {
-  const name = [initialFormat];
+  const name = [initialFormatSutra];
   const pagination = usePagination({ count: name.length });
   const editDrawer = useDrawer();
   return (

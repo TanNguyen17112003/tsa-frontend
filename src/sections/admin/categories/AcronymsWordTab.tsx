@@ -1,7 +1,7 @@
 import { HiMagnifyingGlass } from "react-icons/hi2";
 import { CustomTable } from "src/components/custom-table";
 import { Input } from "src/components/shadcn/ui/input";
-import { initialFormat } from "src/types/formats";
+import { initialFormatWord } from "src/types/format-word";
 import getAcronymsWordTableConfig from "./acronyms-word-table-config";
 import AcronymsWordEditSheet from "./AcronymsWordEditSheet";
 import Pagination from "src/components/ui/Pagination";
@@ -10,7 +10,7 @@ import { SIDE_NAV_WIDTH } from "src/config";
 import { useDrawer } from "src/hooks/use-drawer";
 
 const AcronymsWordTab = () => {
-  const word = [initialFormat];
+  const word = [initialFormatWord];
   const pagination = usePagination({ count: word.length });
   const editDrawer = useDrawer();
   return (

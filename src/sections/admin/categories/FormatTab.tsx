@@ -1,14 +1,14 @@
 import { HiMagnifyingGlass } from "react-icons/hi2";
 import { CustomTable } from "src/components/custom-table";
 import { Input } from "src/components/shadcn/ui/input";
-import { initialFormat } from "src/types/formats";
 import getFormatTableConfig from "./format-table-config";
 import Pagination from "src/components/ui/Pagination";
 import usePagination from "src/hooks/use-pagination";
 import { SIDE_NAV_WIDTH } from "src/config";
+import { initialFormatPage } from "src/types/format-page";
 
 const FormatTab = () => {
-  const format = [initialFormat];
+  const format = [initialFormatPage];
   const pagination = usePagination({ count: format.length });
   return (
     <div className="flex flex-col divide-y-2 min-h-[87.5vh]">

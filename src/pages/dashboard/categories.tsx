@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { HiMagnifyingGlass } from "react-icons/hi2";
 import PageHeader from "src/components/PageHeader";
@@ -36,6 +37,15 @@ const tabs = [
 ];
 
 const Page: PageType = () => {
+  const { user } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user?.role != "admin") {
+      router.push("/dashboard");
+    }
+  }, []);
+
   const [tab, setTab] = useState(tabs[0].key);
   const tabsMenu = (
     <div className="flex space-x-8 overflow-hidden">
@@ -118,14 +128,18 @@ const Page: PageType = () => {
   );
   return (
     <div className="flex flex-col">
-      <div className="w-full ">
-        <PageHeader title="Danh mục" tabs={tabsMenu}></PageHeader>
-        {tab == "author" && <AuthorTab />}
-        {tab == "format" && <FormatTab />}
-        {tab == "acronym-name" && <AcronymsNameTab />}
-        {tab == "acronym-word" && <AcronymsWordTab />}
-        {tab == "circa" && <CircaTab />}
-      </div>
+      {user?.role == "admin" && (
+        <>
+          <div className="w-full ">
+            <PageHeader title="Danh mục" tabs={tabsMenu}></PageHeader>
+            {tab == "author" && <AuthorTab />}
+            {tab == "format" && <FormatTab />}
+            {tab == "acronym-name" && <AcronymsNameTab />}
+            {tab == "acronym-word" && <AcronymsWordTab />}
+            {tab == "circa" && <CircaTab />}
+          </div>
+        </>
+      )}
     </div>
   );
 };

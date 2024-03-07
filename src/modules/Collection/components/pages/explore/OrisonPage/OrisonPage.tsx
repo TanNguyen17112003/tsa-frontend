@@ -18,16 +18,19 @@ import PlateEditor from "src/modules/Editor";
 import { Button } from "src/components/shadcn/ui/button";
 import exportDocx from "src/modules/Editor/utils/docx";
 import { downloadFile } from "src/utils/url-handler";
+import useFunction from "src/hooks/use-function";
 
 interface OrisonPageProps {}
 
 const OrisonPage: FC<OrisonPageProps> = ({}) => {
-  const { getOrisonsApi, orisonId, getOrisonDetailApi } = useOrisonsContext();
+  const { getOrisonsApi, orisonId, getOrisonDetailApi, updateOrison } =
+    useOrisonsContext();
   const [searchText, setSearchText] = useState("");
   const router = useRouter();
 
   const isEditting = router.query.isEditting == "true";
   const isFullScreen = router.query.isFullScreen == "true";
+  const currentOrison = getOrisonDetailApi.data;
 
   const handleSearch = useCallback((e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -56,20 +59,24 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
   }, [router]);
 
   const handleDownload = useCallback(async () => {
-    if (getOrisonDetailApi.data) {
-      const file = await exportDocx(getOrisonDetailApi.data.content);
-      downloadFile(file, getOrisonDetailApi.data.name + ".docx");
+    if (currentOrison) {
+      const file = await exportDocx(currentOrison.content);
+      downloadFile(file, currentOrison.name + ".docx");
     }
-  }, [getOrisonDetailApi.data]);
+  }, [currentOrison]);
 
-  const handleSave = useCallback(
-    (value: any) => {
-      router.replace({
-        pathname: router.pathname,
-        query: { ...router.query, isEditting: "" },
-      });
-    },
-    [router]
+  const handleSave = useFunction(
+    useCallback(
+      async (value: any) => {
+        updateOrison({ ...currentOrison, content: value });
+        router.replace({
+          pathname: router.pathname,
+          query: { ...router.query, isEditting: "" },
+        });
+      },
+      [currentOrison, router, updateOrison]
+    ),
+    { successMessage: "Lưu thành công!" }
   );
 
   const handleCancel = useCallback(() => {
@@ -168,14 +175,14 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
               <div className="flex h-[100px] items-center justify-center mt-4">
                 <Loading />
               </div>
-            ) : getOrisonDetailApi.data ? (
+            ) : currentOrison ? (
               <PlateEditor
                 readOnly={!isEditting}
-                initialValue={getOrisonDetailApi.data.content}
-                notes={getOrisonDetailApi.data.notes}
+                initialValue={currentOrison.content}
+                notes={currentOrison.notes}
                 onUpdateNotes={() => {}}
                 onChange={() => {}}
-                onSave={handleSave}
+                onSave={handleSave.call}
                 onCancel={handleCancel}
                 searchText={searchText.toLowerCase()}
               />

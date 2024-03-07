@@ -11,7 +11,12 @@ import useFunction, {
   DEFAULT_FUNCTION_RETURN,
   UseFunctionReturnType,
 } from "src/hooks/use-function";
-import { Orison, OrisonDetail, OrisonEditor } from "src/types/orison";
+import {
+  Orison,
+  OrisonDetail,
+  OrisonEditor,
+  initialOrison,
+} from "src/types/orison";
 import { VolumeDetail } from "src/types/volume";
 import { useVolumesContext } from "../volumes/volumes-context";
 import { convertDocx2Editor } from "src/modules/Editor/utils";
@@ -31,7 +36,9 @@ interface ContextValue {
   createOrison: (
     requests: Omit<OrisonDetail, "id"> & { file: File }
   ) => Promise<void>;
-  updateOrison: (Orison: Partial<OrisonDetail>) => Promise<void>;
+  updateOrison: (
+    Orison: Partial<Orison & OrisonDetail & OrisonEditor>
+  ) => Promise<void>;
   deleteOrison: (ids: Orison["id"][]) => Promise<void>;
 }
 
@@ -148,19 +155,25 @@ const OrisonsProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const updateOrison = useCallback(
-    async (Orison: Partial<Orison>) => {
+    async (orison: Partial<Orison & OrisonDetail & OrisonEditor>) => {
       try {
-        await OrisonsApi.putOrisons(Orison);
+        await OrisonsApi.putOrisons(orison);
         getOrisonsApi.setData(
           (getOrisonsApi.data || []).map((c) =>
-            c.id == Orison.id ? Object.assign(c, Orison) : c
+            c.id == orison.id ? Object.assign(c, orison) : c
           )
         );
+        if (orison.id == orisonId) {
+          getOrisonDetailApi.setData({
+            ...(getOrisonDetailApi.data || initialOrison),
+            ...orison,
+          });
+        }
       } catch (error) {
         throw error;
       }
     },
-    [getOrisonsApi]
+    [getOrisonDetailApi, getOrisonsApi, orisonId]
   );
 
   const deleteOrison = useCallback(

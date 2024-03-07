@@ -9,8 +9,8 @@ export interface FormatWord {
 export interface FormatWordDetail extends FormatWord {}
 
 export const formatWordSchema = yup.object().shape({
-  short: yup.string().required("Vui lòng nhập short"),
-  full: yup.string().required("Vui lòng nhập full"),
+  short: yup.string().required("Vui lòng nhập từ đầy đủ"),
+  full: yup.string().required("Vui lòng nhập từ viết tắt"),
 });
 
 export const initialFormatWord: FormatWordDetail = {

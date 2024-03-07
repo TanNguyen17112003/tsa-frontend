@@ -9,8 +9,8 @@ export interface FormatSutra {
 export interface FormatSutraDetail extends FormatSutra {}
 
 export const formatSutraSchema = yup.object().shape({
-  short: yup.string().required("Vui lòng nhập short"),
-  full: yup.string().required("Vui lòng nhập full"),
+  short: yup.string().required("Vui lòng nhập tên đầy đủ"),
+  full: yup.string().required("Vui lòng nhập tên viết tắt"),
 });
 
 export const initialFormatSutra: FormatSutraDetail = {

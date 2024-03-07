@@ -1,16 +1,19 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { HiMagnifyingGlass } from "react-icons/hi2";
+import { UsersApi } from "src/api/users";
 import PageHeader from "src/components/PageHeader";
 import { CustomTable } from "src/components/custom-table";
 import { Input } from "src/components/shadcn/ui/input";
 import Pagination from "src/components/ui/Pagination";
 import { useDrawer } from "src/hooks/use-drawer";
+import useFunction from "src/hooks/use-function";
 import usePagination from "src/hooks/use-pagination";
 import { Layout as DashboardLayout } from "src/layouts/dashboard";
 import AccountEditSheet from "src/sections/admin/accounts/AccountEditSheet";
 import getAccountTableConfig from "src/sections/admin/accounts/account-table-config";
 import type { Page as PageType } from "src/types/page";
-import { UserDetail, users } from "src/types/user";
+import { User, UserDetail, initialUser, users } from "src/types/user";
+import { getFormData } from "src/utils/api-request";
 
 const Page: PageType = () => {
   const accountTableConfig = useMemo(() => {
@@ -22,6 +25,15 @@ const Page: PageType = () => {
   const editDrawer = useDrawer<UserDetail>();
 
   const pagination = usePagination({ count: users.length });
+
+  const getUsersApi = useFunction(UsersApi.getUsers);
+  useEffect(() => {
+    getUsersApi.call(getFormData({}));
+  }, []);
+
+  const author = useMemo(() => {
+    return getUsersApi.data || [];
+  }, [getUsersApi.data]);
 
   return (
     <div className="flex flex-col space-y-4 min-h-screen">
@@ -51,7 +63,7 @@ const Page: PageType = () => {
           </div>
         </div>
         <CustomTable
-          rows={users}
+          rows={author}
           configs={accountTableConfig}
           tableClassName="rounded-xl border-2"
           pagination={pagination}

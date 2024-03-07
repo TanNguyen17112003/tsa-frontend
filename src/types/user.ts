@@ -2,9 +2,9 @@ import * as yup from "yup";
 
 export interface User {
   id: string;
-  username: string;
+  user_name: string;
   email: string;
-  name: string;
+  full_name: string;
   password: string;
   role: string;
   deleted_at?: null | string | Date;
@@ -24,9 +24,9 @@ export const userSchema = yup.object().shape({
 
 export const initialUser: UserDetail = {
   id: "",
-  username: "",
+  user_name: "",
   email: "",
-  name: "",
+  full_name: "aa",
   password: "",
   role: "",
 };
@@ -34,18 +34,18 @@ export const initialUser: UserDetail = {
 export const users: UserDetail[] = [
   {
     id: "10",
-    username: "username 1",
+    user_name: "username 1",
     email: "email 1",
-    name: "name 1",
+    full_name: "name 1",
     password: "password 1",
     role: "role 1",
     deleted_at: null,
   },
   {
     id: "20",
-    username: "username 2",
+    user_name: "username 2",
     email: "email 2",
-    name: "name 2",
+    full_name: "name 2",
     password: "password 2",
     role: "role 2",
     deleted_at: null,

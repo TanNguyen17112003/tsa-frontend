@@ -1,13 +1,13 @@
 import { CustomTableConfig } from "src/components/custom-table";
-import { User } from "src/types/user";
+import { User, UserDetail } from "src/types/user";
 
 const getAccountTableConfig = ({
   onClickDelete,
 }: {
   onClickDelete: (data: User) => void;
-}): CustomTableConfig<User["id"], User>[] => [
+}): CustomTableConfig<UserDetail["id"], UserDetail>[] => [
   {
-    key: "name",
+    key: "full_name",
     headerLabel: "Họ và tên",
     type: "string",
   },
@@ -17,7 +17,7 @@ const getAccountTableConfig = ({
     type: "string",
   },
   {
-    key: "username",
+    key: "user_name",
     headerLabel: "Tên tài khoản",
     type: "string",
   },

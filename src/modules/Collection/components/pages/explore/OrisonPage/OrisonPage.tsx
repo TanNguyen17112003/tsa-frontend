@@ -16,6 +16,8 @@ import { useOrisonsContext } from "src/contexts/orisons/orisons-context";
 import OrisonPagination from "./OrisonPagination";
 import PlateEditor from "src/modules/Editor";
 import { Button } from "src/components/shadcn/ui/button";
+import exportDocx from "src/modules/Editor/utils/docx";
+import { downloadFile } from "src/utils/url-handler";
 
 interface OrisonPageProps {}
 
@@ -52,6 +54,13 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
       },
     });
   }, [router]);
+
+  const handleDownload = useCallback(async () => {
+    if (getOrisonDetailApi.data) {
+      const file = await exportDocx(getOrisonDetailApi.data.content);
+      downloadFile(file, getOrisonDetailApi.data.name + ".docx");
+    }
+  }, [getOrisonDetailApi.data]);
 
   const handleSave = useCallback(
     (value: any) => {
@@ -101,7 +110,12 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
                     <PiFlagBold className="w-5 h-5" />
                     Khiếu nại
                   </Button>
-                  <Button size="lg" variant="outline" className="gap-2 px-4">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="gap-2 px-4"
+                    onClick={handleDownload}
+                  >
                     <PiDownloadSimpleBold className="w-5 h-5" /> Tải văn bản
                     dịch
                   </Button>

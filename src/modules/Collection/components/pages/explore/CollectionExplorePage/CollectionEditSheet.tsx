@@ -73,7 +73,7 @@ const CollectionEditSheet: FC<CollectionEditSheetProps> = ({
       open={open}
       onOpenChange={onOpenChange}
       sheetTrigger={<Button>Tạo tuyển tập kinh</Button>}
-      title="Tạo tuyển tập kinh"
+      title={collection ? "Sửa tuyển tập kinh" : "Tạo tuyển tập kinh"}
       actions={
         <Button onClick={() => formik.handleSubmit()}>
           Tạo tuyển tập kinh

@@ -20,7 +20,7 @@ const SutraItems: FC<SutraItemsProps> = (props) => {
   const { expandedIds, setExpandedIds } = useCollectionTreeContext();
   const router = useRouter();
 
-  const viewType = router.query.viewType;
+  const viewType = (router.query.viewType || "all").toString();
 
   const items = useMemo(() => {
     return (

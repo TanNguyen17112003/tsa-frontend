@@ -1,36 +1,80 @@
 "use client";
-import type { FC } from "react";
+import { useFormik } from "formik";
+import { FC, useEffect } from "react";
 import CustomSheet from "src/components/CustomSheet";
 import { Button } from "src/components/shadcn/ui/button";
 import { Input } from "src/components/shadcn/ui/input";
+import FormInput from "src/components/ui/FormInput";
+import { FormatWord, formatWordSchema, initialFormatWord } from "src/types/format-word";
 
-export interface SortWordEditSheetProps {
+export interface AcronymsWordEditSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  formatWord?: FormatWord;
 }
 
-const SortWordEditSheet: FC<SortWordEditSheetProps> = ({
+const AcronymsWordEditSheet: FC<AcronymsWordEditSheetProps> = ({
   open,
   onOpenChange,
+  formatWord,
 }) => {
+  const formik = useFormik({
+    initialValues: initialFormatWord,
+    validationSchema: formatWordSchema,
+    onSubmit: async (values) => {
+      try {
+        console.log(values);
+        //todo
+      } catch (error: any) {
+        console.error(error);
+      }
+    },
+  });
+
+  useEffect(() => {
+    if (!open) {
+      formik.resetForm();
+      formik.setValues(initialFormatWord);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
   return (
     <CustomSheet
       open={open}
       onOpenChange={onOpenChange}
       sheetTrigger={<Button>Thêm tên viết tắt</Button>}
       title={"Thêm tên viết tắt"}
-      actions={<Button>Xác nhận thêm</Button>}
+      actions={
+        <Button type="submit" onClick={() => formik.handleSubmit()}>
+          Xác nhận thêm
+        </Button>
+      }
     >
       <div className="flex flex-col gap-2">
         <div className="text-xs font-semibold ml-1">Từ đầy đủ</div>
-        <Input type="text" placeholder="Nhập từ đầy đủ" />
+        <FormInput
+          type="text"
+          placeholder="Nhập từ đầy đủ"
+          className="w-full px-3"
+          {...formik.getFieldProps("full")}
+          error={formik.touched.full && !!formik.errors.full}
+          helperText={!!formik.touched.full && formik.errors.full}
+        />
       </div>
       <div className="flex flex-col gap-2 mt-4">
         <div className="text-xs font-semibold ml-1">Từ viết tắt</div>
-        <Input type="text" placeholder="Nhập từ viết tắt" />
+        <FormInput
+          type="text"
+          placeholder="Nhập từ viết tắt"
+          className="w-full px-3"
+          {...formik.getFieldProps("short")}
+          error={formik.touched.short && !!formik.errors.short}
+          helperText={!!formik.touched.short && formik.errors.short}
+        />
       </div>
     </CustomSheet>
   );
 };
 
-export default SortWordEditSheet;
+export default AcronymsWordEditSheet;

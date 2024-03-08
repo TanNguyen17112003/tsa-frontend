@@ -17,6 +17,10 @@ import FormInput from "src/components/ui/FormInput";
 import { User, initialUser } from "src/types/user";
 import { userSchema } from "src/types/user";
 import CustomSelect from "src/components/CustomSelect";
+import { useAuth } from "src/hooks/use-auth";
+import { useUsersContext } from "src/contexts/users/users-context";
+import useFunction from "src/hooks/use-function";
+import useAppSnackbar from "src/hooks/use-app-snackbar";
 
 export interface AccountEditSheetProps {
   open: boolean;
@@ -33,23 +37,40 @@ const roleOptions = [
     label: "Được xử lý khiếu nại",
     value: "handle-reports",
   },
-]
+];
 
 const AccountEditSheet: FC<AccountEditSheetProps> = ({
   open,
   onOpenChange,
   account,
 }) => {
+  const { user } = useAuth();
+
+  const { createUser } = useUsersContext();
+  const createUserHelper = useFunction(createUser);
+  const { showSnackbarSuccess, showSnackbarError } = useAppSnackbar();
+
   const formik = useFormik({
     initialValues: {
-      ...initialUser, 
-      password: "siu@123", 
+      ...initialUser,
+      password: "siu@123",
       role: "view-reports",
     },
     validationSchema: userSchema,
     onSubmit: async (values) => {
       try {
-        console.log(values);
+        const { error } = await createUserHelper.call({
+          ...values,
+          role: "user",
+          confirm_password: values.password,
+        });
+
+        if (!error) {
+          showSnackbarSuccess("Thêm tài khoản thành công!");
+          formik.resetForm();
+        } else {
+          showSnackbarError("Thêm tài khoản không thành công!");
+        }
       } catch (error: any) {
         console.error(error);
       }
@@ -59,8 +80,8 @@ const AccountEditSheet: FC<AccountEditSheetProps> = ({
   useEffect(() => {
     if (!open) {
       formik.setValues({
-        ...initialUser, 
-        password: "siu@123", 
+        ...initialUser,
+        password: "siu@123",
         role: "view-reports",
       });
       formik.resetForm();
@@ -89,8 +110,8 @@ const AccountEditSheet: FC<AccountEditSheetProps> = ({
             placeholder="Nhập họ và tên của bạn ..."
             className="w-full px-3"
             {...formik.getFieldProps("name")}
-            error={formik.touched.name && !!formik.errors.name}
-            helperText={!!formik.touched.name && formik.errors.name}
+            error={formik.touched.full_name && !!formik.errors.full_name}
+            helperText={!!formik.touched.full_name && formik.errors.full_name}
           />
 
           <div className="text-xs font-semibold pl-1">Email {"(*)"}</div>
@@ -110,9 +131,9 @@ const AccountEditSheet: FC<AccountEditSheetProps> = ({
             type="text"
             placeholder="Tên tài khoản"
             className="w-full px-3"
-            {...formik.getFieldProps("username")}
-            error={formik.touched.username && !!formik.errors.username}
-            helperText={!!formik.touched.username && formik.errors.username}
+            {...formik.getFieldProps("user_name")}
+            error={formik.touched.user_name && !!formik.errors.user_name}
+            helperText={!!formik.touched.user_name && formik.errors.user_name}
           />
 
           <div className="text-xs font-semibold pl-1">Mật khẩu</div>
@@ -127,7 +148,7 @@ const AccountEditSheet: FC<AccountEditSheetProps> = ({
           />
         </div>
         <div className="text-sm font-semibold pb-2">Thiết lập quyền</div>
-        <div>          
+        <div>
           <CustomSelect
             label="Cho phép dịch giả"
             placeholder="Phân quyền"

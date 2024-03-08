@@ -3,8 +3,10 @@ import { useFormik } from "formik";
 import { FC, useEffect } from "react";
 import CustomSheet from "src/components/CustomSheet";
 import { Button } from "src/components/shadcn/ui/button";
-import { Input } from "src/components/shadcn/ui/input";
 import FormInput from "src/components/ui/FormInput";
+import { useFormatSutrasContext } from "src/contexts/format-sutras/format-sutras-context";
+import useAppSnackbar from "src/hooks/use-app-snackbar";
+import useFunction from "src/hooks/use-function";
 import { FormatSutra, initialFormatSutra } from "src/types/format-sutra";
 import { formatSutraSchema } from "src/types/format-sutra";
 
@@ -19,13 +21,18 @@ const AcronymsNameEditSheet: FC<AcronymsNameEditSheetProps> = ({
   onOpenChange,
   formatSutra,
 }) => {
+  const { createFormatSutra } = useFormatSutrasContext();
+  const createFormatSutraHelper = useFunction(createFormatSutra);
+  const { showSnackbarSuccess, showSnackbarError } = useAppSnackbar();
+
   const formik = useFormik({
     initialValues: initialFormatSutra,
     validationSchema: formatSutraSchema,
     onSubmit: async (values) => {
       try {
-        console.log(values);
-        //todo
+        createFormatSutraHelper.call({ ...values });
+        showSnackbarSuccess("Thêm thành công!");
+        onOpenChange(!open);
       } catch (error: any) {
         console.error(error);
       }

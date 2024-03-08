@@ -7,6 +7,9 @@ import * as Yup from "yup";
 import { Input } from "src/components/shadcn/ui/input";
 import FormInput from "src/components/ui/FormInput";
 import { Author, authorSchema, initialAuthor } from "src/types/author";
+import { useAuthorsContext } from "src/contexts/authors/authors-context";
+import useFunction from "src/hooks/use-function";
+import useAppSnackbar from "src/hooks/use-app-snackbar";
 
 export interface AuthorEditSheetProps {
   open: boolean;
@@ -14,18 +17,26 @@ export interface AuthorEditSheetProps {
   author?: Author;
 }
 
-const AuthorEditSheet: FC<AuthorEditSheetProps> = ({ 
-  open, 
+const AuthorEditSheet: FC<AuthorEditSheetProps> = ({
+  open,
   onOpenChange,
   author,
 }) => {
+  const { createAuthor } = useAuthorsContext();
+  const createAuthorHelper = useFunction(createAuthor);
+
+  const { showSnackbarSuccess, showSnackbarError } = useAppSnackbar();
+
   const formik = useFormik({
     initialValues: initialAuthor,
     validationSchema: authorSchema,
     onSubmit: async (values) => {
       try {
-        console.log(values);
-        //todo
+        createAuthorHelper.call({
+          ...values,
+        });
+        showSnackbarSuccess("Thêm tác giả thành công!");
+        onOpenChange(!open);
       } catch (error: any) {
         console.error(error);
       }

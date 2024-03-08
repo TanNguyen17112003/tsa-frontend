@@ -28,8 +28,8 @@ type SignUpResponse = Promise<{
 }>;
 
 export class UsersApi {
-  static async postUser(request: Omit<User, "id">): Promise<number> {
-    return await apiPost("/users/create", request);
+  static async postUser(request: Omit<User, "id">): Promise<User> {
+    return await apiPost("/users", request);
   }
   // static async createUser(request: Omit<User, "id">): Promise<{ id: string }> {
   //   return await apiPost("/users/create", request);
@@ -45,7 +45,7 @@ export class UsersApi {
     return response.data;
   }
 
-  static async deleteUser(id: number) {
+  static async deleteUser(id: User["id"][]) {
     return await apiDelete(`/users/${id}`, { id });
   }
 

@@ -5,6 +5,9 @@ import CustomSheet from "src/components/CustomSheet";
 import { Button } from "src/components/shadcn/ui/button";
 import { Input } from "src/components/shadcn/ui/input";
 import FormInput from "src/components/ui/FormInput";
+import { useCircasContext } from "src/contexts/circas/circas-context";
+import useAppSnackbar from "src/hooks/use-app-snackbar";
+import useFunction from "src/hooks/use-function";
 import { Circa, circaSchema, initialCirca } from "src/types/circas";
 
 export interface CircaEditSheetProps {
@@ -13,18 +16,23 @@ export interface CircaEditSheetProps {
   circa?: Circa;
 }
 
-const CircaEditSheet: FC<CircaEditSheetProps> = ({ 
-  open, 
+const CircaEditSheet: FC<CircaEditSheetProps> = ({
+  open,
   onOpenChange,
   circa,
 }) => {
+  const { createCirca } = useCircasContext();
+  const createCircaHelper = useFunction(createCirca);
+  const { showSnackbarSuccess, showSnackbarError } = useAppSnackbar();
+
   const formik = useFormik({
     initialValues: initialCirca,
     validationSchema: circaSchema,
     onSubmit: async (values) => {
       try {
-        console.log(values);
-        //todo
+        createCircaHelper.call({ ...values });
+        showSnackbarSuccess("Thêm niên đại thành công!");
+        onOpenChange(!open);
       } catch (error: any) {
         console.error(error);
       }
@@ -57,9 +65,9 @@ const CircaEditSheet: FC<CircaEditSheetProps> = ({
           type="text"
           placeholder="Nhập niên đại"
           className="w-full px-3"
-          {...formik.getFieldProps("circa")}
-          error={formik.touched.circa && !!formik.errors.circa}
-          helperText={!!formik.touched.circa && formik.errors.circa}
+          {...formik.getFieldProps("name")}
+          error={formik.touched.name && !!formik.errors.name}
+          helperText={!!formik.touched.name && formik.errors.name}
         />
       </div>
       <div className="flex flex-col gap-2 mt-4">

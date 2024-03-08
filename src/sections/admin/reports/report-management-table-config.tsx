@@ -24,7 +24,7 @@ const getReportManagementTableConfig: CustomTableConfig<
   {
     key: "created_at",
     headerLabel: "Thời gian khiếu nại",
-    type: "string",
+    type: "date",
   },
   {
     key: "report_status",

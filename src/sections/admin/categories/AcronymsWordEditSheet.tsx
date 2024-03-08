@@ -5,7 +5,14 @@ import CustomSheet from "src/components/CustomSheet";
 import { Button } from "src/components/shadcn/ui/button";
 import { Input } from "src/components/shadcn/ui/input";
 import FormInput from "src/components/ui/FormInput";
-import { FormatWord, formatWordSchema, initialFormatWord } from "src/types/format-word";
+import { useFormatWordsContext } from "src/contexts/format-words/format-words-context";
+import useAppSnackbar from "src/hooks/use-app-snackbar";
+import useFunction from "src/hooks/use-function";
+import {
+  FormatWord,
+  formatWordSchema,
+  initialFormatWord,
+} from "src/types/format-word";
 
 export interface AcronymsWordEditSheetProps {
   open: boolean;
@@ -18,13 +25,18 @@ const AcronymsWordEditSheet: FC<AcronymsWordEditSheetProps> = ({
   onOpenChange,
   formatWord,
 }) => {
+  const { createFormatWord } = useFormatWordsContext();
+  const createFormatWordHelper = useFunction(createFormatWord);
+  const { showSnackbarSuccess, showSnackbarError } = useAppSnackbar();
+
   const formik = useFormik({
     initialValues: initialFormatWord,
     validationSchema: formatWordSchema,
     onSubmit: async (values) => {
       try {
-        console.log(values);
-        //todo
+        createFormatWordHelper.call({ ...values });
+        showSnackbarSuccess("Thêm thành công!");
+        onOpenChange(!open);
       } catch (error: any) {
         console.error(error);
       }

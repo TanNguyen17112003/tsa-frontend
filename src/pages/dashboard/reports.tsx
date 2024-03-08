@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import ReportsProvider from "src/contexts/reports/reports-context";
 import { useAuth } from "src/hooks/use-auth";
 import { Layout as DashboardLayout } from "src/layouts/dashboard";
 import DeletedReport from "src/sections/admin/reports/DeletedReportTab";
@@ -77,6 +78,10 @@ const Page: PageType = () => {
   );
 };
 
-Page.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
+Page.getLayout = (page) => (
+  <DashboardLayout>
+    <ReportsProvider>{page}</ReportsProvider>
+  </DashboardLayout>
+);
 
 export default Page;

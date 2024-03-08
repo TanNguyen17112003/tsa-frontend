@@ -7,7 +7,7 @@ const getCircasTableConfig = ({
   onClickDelete: (data: Circa) => void;
 }): CustomTableConfig<Circa["id"], Circa>[] => [
   {
-    key: "circa",
+    key: "name",
     headerLabel: "Niên đại",
     type: "string",
   },

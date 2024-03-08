@@ -10,6 +10,7 @@ import {
 } from "src/components/shadcn/ui/dialog";
 import { Button } from "src/components/shadcn/ui/button";
 import { HiMiniArrowSmallRight } from "react-icons/hi2";
+import { format } from "date-fns";
 
 const ReportDialog = ({
   state = false,
@@ -20,6 +21,16 @@ const ReportDialog = ({
   onClose: () => void;
   data: Report;
 }) => {
+  const dateObject = new Date(data.created_at);
+  var day =
+    dateObject.getDate() < 10
+      ? "0" + dateObject.getDate()
+      : dateObject.getDate();
+  var month =
+    dateObject.getMonth() + 1 < 10
+      ? "0" + (dateObject.getMonth() + 1)
+      : dateObject.getMonth() + 1;
+  var year = dateObject.getFullYear();
   return (
     <Dialog open={state} onOpenChange={(value) => !value && onClose()}>
       <DialogTrigger asChild>
@@ -36,7 +47,7 @@ const ReportDialog = ({
               <div>
                 <div className="text-base font-normal">{data.email}</div>
                 <div className="text-xs font-normal text-gray-500">
-                  {data.created_at}
+                  {day + "/" + month + "/" + year}
                 </div>
               </div>
             </div>

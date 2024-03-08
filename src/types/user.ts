@@ -6,6 +6,7 @@ export interface User {
   email: string;
   full_name: string;
   password: string;
+  confirm_password: string;
   role: string;
   deleted_at?: null | string | Date;
 }
@@ -28,6 +29,7 @@ export const initialUser: UserDetail = {
   email: "",
   full_name: "aa",
   password: "",
+  confirm_password: "",
   role: "",
 };
 
@@ -38,6 +40,7 @@ export const users: UserDetail[] = [
     email: "email 1",
     full_name: "name 1",
     password: "password 1",
+    confirm_password: "password 1",
     role: "role 1",
     deleted_at: null,
   },
@@ -47,6 +50,7 @@ export const users: UserDetail[] = [
     email: "email 2",
     full_name: "name 2",
     password: "password 2",
+    confirm_password: "password 2",
     role: "role 2",
     deleted_at: null,
   },

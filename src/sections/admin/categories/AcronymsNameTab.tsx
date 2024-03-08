@@ -1,8 +1,6 @@
 import { HiMagnifyingGlass } from "react-icons/hi2";
 import { CustomTable } from "src/components/custom-table";
-import { Button } from "src/components/shadcn/ui/button";
 import { Input } from "src/components/shadcn/ui/input";
-import { initialFormatSutra } from "src/types/format-sutra";
 import getAcronymsNameTableConfig from "./acronyms-name-table-config";
 import AcronymsNameEditSheet from "./AcronymsNameEditSheet";
 import usePagination from "src/hooks/use-pagination";
@@ -11,11 +9,10 @@ import { SIDE_NAV_WIDTH } from "src/config";
 import { useDrawer } from "src/hooks/use-drawer";
 import { useEffect, useMemo } from "react";
 import { getFormData } from "src/utils/api-request";
-import useFunction from "src/hooks/use-function";
-import { FormatSutrasApi } from "src/api/format-sutras";
+import { useFormatSutrasContext } from "src/contexts/format-sutras/format-sutras-context";
 
 const AcronymsNameTab = () => {
-  const getFormatSutrasApi = useFunction(FormatSutrasApi.getFormatSutras);
+  const { getFormatSutrasApi } = useFormatSutrasContext();
 
   useEffect(() => {
     getFormatSutrasApi.call(getFormData({}));

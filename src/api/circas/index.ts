@@ -1,3 +1,4 @@
+
 import { Circa, CircaDetail } from "src/types/circas";
 import { apiGet, apiPost, apiDelete, apiPatch } from "src/utils/api-request";
 
@@ -19,3 +20,4 @@ export class CircasApi {
     return await apiDelete(`/circas/${id}`, { id });
   }
 }
+

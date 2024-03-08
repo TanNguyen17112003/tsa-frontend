@@ -12,8 +12,6 @@ import usePagination from "src/hooks/use-pagination";
 import AuthorEditSheet from "./AuthorEditSheet";
 import { useAuthorsContext } from "src/contexts/authors/authors-context";
 import { getFormData } from "src/utils/api-request";
-import useFunction from "src/hooks/use-function";
-import { AuthorsApi } from "src/api/authors";
 
 const AuthorTab = () => {
   const user = [initialUser];
@@ -25,7 +23,7 @@ const AuthorTab = () => {
   const editDrawer = useDrawer<UserDetail>();
   const pagination = usePagination({ count: user.length });
 
-  const getAuthorsApi = useFunction(AuthorsApi.getAuthors);
+  const { getAuthorsApi } = useAuthorsContext();
 
   useEffect(() => {
     getAuthorsApi.call(getFormData({}));

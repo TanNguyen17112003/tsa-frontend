@@ -1,21 +1,21 @@
-import { redirect } from "next/navigation";
 import { useRouter } from "next/router";
-import { useEffect, useLayoutEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { HiMagnifyingGlass } from "react-icons/hi2";
-import { UsersApi } from "src/api/users";
 import PageHeader from "src/components/PageHeader";
 import { CustomTable } from "src/components/custom-table";
 import { Input } from "src/components/shadcn/ui/input";
 import Pagination from "src/components/ui/Pagination";
+import UsersProvider, {
+  useUsersContext,
+} from "src/contexts/users/users-context";
 import { useAuth } from "src/hooks/use-auth";
 import { useDrawer } from "src/hooks/use-drawer";
-import useFunction from "src/hooks/use-function";
 import usePagination from "src/hooks/use-pagination";
 import { Layout as DashboardLayout } from "src/layouts/dashboard";
 import AccountEditSheet from "src/sections/admin/accounts/AccountEditSheet";
 import getAccountTableConfig from "src/sections/admin/accounts/account-table-config";
 import type { Page as PageType } from "src/types/page";
-import { User, UserDetail, initialUser, users } from "src/types/user";
+import { UserDetail, users } from "src/types/user";
 import { getFormData } from "src/utils/api-request";
 
 const Page: PageType = () => {
@@ -29,7 +29,7 @@ const Page: PageType = () => {
 
   const pagination = usePagination({ count: users.length });
 
-  const getUsersApi = useFunction(UsersApi.getUsers);
+  const { getUsersApi } = useUsersContext();
   useEffect(() => {
     getUsersApi.call(getFormData({}));
   }, []);
@@ -98,6 +98,10 @@ const Page: PageType = () => {
   );
 };
 
-Page.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
+Page.getLayout = (page) => (
+  <DashboardLayout>
+    <UsersProvider>{page}</UsersProvider>
+  </DashboardLayout>
+);
 
 export default Page;

@@ -19,7 +19,7 @@ export class FormatPagesApi {
     return await apiPatch(`/format_pages/${request.id}`, request);
   }
 
-  static async deleteFormatPage(id: FormatPage["id"]) {
+  static async deleteFormatPage(id: FormatPage["id"][]) {
     return await apiDelete(`/format_pages/${id}`, { id });
   }
 }

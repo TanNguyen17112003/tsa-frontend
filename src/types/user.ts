@@ -27,7 +27,7 @@ export const initialUser: UserDetail = {
   id: "",
   user_name: "",
   email: "",
-  full_name: "aa",
+  full_name: "",
   password: "",
   confirm_password: "",
   role: "",

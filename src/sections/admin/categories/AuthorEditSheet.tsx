@@ -1,6 +1,6 @@
 "use client";
 import { useFormik } from "formik";
-import { FC, useEffect } from "react";
+import { FC, useCallback, useEffect } from "react";
 import CustomSheet from "src/components/CustomSheet";
 import { Button } from "src/components/shadcn/ui/button";
 import * as Yup from "yup";
@@ -22,29 +22,45 @@ const AuthorEditSheet: FC<AuthorEditSheetProps> = ({
   onOpenChange,
   author,
 }) => {
-  const { createAuthor } = useAuthorsContext();
+  const { createAuthor, updateAuthor } = useAuthorsContext();
   const createAuthorHelper = useFunction(createAuthor);
 
-  const { showSnackbarSuccess, showSnackbarError } = useAppSnackbar();
+  const handleSubmit = useCallback(
+    async (values: Author) => {
+      if (author) {
+        await updateAuthor({
+          ...values,
+          id: author.id,
+        });
+      } else {
+        try {
+          createAuthorHelper.call({
+            ...values,
+          });
+        } catch (error: any) {
+          console.error(error);
+        }
+      }
+      onOpenChange(false);
+    },
+    [author, onOpenChange, updateAuthor, createAuthorHelper]
+  );
+
+  const handleSubmitHelper = useFunction(handleSubmit, {
+    successMessage: (author ? "Sửa" : "Thêm") + " tác giả thành công!",
+  });
 
   const formik = useFormik({
     initialValues: initialAuthor,
     validationSchema: authorSchema,
-    onSubmit: async (values) => {
-      try {
-        createAuthorHelper.call({
-          ...values,
-        });
-        showSnackbarSuccess("Thêm tác giả thành công!");
-        onOpenChange(!open);
-      } catch (error: any) {
-        console.error(error);
-      }
-    },
+    onSubmit: handleSubmitHelper.call,
   });
 
   useEffect(() => {
-    if (!open) {
+    if (author && open) {
+      formik.resetForm();
+      formik.setValues(author);
+    } else {
       formik.resetForm();
       formik.setValues(initialAuthor);
     }
@@ -56,10 +72,10 @@ const AuthorEditSheet: FC<AuthorEditSheetProps> = ({
       open={open}
       onOpenChange={onOpenChange}
       sheetTrigger={<Button>Thêm tài khoản</Button>}
-      title={"Thêm tài khoản"}
+      title={author ? "Chỉnh sửa tài khoản" : "Thêm tài khoản"}
       actions={
         <Button type="submit" onClick={() => formik.handleSubmit()}>
-          Xác nhận thêm
+          {author ? "Xác nhận chỉnh sửa" : "Xác nhận thêm"}
         </Button>
       }
     >

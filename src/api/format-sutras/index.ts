@@ -1,17 +1,23 @@
 import { FormatSutra, FormatSutraDetail } from "src/types/format-sutra";
-import { apiGet, apiPost, apiDelete, apiPatch } from "src/utils/api-request";
+import {
+  apiGet,
+  apiPost,
+  apiDelete,
+  apiPatch,
+  getFormData,
+} from "src/utils/api-request";
 
 export class FormatSutrasApi {
   static async postFormatSutra(
     request: Omit<FormatSutra, "id">
-  ): Promise<FormatSutra["id"]> {
+  ): Promise<FormatSutra> {
     return await apiPost("/format_sutras", request);
   }
 
   static async getFormatSutras(
     request: FormData
   ): Promise<FormatSutraDetail[]> {
-    const response = await apiGet("/format_sutras", request);
+    const response = await apiGet("/format_sutras", getFormData(request));
     return response;
   }
 
@@ -21,7 +27,7 @@ export class FormatSutrasApi {
     return await apiPatch(`/format_sutras/${request.id}`, request);
   }
 
-  static async deleteFormatSutra(id: FormatSutra["id"]) {
+  static async deleteFormatSutra(id: FormatSutra["id"][]) {
     return await apiDelete(`/format_sutras/${id}`, { id });
   }
 }

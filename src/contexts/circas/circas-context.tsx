@@ -39,7 +39,7 @@ const CircasProvider = ({ children }: { children: ReactNode }) => {
           const newCircas: CircaDetail[] = [
             {
               ...request,
-              id: id,
+              id: id.id,
             },
             ...(getCircasApi.data || []),
           ];
@@ -71,28 +71,12 @@ const CircasProvider = ({ children }: { children: ReactNode }) => {
   const deleteCirca = useCallback(
     async (ids: Circa["id"][]) => {
       try {
-        const results = await Promise.allSettled(
-          ids.map((id) => CircasApi.deleteCirca(id))
-        );
+        const results = await CircasApi.deleteCirca(ids);
         getCircasApi.setData([
           ...(getCircasApi.data || []).filter(
-            (Circa) =>
-              !results.find(
-                (result, index) =>
-                  result.status == "fulfilled" && ids[index] == Circa.id
-              )
+            (Circa) => !ids.includes(Circa.id)
           ),
         ]);
-        results.forEach((result, index) => {
-          if (result.status == "rejected") {
-            throw new Error(
-              "Không thể xoá danh mục: " +
-                ids[index] +
-                ". " +
-                result.reason.toString()
-            );
-          }
-        });
       } catch (error) {
         throw error;
       }

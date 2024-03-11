@@ -1,4 +1,3 @@
-
 import {
   createContext,
   ReactNode,
@@ -40,7 +39,7 @@ const FormatSutrasProvider = ({ children }: { children: ReactNode }) => {
           const newFormatSutras: FormatSutraDetail[] = [
             {
               ...request,
-              id: id,
+              id: id.id,
             },
             ...(getFormatSutrasApi.data || []),
           ];
@@ -72,28 +71,12 @@ const FormatSutrasProvider = ({ children }: { children: ReactNode }) => {
   const deleteFormatSutra = useCallback(
     async (ids: FormatSutra["id"][]) => {
       try {
-        const results = await Promise.allSettled(
-          ids.map((id) => FormatSutrasApi.deleteFormatSutra(id))
-        );
+        FormatSutrasApi.deleteFormatSutra(ids);
         getFormatSutrasApi.setData([
           ...(getFormatSutrasApi.data || []).filter(
-            (FormatSutra) =>
-              !results.find(
-                (result, index) =>
-                  result.status == "fulfilled" && ids[index] == FormatSutra.id
-              )
+            (FormatSutra) => !ids.includes(FormatSutra.id)
           ),
         ]);
-        results.forEach((result, index) => {
-          if (result.status == "rejected") {
-            throw new Error(
-              "Không thể xoá danh mục: " +
-                ids[index] +
-                ". " +
-                result.reason.toString()
-            );
-          }
-        });
       } catch (error) {
         throw error;
       }

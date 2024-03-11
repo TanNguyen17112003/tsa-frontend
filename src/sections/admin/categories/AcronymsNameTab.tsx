@@ -7,23 +7,50 @@ import usePagination from "src/hooks/use-pagination";
 import Pagination from "src/components/ui/Pagination";
 import { SIDE_NAV_WIDTH } from "src/config";
 import { useDrawer } from "src/hooks/use-drawer";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getFormData } from "src/utils/api-request";
 import { useFormatSutrasContext } from "src/contexts/format-sutras/format-sutras-context";
+import { FormatSutra } from "src/types/format-sutra";
+import CategoriesDeleteDialog from "./CategoriesDeleteDialog";
 
 const AcronymsNameTab = () => {
   const { getFormatSutrasApi } = useFormatSutrasContext();
+  const [data, setData] = useState<FormatSutra>();
+  const [id, setId] = useState<string>();
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    getFormatSutrasApi.call(getFormData({}));
+    getFormatSutrasApi.call;
   }, []);
 
   const name = useMemo(() => {
     return getFormatSutrasApi.data || [];
   }, [getFormatSutrasApi.data]);
 
-  const pagination = usePagination({ count: name.length });
   const editDrawer = useDrawer();
+
+  const acronymsNameTableConfig = useMemo(() => {
+    return getAcronymsNameTableConfig({
+      onClickDelete: (item) => {
+        setId(item.id);
+        setIsOpen(true);
+      },
+      onClickEdit: (item) => {
+        setData(item);
+        editDrawer.handleOpen();
+      },
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!editDrawer.open) setData(undefined);
+    if (!isOpen) setId(undefined);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editDrawer.open]);
+
+  const pagination = usePagination({ count: name.length });
+
   return (
     <div className="flex flex-col divide-y-2 min-h-[87.5vh]">
       <div className="flex-col flex-grow px-[10%]">
@@ -47,13 +74,20 @@ const AcronymsNameTab = () => {
                 onOpenChange={(open) =>
                   open ? editDrawer.handleOpen() : editDrawer.handleClose()
                 }
+                formatSutra={data}
               />
             </div>
           </div>
+          <CategoriesDeleteDialog
+            state={isOpen}
+            onClose={() => setIsOpen(false)}
+            data="tên viết tắt"
+            id={id || ""}
+          />
         </div>
         <CustomTable
           rows={name}
-          configs={getAcronymsNameTableConfig}
+          configs={acronymsNameTableConfig}
           tableClassName="rounded-xl border-2"
           pagination={pagination}
           hidePagination
@@ -63,7 +97,13 @@ const AcronymsNameTab = () => {
         className={`fixed bg-white flex bottom-0 px-7 justify-between py-2 w-[calc(100vw-${SIDE_NAV_WIDTH}px)]`}
       >
         <div className="flex text-sm text-gray-500 font-normal items-center overflow-hidden text-nowrap">
-          Đang hiển thị kết quả thứ 1 tới 10 trên 97 kết quả
+          Đang hiển thị kết quả thứ{" "}
+          {pagination.page * pagination.rowsPerPage + 1} tới{" "}
+          {Math.min(
+            pagination.count,
+            pagination.rowsPerPage * (pagination.page + 1)
+          )}{" "}
+          trên {pagination.count} kết quả
         </div>
         <Pagination {...pagination} onChange={pagination.onPageChange} />
       </div>

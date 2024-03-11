@@ -1,11 +1,14 @@
 import { CustomTableConfig } from "src/components/custom-table";
 import { Author } from "src/types/author";
-import { MdDelete } from "react-icons/md";
+import { RiDeleteBin6Line } from "react-icons/ri";
+import { FaRegEdit } from "react-icons/fa";
 
 const getAccountTableConfig = ({
   onClickDelete,
+  onClickEdit,
 }: {
   onClickDelete: (data: Author) => void;
+  onClickEdit: (data: Author) => void;
 }): CustomTableConfig<Author["id"], Author>[] => [
   {
     key: "author",
@@ -16,7 +19,26 @@ const getAccountTableConfig = ({
     key: "delete",
     headerLabel: "Xóa",
     type: "string",
-    renderCell: () => <MdDelete style={{ fontSize: "1.3rem" }} />,
+    renderCell: (data) => (
+      <div className="flex space-x-4">
+        <FaRegEdit
+          onClick={() => onClickEdit(data)}
+          style={{
+            fontSize: "1.1rem",
+            color: "deepskyblue",
+            cursor: "pointer",
+          }}
+        />
+        <RiDeleteBin6Line
+          onClick={() => onClickDelete(data)}
+          style={{
+            fontSize: "1.1rem",
+            color: "red",
+            cursor: "pointer",
+          }}
+        />
+      </div>
+    ),
   },
 ];
 

@@ -1,6 +1,6 @@
 "use client";
 import { useFormik } from "formik";
-import { FC, useEffect } from "react";
+import { FC, useCallback, useEffect } from "react";
 import CustomSheet from "src/components/CustomSheet";
 import { Button } from "src/components/shadcn/ui/button";
 import { Input } from "src/components/shadcn/ui/input";
@@ -21,29 +21,49 @@ const CircaEditSheet: FC<CircaEditSheetProps> = ({
   onOpenChange,
   circa,
 }) => {
-  const { createCirca } = useCircasContext();
+  const { createCirca, updateCirca } = useCircasContext();
   const createCircaHelper = useFunction(createCirca);
-  const { showSnackbarSuccess, showSnackbarError } = useAppSnackbar();
+
+  const handleSubmit = useCallback(
+    async (values: Circa) => {
+      if (circa) {
+        await updateCirca({
+          ...values,
+          id: circa.id,
+        });
+      } else {
+        try {
+          createCircaHelper.call({
+            ...values,
+          });
+        } catch (error: any) {
+          console.error(error);
+        }
+      }
+      onOpenChange(false);
+    },
+    [circa, onOpenChange, updateCirca, createCircaHelper]
+  );
+
+  const handleSubmitHelper = useFunction(handleSubmit, {
+    successMessage: (circa ? "Sửa" : "Thêm") + " tác giả thành công!",
+  });
 
   const formik = useFormik({
     initialValues: initialCirca,
     validationSchema: circaSchema,
-    onSubmit: async (values) => {
-      try {
-        createCircaHelper.call({ ...values });
-        showSnackbarSuccess("Thêm niên đại thành công!");
-        onOpenChange(!open);
-      } catch (error: any) {
-        console.error(error);
-      }
-    },
+    onSubmit: handleSubmitHelper.call,
   });
 
   useEffect(() => {
-    if (!open) {
+    if (open && circa) {
+      formik.resetForm();
+      formik.setValues(circa);
+    } else {
       formik.resetForm();
       formik.setValues(initialCirca);
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
@@ -51,11 +71,11 @@ const CircaEditSheet: FC<CircaEditSheetProps> = ({
     <CustomSheet
       open={open}
       onOpenChange={onOpenChange}
-      sheetTrigger={<Button>Thêm tên viết tắt</Button>}
-      title={"Thêm tên viết tắt"}
+      sheetTrigger={<Button>Thêm niên đại</Button>}
+      title={circa ? "Chỉnh sửa niên đại" : "Thêm niên đại"}
       actions={
         <Button type="submit" onClick={() => formik.handleSubmit()}>
-          Xác nhận thêm
+          Xác nhận {circa ? "sửa" : "thêm"}
         </Button>
       }
     >

@@ -38,7 +38,7 @@ const DeletedReport = () => {
   const { getReportsApi } = useReportsContext();
 
   useEffect(() => {
-    getReportsApi.call(getFormData({}));
+    getReportsApi.call;
   }, [getReportsApi.call]);
 
   const report = useMemo(() => {
@@ -101,7 +101,13 @@ const DeletedReport = () => {
         className={`fixed flex bottom-0 bg-white justify-between px-7 py-2 w-[calc(100vw-${SIDE_NAV_WIDTH}px)]`}
       >
         <div className="flex text-sm text-gray-500 font-normal items-center overflow-hidden text-nowrap">
-          Đang hiển thị kết quả thứ 1 tới 10 trên 97 kết quả
+          Đang hiển thị kết quả thứ{" "}
+          {pagination.page * pagination.rowsPerPage + 1} tới{" "}
+          {Math.min(
+            pagination.count,
+            pagination.rowsPerPage * (pagination.page + 1)
+          )}{" "}
+          trên {pagination.count} kết quả
         </div>
         <Pagination {...pagination} onChange={pagination.onPageChange} />
       </div>

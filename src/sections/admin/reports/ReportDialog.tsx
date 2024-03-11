@@ -21,16 +21,6 @@ const ReportDialog = ({
   onClose: () => void;
   data: Report;
 }) => {
-  const dateObject = new Date(data.created_at);
-  var day =
-    dateObject.getDate() < 10
-      ? "0" + dateObject.getDate()
-      : dateObject.getDate();
-  var month =
-    dateObject.getMonth() + 1 < 10
-      ? "0" + (dateObject.getMonth() + 1)
-      : dateObject.getMonth() + 1;
-  var year = dateObject.getFullYear();
   return (
     <Dialog open={state} onOpenChange={(value) => !value && onClose()}>
       <DialogTrigger asChild>
@@ -47,7 +37,9 @@ const ReportDialog = ({
               <div>
                 <div className="text-base font-normal">{data.email}</div>
                 <div className="text-xs font-normal text-gray-500">
-                  {day + "/" + month + "/" + year}
+                  {data.created_at
+                    ? format(new Date(data.created_at), "dd/MM/yyyy")
+                    : "-"}
                 </div>
               </div>
             </div>

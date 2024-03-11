@@ -2,7 +2,7 @@ import { HiMagnifyingGlass } from "react-icons/hi2";
 import { CustomTable } from "src/components/custom-table";
 import { Input } from "src/components/shadcn/ui/input";
 import getCircasTableConfig from "./circa-table-config";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import CircaEditSheet from "./CircaEditSheet";
 import usePagination from "src/hooks/use-pagination";
 import Pagination from "src/components/ui/Pagination";
@@ -10,18 +10,41 @@ import { SIDE_NAV_WIDTH } from "src/config";
 import { useDrawer } from "src/hooks/use-drawer";
 import { getFormData } from "src/utils/api-request";
 import { useCircasContext } from "src/contexts/circas/circas-context";
+import { Circa } from "src/types/circas";
+import CategoriesDeleteDialog from "./CategoriesDeleteDialog";
 
 const CircaTab = () => {
+  const [data, setData] = useState<Circa>();
+  const [id, setId] = useState<string>();
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
   const accountCircasConfig = useMemo(() => {
     return getCircasTableConfig({
-      onClickDelete: (data) => {},
+      onClickDelete: (item) => {
+        setId(item.id);
+        setIsOpen(true);
+      },
+      onClickEdit: (item) => {
+        setData(item);
+        editDrawer.handleOpen();
+      },
     });
   }, []);
 
   const { getCircasApi } = useCircasContext();
+  const editDrawer = useDrawer();
 
   useEffect(() => {
-    getCircasApi.call(getFormData({}));
+    if (!editDrawer.open) setData(undefined);
+    if (!isOpen) setId(undefined);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editDrawer.open]);
+
+  useEffect(() => {
+    getCircasApi.call;
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const circa = useMemo(() => {
@@ -29,7 +52,7 @@ const CircaTab = () => {
   }, [getCircasApi.data]);
 
   const pagination = usePagination({ count: circa.length });
-  const editDrawer = useDrawer();
+
   return (
     <div className="flex flex-col divide-y-2 min-h-[87.5vh]">
       <div className=" flex-grow flex-col px-[10%]">
@@ -52,8 +75,15 @@ const CircaTab = () => {
               onOpenChange={(open) =>
                 open ? editDrawer.handleOpen() : editDrawer.handleClose()
               }
+              circa={data}
             />
           </div>
+          <CategoriesDeleteDialog
+            state={isOpen}
+            onClose={() => setIsOpen(false)}
+            data="niên đại"
+            id={id || ""}
+          />
         </div>
         <CustomTable
           rows={circa}
@@ -67,7 +97,13 @@ const CircaTab = () => {
         className={`fixed bg-white flex bottom-0 px-7 justify-between py-2 w-[calc(100vw-${SIDE_NAV_WIDTH}px)]`}
       >
         <div className="flex text-sm text-gray-500 font-normal items-center overflow-hidden text-nowrap">
-          Đang hiển thị kết quả thứ 1 tới 10 trên 97 kết quả
+          Đang hiển thị kết quả thứ{" "}
+          {pagination.page * pagination.rowsPerPage + 1} tới{" "}
+          {Math.min(
+            pagination.count,
+            pagination.rowsPerPage * (pagination.page + 1)
+          )}{" "}
+          trên {pagination.count} kết quả
         </div>
         <Pagination {...pagination} onChange={pagination.onPageChange} />
       </div>

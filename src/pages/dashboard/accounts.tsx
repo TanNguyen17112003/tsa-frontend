@@ -31,7 +31,7 @@ const Page: PageType = () => {
 
   const { getUsersApi } = useUsersContext();
   useEffect(() => {
-    getUsersApi.call(getFormData({}));
+    getUsersApi.call;
   }, []);
 
   const author = useMemo(() => {
@@ -88,7 +88,13 @@ const Page: PageType = () => {
           </div>
           <div className="fixed bg-white flex bottom-0 px-7 justify-between py-2 w-[calc(100vw-280px)]">
             <div className="flex text-sm text-gray-500 font-normal items-center overflow-hidden text-nowrap">
-              Đang hiển thị kết quả thứ 1 tới 10 trên 97 kết quả
+              Đang hiển thị kết quả thứ{" "}
+              {pagination.page * pagination.rowsPerPage + 1} tới{" "}
+              {Math.min(
+                pagination.count,
+                pagination.rowsPerPage * (pagination.page + 1)
+              )}{" "}
+              trên {pagination.count} kết quả
             </div>
             <Pagination {...pagination} onChange={pagination.onPageChange} />
           </div>

@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { HiMagnifyingGlass } from "react-icons/hi2";
 import { CustomTable } from "src/components/custom-table";
 import { Input } from "src/components/shadcn/ui/input";
@@ -12,26 +12,47 @@ import usePagination from "src/hooks/use-pagination";
 import AuthorEditSheet from "./AuthorEditSheet";
 import { useAuthorsContext } from "src/contexts/authors/authors-context";
 import { getFormData } from "src/utils/api-request";
+import { Author } from "src/types/author";
+import CategoriesDeleteDialog from "./CategoriesDeleteDialog";
 
 const AuthorTab = () => {
-  const user = [initialUser];
+  const [data, setData] = useState<Author>();
+  const [id, setId] = useState<string>();
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const editDrawer = useDrawer<UserDetail>();
   const accountTableConfig = useMemo(() => {
     return getAccountTableConfig({
-      onClickDelete: (data) => {},
+      onClickDelete: (item) => {
+        setId(item.id);
+        setIsOpen(true);
+      },
+      onClickEdit: (item) => {
+        setData(item);
+        editDrawer.handleOpen();
+      },
     });
   }, []);
-  const editDrawer = useDrawer<UserDetail>();
-  const pagination = usePagination({ count: user.length });
 
   const { getAuthorsApi } = useAuthorsContext();
 
   useEffect(() => {
-    getAuthorsApi.call(getFormData({}));
+    if (!editDrawer.open) setData(undefined);
+    if (!isOpen) setId(undefined);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editDrawer.open, isOpen]);
+
+  useEffect(() => {
+    getAuthorsApi.call;
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const author = useMemo(() => {
     return getAuthorsApi.data || [];
   }, [getAuthorsApi.data]);
+
+  const pagination = usePagination({ count: author.length });
 
   return (
     <div className="divide-y-2">
@@ -56,10 +77,17 @@ const AuthorTab = () => {
                 onOpenChange={(open) =>
                   open ? editDrawer.handleOpen() : editDrawer.handleClose()
                 }
+                author={data}
               />
             </div>
           </div>
         </div>
+        <CategoriesDeleteDialog
+          state={isOpen}
+          onClose={() => setIsOpen(false)}
+          data="tác giả"
+          id={id || ""}
+        />
         <div className="flex-grow pb-5">
           <CustomTable
             rows={author}
@@ -74,7 +102,13 @@ const AuthorTab = () => {
         className={`fixed bg-white flex bottom-0 px-7 justify-between py-2 w-[calc(100vw-${SIDE_NAV_WIDTH}px)]`}
       >
         <div className="flex text-sm text-gray-500 font-normal items-center overflow-hidden text-nowrap">
-          Đang hiển thị kết quả thứ 1 tới 10 trên 97 kết quả
+          Đang hiển thị kết quả thứ{" "}
+          {pagination.page * pagination.rowsPerPage + 1} tới{" "}
+          {Math.min(
+            pagination.count,
+            pagination.rowsPerPage * (pagination.page + 1)
+          )}{" "}
+          trên {pagination.count} kết quả
         </div>
         <Pagination {...pagination} onChange={pagination.onPageChange} />
       </div>

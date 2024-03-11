@@ -35,16 +35,31 @@ export const SideNav: FC<SideNavProps> = (props) => {
           <div className="flex flex-col items-center pt-[32px] pb-[24px] px-[16px] relative self-stretch w-full flex-[0_0_auto]">
             <div className="flex flex-col items-center gap-[16px] relative self-stretch w-full flex-[0_0_auto]">
               <div className="flex flex-col items-start gap-[4px] p-[16px] relative self-stretch w-full flex-[0_0_auto] bg-tailwindcss-colors-slate-50 rounded-[16px]">
-                <img
+                {/* <img
                   className="relative w-[24px] h-[24px]"
                   alt="Header images"
                   src="https://c.animaapp.com/oTA7Mv2p/img/header-images-2-1@2x.png"
+                /> */}
+                <img
+                  className="relative w-[100%] h-[100%] pb-6"
+                  alt="Logo"
+                  src="/logos/logo_new.png"
                 />
-                <p className="text-sm font-semibold">Viện nghiên cứu Châu Á</p>
+                {/* <p className="text-sm font-semibold">Viện nghiên cứu Châu Á</p> */}
               </div>
-              <h1 className="text-lg font-semibold text-primary">
+              {/* <h1 className="text-lg font-semibold text-primary">
                 Đại Chánh Tân Tu Đại Tạng Kinh
-              </h1>
+              </h1> */}
+              <img
+                className="relative w-[100%] h-[100%]"
+                alt="Logo"
+                src="/chu dai chanh tang tv.png"
+              />
+              <img
+                className="relative w-[100%] h-[100%]"
+                alt="Logo"
+                src="/chu dai chanh tang ta.png"
+              />
             </div>
           </div>
 

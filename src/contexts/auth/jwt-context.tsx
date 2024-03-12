@@ -137,7 +137,7 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
         } catch {}
         if (!user) {
           user = await JSON.parse(localStorage.getItem("user_data") || "{}");
-          if (!user || !user.id || !user.role || !user.name) {
+          if (!user || !user.id || !user.role || !user.full_name) {
             throw new Error("Ger user failed.");
           }
         }

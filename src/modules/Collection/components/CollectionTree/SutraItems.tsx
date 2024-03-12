@@ -16,11 +16,11 @@ interface SutraItemsProps {
 }
 
 const SutraItems: FC<SutraItemsProps> = (props) => {
-  const { tree } = useCollectionCategoriesContext();
+  const { tree, goSutra } = useCollectionCategoriesContext();
   const { expandedIds, setExpandedIds } = useCollectionTreeContext();
   const router = useRouter();
 
-  const viewType = router.query.viewType;
+  const viewType = (router.query.viewType || "all").toString();
 
   const items = useMemo(() => {
     return (
@@ -32,27 +32,13 @@ const SutraItems: FC<SutraItemsProps> = (props) => {
 
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: string) => {
-      const sutra = tree?.sutras?.find((sutra) => sutra.id == id);
-      const collection = tree?.collections?.find(
-        (collection) => collection.id == sutra?.collection_id
-      );
-      router.replace({
-        pathname: router.pathname,
-        query: {
-          ...router.query,
-          searchType: "",
-          collectionId: collection?.id || "",
-          sutraId: id == router.query.sutraId ? "" : id,
-          volumeId: "",
-          orisonId: "",
-        },
-      });
+      goSutra(id);
       if (id != router.query.sutraId && expandedIds.includes(id)) {
         e.preventDefault();
         e.stopPropagation();
       }
     },
-    [expandedIds, tree?.collections, tree?.sutras, router]
+    [goSutra, router.query.sutraId, expandedIds]
   );
 
   if (viewType != "all" && viewType != "sutra") {

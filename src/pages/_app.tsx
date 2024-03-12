@@ -19,7 +19,8 @@ const App = (props: AppProps) => {
   return (
     <>
       <Head>
-        <title>SIU KINH PHẬT</title>
+        <link rel="shortcut icon" href="/logos/logo.png" />
+        <title>CHÁNH TẠNG VIỆT DỊCH</title>
         <meta name="viewport" content="initial-scale=1, width=device-width" />
       </Head>
 

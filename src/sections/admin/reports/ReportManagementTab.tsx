@@ -24,61 +24,26 @@ import getReportManagementTableConfig from "./report-management-table-config";
 import Pagination from "src/components/ui/Pagination";
 import usePagination from "src/hooks/use-pagination";
 import { Button } from "src/components/shadcn/ui/button";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { SIDE_NAV_WIDTH } from "src/config";
 import ReportDialog from "./ReportDialog";
+import useFunction from "src/hooks/use-function";
+import { ReportsApi } from "src/api/reports";
+import { getFormData } from "src/utils/api-request";
+import { useReportsContext } from "src/contexts/reports/reports-context";
+import getPaginationText from "src/utils/get-pagination-text";
 
 const ReportManagement = () => {
-  const report = [
-    {
-      id: "",
-      email: "pngiahan3010",
-      content:
-        "Sai thông tin ở đoạn: “nghĩa là từ chỗ ngồi, và nói迦里梨道場,結跏趺坐。 時諸苾芻,...",
-      title: "Sai thông tin trong bài kinh",
-      report_status: "Chưa xử lý",
-      created_at: "21/12/2023 10:47:56",
-      orison_id: "",
-      user_id: "",
-      updated_s: "",
-    },
-    {
-      id: "",
-      email: "pngiahan3010",
-      content:
-        "Sai thông tin ở đoạn: “nghĩa là từ chỗ ngồi, và nói迦里梨道場,結跏趺坐。 時諸苾芻,...",
-      title: "Sai thông tin trong bài kinh",
-      report_status: "Đã xử lý",
-      created_at: "21/12/2023 10:47:56",
-      orison_id: "",
-      user_id: "",
-      updated_s: "",
-    },
-    {
-      id: "",
-      email: "pngiahan3010",
-      content:
-        "Sai thông tin ở đoạn: “nghĩa là từ chỗ ngồi, và nói迦里梨道場,結跏趺坐。 時諸苾芻,...",
-      title: "Sai thông tin trong bài kinh",
-      report_status: "Chưa xử lý",
-      created_at: "21/12/2023 10:47:56",
-      orison_id: "",
-      user_id: "",
-      updated_s: "",
-    },
-    {
-      id: "",
-      email: "pngiahan3010",
-      content:
-        "Sai thông tin ở đoạn: “nghĩa là từ chỗ ngồi, và nói迦里梨道場,結跏趺坐。 時諸苾芻,...",
-      title: "Sai thông tin trong bài kinh",
-      report_status: "Đã xử lý",
-      created_at: "21/12/2023 10:47:56",
-      orison_id: "",
-      user_id: "",
-      updated_s: "",
-    },
-  ];
+  const { getReportsApi } = useReportsContext();
+
+  useEffect(() => {
+    getReportsApi.call;
+  }, [getReportsApi.call]);
+
+  const report = useMemo(() => {
+    return getReportsApi.data || [];
+  }, [getReportsApi.data]);
+
   const pagination = usePagination({ count: report.length });
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [data, setData] = useState(initialReport);
@@ -132,10 +97,10 @@ const ReportManagement = () => {
       />
 
       <div
-        className={`fixed flex bottom-0 bg-white justify-between px-7 py-2 w-[calc(100vw-${SIDE_NAV_WIDTH}px)]`}
+        className={`fixed bg-white flex bottom-0 px-7 justify-between py-2 w-[calc(100vw-${SIDE_NAV_WIDTH}px)]`}
       >
         <div className="flex text-sm text-gray-500 font-normal items-center overflow-hidden text-nowrap">
-          Đang hiển thị kết quả thứ 1 tới 10 trên 97 kết quả
+          {getPaginationText(pagination)}
         </div>
         <Pagination {...pagination} onChange={pagination.onPageChange} />
       </div>

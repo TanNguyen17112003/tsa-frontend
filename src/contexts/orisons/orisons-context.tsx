@@ -1,4 +1,3 @@
-import router from "next/router";
 import {
   ReactNode,
   createContext,
@@ -12,22 +11,35 @@ import useFunction, {
   DEFAULT_FUNCTION_RETURN,
   UseFunctionReturnType,
 } from "src/hooks/use-function";
-import { Orison, OrisonDetail } from "src/types/orison";
+import { Orison, OrisonDetail, OrisonEditor } from "src/types/orison";
 import { VolumeDetail } from "src/types/volume";
 import { useVolumesContext } from "../volumes/volumes-context";
+import { convertDocx2Editor } from "src/modules/Editor/utils";
+import { initialSutra } from "src/types/sutra";
+import { useRouter } from "next/router";
 
 interface ContextValue {
   volume?: VolumeDetail;
+  orisonId?: string;
   getOrisonsApi: UseFunctionReturnType<GetOrisonPayload, OrisonDetail[]>;
+  getOrisonDetailApi: UseFunctionReturnType<Orison["id"], OrisonEditor>;
 
-  createOrison: (requests: Omit<OrisonDetail, "id">) => Promise<void>;
+  createOrisonsByFile: (
+    files: File[],
+    onProgress?: (value: number) => void
+  ) => Promise<void>;
+  createOrison: (
+    requests: Omit<OrisonDetail, "id"> & { file: File }
+  ) => Promise<void>;
   updateOrison: (Orison: Partial<OrisonDetail>) => Promise<void>;
   deleteOrison: (ids: Orison["id"][]) => Promise<void>;
 }
 
 export const OrisonsContext = createContext<ContextValue>({
   getOrisonsApi: DEFAULT_FUNCTION_RETURN,
+  getOrisonDetailApi: DEFAULT_FUNCTION_RETURN,
 
+  createOrisonsByFile: async () => {},
   createOrison: async () => {},
   updateOrison: async () => {},
   deleteOrison: async () => {},
@@ -35,6 +47,8 @@ export const OrisonsContext = createContext<ContextValue>({
 
 const OrisonsProvider = ({ children }: { children: ReactNode }) => {
   const { getVolumesApi } = useVolumesContext();
+  const router = useRouter();
+
   const volume = useMemo(() => {
     const volumeId = (
       router.query.volumeId ||
@@ -42,13 +56,80 @@ const OrisonsProvider = ({ children }: { children: ReactNode }) => {
       ""
     )?.toString();
     return getVolumesApi.data?.find((c) => c.id == volumeId);
-  }, [getVolumesApi.data]);
+  }, [getVolumesApi.data, router.query]);
+
   const getOrisonsApi = useFunction(OrisonsApi.getOrisons);
+  const getOrisonDetailApi = useFunction(OrisonsApi.getOrisonById);
+  const orisonId = useMemo(() => {
+    return (router.query.orisonId || router.query.qOrisonId || "")?.toString();
+  }, [router.query]);
+
+  const createOrisonsByFile = useCallback(
+    async (files: File[], onProgress?: (value: number) => void) => {
+      try {
+        if (volume) {
+          const newOrisons: OrisonDetail[] = [];
+          for (let index = 0; index < files.length; index++) {
+            try {
+              const file = files[index];
+              const [code, name] = file.name.split(".")[0]?.split("_");
+              if (!code || !name) {
+                throw new Error(`Tên file ${file.name} sai cấu trúc`);
+              }
+              const { blocks, notes, plainText } = await convertDocx2Editor(
+                file
+              );
+              const newOrison = await OrisonsApi.postOrison({
+                code,
+                name,
+                volume_id: volume.id,
+                content: blocks,
+                plain_text: plainText,
+                notes: notes.map((note, index) => ({
+                  ...note,
+                  num: index + 1,
+                })),
+              });
+              newOrisons.push({
+                ...newOrison,
+                code,
+                name,
+                sutra: initialSutra,
+              });
+
+              onProgress?.((index + 1) / files.length);
+            } catch (error) {
+              getOrisonsApi.setData([
+                ...(getOrisonsApi.data || []),
+                ...newOrisons,
+              ]);
+              throw error;
+            }
+          }
+          getOrisonsApi.setData([...(getOrisonsApi.data || []), ...newOrisons]);
+        }
+      } catch (error) {
+        throw error;
+      }
+    },
+    [getOrisonsApi, volume]
+  );
 
   const createOrison = useCallback(
-    async (request: Omit<OrisonDetail, "id">) => {
+    async (request: Omit<OrisonDetail, "id"> & { file: File }) => {
       try {
-        const orison = await OrisonsApi.postOrison(request);
+        const { blocks, notes, plainText } = await convertDocx2Editor(
+          request.file
+        );
+        const orison = await OrisonsApi.postOrison({
+          ...request,
+          content: blocks,
+          notes: notes.map((note, index) => ({
+            ...note,
+            num: index + 1,
+          })),
+          plain_text: plainText,
+        });
         if (orison) {
           const newOrisons: OrisonDetail[] = [
             {
@@ -105,12 +186,22 @@ const OrisonsProvider = ({ children }: { children: ReactNode }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [volume]);
 
+  useEffect(() => {
+    if (orisonId) {
+      getOrisonDetailApi.call(orisonId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orisonId]);
+
   return (
     <OrisonsContext.Provider
       value={{
         volume,
+        orisonId,
         getOrisonsApi,
+        getOrisonDetailApi,
 
+        createOrisonsByFile,
         createOrison,
         updateOrison,
         deleteOrison,

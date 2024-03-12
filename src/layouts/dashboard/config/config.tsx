@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { useMemo } from "react";
 import { useAuth } from "src/hooks/use-auth";
 import { getDashboardAdminConfigs } from "./dashboard-admin-configs";
+import { getDashboardUserConfigs } from "./dashboard-user-configs";
 
 export interface DashboardItem {
   disabled?: boolean;
@@ -23,6 +24,10 @@ export const useSections = () => {
   const { user } = useAuth();
 
   return useMemo(() => {
-    return getDashboardAdminConfigs();
-  }, []);
+    if (user?.role == "admin") {
+      return getDashboardAdminConfigs();
+    } else {
+      return getDashboardUserConfigs();
+    }
+  }, [user?.role]);
 };

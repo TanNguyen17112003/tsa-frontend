@@ -63,7 +63,11 @@ export const convertDocx2Editor = async (
     return { id: noteId, note: extractContent(noteContent).trim() };
   });
   console.log("notes", notes);
-  return { blocks: notedBlocks, notes };
+  return {
+    blocks: notedBlocks,
+    notes,
+    plainText: extractContent(htmlArticleString),
+  };
 };
 
 /**

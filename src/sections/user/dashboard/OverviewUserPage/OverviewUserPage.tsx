@@ -104,7 +104,7 @@ const OverviewUserPage = () => {
           <div
             className="flex bg-cover bg-center rounded-xl"
             style={{
-              backgroundImage: 'url("/banner chu dai chanh tang.png")',
+              backgroundImage: 'url("/ui/banner chu dai chanh tang.png")',
               width: "100%",
               height: "100%",
             }}

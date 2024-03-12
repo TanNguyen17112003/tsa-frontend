@@ -18,6 +18,7 @@ const CircaTab = () => {
   const [id, setId] = useState<string>();
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
+  const editDrawer = useDrawer<Circa>();
   const accountCircasConfig = useMemo(() => {
     return getCircasTableConfig({
       onClickDelete: (item) => {
@@ -28,10 +29,9 @@ const CircaTab = () => {
         editDrawer.handleOpen(item);
       },
     });
-  }, []);
+  }, [editDrawer]);
 
   const { getCircasApi } = useCircasContext();
-  const editDrawer = useDrawer<Circa>();
 
   useEffect(() => {
     if (!isOpen) setId(undefined);

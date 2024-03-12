@@ -29,7 +29,7 @@ const AuthorTab = () => {
         editDrawer.handleOpen(item);
       },
     });
-  }, []);
+  }, [editDrawer]);
 
   const { getAuthorsApi } = useAuthorsContext();
 

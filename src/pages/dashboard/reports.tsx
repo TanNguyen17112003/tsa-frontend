@@ -28,6 +28,7 @@ const Page: PageType = () => {
     if (user?.role == "user") {
       router.push("/dashboard");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

@@ -23,6 +23,7 @@ const Page: PageType = () => {
   const [id, setId] = useState<string>();
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
+  const editDrawer = useDrawer<User>();
   const accountTableConfig = useMemo(() => {
     return getAccountTableConfig({
       onClickDelete: (item) => {
@@ -33,9 +34,7 @@ const Page: PageType = () => {
         editDrawer.handleOpen(item);
       },
     });
-  }, []);
-
-  const editDrawer = useDrawer<User>();
+  }, [editDrawer]);
 
   useEffect(() => {
     // if (!editDrawer.open) setData(undefined);
@@ -47,6 +46,7 @@ const Page: PageType = () => {
   const { getUsersApi } = useUsersContext();
   useEffect(() => {
     getUsersApi.call;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const author = useMemo(() => {

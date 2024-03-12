@@ -50,6 +50,7 @@ const Page: PageType = () => {
     if (user?.role != "admin") {
       router.push(paths.dashboard.index);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const [tab, setTab] = useState(tabs[0].key);

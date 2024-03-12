@@ -29,5 +29,5 @@ export const useSections = () => {
     } else {
       return getDashboardUserConfigs();
     }
-  }, []);
+  }, [user?.role]);
 };

@@ -35,7 +35,7 @@ const AcronymsNameTab = () => {
         editDrawer.handleOpen(item);
       },
     });
-  }, []);
+  }, [editDrawer]);
 
   useEffect(() => {
     if (!isOpen) setId(undefined);

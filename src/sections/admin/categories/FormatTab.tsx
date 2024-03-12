@@ -15,6 +15,7 @@ const FormatTab = () => {
 
   useEffect(() => {
     getFormatPagesApi.call;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const format = useMemo(() => {

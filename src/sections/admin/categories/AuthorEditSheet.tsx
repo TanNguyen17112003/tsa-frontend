@@ -1,12 +1,15 @@
 "use client";
 import { useFormik } from "formik";
-import { FC, useEffect } from "react";
+import { FC, useCallback, useEffect } from "react";
 import CustomSheet from "src/components/CustomSheet";
 import { Button } from "src/components/shadcn/ui/button";
 import * as Yup from "yup";
 import { Input } from "src/components/shadcn/ui/input";
 import FormInput from "src/components/ui/FormInput";
 import { Author, authorSchema, initialAuthor } from "src/types/author";
+import { useAuthorsContext } from "src/contexts/authors/authors-context";
+import useFunction from "src/hooks/use-function";
+import useAppSnackbar from "src/hooks/use-app-snackbar";
 
 export interface AuthorEditSheetProps {
   open: boolean;
@@ -14,26 +17,45 @@ export interface AuthorEditSheetProps {
   author?: Author;
 }
 
-const AuthorEditSheet: FC<AuthorEditSheetProps> = ({ 
-  open, 
+const AuthorEditSheet: FC<AuthorEditSheetProps> = ({
+  open,
   onOpenChange,
   author,
 }) => {
+  const { createAuthor, updateAuthor } = useAuthorsContext();
+
+  const handleSubmit = useCallback(
+    async (values: Author) => {
+      if (author) {
+        await updateAuthor({
+          ...values,
+          id: author.id,
+        });
+      } else {
+        await createAuthor({
+          ...values,
+        });
+      }
+      onOpenChange(false);
+    },
+    [author, onOpenChange, updateAuthor, createAuthor]
+  );
+
+  const handleSubmitHelper = useFunction(handleSubmit, {
+    successMessage: (author ? "Sửa" : "Thêm") + " tác giả thành công!",
+  });
+
   const formik = useFormik({
     initialValues: initialAuthor,
     validationSchema: authorSchema,
-    onSubmit: async (values) => {
-      try {
-        console.log(values);
-        //todo
-      } catch (error: any) {
-        console.error(error);
-      }
-    },
+    onSubmit: handleSubmitHelper.call,
   });
 
   useEffect(() => {
-    if (!open) {
+    if (author && open) {
+      formik.resetForm();
+      formik.setValues(author);
+    } else {
       formik.resetForm();
       formik.setValues(initialAuthor);
     }
@@ -45,10 +67,10 @@ const AuthorEditSheet: FC<AuthorEditSheetProps> = ({
       open={open}
       onOpenChange={onOpenChange}
       sheetTrigger={<Button>Thêm tài khoản</Button>}
-      title={"Thêm tài khoản"}
+      title={author ? "Chỉnh sửa tài khoản" : "Thêm tài khoản"}
       actions={
         <Button type="submit" onClick={() => formik.handleSubmit()}>
-          Xác nhận thêm
+          {author ? "Xác nhận chỉnh sửa" : "Xác nhận thêm"}
         </Button>
       }
     >

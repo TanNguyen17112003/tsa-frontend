@@ -10,6 +10,7 @@ import {
 } from "src/components/shadcn/ui/dialog";
 import { Button } from "src/components/shadcn/ui/button";
 import { HiMiniArrowSmallRight } from "react-icons/hi2";
+import { format } from "date-fns";
 
 const ReportDialog = ({
   state = false,
@@ -36,7 +37,9 @@ const ReportDialog = ({
               <div>
                 <div className="text-base font-normal">{data.email}</div>
                 <div className="text-xs font-normal text-gray-500">
-                  {data.created_at}
+                  {data.created_at
+                    ? format(new Date(data.created_at), "dd/MM/yyyy")
+                    : "-"}
                 </div>
               </div>
             </div>

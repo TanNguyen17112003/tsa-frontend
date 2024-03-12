@@ -5,11 +5,24 @@ import getFormatTableConfig from "./format-table-config";
 import Pagination from "src/components/ui/Pagination";
 import usePagination from "src/hooks/use-pagination";
 import { SIDE_NAV_WIDTH } from "src/config";
-import { initialFormatPage } from "src/types/format-page";
+import { useEffect, useMemo } from "react";
+import { getFormData } from "src/utils/api-request";
+import { useFormatPagesContext } from "src/contexts/format-pages/format-pages-context";
+import getPaginationText from "src/utils/get-pagination-text";
 
 const FormatTab = () => {
-  const format = [initialFormatPage];
+  const { getFormatPagesApi } = useFormatPagesContext();
+
+  useEffect(() => {
+    getFormatPagesApi.call;
+  }, []);
+
+  const format = useMemo(() => {
+    return getFormatPagesApi.data || [];
+  }, [getFormatPagesApi.data]);
+
   const pagination = usePagination({ count: format.length });
+
   return (
     <div className="flex flex-col divide-y-2 min-h-[87.5vh]">
       <div className="flex-grow flex-col mx-[10%]">
@@ -39,7 +52,7 @@ const FormatTab = () => {
         className={`fixed bg-white flex bottom-0 px-7 justify-between py-2 w-[calc(100vw-${SIDE_NAV_WIDTH}px)]`}
       >
         <div className="flex text-sm text-gray-500 font-normal items-center overflow-hidden text-nowrap">
-          Đang hiển thị kết quả thứ 1 tới 10 trên 97 kết quả
+          {getPaginationText(pagination)}
         </div>
         <Pagination {...pagination} onChange={pagination.onPageChange} />
       </div>

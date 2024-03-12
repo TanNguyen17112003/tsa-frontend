@@ -1,10 +1,12 @@
 "use client";
 import { useFormik } from "formik";
-import { FC, useEffect } from "react";
+import { FC, useCallback, useEffect } from "react";
 import CustomSheet from "src/components/CustomSheet";
 import { Button } from "src/components/shadcn/ui/button";
-import { Input } from "src/components/shadcn/ui/input";
 import FormInput from "src/components/ui/FormInput";
+import { useFormatSutrasContext } from "src/contexts/format-sutras/format-sutras-context";
+import useAppSnackbar from "src/hooks/use-app-snackbar";
+import useFunction from "src/hooks/use-function";
 import { FormatSutra, initialFormatSutra } from "src/types/format-sutra";
 import { formatSutraSchema } from "src/types/format-sutra";
 
@@ -19,24 +21,45 @@ const AcronymsNameEditSheet: FC<AcronymsNameEditSheetProps> = ({
   onOpenChange,
   formatSutra,
 }) => {
+  const { createFormatSutra, updateFormatSutra } = useFormatSutrasContext();
+
+  const handleSubmit = useCallback(
+    async (values: FormatSutra) => {
+      if (formatSutra) {
+        await updateFormatSutra({
+          ...values,
+        });
+      } else {
+        await createFormatSutra({
+          ...values,
+        });
+      }
+      onOpenChange(false);
+    },
+    [formatSutra, onOpenChange, updateFormatSutra, createFormatSutra]
+  );
+
+  const handleSubmitHelper = useFunction(handleSubmit, {
+    successMessage: `${
+      formatSutra ? "Chỉnh sửa" : "Thêm"
+    } tên viết tắt thành công`,
+  });
+
   const formik = useFormik({
     initialValues: initialFormatSutra,
     validationSchema: formatSutraSchema,
-    onSubmit: async (values) => {
-      try {
-        console.log(values);
-        //todo
-      } catch (error: any) {
-        console.error(error);
-      }
-    },
+    onSubmit: handleSubmitHelper.call,
   });
 
   useEffect(() => {
-    if (!open) {
+    if (formatSutra && open) {
+      formik.resetForm();
+      formik.setValues(formatSutra);
+    } else {
       formik.resetForm();
       formik.setValues(initialFormatSutra);
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
@@ -45,10 +68,10 @@ const AcronymsNameEditSheet: FC<AcronymsNameEditSheetProps> = ({
       open={open}
       onOpenChange={onOpenChange}
       sheetTrigger={<Button>Thêm tên viết tắt</Button>}
-      title={"Thêm tên viết tắt tuyển tập"}
+      title={`${formatSutra ? "Chỉnh sửa" : "Thêm"} tên viết tắt tuyển tập`}
       actions={
         <Button type="submit" onClick={() => formik.handleSubmit()}>
-          Xác nhận thêm
+          Xác nhận {formatSutra ? "sửa" : "thêm"}
         </Button>
       }
     >

@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { HiMagnifyingGlass } from "react-icons/hi2";
 import { CustomTable } from "src/components/custom-table";
 import { Input } from "src/components/shadcn/ui/input";
@@ -10,16 +10,41 @@ import { SIDE_NAV_WIDTH } from "src/config";
 import { useDrawer } from "src/hooks/use-drawer";
 import usePagination from "src/hooks/use-pagination";
 import AuthorEditSheet from "./AuthorEditSheet";
+import { useAuthorsContext } from "src/contexts/authors/authors-context";
+import { Author } from "src/types/author";
+import CategoriesDeleteDialog from "./CategoriesDeleteDialog";
+import getPaginationText from "src/utils/get-pagination-text";
 
 const AuthorTab = () => {
-  const user = [initialUser];
+  const [id, setId] = useState<string>();
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const editDrawer = useDrawer<Author>();
   const accountTableConfig = useMemo(() => {
     return getAccountTableConfig({
-      onClickDelete: (data) => {},
+      onClickDelete: (item) => {
+        setId(item.id);
+        setIsOpen(true);
+      },
+      onClickEdit: (item) => {
+        editDrawer.handleOpen(item);
+      },
     });
   }, []);
-  const editDrawer = useDrawer<UserDetail>();
-  const pagination = usePagination({ count: user.length });
+
+  const { getAuthorsApi } = useAuthorsContext();
+
+  useEffect(() => {
+    if (!isOpen) setId(undefined);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
+
+  const author = useMemo(() => {
+    return getAuthorsApi.data || [];
+  }, [getAuthorsApi.data]);
+
+  const pagination = usePagination({ count: author.length });
+
   return (
     <div className="divide-y-2">
       <div className="flex-col mx-[10%]">
@@ -43,13 +68,20 @@ const AuthorTab = () => {
                 onOpenChange={(open) =>
                   open ? editDrawer.handleOpen() : editDrawer.handleClose()
                 }
+                author={editDrawer.data}
               />
             </div>
           </div>
         </div>
+        <CategoriesDeleteDialog
+          state={isOpen}
+          onClose={() => setIsOpen(false)}
+          data="tác giả"
+          id={id || ""}
+        />
         <div className="flex-grow pb-5">
           <CustomTable
-            rows={user}
+            rows={author}
             configs={accountTableConfig}
             tableClassName="rounded-xl border-2"
             pagination={pagination}
@@ -61,7 +93,7 @@ const AuthorTab = () => {
         className={`fixed bg-white flex bottom-0 px-7 justify-between py-2 w-[calc(100vw-${SIDE_NAV_WIDTH}px)]`}
       >
         <div className="flex text-sm text-gray-500 font-normal items-center overflow-hidden text-nowrap">
-          Đang hiển thị kết quả thứ 1 tới 10 trên 97 kết quả
+          {getPaginationText(pagination)}
         </div>
         <Pagination {...pagination} onChange={pagination.onPageChange} />
       </div>

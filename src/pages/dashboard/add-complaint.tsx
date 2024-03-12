@@ -7,6 +7,12 @@ import { useAuth } from "src/hooks/use-auth";
 import { Layout as DashboardLayout } from "src/layouts/dashboard";
 import * as Yup from "yup";
 import type { Page as PageType } from "src/types/page";
+import ReportsProvider, {
+  useReportsContext,
+} from "src/contexts/reports/reports-context";
+import { formatReportSchema, initialReport } from "src/types/report";
+import useFunction from "src/hooks/use-function";
+import useAppSnackbar from "src/hooks/use-app-snackbar";
 
 const validationSchema = Yup.object({
   title: Yup.string().required("Tiêu đề không được để trống"),
@@ -17,17 +23,31 @@ const validationSchema = Yup.object({
 });
 
 const Page: PageType = () => {
+  const { createReport } = useReportsContext();
+
+  const createReportHelper = useFunction(createReport);
+
+  const { showSnackbarSuccess, showSnackbarError } = useAppSnackbar();
+
+  const { user } = useAuth();
+
   const formik = useFormik({
-    initialValues: {
-      email: "",
-      title: "",
-      content: "",
-    },
-    validationSchema,
+    initialValues: initialReport,
+    validationSchema: formatReportSchema,
     onSubmit: async (values) => {
       try {
-        console.log(values);
-        //todo
+        const { error } = await createReportHelper.call({
+          ...values,
+          user_id: user?.id || "",
+          report_status: "pending",
+        });
+
+        if (!error) {
+          showSnackbarSuccess("Gửi khiếu nại thành công!");
+          formik.resetForm();
+        } else {
+          showSnackbarError("Gửi khiếu nại không thành công!");
+        }
       } catch (error: any) {
         console.error(error);
       }
@@ -37,11 +57,7 @@ const Page: PageType = () => {
   useEffect(() => {
     if (!open) {
       formik.resetForm();
-      formik.setValues({
-        email: "",
-        title: "",
-        content: "",
-      });
+      formik.setValues(initialReport);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
@@ -99,6 +115,10 @@ const Page: PageType = () => {
   );
 };
 
-Page.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
+Page.getLayout = (page) => (
+  <DashboardLayout>
+    <ReportsProvider>{page}</ReportsProvider>
+  </DashboardLayout>
+);
 
 export default Page;

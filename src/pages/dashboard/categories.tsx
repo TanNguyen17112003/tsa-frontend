@@ -4,6 +4,11 @@ import { HiMagnifyingGlass } from "react-icons/hi2";
 import PageHeader from "src/components/PageHeader";
 import { Button } from "src/components/shadcn/ui/button";
 import { Input } from "src/components/shadcn/ui/input";
+import AuthorsProvider from "src/contexts/authors/authors-context";
+import CircasProvider from "src/contexts/circas/circas-context";
+import FormatPagesProvider from "src/contexts/format-pages/format-pages-context";
+import FormatSutrasProvider from "src/contexts/format-sutras/format-sutras-context";
+import FormatWordsProvider from "src/contexts/format-words/format-words-context";
 import { useAuth } from "src/hooks/use-auth";
 import { Layout as DashboardLayout } from "src/layouts/dashboard";
 import { paths } from "src/paths";
@@ -145,6 +150,18 @@ const Page: PageType = () => {
   );
 };
 
-Page.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
+Page.getLayout = (page) => (
+  <DashboardLayout>
+    <AuthorsProvider>
+      <FormatPagesProvider>
+        <FormatSutrasProvider>
+          <FormatWordsProvider>
+            <CircasProvider>{page}</CircasProvider>
+          </FormatWordsProvider>
+        </FormatSutrasProvider>
+      </FormatPagesProvider>
+    </AuthorsProvider>
+  </DashboardLayout>
+);
 
 export default Page;

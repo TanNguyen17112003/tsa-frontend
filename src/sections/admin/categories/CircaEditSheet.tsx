@@ -1,10 +1,13 @@
 "use client";
 import { useFormik } from "formik";
-import { FC, useEffect } from "react";
+import { FC, useCallback, useEffect } from "react";
 import CustomSheet from "src/components/CustomSheet";
 import { Button } from "src/components/shadcn/ui/button";
 import { Input } from "src/components/shadcn/ui/input";
 import FormInput from "src/components/ui/FormInput";
+import { useCircasContext } from "src/contexts/circas/circas-context";
+import useAppSnackbar from "src/hooks/use-app-snackbar";
+import useFunction from "src/hooks/use-function";
 import { Circa, circaSchema, initialCirca } from "src/types/circas";
 
 export interface CircaEditSheetProps {
@@ -13,29 +16,49 @@ export interface CircaEditSheetProps {
   circa?: Circa;
 }
 
-const CircaEditSheet: FC<CircaEditSheetProps> = ({ 
-  open, 
+const CircaEditSheet: FC<CircaEditSheetProps> = ({
+  open,
   onOpenChange,
   circa,
 }) => {
+  const { createCirca, updateCirca } = useCircasContext();
+
+  const handleSubmit = useCallback(
+    async (values: Circa) => {
+      if (circa) {
+        await updateCirca({
+          ...values,
+          id: circa.id,
+        });
+      } else {
+        await createCirca({
+          ...values,
+        });
+      }
+      onOpenChange(false);
+    },
+    [circa, onOpenChange, updateCirca, createCirca]
+  );
+
+  const handleSubmitHelper = useFunction(handleSubmit, {
+    successMessage: (circa ? "Sửa" : "Thêm") + " tác giả thành công!",
+  });
+
   const formik = useFormik({
     initialValues: initialCirca,
     validationSchema: circaSchema,
-    onSubmit: async (values) => {
-      try {
-        console.log(values);
-        //todo
-      } catch (error: any) {
-        console.error(error);
-      }
-    },
+    onSubmit: handleSubmitHelper.call,
   });
 
   useEffect(() => {
-    if (!open) {
+    if (open && circa) {
+      formik.resetForm();
+      formik.setValues(circa);
+    } else {
       formik.resetForm();
       formik.setValues(initialCirca);
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
@@ -43,11 +66,11 @@ const CircaEditSheet: FC<CircaEditSheetProps> = ({
     <CustomSheet
       open={open}
       onOpenChange={onOpenChange}
-      sheetTrigger={<Button>Thêm tên viết tắt</Button>}
-      title={"Thêm tên viết tắt"}
+      sheetTrigger={<Button>Thêm niên đại</Button>}
+      title={circa ? "Chỉnh sửa niên đại" : "Thêm niên đại"}
       actions={
         <Button type="submit" onClick={() => formik.handleSubmit()}>
-          Xác nhận thêm
+          Xác nhận {circa ? "sửa" : "thêm"}
         </Button>
       }
     >
@@ -57,9 +80,9 @@ const CircaEditSheet: FC<CircaEditSheetProps> = ({
           type="text"
           placeholder="Nhập niên đại"
           className="w-full px-3"
-          {...formik.getFieldProps("circa")}
-          error={formik.touched.circa && !!formik.errors.circa}
-          helperText={!!formik.touched.circa && formik.errors.circa}
+          {...formik.getFieldProps("name")}
+          error={formik.touched.name && !!formik.errors.name}
+          helperText={!!formik.touched.name && formik.errors.name}
         />
       </div>
       <div className="flex flex-col gap-2 mt-4">

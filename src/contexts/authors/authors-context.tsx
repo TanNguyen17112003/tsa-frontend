@@ -1,4 +1,3 @@
-
 import {
   createContext,
   ReactNode,
@@ -40,7 +39,7 @@ const AuthorsProvider = ({ children }: { children: ReactNode }) => {
           const newAuthors: AuthorDetail[] = [
             {
               ...request,
-              id: id,
+              id: id.id,
             },
             ...(getAuthorsApi.data || []),
           ];
@@ -72,28 +71,12 @@ const AuthorsProvider = ({ children }: { children: ReactNode }) => {
   const deleteAuthor = useCallback(
     async (ids: Author["id"][]) => {
       try {
-        const results = await Promise.allSettled(
-          ids.map((id) => AuthorsApi.deleteAuthor(id))
-        );
+        await AuthorsApi.deleteAuthor(ids);
         getAuthorsApi.setData([
           ...(getAuthorsApi.data || []).filter(
-            (Author) =>
-              !results.find(
-                (result, index) =>
-                  result.status == "fulfilled" && ids[index] == Author.id
-              )
+            (Author) => !ids.includes(Author.id)
           ),
         ]);
-        results.forEach((result, index) => {
-          if (result.status == "rejected") {
-            throw new Error(
-              "Không thể xoá danh mục: " +
-                ids[index] +
-                ". " +
-                result.reason.toString()
-            );
-          }
-        });
       } catch (error) {
         throw error;
       }

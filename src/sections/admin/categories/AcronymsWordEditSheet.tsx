@@ -1,11 +1,18 @@
 "use client";
 import { useFormik } from "formik";
-import { FC, useEffect } from "react";
+import { FC, useCallback, useEffect } from "react";
 import CustomSheet from "src/components/CustomSheet";
 import { Button } from "src/components/shadcn/ui/button";
 import { Input } from "src/components/shadcn/ui/input";
 import FormInput from "src/components/ui/FormInput";
-import { FormatWord, formatWordSchema, initialFormatWord } from "src/types/format-word";
+import { useFormatWordsContext } from "src/contexts/format-words/format-words-context";
+import useAppSnackbar from "src/hooks/use-app-snackbar";
+import useFunction from "src/hooks/use-function";
+import {
+  FormatWord,
+  formatWordSchema,
+  initialFormatWord,
+} from "src/types/format-word";
 
 export interface AcronymsWordEditSheetProps {
   open: boolean;
@@ -18,24 +25,45 @@ const AcronymsWordEditSheet: FC<AcronymsWordEditSheetProps> = ({
   onOpenChange,
   formatWord,
 }) => {
+  const { createFormatWord, updateFormatWord } = useFormatWordsContext();
+
+  const handleSubmit = useCallback(
+    async (values: FormatWord) => {
+      if (formatWord) {
+        await updateFormatWord({
+          ...values,
+        });
+      } else {
+        await createFormatWord({
+          ...values,
+        });
+      }
+      onOpenChange(false);
+    },
+    [formatWord, onOpenChange, updateFormatWord, createFormatWord]
+  );
+
+  const handleSubmitHelper = useFunction(handleSubmit, {
+    successMessage: `${
+      formatWord ? "Chỉnh sửa" : "Thêm"
+    } từ viết tắt thành công`,
+  });
+
   const formik = useFormik({
     initialValues: initialFormatWord,
     validationSchema: formatWordSchema,
-    onSubmit: async (values) => {
-      try {
-        console.log(values);
-        //todo
-      } catch (error: any) {
-        console.error(error);
-      }
-    },
+    onSubmit: handleSubmitHelper.call,
   });
 
   useEffect(() => {
-    if (!open) {
+    if (formatWord && open) {
+      formik.resetForm();
+      formik.setValues(formatWord);
+    } else {
       formik.resetForm();
       formik.setValues(initialFormatWord);
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
@@ -44,10 +72,10 @@ const AcronymsWordEditSheet: FC<AcronymsWordEditSheetProps> = ({
       open={open}
       onOpenChange={onOpenChange}
       sheetTrigger={<Button>Thêm tên viết tắt</Button>}
-      title={"Thêm tên viết tắt"}
+      title={`${formatWord ? "Chỉnh sửa" : "Thêm"} từ viết tắt tuyển tập`}
       actions={
         <Button type="submit" onClick={() => formik.handleSubmit()}>
-          Xác nhận thêm
+          Xác nhận {formatWord ? "sửa" : "thêm"}
         </Button>
       }
     >

@@ -1,13 +1,18 @@
+import { FaRegEdit } from "react-icons/fa";
+import { RiDeleteBin6Line } from "react-icons/ri";
 import { CustomTableConfig } from "src/components/custom-table";
-import { User } from "src/types/user";
+import { Button } from "src/components/shadcn/ui/button";
+import { User, UserDetail } from "src/types/user";
 
 const getAccountTableConfig = ({
   onClickDelete,
+  onClickEdit,
 }: {
   onClickDelete: (data: User) => void;
-}): CustomTableConfig<User["id"], User>[] => [
+  onClickEdit: (data: User) => void;
+}): CustomTableConfig<UserDetail["id"], UserDetail>[] => [
   {
-    key: "name",
+    key: "full_name",
     headerLabel: "Họ và tên",
     type: "string",
   },
@@ -17,7 +22,7 @@ const getAccountTableConfig = ({
     type: "string",
   },
   {
-    key: "username",
+    key: "user_name",
     headerLabel: "Tên tài khoản",
     type: "string",
   },
@@ -35,6 +40,31 @@ const getAccountTableConfig = ({
     key: "role",
     headerLabel: "Phân quyền",
     type: "string",
+  },
+  {
+    key: "delete",
+    headerLabel: "Xóa",
+    type: "string",
+    renderCell: (data) => (
+      <div className="flex">
+        <Button className="text-cyan-600" variant="link">
+          <FaRegEdit
+            onClick={() => onClickEdit(data)}
+            style={{
+              fontSize: "1.1rem",
+            }}
+          />
+        </Button>
+        <Button className="text-red-600" variant="link">
+          <RiDeleteBin6Line
+            onClick={() => onClickDelete(data)}
+            style={{
+              fontSize: "1.1rem",
+            }}
+          />
+        </Button>
+      </div>
+    ),
   },
 ];
 

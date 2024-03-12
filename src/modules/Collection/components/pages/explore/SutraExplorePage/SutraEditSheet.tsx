@@ -115,7 +115,7 @@ const SutraEditSheet: FC<SutraEditSheetProps> = ({
       open={open}
       onOpenChange={onOpenChange}
       sheetTrigger={<Button>Tạo bộ kinh</Button>}
-      title="Tạo bộ kinh"
+      title={sutra ? "Sửa bộ kinh" : "Tạo bộ kinh"}
       actions={
         <Button onClick={() => formik.handleSubmit()}>Tạo bộ kinh</Button>
       }

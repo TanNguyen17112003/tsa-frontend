@@ -1,4 +1,3 @@
-
 import {
   createContext,
   ReactNode,
@@ -40,7 +39,7 @@ const FormatWordsProvider = ({ children }: { children: ReactNode }) => {
           const newFormatWords: FormatWordDetail[] = [
             {
               ...request,
-              id: id,
+              id: id.id,
             },
             ...(getFormatWordsApi.data || []),
           ];
@@ -72,28 +71,12 @@ const FormatWordsProvider = ({ children }: { children: ReactNode }) => {
   const deleteFormatWord = useCallback(
     async (ids: FormatWord["id"][]) => {
       try {
-        const results = await Promise.allSettled(
-          ids.map((id) => FormatWordsApi.deleteFormatWord(id))
-        );
+        FormatWordsApi.deleteFormatWord(ids);
         getFormatWordsApi.setData([
           ...(getFormatWordsApi.data || []).filter(
-            (FormatWord) =>
-              !results.find(
-                (result, index) =>
-                  result.status == "fulfilled" && ids[index] == FormatWord.id
-              )
+            (FormatWord) => !ids.includes(FormatWord.id)
           ),
         ]);
-        results.forEach((result, index) => {
-          if (result.status == "rejected") {
-            throw new Error(
-              "Không thể xoá danh mục: " +
-                ids[index] +
-                ". " +
-                result.reason.toString()
-            );
-          }
-        });
       } catch (error) {
         throw error;
       }

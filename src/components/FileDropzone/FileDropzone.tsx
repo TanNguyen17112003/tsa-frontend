@@ -1,21 +1,16 @@
 import clsx from "clsx";
 import React, { useRef, useState } from "react";
-import { useDropzone } from "react-dropzone";
+import { Accept, useDropzone } from "react-dropzone";
 import { BiUpload } from "react-icons/bi";
 import { FaFileCircleCheck } from "react-icons/fa6";
 import { Button } from "../shadcn/ui/button";
-
-// interface File {
-//   name: string;
-//   size: number;
-//   type: string;
-// }
 
 interface FileDropzoneProps {
   fileCount: number;
   onUpload: (files: File[]) => void;
   onClear?: () => void;
   multiple?: boolean;
+  accept?: Accept | undefined;
 }
 
 const FileDropzone: React.FC<FileDropzoneProps> = ({
@@ -23,15 +18,13 @@ const FileDropzone: React.FC<FileDropzoneProps> = ({
   onUpload,
   onClear,
   multiple,
+  accept,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null); // Create a ref for the input element
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     multiple,
-    accept: {
-      "image/*": [".png", ".jpg", ".jpeg"],
-      "application/pdf": [".pdf"],
-    }, // specify accepted file types
+    accept,
     onDrop: onUpload,
     noClick: true, // prevent button click triggering dialog
   });

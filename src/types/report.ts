@@ -1,3 +1,4 @@
+import * as yup from "yup";
 export interface Report {
   id: string;
   email: string;
@@ -11,6 +12,15 @@ export interface Report {
 }
 
 export interface ReportDetail extends Report {}
+
+export const formatReportSchema = yup.object().shape({
+  email: yup
+    .string()
+    .email("Vui lòng nhập đúng định dạng email")
+    .required("Vui lòng nhập username"),
+  content: yup.string().required("Vui lòng nhập nội dung"),
+  title: yup.string().required("Vui lòng nhập tiêu đề"),
+});
 
 export const initialReport: ReportDetail = {
   id: "",

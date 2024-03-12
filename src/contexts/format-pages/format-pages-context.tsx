@@ -1,4 +1,3 @@
-
 import {
   createContext,
   ReactNode,
@@ -72,28 +71,12 @@ const FormatPagesProvider = ({ children }: { children: ReactNode }) => {
   const deleteFormatPage = useCallback(
     async (ids: FormatPage["id"][]) => {
       try {
-        const results = await Promise.allSettled(
-          ids.map((id) => FormatPagesApi.deleteFormatPage(id))
-        );
+        FormatPagesApi.deleteFormatPage(ids);
         getFormatPagesApi.setData([
           ...(getFormatPagesApi.data || []).filter(
-            (FormatPage) =>
-              !results.find(
-                (result, index) =>
-                  result.status == "fulfilled" && ids[index] == FormatPage.id
-              )
+            (FormatPage) => !ids.includes(FormatPage.id)
           ),
         ]);
-        results.forEach((result, index) => {
-          if (result.status == "rejected") {
-            throw new Error(
-              "Không thể xoá danh mục: " +
-                ids[index] +
-                ". " +
-                result.reason.toString()
-            );
-          }
-        });
       } catch (error) {
         throw error;
       }

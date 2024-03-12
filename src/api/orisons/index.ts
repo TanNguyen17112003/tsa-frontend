@@ -1,4 +1,4 @@
-import { Orison, OrisonDetail } from "src/types/orison";
+import { Orison, OrisonDetail, OrisonEditor } from "src/types/orison";
 import {
   apiGet,
   apiPost,
@@ -8,13 +8,17 @@ import {
 } from "src/utils/api-request";
 
 export class OrisonsApi {
-  static async postOrison(request: Omit<Orison, "id">): Promise<Orison> {
+  static async postOrison(request: Omit<OrisonEditor, "id">): Promise<Orison> {
     return await apiPost("/orisons", request);
   }
 
   static async getOrisons(request: GetOrisonPayload): Promise<OrisonDetail[]> {
     const response = await apiGet("/orisons", getFormData(request));
     return response;
+  }
+
+  static async getOrisonById(id: Orison["id"]): Promise<OrisonEditor> {
+    return await apiGet(`/orisons/${id}`, {});
   }
 
   static async putOrisons(request: Partial<Orison & Pick<Orison, "id">>) {

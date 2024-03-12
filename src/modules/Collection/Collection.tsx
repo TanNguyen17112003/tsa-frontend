@@ -10,14 +10,14 @@ interface CollectionProps {}
 
 const Collection: FC<CollectionProps> = ({}) => {
   return (
-    <div className="h-[calc(100vh_-_116px)] relative overflow-y-auto pl-[300px] flex flex-col">
+    <div className="h-[calc(100vh_-_116px)] relative overflow-y-auto pl-[300px] flex flex-col border-t">
       <CollectionCategoriesProvider>
         <CollectionsProvider>
           <SutrasProvider>
             <VolumesProvider>
               <OrisonsProvider>
                 <CollectionContent
-                  sideNavClassName="fixed top-[116px] left-0 z-10"
+                  sideNavClassName=""
                   className=""
                 ></CollectionContent>
               </OrisonsProvider>

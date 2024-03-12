@@ -85,7 +85,7 @@ const OverviewAdminPage = () => {
           <div
             className="bg-cover bg-center rounded-2xl"
             style={{
-              backgroundImage: 'url("/banner chu dai chanh tang.png")',
+              backgroundImage: 'url("/ui/banner chu dai chanh tang.png")',
               width: "100%",
               height: "100%",
             }}

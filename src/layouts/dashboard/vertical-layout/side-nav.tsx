@@ -43,7 +43,7 @@ export const SideNav: FC<SideNavProps> = (props) => {
                 <img
                   className="relative w-[100%] h-[100%] pb-6"
                   alt="Logo"
-                  src="/logos/logo_new.png"
+                  src="/ui/logo_new.png"
                 />
                 {/* <p className="text-sm font-semibold">Viện nghiên cứu Châu Á</p> */}
               </div>
@@ -53,12 +53,12 @@ export const SideNav: FC<SideNavProps> = (props) => {
               <img
                 className="relative w-[100%] h-[100%]"
                 alt="Logo"
-                src="/chu dai chanh tang tv.png"
+                src="/ui/chu dai chanh tang tv.png"
               />
               <img
                 className="relative w-[100%] h-[100%]"
                 alt="Logo"
-                src="/chu dai chanh tang ta.png"
+                src="/ui/chu dai chanh tang ta.png"
               />
             </div>
           </div>

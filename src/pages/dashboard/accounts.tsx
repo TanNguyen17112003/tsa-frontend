@@ -111,7 +111,12 @@ const Page: PageType = () => {
             onClose={() => setIsOpen(false)}
             id={id || ""}
           />
-          {getPaginationText(pagination)}
+          <div className="fixed bg-white flex bottom-0 px-7 justify-between py-2 w-[calc(100vw-280px)]">
+            <div className="flex text-sm text-gray-500 font-normal items-center overflow-hidden text-nowrap">
+              {getPaginationText(pagination)}
+            </div>
+            <Pagination {...pagination} onChange={pagination.onPageChange} />
+          </div>
         </>
       )}
     </div>

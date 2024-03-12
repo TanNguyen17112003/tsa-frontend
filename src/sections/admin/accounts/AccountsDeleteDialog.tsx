@@ -50,7 +50,7 @@ const AccountsDeleteDialog = ({
               style={{
                 padding: "8px",
                 fontSize: "2.5rem",
-                backgroundColor: "#FFE4E1",
+                backgroundColor: "mistyrose",
                 borderRadius: "25px",
                 color: "red",
               }}

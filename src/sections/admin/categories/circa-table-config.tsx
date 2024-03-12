@@ -1,6 +1,7 @@
 import { FaRegEdit } from "react-icons/fa";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { CustomTableConfig } from "src/components/custom-table";
+import { Button } from "src/components/shadcn/ui/button";
 import { Circa } from "src/types/circas";
 
 const getCircasTableConfig = ({
@@ -30,23 +31,23 @@ const getCircasTableConfig = ({
     headerLabel: "Xóa",
     type: "string",
     renderCell: (data) => (
-      <div className="flex space-x-4">
-        <FaRegEdit
-          onClick={() => onClickEdit(data)}
-          style={{
-            fontSize: "1.1rem",
-            color: "deepskyblue",
-            cursor: "pointer",
-          }}
-        />
-        <RiDeleteBin6Line
-          onClick={() => onClickDelete(data)}
-          style={{
-            fontSize: "1.1rem",
-            color: "red",
-            cursor: "pointer",
-          }}
-        />
+      <div className="flex">
+        <Button className="text-cyan-600" variant="link">
+          <FaRegEdit
+            onClick={() => onClickEdit(data)}
+            style={{
+              fontSize: "1.1rem",
+            }}
+          />
+        </Button>
+        <Button className="text-red-600" variant="link">
+          <RiDeleteBin6Line
+            onClick={() => onClickDelete(data)}
+            style={{
+              fontSize: "1.1rem",
+            }}
+          />
+        </Button>
       </div>
     ),
   },

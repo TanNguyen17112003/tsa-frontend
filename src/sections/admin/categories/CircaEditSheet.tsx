@@ -22,7 +22,6 @@ const CircaEditSheet: FC<CircaEditSheetProps> = ({
   circa,
 }) => {
   const { createCirca, updateCirca } = useCircasContext();
-  const createCircaHelper = useFunction(createCirca);
 
   const handleSubmit = useCallback(
     async (values: Circa) => {
@@ -32,17 +31,13 @@ const CircaEditSheet: FC<CircaEditSheetProps> = ({
           id: circa.id,
         });
       } else {
-        try {
-          createCircaHelper.call({
-            ...values,
-          });
-        } catch (error: any) {
-          console.error(error);
-        }
+        await createCirca({
+          ...values,
+        });
       }
       onOpenChange(false);
     },
-    [circa, onOpenChange, updateCirca, createCircaHelper]
+    [circa, onOpenChange, updateCirca, createCirca]
   );
 
   const handleSubmitHelper = useFunction(handleSubmit, {

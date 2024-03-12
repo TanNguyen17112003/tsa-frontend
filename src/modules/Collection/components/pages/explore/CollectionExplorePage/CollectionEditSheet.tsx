@@ -26,6 +26,7 @@ const CollectionEditSheet: FC<CollectionEditSheetProps> = ({
 }) => {
   const { user } = useAuth();
   const { updateCollection, createCollection } = useCollectionsContext();
+
   const handleSubmit = useCallback(
     async (values: Collection) => {
       if (collection) {

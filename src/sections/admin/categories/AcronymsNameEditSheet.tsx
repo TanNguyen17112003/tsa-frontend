@@ -22,7 +22,6 @@ const AcronymsNameEditSheet: FC<AcronymsNameEditSheetProps> = ({
   formatSutra,
 }) => {
   const { createFormatSutra, updateFormatSutra } = useFormatSutrasContext();
-  const createFormatSutraHelper = useFunction(createFormatSutra);
 
   const handleSubmit = useCallback(
     async (values: FormatSutra) => {
@@ -31,17 +30,13 @@ const AcronymsNameEditSheet: FC<AcronymsNameEditSheetProps> = ({
           ...values,
         });
       } else {
-        try {
-          createFormatSutraHelper.call({
-            ...values,
-          });
-        } catch (error: any) {
-          console.error(error);
-        }
+        await createFormatSutra({
+          ...values,
+        });
       }
       onOpenChange(false);
     },
-    [formatSutra, onOpenChange, updateFormatSutra, createFormatSutraHelper]
+    [formatSutra, onOpenChange, updateFormatSutra, createFormatSutra]
   );
 
   const handleSubmitHelper = useFunction(handleSubmit, {

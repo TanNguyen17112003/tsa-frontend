@@ -12,7 +12,7 @@ export class CircasApi {
     return await apiPost("/circas", request);
   }
 
-  static async getCircas(request: FormData): Promise<CircaDetail[]> {
+  static async getCircas(request: {}): Promise<CircaDetail[]> {
     const response = await apiGet("/circas", getFormData(request));
     return response;
   }

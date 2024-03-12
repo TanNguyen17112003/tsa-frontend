@@ -81,16 +81,16 @@ const OverviewAdminPage = () => {
             <div>Tìm kiếm</div>
           </Button>
         </div>
-        <div className="relative w-full h-64">
+        <div className="relative w-full h-80">
           <div
-            className="absolute top-0 right-0 bg-cover bg-center  rounded-2xl"
+            className="bg-cover bg-center rounded-2xl"
             style={{
               backgroundImage: 'url("/banner chu dai chanh tang.png")',
-              width: "97%",
-              height: "90%",
+              width: "100%",
+              height: "100%",
             }}
           ></div>
-          <div className="flex absolute bottom-0 left-0 w-full h-[60%]">
+          {/* <div className="flex absolute bottom-0 left-0 w-full h-[60%]">
             <div className="flex flex-col bg-white rounded-2xl shadow-md w-[35%] overflow-hidden">
               <div className="flex items-center w-full pt-7 pl-[8%]">
                 <div className="px-[2%]">
@@ -129,7 +129,7 @@ const OverviewAdminPage = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
         <div className="flex mt-4">
           <div className="flex bg-white border border-gray-300 rounded-2xl mr-4 p-5 overflow-auto h-full w-full">

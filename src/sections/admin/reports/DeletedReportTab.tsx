@@ -33,6 +33,7 @@ import useFunction from "src/hooks/use-function";
 import { ReportsApi } from "src/api/reports";
 import { getFormData } from "src/utils/api-request";
 import { useReportsContext } from "src/contexts/reports/reports-context";
+import getPaginationText from "src/utils/get-pagination-text";
 
 const DeletedReport = () => {
   const { getReportsApi } = useReportsContext();
@@ -97,20 +98,7 @@ const DeletedReport = () => {
         data={data}
       />
 
-      <div
-        className={`fixed flex bottom-0 bg-white justify-between px-7 py-2 w-[calc(100vw-${SIDE_NAV_WIDTH}px)]`}
-      >
-        <div className="flex text-sm text-gray-500 font-normal items-center overflow-hidden text-nowrap">
-          Đang hiển thị kết quả thứ{" "}
-          {pagination.page * pagination.rowsPerPage + 1} tới{" "}
-          {Math.min(
-            pagination.count,
-            pagination.rowsPerPage * (pagination.page + 1)
-          )}{" "}
-          trên {pagination.count} kết quả
-        </div>
-        <Pagination {...pagination} onChange={pagination.onPageChange} />
-      </div>
+      {getPaginationText(pagination)}
     </div>
   );
 };

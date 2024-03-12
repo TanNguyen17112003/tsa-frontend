@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { HiMagnifyingGlass } from "react-icons/hi2";
 import PageHeader from "src/components/PageHeader";
 import { CustomTable } from "src/components/custom-table";
@@ -13,21 +13,36 @@ import { useDrawer } from "src/hooks/use-drawer";
 import usePagination from "src/hooks/use-pagination";
 import { Layout as DashboardLayout } from "src/layouts/dashboard";
 import AccountEditSheet from "src/sections/admin/accounts/AccountEditSheet";
+import AccountsDeleteDialog from "src/sections/admin/accounts/AccountsDeleteDialog";
 import getAccountTableConfig from "src/sections/admin/accounts/account-table-config";
 import type { Page as PageType } from "src/types/page";
-import { UserDetail, users } from "src/types/user";
-import { getFormData } from "src/utils/api-request";
+import { User } from "src/types/user";
+import getPaginationText from "src/utils/get-pagination-text";
 
 const Page: PageType = () => {
+  const [id, setId] = useState<string>();
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
   const accountTableConfig = useMemo(() => {
     return getAccountTableConfig({
-      onClickDelete: (data) => {},
+      onClickDelete: (item) => {
+        setId(item.id);
+        setIsOpen(true);
+      },
+      onClickEdit: (item) => {
+        editDrawer.handleOpen(item);
+      },
     });
   }, []);
 
-  const editDrawer = useDrawer<UserDetail>();
+  const editDrawer = useDrawer<User>();
 
-  const pagination = usePagination({ count: users.length });
+  useEffect(() => {
+    // if (!editDrawer.open) setData(undefined);
+    if (!isOpen) setId(undefined);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   const { getUsersApi } = useUsersContext();
   useEffect(() => {
@@ -45,7 +60,11 @@ const Page: PageType = () => {
     if (user?.role != "admin") {
       router.push("/dashboard");
     }
-  }, []);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
+  const pagination = usePagination({ count: author.length });
 
   return (
     <div className="flex flex-col space-y-4 min-h-screen">
@@ -60,6 +79,7 @@ const Page: PageType = () => {
                   onOpenChange={(open) =>
                     open ? editDrawer.handleOpen() : editDrawer.handleClose()
                   }
+                  account={editDrawer.data}
                 />
               </div>
             }
@@ -86,18 +106,12 @@ const Page: PageType = () => {
               hidePagination
             ></CustomTable>
           </div>
-          <div className="fixed bg-white flex bottom-0 px-7 justify-between py-2 w-[calc(100vw-280px)]">
-            <div className="flex text-sm text-gray-500 font-normal items-center overflow-hidden text-nowrap">
-              Đang hiển thị kết quả thứ{" "}
-              {pagination.page * pagination.rowsPerPage + 1} tới{" "}
-              {Math.min(
-                pagination.count,
-                pagination.rowsPerPage * (pagination.page + 1)
-              )}{" "}
-              trên {pagination.count} kết quả
-            </div>
-            <Pagination {...pagination} onChange={pagination.onPageChange} />
-          </div>
+          <AccountsDeleteDialog
+            state={isOpen}
+            onClose={() => setIsOpen(false)}
+            id={id || ""}
+          />
+          {getPaginationText(pagination)}
         </>
       )}
     </div>

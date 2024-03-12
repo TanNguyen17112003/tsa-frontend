@@ -12,22 +12,18 @@ import { getFormData } from "src/utils/api-request";
 import { useFormatWordsContext } from "src/contexts/format-words/format-words-context";
 import CategoriesDeleteDialog from "./CategoriesDeleteDialog";
 import { FormatWord } from "src/types/format-word";
+import getPaginationText from "src/utils/get-pagination-text";
 
 const AcronymsWordTab = () => {
   const { getFormatWordsApi } = useFormatWordsContext();
-  const [data, setData] = useState<FormatWord>();
   const [id, setId] = useState<string>();
   const [isOpen, setIsOpen] = useState<boolean>(false);
-
-  useEffect(() => {
-    getFormatWordsApi.call;
-  }, []);
 
   const word = useMemo(() => {
     return getFormatWordsApi.data || [];
   }, [getFormatWordsApi.data]);
 
-  const editDrawer = useDrawer();
+  const editDrawer = useDrawer<FormatWord>();
 
   const pagination = usePagination({ count: word.length });
 
@@ -38,18 +34,16 @@ const AcronymsWordTab = () => {
         setIsOpen(true);
       },
       onClickEdit: (item) => {
-        setData(item);
-        editDrawer.handleOpen();
+        editDrawer.handleOpen(item);
       },
     });
   }, []);
 
   useEffect(() => {
-    if (!editDrawer.open) setData(undefined);
     if (!isOpen) setId(undefined);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editDrawer.open]);
+  }, [isOpen]);
 
   return (
     <div className="flex flex-col divide-y-2 min-h-[87.5vh]">
@@ -73,7 +67,7 @@ const AcronymsWordTab = () => {
               onOpenChange={(open) =>
                 open ? editDrawer.handleOpen() : editDrawer.handleClose()
               }
-              formatWord={data}
+              formatWord={editDrawer.data}
             />
           </div>
           <CategoriesDeleteDialog
@@ -91,20 +85,7 @@ const AcronymsWordTab = () => {
           hidePagination
         ></CustomTable>
       </div>
-      <div
-        className={`fixed bg-white flex bottom-0 px-7 justify-between py-2 w-[calc(100vw-${SIDE_NAV_WIDTH}px)]`}
-      >
-        <div className="flex text-sm text-gray-500 font-normal items-center overflow-hidden text-nowrap">
-          Đang hiển thị kết quả thứ{" "}
-          {pagination.page * pagination.rowsPerPage + 1} tới{" "}
-          {Math.min(
-            pagination.count,
-            pagination.rowsPerPage * (pagination.page + 1)
-          )}{" "}
-          trên {pagination.count} kết quả
-        </div>
-        <Pagination {...pagination} onChange={pagination.onPageChange} />
-      </div>
+      {getPaginationText(pagination)}
     </div>
   );
 };

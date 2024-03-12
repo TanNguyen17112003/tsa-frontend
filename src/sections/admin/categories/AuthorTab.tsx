@@ -11,15 +11,14 @@ import { useDrawer } from "src/hooks/use-drawer";
 import usePagination from "src/hooks/use-pagination";
 import AuthorEditSheet from "./AuthorEditSheet";
 import { useAuthorsContext } from "src/contexts/authors/authors-context";
-import { getFormData } from "src/utils/api-request";
 import { Author } from "src/types/author";
 import CategoriesDeleteDialog from "./CategoriesDeleteDialog";
+import getPaginationText from "src/utils/get-pagination-text";
 
 const AuthorTab = () => {
-  const [data, setData] = useState<Author>();
   const [id, setId] = useState<string>();
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const editDrawer = useDrawer<UserDetail>();
+  const editDrawer = useDrawer<Author>();
   const accountTableConfig = useMemo(() => {
     return getAccountTableConfig({
       onClickDelete: (item) => {
@@ -27,8 +26,7 @@ const AuthorTab = () => {
         setIsOpen(true);
       },
       onClickEdit: (item) => {
-        setData(item);
-        editDrawer.handleOpen();
+        editDrawer.handleOpen(item);
       },
     });
   }, []);
@@ -36,17 +34,10 @@ const AuthorTab = () => {
   const { getAuthorsApi } = useAuthorsContext();
 
   useEffect(() => {
-    if (!editDrawer.open) setData(undefined);
     if (!isOpen) setId(undefined);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editDrawer.open, isOpen]);
-
-  useEffect(() => {
-    getAuthorsApi.call;
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isOpen]);
 
   const author = useMemo(() => {
     return getAuthorsApi.data || [];
@@ -77,7 +68,7 @@ const AuthorTab = () => {
                 onOpenChange={(open) =>
                   open ? editDrawer.handleOpen() : editDrawer.handleClose()
                 }
-                author={data}
+                author={editDrawer.data}
               />
             </div>
           </div>
@@ -98,20 +89,7 @@ const AuthorTab = () => {
           ></CustomTable>
         </div>
       </div>
-      <div
-        className={`fixed bg-white flex bottom-0 px-7 justify-between py-2 w-[calc(100vw-${SIDE_NAV_WIDTH}px)]`}
-      >
-        <div className="flex text-sm text-gray-500 font-normal items-center overflow-hidden text-nowrap">
-          Đang hiển thị kết quả thứ{" "}
-          {pagination.page * pagination.rowsPerPage + 1} tới{" "}
-          {Math.min(
-            pagination.count,
-            pagination.rowsPerPage * (pagination.page + 1)
-          )}{" "}
-          trên {pagination.count} kết quả
-        </div>
-        <Pagination {...pagination} onChange={pagination.onPageChange} />
-      </div>
+      {getPaginationText(pagination)}
     </div>
   );
 };

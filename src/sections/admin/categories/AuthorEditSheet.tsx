@@ -23,7 +23,6 @@ const AuthorEditSheet: FC<AuthorEditSheetProps> = ({
   author,
 }) => {
   const { createAuthor, updateAuthor } = useAuthorsContext();
-  const createAuthorHelper = useFunction(createAuthor);
 
   const handleSubmit = useCallback(
     async (values: Author) => {
@@ -33,17 +32,13 @@ const AuthorEditSheet: FC<AuthorEditSheetProps> = ({
           id: author.id,
         });
       } else {
-        try {
-          createAuthorHelper.call({
-            ...values,
-          });
-        } catch (error: any) {
-          console.error(error);
-        }
+        await createAuthor({
+          ...values,
+        });
       }
       onOpenChange(false);
     },
-    [author, onOpenChange, updateAuthor, createAuthorHelper]
+    [author, onOpenChange, updateAuthor, createAuthor]
   );
 
   const handleSubmitHelper = useFunction(handleSubmit, {

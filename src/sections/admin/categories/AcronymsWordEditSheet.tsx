@@ -26,8 +26,6 @@ const AcronymsWordEditSheet: FC<AcronymsWordEditSheetProps> = ({
   formatWord,
 }) => {
   const { createFormatWord, updateFormatWord } = useFormatWordsContext();
-  const createFormatWordHelper = useFunction(createFormatWord);
-  const { showSnackbarSuccess, showSnackbarError } = useAppSnackbar();
 
   const handleSubmit = useCallback(
     async (values: FormatWord) => {
@@ -36,17 +34,13 @@ const AcronymsWordEditSheet: FC<AcronymsWordEditSheetProps> = ({
           ...values,
         });
       } else {
-        try {
-          createFormatWordHelper.call({
-            ...values,
-          });
-        } catch (error: any) {
-          console.error(error);
-        }
+        await createFormatWord({
+          ...values,
+        });
       }
       onOpenChange(false);
     },
-    [formatWord, onOpenChange, updateFormatWord, createFormatWordHelper]
+    [formatWord, onOpenChange, updateFormatWord, createFormatWord]
   );
 
   const handleSubmitHelper = useFunction(handleSubmit, {

@@ -12,9 +12,9 @@ import { getFormData } from "src/utils/api-request";
 import { useCircasContext } from "src/contexts/circas/circas-context";
 import { Circa } from "src/types/circas";
 import CategoriesDeleteDialog from "./CategoriesDeleteDialog";
+import getPaginationText from "src/utils/get-pagination-text";
 
 const CircaTab = () => {
-  const [data, setData] = useState<Circa>();
   const [id, setId] = useState<string>();
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -25,27 +25,19 @@ const CircaTab = () => {
         setIsOpen(true);
       },
       onClickEdit: (item) => {
-        setData(item);
-        editDrawer.handleOpen();
+        editDrawer.handleOpen(item);
       },
     });
   }, []);
 
   const { getCircasApi } = useCircasContext();
-  const editDrawer = useDrawer();
+  const editDrawer = useDrawer<Circa>();
 
   useEffect(() => {
-    if (!editDrawer.open) setData(undefined);
     if (!isOpen) setId(undefined);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editDrawer.open]);
-
-  useEffect(() => {
-    getCircasApi.call;
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isOpen]);
 
   const circa = useMemo(() => {
     return getCircasApi.data || [];
@@ -75,7 +67,7 @@ const CircaTab = () => {
               onOpenChange={(open) =>
                 open ? editDrawer.handleOpen() : editDrawer.handleClose()
               }
-              circa={data}
+              circa={editDrawer.data}
             />
           </div>
           <CategoriesDeleteDialog
@@ -93,20 +85,7 @@ const CircaTab = () => {
           hidePagination
         ></CustomTable>
       </div>
-      <div
-        className={`fixed bg-white flex bottom-0 px-7 justify-between py-2 w-[calc(100vw-${SIDE_NAV_WIDTH}px)]`}
-      >
-        <div className="flex text-sm text-gray-500 font-normal items-center overflow-hidden text-nowrap">
-          Đang hiển thị kết quả thứ{" "}
-          {pagination.page * pagination.rowsPerPage + 1} tới{" "}
-          {Math.min(
-            pagination.count,
-            pagination.rowsPerPage * (pagination.page + 1)
-          )}{" "}
-          trên {pagination.count} kết quả
-        </div>
-        <Pagination {...pagination} onChange={pagination.onPageChange} />
-      </div>
+      {getPaginationText(pagination)}
     </div>
   );
 };

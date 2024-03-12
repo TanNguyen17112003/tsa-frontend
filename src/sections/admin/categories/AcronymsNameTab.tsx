@@ -12,22 +12,18 @@ import { getFormData } from "src/utils/api-request";
 import { useFormatSutrasContext } from "src/contexts/format-sutras/format-sutras-context";
 import { FormatSutra } from "src/types/format-sutra";
 import CategoriesDeleteDialog from "./CategoriesDeleteDialog";
+import getPaginationText from "src/utils/get-pagination-text";
 
 const AcronymsNameTab = () => {
   const { getFormatSutrasApi } = useFormatSutrasContext();
-  const [data, setData] = useState<FormatSutra>();
   const [id, setId] = useState<string>();
   const [isOpen, setIsOpen] = useState<boolean>(false);
-
-  useEffect(() => {
-    getFormatSutrasApi.call;
-  }, []);
 
   const name = useMemo(() => {
     return getFormatSutrasApi.data || [];
   }, [getFormatSutrasApi.data]);
 
-  const editDrawer = useDrawer();
+  const editDrawer = useDrawer<FormatSutra>();
 
   const acronymsNameTableConfig = useMemo(() => {
     return getAcronymsNameTableConfig({
@@ -36,18 +32,16 @@ const AcronymsNameTab = () => {
         setIsOpen(true);
       },
       onClickEdit: (item) => {
-        setData(item);
-        editDrawer.handleOpen();
+        editDrawer.handleOpen(item);
       },
     });
   }, []);
 
   useEffect(() => {
-    if (!editDrawer.open) setData(undefined);
     if (!isOpen) setId(undefined);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editDrawer.open]);
+  }, [isOpen]);
 
   const pagination = usePagination({ count: name.length });
 
@@ -74,7 +68,7 @@ const AcronymsNameTab = () => {
                 onOpenChange={(open) =>
                   open ? editDrawer.handleOpen() : editDrawer.handleClose()
                 }
-                formatSutra={data}
+                formatSutra={editDrawer.data}
               />
             </div>
           </div>
@@ -93,20 +87,7 @@ const AcronymsNameTab = () => {
           hidePagination
         ></CustomTable>
       </div>
-      <div
-        className={`fixed bg-white flex bottom-0 px-7 justify-between py-2 w-[calc(100vw-${SIDE_NAV_WIDTH}px)]`}
-      >
-        <div className="flex text-sm text-gray-500 font-normal items-center overflow-hidden text-nowrap">
-          Đang hiển thị kết quả thứ{" "}
-          {pagination.page * pagination.rowsPerPage + 1} tới{" "}
-          {Math.min(
-            pagination.count,
-            pagination.rowsPerPage * (pagination.page + 1)
-          )}{" "}
-          trên {pagination.count} kết quả
-        </div>
-        <Pagination {...pagination} onChange={pagination.onPageChange} />
-      </div>
+      {getPaginationText(pagination)}
     </div>
   );
 };

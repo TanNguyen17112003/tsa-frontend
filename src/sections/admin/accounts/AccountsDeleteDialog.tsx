@@ -9,55 +9,34 @@ import {
   DialogTrigger,
 } from "src/components/shadcn/ui/dialog";
 import { Button } from "src/components/shadcn/ui/button";
-import { HiMiniArrowSmallRight } from "react-icons/hi2";
-import { format } from "date-fns";
 import useFunction from "src/hooks/use-function";
 import { useCallback } from "react";
-import { useAuthorsContext } from "src/contexts/authors/authors-context";
-import { useFormatSutrasContext } from "src/contexts/format-sutras/format-sutras-context";
-import { useFormatPagesContext } from "src/contexts/format-pages/format-pages-context";
-import { useCircasContext } from "src/contexts/circas/circas-context";
+import { useUsersContext } from "src/contexts/users/users-context";
+import { User } from "src/types/user";
 import { RiErrorWarningLine } from "react-icons/ri";
 
-const CategoriesDeleteDialog = ({
+const AccountsDeleteDialog = ({
   state = false,
   onClose,
-  data,
   id,
 }: {
   state: boolean;
   onClose: () => void;
-  data: string;
   id: string;
 }) => {
-  const { deleteAuthor } = useAuthorsContext();
-  const { deleteFormatSutra } = useFormatSutrasContext();
-  const { deleteFormatPage } = useFormatPagesContext();
-  const { deleteCirca } = useCircasContext();
-
+  const { deleteUser } = useUsersContext();
   const handleDelete = useCallback(
     async (values: any) => {
       if (id) {
-        if (data == "tác giả") await deleteAuthor([id]);
-        else if (data == "tên viết tắt") await deleteFormatSutra([id]);
-        else if (data == "từ viết tắt") await deleteFormatPage([id]);
-        else if (data == "niên đại") await deleteCirca([id]);
+        await deleteUser([id]);
       }
       onClose();
     },
-    [
-      deleteAuthor,
-      deleteFormatSutra,
-      deleteFormatPage,
-      deleteCirca,
-      id,
-      onClose,
-      data,
-    ]
+    [deleteUser, onClose, id]
   );
 
   const handleDeleteHelper = useFunction(handleDelete, {
-    successMessage: `Xóa ${data} thành công!`,
+    successMessage: "Xóa tài khoản thành công!",
   });
   return (
     <Dialog open={state} onOpenChange={(value) => !value && onClose()}>
@@ -76,9 +55,9 @@ const CategoriesDeleteDialog = ({
                 color: "red",
               }}
             />
-            <div className="pl-4 pt-1.5">Xóa {data}</div>
+            <div className="pl-4 pt-1.5">Xóa tài khoản</div>
           </DialogTitle>
-          <div className="pl-14">Xác nhận xóa {data} này</div>
+          <div className="pl-14">Xác nhận xóa tài khoản này</div>
         </DialogHeader>
         <DialogFooter className="flex">
           <Button type="submit" variant={"outline"} onClick={onClose}>
@@ -97,4 +76,4 @@ const CategoriesDeleteDialog = ({
   );
 };
 
-export default CategoriesDeleteDialog;
+export default AccountsDeleteDialog;

@@ -20,14 +20,25 @@ const CircaSearchResultPage = ({ qCirca }: { qCirca?: CircaSearchQuery }) => {
   const getCollectionsApi = useFunction(CollectionsApi.getCollections);
   const getSutrasApi = useFunction(SutrasApi.getSutras);
   const [data, setData] = useState<Sutra[]>();
+  const [index, setIndex] = useState<string>("");
 
   const router = useRouter();
   const { goSutra } = useCollectionCategoriesContext();
 
   useEffect(() => {
     getCollectionsApi.call({});
+    if (index) {
+      const temp = getSutra(index).filter((t) => {
+        return (
+          t.circa.start_year >= parseInt(qCirca?.qCircaFrom || "0") &&
+          t.circa.end_year <= parseInt(qCirca?.qCircaTo || "0")
+        );
+      });
+      setData(temp);
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [qCirca]);
 
   const collection = useMemo(() => {
     return getCollectionsApi.data || [];
@@ -67,23 +78,22 @@ const CircaSearchResultPage = ({ qCirca }: { qCirca?: CircaSearchQuery }) => {
                       t.circa.end_year <= parseInt(qCirca?.qCircaTo || "0")
                     );
                   });
-                  if (JSON.stringify(temp) === JSON.stringify(data))
+                  setIndex(item.id);
+                  if (JSON.stringify(temp) === JSON.stringify(data)) {
                     setData(undefined);
-                  else setData(temp);
+                    setIndex("");
+                  } else setData(temp);
                 }}
               >
                 {item.name}
               </AccordionTrigger>
-              {data && (
+              {data && index == item.id && (
                 <CustomTable
                   rows={data}
                   configs={getCircaSearchTableConfig}
                   onClickRow={(e) => handleClick(e.id)}
                 />
               )}
-              {/* <AccordionContent>
-                <SutraItems collectionId={item.id} />
-              </AccordionContent> */}
             </AccordionItem>
           ))}
         </Accordion>

@@ -16,6 +16,7 @@ import { useOrisonsContext } from "src/contexts/orisons/orisons-context";
 import OrisonPagination from "./OrisonPagination";
 import PlateEditor from "src/modules/Editor";
 import { Button } from "src/components/shadcn/ui/button";
+import AudioPlayer from "../../../AudioPlayer";
 
 interface OrisonPageProps {}
 
@@ -126,10 +127,11 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
         {!isEditting && (
           <div
             className={clsx(
-              "flex justify-end w-full bg-white left-0 relative z-40",
+              "flex justify-end w-full bg-white left-0 relative z-40 gap-4",
               isFullScreen ? "p-0" : "px-4 pt-3"
             )}
           >
+            <AudioPlayer audioSrc="/audio/audio.mp3" label="Đọc bài kinh" />
             {!isFullScreen && <OrisonPagination />}
             <Button
               variant="ghost"

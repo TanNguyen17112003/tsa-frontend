@@ -1,12 +1,11 @@
-import { useEffect, useState } from "react";
-import { useAuth } from "src/hooks/use-auth";
-import { Layout as DashboardLayout } from "src/layouts/dashboard";
-import type { Page as PageType } from "src/types/page";
-import CommonCard from "src/components/CommonCard";
+import { useRouter } from "next/router";
+import { useCallback, useState } from "react";
 import { HiMagnifyingGlass, HiMiniArrowSmallRight } from "react-icons/hi2";
-import { PiBookOpen } from "react-icons/pi";
-import { BookshelfIcon } from "src/components/icons/BookshelfIcon";
 import { LuClock } from "react-icons/lu";
+import { PiBookOpen } from "react-icons/pi";
+import CommonCard from "src/components/CommonCard";
+import { Button } from "src/components/shadcn/ui/button";
+import { Input } from "src/components/shadcn/ui/input";
 import {
   Select,
   SelectContent,
@@ -14,9 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "src/components/shadcn/ui/select";
-import { Button } from "src/components/shadcn/ui/button";
-import { Input } from "src/components/shadcn/ui/input";
-import { BsPersonCircle } from "react-icons/bs";
+import { paths } from "src/paths";
 
 const children = [
   { title: "Bài dịch số 23", time: "15:30 - 01/12/2023" },
@@ -38,10 +35,18 @@ const history = [
 ];
 
 const OverviewAdminPage = () => {
+  const router = useRouter();
   const [searchMode, setSearchMode] = useState("basic");
   const handleModeChange = (newMode: string) => {
     setSearchMode(newMode);
   };
+
+  const handleSeeAll = useCallback(() => {
+    router.push({
+      pathname: paths.dashboard.collections,
+    });
+  }, [router]);
+
   return (
     <div
       className="flex bg-cover bg-center min-h-screen"
@@ -137,10 +142,13 @@ const OverviewAdminPage = () => {
               <p className="text-lg font-semibold w-full text-nowrap p-3">
                 Khiếu nại chưa giải quyết (3)
               </p>
-              <div className="flex text-orange-500 mt-0.5 text-nowrap hover:bg-orange-200 p-3 rounded-lg cursor-pointer">
-                Xem tất cả{" "}
-                <HiMiniArrowSmallRight style={{ fontSize: "1.4em" }} />
-              </div>
+              <Button
+                variant="ghost"
+                className="gap-2 text-primary"
+                onClick={handleSeeAll}
+              >
+                Xem tất cả <HiMiniArrowSmallRight className="h-6 w-6" />
+              </Button>
             </div>
             {/* <CustomTable /> */}
           </div>

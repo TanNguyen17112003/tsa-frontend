@@ -1,14 +1,10 @@
-import { useEffect, useState } from "react";
-import { useAuth } from "src/hooks/use-auth";
-import { Layout as DashboardLayout } from "src/layouts/dashboard";
-import type { Page as PageType } from "src/types/page";
-import CommonCard from "src/components/CommonCard";
-import {
-  HiHandThumbUp,
-  HiMagnifyingGlass,
-  HiMiniArrowSmallRight,
-} from "react-icons/hi2";
+import { useCallback, useEffect, useMemo } from "react";
+import { FaLongArrowAltRight } from "react-icons/fa";
+import { HiMagnifyingGlass, HiMiniArrowSmallRight } from "react-icons/hi2";
 import { PiBookOpen } from "react-icons/pi";
+import CommonCard from "src/components/CommonCard";
+import { Button } from "src/components/shadcn/ui/button";
+import { Input } from "src/components/shadcn/ui/input";
 import {
   Select,
   SelectContent,
@@ -16,18 +12,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "src/components/shadcn/ui/select";
-import { Button } from "src/components/shadcn/ui/button";
-import { Input } from "src/components/shadcn/ui/input";
-import { FaLongArrowAltRight } from "react-icons/fa";
-// import { BookshelfFillIcon } from "../icons/BookshelfFillIcon";
-import { BsExclamationCircle, BsPersonCircle } from "react-icons/bs";
-// import { CustomTable } from "../custom-table";
-import getDashboardTableConfig from "src/sections/user/dashboard/dashboard-table-config";
+import { BsExclamationCircle } from "react-icons/bs";
+import { useRouter } from "next/router";
 import { IoSearch } from "react-icons/io5";
-import { FaBookOpen } from "react-icons/fa6";
-import { Collection } from "src/types/collection";
-import { BookshelfFillIcon } from "src/components/icons/BookshelfFillIcon";
+import { SutrasApi } from "src/api/sutras";
 import { CustomTable } from "src/components/custom-table";
+import useFunction from "src/hooks/use-function";
+import { paths } from "src/paths";
+import getDashboardSutraTableConfigs from "../getDashboardSutraTableConfigs";
+import OverviewStats from "./OverviewStats";
 
 const history = [
   { title: "Đọc bài kinh 1: Bài dịch số 2", time: "15:30 - 01/12/2023" },
@@ -44,50 +37,37 @@ const history = [
 ];
 
 const OverviewUserPage = () => {
-  const data: Collection[] = [
-    {
-      id: "",
-      name: "Kinh A Hàm",
-      code: "",
-      circa: "250 TCN - 360 TCN",
-      user_id: "Nguyễn Văn A",
-    },
-    {
-      id: "",
-      name: "Kinh A Hàm",
-      code: "",
-      circa: "250 TCN - 360 TCN",
-      user_id: "Nguyễn Văn A",
-    },
-    {
-      id: "",
-      name: "Kinh A Hàm",
-      code: "",
-      circa: "250 TCN - 360 TCN",
-      user_id: "Nguyễn Văn A",
-    },
-    {
-      id: "",
-      name: "Kinh A Hàm",
-      code: "",
-      circa: "250 TCN - 360 TCN",
-      user_id: "Nguyễn Văn A",
-    },
-    {
-      id: "",
-      name: "Kinh A Hàm",
-      code: "",
-      circa: "250 TCN - 360 TCN",
-      user_id: "Nguyễn Văn A",
-    },
-    {
-      id: "",
-      name: "Kinh A Hàm",
-      code: "",
-      circa: "250 TCN - 360 TCN",
-      user_id: "Nguyễn Văn A",
-    },
-  ];
+  const router = useRouter();
+  const getSutrasApi = useFunction(SutrasApi.getSutras);
+
+  const dashboardSutraTableConfigs = useMemo(
+    () =>
+      getDashboardSutraTableConfigs({
+        onClickDetail: (sutra) => {
+          router.push({
+            pathname: paths.dashboard.collections,
+            query: { collectionId: sutra.collection_id, sutraId: sutra.id },
+          });
+        },
+      }),
+    [router]
+  );
+
+  const handleSeeAll = useCallback(() => {
+    router.push({
+      pathname: paths.dashboard.collections,
+    });
+  }, [router]);
+
+  useEffect(() => {
+    getSutrasApi.call({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const sutras = useMemo(() => {
+    return (getSutrasApi.data || []).slice(0, 6);
+  }, [getSutrasApi.data]);
+
   return (
     <div
       className="flex bg-cover bg-center w-full min-h-screen"
@@ -158,71 +138,23 @@ const OverviewUserPage = () => {
             <div>Tìm kiếm</div>
           </Button>
         </div>
-        <div className="flex space-x-6">
-          <CommonCard title="">
-            <div className="flex w-full pb-2">
-              <div className="flex mt-3">
-                <BookshelfFillIcon className="h-8 w-8" />
-              </div>
-              <div className="px-3">
-                <h2 className="text-base text-nowrap">Bộ kinh</h2>
-                <p className="text-4xl font-bold">172</p>
-              </div>
-            </div>
-          </CommonCard>
-          <CommonCard title="">
-            <div className="flex w-full pb-1">
-              <div className="flex mt-3">
-                <BookshelfFillIcon className="h-8 w-8" />
-              </div>
-              <div className="px-3">
-                <h2 className="text-base text-[#374151] text-nowrap">
-                  Bài kinh
-                </h2>
-                <p className="text-4xl font-bold">172</p>
-              </div>
-            </div>
-          </CommonCard>
-          <CommonCard title="">
-            <div className="flex w-full pb-1">
-              <div className="flex mt-3">
-                <BookshelfFillIcon className="h-8 w-8" />
-              </div>
-              <div className="px-3">
-                <h2 className="text-base text-[#374151] text-nowrap">
-                  Số tác giả
-                </h2>
-                <p className="text-4xl font-bold">52</p>
-              </div>
-            </div>
-          </CommonCard>
-          <CommonCard title="">
-            <div className="flex w-full pb-1">
-              <div className="flex mt-3">
-                <BookshelfFillIcon className="h-8 w-8" />
-              </div>
-              <div className="px-3">
-                <h2 className="text-base text-[#374151] text-nowrap">
-                  Số dịch giả
-                </h2>
-                <p className="text-4xl font-bold">32</p>
-              </div>
-            </div>
-          </CommonCard>
-        </div>
+        <OverviewStats />
         <div className="my-8 flex overflow-hidden space-x-5">
           <div className="w-full max-w-[80%] border rounded-3xl bg-white">
             <div className="flex p-5 ">
               <div className="text-lg font-semibold w-full">
-                Danh sách tuyển tập kinh
+                Danh sách bộ kinh
               </div>
-              <div className="flex text-sm font-semibold text-primary text-nowrap hover:bg-orange-200 p-2 rounded-md">
-                Xem tất cả{" "}
-                <HiMiniArrowSmallRight style={{ fontSize: "1.4em" }} />
-              </div>
+              <Button
+                variant="ghost"
+                className="gap-2 text-primary"
+                onClick={handleSeeAll}
+              >
+                Xem tất cả <HiMiniArrowSmallRight className="h-6 w-6" />
+              </Button>
             </div>
             <div className="bg-white ">
-              <CustomTable rows={data} configs={getDashboardTableConfig} />
+              <CustomTable rows={sutras} configs={dashboardSutraTableConfigs} />
             </div>
           </div>
           <CommonCard title="Nhật ký hoạt động">

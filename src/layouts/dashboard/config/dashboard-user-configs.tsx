@@ -21,7 +21,7 @@ export const getDashboardUserConfigs = () => {
         },
         {
           title: "Khiếu nại",
-          path: paths.dashboard["add-complaint"],
+          path: paths.dashboard["add-report"],
           icon: <IoFlag className="h-6 w-6" />,
         },
         {

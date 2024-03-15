@@ -8,6 +8,7 @@ import Pagination from "src/components/ui/Pagination";
 import UsersProvider, {
   useUsersContext,
 } from "src/contexts/users/users-context";
+import { AuthGuard } from "src/guards/auth-guard";
 import { useAuth } from "src/hooks/use-auth";
 import { useDrawer } from "src/hooks/use-drawer";
 import usePagination from "src/hooks/use-pagination";
@@ -124,9 +125,11 @@ const Page: PageType = () => {
 };
 
 Page.getLayout = (page) => (
-  <DashboardLayout>
-    <UsersProvider>{page}</UsersProvider>
-  </DashboardLayout>
+  <AuthGuard>
+    <DashboardLayout>
+      <UsersProvider>{page}</UsersProvider>
+    </DashboardLayout>
+  </AuthGuard>
 );
 
 export default Page;

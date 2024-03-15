@@ -128,7 +128,8 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
 
   const initialize = useCallback(async (): Promise<void> => {
     try {
-      const accessToken = localStorage.getItem(CookieKeys.TOKEN);
+      const accessToken = CookieHelper.getItem(CookieKeys.TOKEN);
+      console.log("accessToken", accessToken);
 
       if (accessToken) {
         let user: UserDetail | undefined = undefined;
@@ -145,7 +146,7 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
           type: ActionType.INITIALIZE,
           payload: {
             isAuthenticated: true,
-            user,
+            user: user || null,
           },
         });
       } else {
@@ -181,8 +182,8 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
     async (user_name: string, password: string): Promise<UserDetail> => {
       const response = await UsersApi.signIn({ user_name, password });
 
-      localStorage.setItem(CookieKeys.TOKEN, response.token);
-      localStorage.setItem("user_data", JSON.stringify(response));
+      CookieHelper.setItem(CookieKeys.TOKEN, response.token);
+      CookieHelper.setItem("user_data", JSON.stringify(response));
 
       dispatch({
         type: ActionType.SIGN_IN,

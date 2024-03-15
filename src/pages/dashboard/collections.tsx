@@ -5,9 +5,9 @@ import { BiSearch } from "react-icons/bi";
 import Loading from "src/components/Loading";
 import PageHeader from "src/components/PageHeader";
 import { Button } from "src/components/shadcn/ui/button";
-import { withAuthGuard } from "src/hocs/with-auth-guard";
 import { paths } from "src/paths";
 import type { Page as PageType } from "src/types/page";
+
 const Collection = dynamic(() => import("src/modules/Collection"), {
   ssr: false,
   loading: () => (
@@ -17,7 +17,7 @@ const Collection = dynamic(() => import("src/modules/Collection"), {
   ),
 });
 
-const Page: PageType = withAuthGuard(() => {
+const Page: PageType = () => {
   const router = useRouter();
 
   const handleClickSearch = useCallback(() => {
@@ -47,6 +47,8 @@ const Page: PageType = withAuthGuard(() => {
       <Collection />
     </div>
   );
-});
+};
+
+Page.getLayout = (page) => <>{page}</>;
 
 export default Page;

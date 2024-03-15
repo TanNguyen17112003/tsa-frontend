@@ -29,12 +29,12 @@ const getCircaSearchResultTableConfig = ({
     type: "number",
   },
   {
-    key: "author.name",
+    key: "author.author",
     headerLabel: "Tác giả",
     type: "string",
   },
   {
-    key: "translator.name",
+    key: "translator.full_name",
     headerLabel: "Dịch giả",
     type: "string",
   },

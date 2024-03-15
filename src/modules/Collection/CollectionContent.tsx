@@ -16,6 +16,7 @@ import OrisonPage from "./components/pages/explore/OrisonPage";
 import VolumnExplorePage from "./components/pages/explore/VolumeExplorePage";
 import SutraExplorePage from "./components/pages/explore/SutraExplorePage";
 import OrisonExplorePage from "./components/pages/explore/OrisonExplorePage";
+import CircaSearchResultPage from "./components/pages/search/CircaSearchPage/CircaSearchResultPage";
 
 interface CollectionContentProps {
   sideNavClassName: string;
@@ -51,7 +52,12 @@ const CollectionContent: FC<CollectionContentProps> = ({
           isFullScreen ? "w-full left-0" : "w-[calc(100%_-_300px)]"
         )}
       >
-        {query.searchType == "text" ? (
+        {query.qCircaFrom && query.qCircaTo ? (
+          <CircaSearchResultPage
+            qCircaFrom={query.qCircaFrom.toString()}
+            qCircaTo={query.qCircaTo.toString()}
+          />
+        ) : query.searchType == "text" ? (
           <TextSearchPage />
         ) : query.searchType == "sutra" ? (
           <SutraSearchPage />

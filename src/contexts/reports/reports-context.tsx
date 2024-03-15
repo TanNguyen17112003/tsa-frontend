@@ -6,6 +6,7 @@ import {
   useContext,
 } from "react";
 import { ReportsApi } from "src/api/reports";
+import { useAuth } from "src/hooks/use-auth";
 import useFunction, {
   DEFAULT_FUNCTION_RETURN,
   UseFunctionReturnType,
@@ -29,6 +30,7 @@ export const ReportsContext = createContext<ContextValue>({
 });
 
 const ReportsProvider = ({ children }: { children: ReactNode }) => {
+  const { user } = useAuth();
   const getReportsApi = useFunction(ReportsApi.getReports);
 
   const createReport = useCallback(
@@ -101,9 +103,11 @@ const ReportsProvider = ({ children }: { children: ReactNode }) => {
   );
 
   useEffect(() => {
-    getReportsApi.call(new FormData());
+    if (user?.role == "admin") {
+      getReportsApi.call({});
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user]);
 
   return (
     <ReportsContext.Provider

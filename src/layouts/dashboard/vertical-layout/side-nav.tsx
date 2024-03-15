@@ -2,7 +2,6 @@ import { FC } from "react";
 import Link from "next/link";
 import { useAuth } from "src/hooks/use-auth"; // Import your auth hook
 import { usePathname } from "src/hooks/use-pathname";
-import { paths } from "src/paths";
 import { Section } from "../config/config";
 import SimpleBar from "simplebar-react";
 import { SideNavSection } from "./side-nav-section";
@@ -76,7 +75,7 @@ export const SideNav: FC<SideNavProps> = (props) => {
             </nav>
           </div>
         </SimpleBar>
-        <div className="sticky w-full bottom-0 p-2 cursor-pointer flex">
+        <div className="sticky w-full bottom-0 p-2 cursor-pointer flex bg-white z-10">
           <Link
             href={"#"}
             className="sticky w-full bottom-0 p-2 cursor-pointer flex gap-[12px]"

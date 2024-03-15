@@ -1,3 +1,5 @@
+import CookieHelper from "./cookie-helper";
+
 const API_HOST = process.env.NEXT_PUBLIC_API_HOST;
 
 export const getFormData = (data: { [name: string]: any }): FormData => {
@@ -17,7 +19,7 @@ const getRequestHeaders = async (
   method: string,
   isFormData?: boolean
 ): Promise<any> => {
-  const token = localStorage.getItem("token");
+  const token = CookieHelper.getItem("token");
 
   const headers = new Headers();
   if (token) {

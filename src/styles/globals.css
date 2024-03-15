@@ -89,6 +89,19 @@
   }
 }
 
+#nprogress {
+  pointer-events: "none"
+}
+
+#nprogress .bar {
+  background-color: #F97316;
+  height: 3;
+  left: 0;
+  position: "fixed";
+  top: 0;
+  width: "100%";
+  z-index: 2000000;
+}
 
 
 

@@ -39,7 +39,7 @@ const getAuthorSearchResultTableConfig = ({
   {
     key: "created_at",
     headerLabel: "Ngày tạo",
-    type: "string",
+    type: "date",
   },
 ];
 

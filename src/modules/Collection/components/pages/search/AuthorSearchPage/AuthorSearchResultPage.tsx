@@ -9,6 +9,9 @@ import { useSutrasContext } from "src/contexts/sutras/sutras-context";
 import { CustomTable } from "src/components/custom-table";
 import getAuthorSearchTableConfig from "src/sections/admin/author-search/author-search-table-config";
 import getAuthorSearchResultTableConfig from "src/sections/admin/author-search/author-search-result-table-config";
+import useFunction from "src/hooks/use-function";
+import { SutrasApi } from "src/api/sutras";
+import { useCollectionCategoriesContext } from "src/contexts/collections/collection-categories-context";
 
 interface AuthorSearchFormProps {
   qAuthorId: string;
@@ -40,6 +43,8 @@ const AuthorSearchResultPage: FC<AuthorSearchFormProps> = ({
     },
   });
 
+  const { goOrison } = useCollectionCategoriesContext();
+
   useEffect(() => {
     if (router.query) {
       formik.setValues(router.query as unknown as AuthorSearchQuery);
@@ -54,13 +59,17 @@ const AuthorSearchResultPage: FC<AuthorSearchFormProps> = ({
     });
   };
 
-  const { getSutrasApi } = useSutrasContext();
+  const getSutrasApi = useFunction(SutrasApi.getSutras);
+
+  useEffect(() => {
+    getSutrasApi.call({});
+  }, []);
 
   const sutras = useMemo(() => {
     return (
       getSutrasApi.data?.filter((item) => item.author_id == qAuthorId) || []
     );
-  }, []);
+  }, [getSutrasApi]);
 
   const AuthorSearchTableConfig = useMemo(() => {
     return getAuthorSearchResultTableConfig({
@@ -76,7 +85,11 @@ const AuthorSearchResultPage: FC<AuthorSearchFormProps> = ({
           Tìm kiếm kết quả khác
         </Button>
       </div>
-      <CustomTable rows={sutras} configs={AuthorSearchTableConfig} />
+      <CustomTable
+        rows={sutras}
+        configs={AuthorSearchTableConfig}
+        onClickRow={(row) => goOrison(row.id)}
+      />
     </div>
   );
 };

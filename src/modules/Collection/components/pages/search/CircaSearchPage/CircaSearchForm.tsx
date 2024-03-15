@@ -4,9 +4,11 @@ import { useEffect, type FC } from "react";
 import { Button } from "src/components/shadcn/ui/button";
 import FormInput from "src/components/ui/FormInput";
 
-interface CircaSearchFormProps {}
+interface CircaSearchFormProps {
+  setQCirca: (values: CircaSearchQuery) => void;
+}
 
-interface CircaSearchQuery {
+export interface CircaSearchQuery {
   qCircaFrom: string;
   qCircaTo: string;
 }
@@ -16,7 +18,11 @@ const initialCircaSearchQuery: CircaSearchQuery = {
   qCircaTo: "",
 };
 
-const CircaSearchForm: FC<CircaSearchFormProps> = ({}) => {
+const CircaSearchForm: FC<CircaSearchFormProps> = ({
+  setQCirca,
+}: {
+  setQCirca: (values: CircaSearchQuery) => void;
+}) => {
   const router = useRouter();
 
   const formik = useFormik({
@@ -26,6 +32,7 @@ const CircaSearchForm: FC<CircaSearchFormProps> = ({}) => {
         pathname: router.pathname,
         query: { ...router.query, ...values },
       });
+      setQCirca({ qCircaFrom: values.qCircaFrom, qCircaTo: values.qCircaTo });
     },
   });
 

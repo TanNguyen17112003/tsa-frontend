@@ -1,4 +1,4 @@
-import type { FC } from "react";
+import { FC, useEffect } from "react";
 import { BsSearch } from "react-icons/bs";
 import { Input } from "src/components/shadcn/ui/input";
 import {
@@ -8,10 +8,21 @@ import {
   TabsTrigger,
 } from "src/components/shadcn/ui/tabs";
 import CollectionBreadcrumb from "../../../CollectionBreadcrumb";
+import AuthorSearchForm from "./AuthorSearchForm";
+import TranslatorSearchForm from "./TranslatorSearchForm";
+import { useRouter } from "next/router";
 
 interface AuthorSearchPageProps {}
 
 const AuthorSearchPage: FC<AuthorSearchPageProps> = ({}) => {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.replace({
+      pathname: router.pathname,
+      query: "searchType=author",
+    });
+  }, []);
   return (
     <>
       <div className="flex justify-between p-5">
@@ -27,20 +38,11 @@ const AuthorSearchPage: FC<AuthorSearchPageProps> = ({}) => {
               <TabsTrigger value="translator">Dịch giả</TabsTrigger>
             </TabsList>
             <hr className="-mt-1" />
-            <div className="flex border border-gray-300 rounded-md w-full items-center my-6">
-              <Input
-                type="text"
-                placeholder="Tìm kiếm"
-                className="border-none"
-              />
-              <BsSearch style={{ color: "gray" }} className="mx-2" />
-            </div>
-            <hr />
             <TabsContent value="author">
-              Make changes to your account here.
+              <AuthorSearchForm />
             </TabsContent>
             <TabsContent value="translator">
-              Change your password here.
+              <TranslatorSearchForm />
             </TabsContent>
           </Tabs>
         </div>

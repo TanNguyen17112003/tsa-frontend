@@ -16,6 +16,7 @@ import OrisonPage from "./components/pages/explore/OrisonPage";
 import VolumnExplorePage from "./components/pages/explore/VolumeExplorePage";
 import SutraExplorePage from "./components/pages/explore/SutraExplorePage";
 import OrisonExplorePage from "./components/pages/explore/OrisonExplorePage";
+import AuthorSearchResultPage from "./components/pages/search/AuthorSearchPage/AuthorSearchResultPage";
 
 interface CollectionContentProps {
   sideNavClassName: string;
@@ -53,6 +54,8 @@ const CollectionContent: FC<CollectionContentProps> = ({
       >
         {query.searchType == "text" ? (
           <TextSearchPage />
+        ) : query.authorId ? (
+          <AuthorSearchResultPage qAuthorId={query.authorId.toString()} />
         ) : query.searchType == "sutra" ? (
           <SutraSearchPage />
         ) : query.searchType == "author" ? (

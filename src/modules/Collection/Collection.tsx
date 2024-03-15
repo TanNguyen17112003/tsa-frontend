@@ -16,10 +16,7 @@ const Collection: FC<CollectionProps> = ({}) => {
           <SutrasProvider>
             <VolumesProvider>
               <OrisonsProvider>
-                <CollectionContent
-                  sideNavClassName=""
-                  className=""
-                ></CollectionContent>
+                <CollectionContent />
               </OrisonsProvider>
             </VolumesProvider>
           </SutrasProvider>

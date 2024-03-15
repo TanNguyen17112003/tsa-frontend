@@ -13,6 +13,7 @@ import type { Page as PageType } from "src/types/page";
 import * as Yup from "yup";
 import backgroundImage from "../../../public/ui/background-siu.png";
 import Link from "next/link";
+import { useSearchParams } from "src/hooks/use-search-params";
 
 export const loginSchema = Yup.object({
   username: Yup.string().required("Tên đăng nhập không được để trống"),
@@ -24,7 +25,8 @@ const Page: PageType = () => {
 
   const router = useRouter();
   const { signIn } = useAuth<AuthContextType>();
-
+  const searchParams = useSearchParams();
+  const returnTo = searchParams.get("returnTo");
   // Use useFormik hook to manage form state and actions
   const formik = useFormik({
     initialValues: {
@@ -36,7 +38,7 @@ const Page: PageType = () => {
     onSubmit: async (values) => {
       try {
         await signIn(values.username, values.password);
-        router.replace(paths.dashboard.index);
+        router.replace(returnTo || paths.dashboard.index);
       } catch (error: any) {
         console.error(error);
         formik.setFieldError(

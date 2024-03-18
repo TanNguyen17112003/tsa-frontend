@@ -48,7 +48,10 @@ export function CustomTableHeader<P, T extends { id: P; [key: string]: any }>(
             <div className="flex gap-1 items-center pl-1">
               {select && (
                 <Checkbox
-                  checked={select.selected.length >= rows.length}
+                  checked={
+                    select.selected.length > 0 &&
+                    select.selected.length >= rows.length
+                  }
                   onCheckedChange={(checked) =>
                     checked
                       ? select.handleSelectAll()

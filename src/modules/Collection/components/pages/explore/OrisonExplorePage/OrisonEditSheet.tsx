@@ -109,8 +109,12 @@ const OrisonEditSheet: FC<OrisonEditSheetProps> = ({
       open={open}
       onOpenChange={onOpenChange}
       sheetTrigger={<Button>Tạo bài kinh</Button>}
-      title={volume ? "Sửa bài kinh" : "Tạo bài kinh"}
-      actions={<Button onClick={handleClickSubmit}>Tạo bài kinh</Button>}
+      title={orison ? "Sửa bài kinh" : "Tạo bài kinh"}
+      actions={
+        <Button onClick={handleClickSubmit}>
+          {orison ? "Sửa" : "Tạo"} bài kinh
+        </Button>
+      }
       tabs={
         orison
           ? undefined

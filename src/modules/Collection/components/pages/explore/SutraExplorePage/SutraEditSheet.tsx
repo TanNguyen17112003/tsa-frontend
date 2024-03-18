@@ -117,7 +117,9 @@ const SutraEditSheet: FC<SutraEditSheetProps> = ({
       sheetTrigger={<Button>Tạo bộ kinh</Button>}
       title={sutra ? "Sửa bộ kinh" : "Tạo bộ kinh"}
       actions={
-        <Button onClick={() => formik.handleSubmit()}>Tạo bộ kinh</Button>
+        <Button onClick={() => formik.handleSubmit()}>
+          {sutra ? "Sửa" : "Tạo"} bộ kinh
+        </Button>
       }
     >
       <form onSubmit={formik.submitForm} className="grid grid-cols-2 gap-4">

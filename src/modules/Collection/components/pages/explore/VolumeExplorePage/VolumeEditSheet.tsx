@@ -143,7 +143,7 @@ const VolumeEditSheet: FC<VolumeEditSheetProps> = ({
             handleSubmitHelper.loading || handleSubmitMultipleHelper.loading
           }
         >
-          Tạo quyển kinh
+          {volume ? "Sửa" : "Tạo"} quyển kinh
         </Button>
       }
       tabs={

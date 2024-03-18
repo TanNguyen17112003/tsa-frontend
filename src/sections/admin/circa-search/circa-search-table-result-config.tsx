@@ -6,7 +6,7 @@ import { Sutra } from "src/types/sutra";
 const getCircaSearchResultTableConfig = ({
   onClickEdit,
 }: {
-  onClickEdit: (data: any) => void;
+  onClickEdit: (data: Sutra) => void;
 }): CustomTableConfig<Sutra["id"], any>[] => [
   {
     key: "name",

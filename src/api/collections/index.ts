@@ -57,6 +57,7 @@ export interface SutraMin {
   id: string;
   name: string;
   collection_id: string;
+  circa: Circa;
 }
 
 export interface VolumeMin {

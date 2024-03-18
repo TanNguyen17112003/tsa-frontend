@@ -5,17 +5,18 @@ import { BsSearch } from "react-icons/bs";
 import { SutrasApi } from "src/api/sutras";
 import { CustomTable } from "src/components/custom-table";
 import { Button } from "src/components/shadcn/ui/button";
-import { Input } from "src/components/shadcn/ui/input";
 import FormInput from "src/components/ui/FormInput";
 import useFunction from "src/hooks/use-function";
 import getAuthorSearchTableConfig from "src/sections/admin/author-search/author-search-table-config";
+import { SutraDetail } from "src/types/sutra";
 
-const AuthorSearchForm = ({}: {}) => {
+const AuthorSearchForm = () => {
   const router = useRouter();
   const getSutrasApi = useFunction(SutrasApi.getSutras);
   const [searchData, setSearchData] = useState("");
   useEffect(() => {
     getSutrasApi.call({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const data = useMemo(() => {
     if (searchData.length != 0) {
@@ -35,10 +36,10 @@ const AuthorSearchForm = ({}: {}) => {
     },
   });
 
-  const handleClick = (id: string) => {
+  const handleClick = (row: SutraDetail) => {
     router.replace({
       pathname: router.pathname,
-      query: { ...router.query, authorId: id },
+      query: { ...router.query, authorId: row.author_id, authorName: row.author.author },
     });
   };
 
@@ -59,7 +60,7 @@ const AuthorSearchForm = ({}: {}) => {
       <CustomTable
         rows={data}
         configs={getAuthorSearchTableConfig}
-        onClickRow={(row) => handleClick(row.author_id)}
+        onClickRow={(row) => handleClick(row)}
       />
     </>
   );

@@ -33,6 +33,16 @@ const CollectionBreadcrumb: FC<CollectionBreadcrumbProps> = ({}) => {
         onClick: () =>
           router.replace({ pathname: router.pathname, query: newQuery }),
       });
+      if (router.query.translatorId) {
+        bItems.push({
+          label: `Kết quả tìm kiếm dịch giả "${router.query.translatorName || ""}"`,
+        });
+      }
+      if (router.query.authorId) {
+        bItems.push({
+          label: `Kết quả tìm kiếm tác giả "${router.query.authorName || ""}"`,
+        });
+      }
       if (router.query.qCircaFrom && router.query.qCircaTo) {
         bItems.push({
           label: `Kết quả tìm kiếm "${router.query.qCircaFrom} TCN - ${router.query.qCircaTo} TCN"`,

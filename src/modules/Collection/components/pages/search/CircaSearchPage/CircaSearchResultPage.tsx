@@ -42,7 +42,7 @@ const CircaSearchResultPage = ({
   const backToSearchCirca = () => {
     router.replace({
       pathname: router.pathname,
-      query: "searchType=circa",
+      query: {searchType:"circa"},
     });
   };
 

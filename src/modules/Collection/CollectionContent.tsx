@@ -18,6 +18,7 @@ import SutraExplorePage from "./components/pages/explore/SutraExplorePage";
 import OrisonExplorePage from "./components/pages/explore/OrisonExplorePage";
 import AuthorSearchResultPage from "./components/pages/search/AuthorSearchPage/AuthorSearchResultPage";
 import CircaSearchResultPage from "./components/pages/search/CircaSearchPage/CircaSearchResultPage";
+import TranslatorSearchResultPage from "./components/pages/search/AuthorSearchPage/TranslatorSearchResultPage";
 
 interface CollectionContentProps {}
 
@@ -56,6 +57,8 @@ const CollectionContent: FC<CollectionContentProps> = ({}) => {
           <TextSearchPage />
         ) : query.authorId ? (
           <AuthorSearchResultPage qAuthorId={query.authorId.toString()} />
+        ) : query.translatorId ? (
+          <TranslatorSearchResultPage qTranslatorId={query.translatorId.toString()} />
         ) : query.searchType == "sutra" ? (
           <SutraSearchPage />
         ) : query.searchType == "author" ? (

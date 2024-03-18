@@ -4,30 +4,30 @@ import { useEffect, type FC, useMemo } from "react";
 import { Button } from "src/components/shadcn/ui/button";
 import CollectionBreadcrumb from "../../../CollectionBreadcrumb";
 import { CustomTable } from "src/components/custom-table";
-import getAuthorSearchResultTableConfig from "src/sections/admin/author-search/author-search-result-table-config";
 import { useSutrasContext } from "src/contexts/sutras/sutras-context";
+import getTranslatorSearchResultTableConfig from "src/sections/admin/author-search/translator-search-result-table-config";
 
-interface AuthorSearchFormProps {
-  qAuthorId: string;
+interface TranslatorSearchFormProps {
+  qTranslatorId: string;
 }
 
-export interface AuthorSearchQuery {
-  qAuthorId: string;
+export interface TranslatorSearchQuery {
+  qTranslatorId: string;
 }
 
-const initialAuthorSearchQuery: AuthorSearchQuery = {
-  qAuthorId: "",
+const initialTranslatorSearchQuery: TranslatorSearchQuery = {
+  qTranslatorId: "",
 };
 
-const AuthorSearchResultPage: FC<AuthorSearchFormProps> = ({
-  qAuthorId,
+const TranslatorSearchResultPage: FC<TranslatorSearchFormProps> = ({
+  qTranslatorId,
 }: {
-  qAuthorId: string;
+  qTranslatorId: string;
 }) => {
   const router = useRouter();
 
   const formik = useFormik({
-    initialValues: initialAuthorSearchQuery,
+    initialValues: initialTranslatorSearchQuery,
     onSubmit: (values) => {
       router.replace({
         pathname: router.pathname,
@@ -38,7 +38,7 @@ const AuthorSearchResultPage: FC<AuthorSearchFormProps> = ({
 
   useEffect(() => {
     if (router.query) {
-      formik.setValues(router.query as unknown as AuthorSearchQuery);
+      formik.setValues(router.query as unknown as TranslatorSearchQuery);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -61,14 +61,14 @@ const AuthorSearchResultPage: FC<AuthorSearchFormProps> = ({
 
   const sutras = useMemo(() => {
     return (
-      getSutrasApi.data?.filter((item) => item.author.id == qAuthorId) || []
+      getSutrasApi.data?.filter((item) => item.translator.id == qTranslatorId) || []
     );
-  }, [getSutrasApi.data, qAuthorId]);
+  }, [getSutrasApi.data, qTranslatorId]);
 
   console.log("object", getSutrasApi.data);
 
-  const AuthorSearchTableConfig = useMemo(() => {
-    return getAuthorSearchResultTableConfig({
+  const TranslatorSearchTableConfig = useMemo(() => {
+    return getTranslatorSearchResultTableConfig({
       onClickEdit: (data) => {},
     });
   }, []);
@@ -83,10 +83,10 @@ const AuthorSearchResultPage: FC<AuthorSearchFormProps> = ({
       </div>
       <CustomTable
         rows={sutras}
-        configs={AuthorSearchTableConfig}
+        configs={TranslatorSearchTableConfig}
       />
     </div>
   );
 };
 
-export default AuthorSearchResultPage;
+export default TranslatorSearchResultPage;

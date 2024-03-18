@@ -2,7 +2,7 @@ import * as yup from "yup";
 
 export interface User {
   id: string;
-  user_name: string;
+  username: string;
   email: string;
   full_name: string;
   password: string;
@@ -14,7 +14,7 @@ export interface User {
 export interface UserDetail extends User {}
 
 export const userSchema = yup.object().shape({
-  user_name: yup.string().required("Vui lòng nhập username"),
+  username: yup.string().required("Vui lòng nhập username"),
   email: yup
     .string()
     .email("Vui lòng nhập đúng định dạng email")
@@ -25,7 +25,7 @@ export const userSchema = yup.object().shape({
 
 export const initialUser: UserDetail = {
   id: "",
-  user_name: "",
+  username: "",
   email: "",
   full_name: "",
   password: "",
@@ -36,7 +36,7 @@ export const initialUser: UserDetail = {
 export const users: UserDetail[] = [
   {
     id: "10",
-    user_name: "username 1",
+    username: "username 1",
     email: "email 1",
     full_name: "name 1",
     password: "password 1",
@@ -46,7 +46,7 @@ export const users: UserDetail[] = [
   },
   {
     id: "20",
-    user_name: "username 2",
+    username: "username 2",
     email: "email 2",
     full_name: "name 2",
     password: "password 2",

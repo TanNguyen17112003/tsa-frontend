@@ -16,6 +16,7 @@ import OrisonEditSheet from "./OrisonEditSheet";
 import CollectionBreadcrumb from "../../../CollectionBreadcrumb";
 import { useVolumesContext } from "src/contexts/volumes/volumes-context";
 import { initialVolume } from "src/types/volume";
+import getPaginationText from "src/utils/get-pagination-text";
 
 interface OrisonExplorePageProps {}
 
@@ -97,13 +98,7 @@ const OrisonExplorePage: FC<OrisonExplorePageProps> = ({}) => {
       </div>
       <div className="sticky bg-white flex bottom-0 px-7 justify-between py-2 border-t">
         <div className="flex text-sm text-gray-500 font-normal items-center overflow-hidden text-nowrap">
-          Đang hiển thị kết quả thứ{" "}
-          {pagination.page * pagination.rowsPerPage + 1} tới{" "}
-          {Math.min(
-            pagination.count,
-            pagination.rowsPerPage * (pagination.page + 1)
-          )}{" "}
-          trên {pagination.count} kết quả
+          {getPaginationText(pagination)}
         </div>
         <Pagination {...pagination} onChange={pagination.onPageChange} />
       </div>

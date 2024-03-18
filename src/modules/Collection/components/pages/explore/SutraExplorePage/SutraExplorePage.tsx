@@ -14,6 +14,7 @@ import { SutraDetail } from "src/types/sutra";
 import CollectionBreadcrumb from "../../../CollectionBreadcrumb";
 import SutraEditSheet from "./SutraEditSheet";
 import { sutraTableConfigs } from "./sutraTableConfigs";
+import getPaginationText from "src/utils/get-pagination-text";
 
 interface SutraExplorePageProps {}
 
@@ -91,13 +92,7 @@ const SutraExplorePage: FC<SutraExplorePageProps> = ({}) => {
       </div>
       <div className="sticky bg-white flex bottom-0 px-7 justify-between py-2 border-t">
         <div className="flex text-sm text-gray-500 font-normal items-center overflow-hidden text-nowrap">
-          Đang hiển thị kết quả thứ{" "}
-          {pagination.page * pagination.rowsPerPage + 1} tới{" "}
-          {Math.min(
-            pagination.count,
-            pagination.rowsPerPage * (pagination.page + 1)
-          )}{" "}
-          trên {pagination.count} kết quả
+          {getPaginationText(pagination)}
         </div>
         <Pagination {...pagination} onChange={pagination.onPageChange} />
       </div>

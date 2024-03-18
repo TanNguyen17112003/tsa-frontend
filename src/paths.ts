@@ -12,7 +12,7 @@ export const paths = {
     accounts: "/dashboard/accounts",
     categories: "/dashboard/categories",
     reports: "/dashboard/reports",
-    "add-complaint": "/dashboard/add-complaint",
+    "add-report": "/dashboard/add-report",
     logout: "/dang-xuat",
   },
   401: "/401",

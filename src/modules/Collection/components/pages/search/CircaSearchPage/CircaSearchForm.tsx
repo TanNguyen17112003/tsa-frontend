@@ -28,10 +28,6 @@ const CircaSearchForm: FC<CircaSearchFormProps> = ({
   const formik = useFormik({
     initialValues: initialCircaSearchQuery,
     onSubmit: (values) => {
-      router.replace({
-        pathname: router.pathname,
-        query: { ...router.query, ...values },
-      });
       setQCirca({ qCircaFrom: values.qCircaFrom, qCircaTo: values.qCircaTo });
     },
   });

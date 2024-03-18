@@ -1,11 +1,12 @@
 import { HiMiniArrowSmallRight } from "react-icons/hi2";
 import { CustomTableConfig } from "src/components/custom-table";
 import { Button } from "src/components/shadcn/ui/button";
-import { Collection } from "src/types/collection";
-const getDashboardTableConfig: CustomTableConfig<
-  Collection["id"],
-  Collection
->[] = [
+import { Sutra, SutraDetail } from "src/types/sutra";
+const getDashboardSutraTableConfigs = ({
+  onClickDetail,
+}: {
+  onClickDetail: (sutra: SutraDetail) => void;
+}): CustomTableConfig<Sutra["id"], SutraDetail>[] => [
   {
     key: "name",
     headerLabel: "Tuyển tập",
@@ -15,9 +16,11 @@ const getDashboardTableConfig: CustomTableConfig<
     key: "circa",
     headerLabel: "Niên đại",
     type: "string",
+    renderCell: (params) =>
+      `${params.circa.start_year} - ${params.circa.end_year}`,
   },
   {
-    key: "user_id",
+    key: "author.author",
     headerLabel: "Tác giả",
     type: "string",
   },
@@ -26,11 +29,15 @@ const getDashboardTableConfig: CustomTableConfig<
     headerLabel: "",
     type: "string",
     renderCell: (data) => (
-      <Button variant={"outline"} className="flex">
+      <Button
+        variant={"outline"}
+        className="flex"
+        onClick={() => onClickDetail(data)}
+      >
         Đọc bài <HiMiniArrowSmallRight style={{ fontSize: "1.4em" }} />
       </Button>
     ),
   },
 ];
 
-export default getDashboardTableConfig;
+export default getDashboardSutraTableConfigs;

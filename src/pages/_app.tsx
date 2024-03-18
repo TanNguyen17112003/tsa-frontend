@@ -21,7 +21,7 @@ const App = (props: AppProps) => {
       <Head>
         <link rel="shortcut icon" href="/logos/logo.png" />
         <title>CHÁNH TẠNG VIỆT DỊCH</title>
-        <meta name="viewport" content="initial-scale=1, width=device-width" />
+        <meta name="viewport" content="width=1024" />
       </Head>
 
       <SnackbarProvider>

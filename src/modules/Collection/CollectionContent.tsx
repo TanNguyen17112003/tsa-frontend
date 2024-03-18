@@ -17,15 +17,11 @@ import VolumnExplorePage from "./components/pages/explore/VolumeExplorePage";
 import SutraExplorePage from "./components/pages/explore/SutraExplorePage";
 import OrisonExplorePage from "./components/pages/explore/OrisonExplorePage";
 import AuthorSearchResultPage from "./components/pages/search/AuthorSearchPage/AuthorSearchResultPage";
+import CircaSearchResultPage from "./components/pages/search/CircaSearchPage/CircaSearchResultPage";
 
-interface CollectionContentProps {
-  sideNavClassName: string;
-  className: string;
-}
+interface CollectionContentProps {}
 
-const CollectionContent: FC<CollectionContentProps> = ({
-  sideNavClassName,
-}) => {
+const CollectionContent: FC<CollectionContentProps> = ({}) => {
   const { query } = useRouter();
   const isFullScreen = query.isFullScreen == "true";
 
@@ -33,8 +29,7 @@ const CollectionContent: FC<CollectionContentProps> = ({
     <>
       <div
         className={clsx(
-          "w-[300px] border-r h-full overflow-y-auto pb-[80px] sticky top-0 mb-[-100%] translate-x-[-300px]",
-          sideNavClassName
+          "w-[300px] border-r h-full overflow-y-auto pb-[80px] sticky top-0 mb-[-100%] translate-x-[-300px]"
         )}
       >
         <div className="p-3">
@@ -52,7 +47,12 @@ const CollectionContent: FC<CollectionContentProps> = ({
           isFullScreen ? "w-full left-0" : "w-[calc(100%_-_300px)]"
         )}
       >
-        {query.searchType == "text" ? (
+        {query.qCircaFrom && query.qCircaTo ? (
+          <CircaSearchResultPage
+            qCircaFrom={query.qCircaFrom.toString()}
+            qCircaTo={query.qCircaTo.toString()}
+          />
+        ) : query.searchType == "text" ? (
           <TextSearchPage />
         ) : query.authorId ? (
           <AuthorSearchResultPage qAuthorId={query.authorId.toString()} />

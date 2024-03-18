@@ -202,6 +202,8 @@ const VolumeEditSheet: FC<VolumeEditSheetProps> = ({
               "image/*": [".png", ".jpg", ".jpeg"],
               "application/pdf": [".pdf"],
             }}
+            title="Tải lên file văn bản gốc"
+            subtitle="File Ảnh (PDF,PNG hoặc JPG)"
           />
         </div>
         {handleSubmitMultipleHelper.error ? (

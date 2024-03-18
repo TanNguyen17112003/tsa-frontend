@@ -123,11 +123,11 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
           </>
         )}
       </div>
-      <div className="flex flex-col flex-1 min-h-0 gap-3">
+      <div className="flex flex-col flex-1 min-h-0">
         {!isEditting && (
           <div
             className={clsx(
-              "flex justify-end w-full bg-white left-0 relative z-40 gap-4",
+              "flex justify-end w-full bg-white left-0 relative z-40 gap-4 py-3 px-3",
               isFullScreen ? "p-0" : "px-4 pt-3"
             )}
           >

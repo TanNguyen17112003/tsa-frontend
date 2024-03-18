@@ -187,6 +187,8 @@ const SutraEditSheet: FC<SutraEditSheetProps> = ({
             onUpload={(newFiles) => setFiles([...files, ...newFiles])}
             onClear={() => setFiles([])}
             fileCount={files.length}
+            title="Tải lên file văn bản gốc"
+            subtitle="File Ảnh (PDF,PNG hoặc JPG)"
           />
         </div>
       </form>

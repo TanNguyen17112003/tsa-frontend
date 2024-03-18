@@ -45,6 +45,9 @@ const OrisonEditSheet: FC<OrisonEditSheetProps> = ({
           ...values,
         });
       } else if (volume.id) {
+        if (!files[0]) {
+          throw "Vui lòng chọn file bài kinh";
+        }
         await createOrison({
           ...values,
           created_at: new Date(),
@@ -171,6 +174,8 @@ const OrisonEditSheet: FC<OrisonEditSheetProps> = ({
               "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
                 [".docx"],
             }}
+            title="Tải lên file văn bản"
+            subtitle="File Word (.docx)"
           />
         </div>
         {handleSubmitMultipleHelper.error ? (

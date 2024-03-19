@@ -33,6 +33,11 @@ const CollectionBreadcrumb: FC<CollectionBreadcrumbProps> = ({}) => {
         onClick: () =>
           router.replace({ pathname: router.pathname, query: newQuery }),
       });
+      if (router.query.qCircaFrom && router.query.qCircaTo) {
+        bItems.push({
+          label: `Kết quả tìm kiếm "${router.query.qCircaFrom} TCN - ${router.query.qCircaTo} TCN"`,
+        });
+      }
       if (router.query.resultLabel) {
         bItems.push({
           label: `Kết quả tìm kiếm ${

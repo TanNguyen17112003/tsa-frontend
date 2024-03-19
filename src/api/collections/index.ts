@@ -87,6 +87,13 @@ export interface CollectionTreeResponse {
   orisons: Orison[];
 }
 
+export const initialCollectionTree: CollectionTreeResponse = {
+  collections: [],
+  sutras: [],
+  volumes: [],
+  orisons: [],
+};
+
 export interface CollectionCategoriesResponse {
   authors: Author[];
   format_sutras: FormatSutra[];

@@ -21,13 +21,13 @@ interface CollectionExplorePageProps {}
 
 const CollectionExplorePage: FC<CollectionExplorePageProps> = ({}) => {
   const router = useRouter();
-  const { getCollections } = useCollectionCategoriesContext();
-  const { deleteCollection } = useCollectionsContext();
+  const { tree } = useCollectionCategoriesContext();
+  const { deleteCollection, getCollectionsApi } = useCollectionsContext();
   const editDrawer = useDrawer<CollectionDetail>();
 
   const collections = useMemo(() => {
-    return getCollections();
-  }, [getCollections]);
+    return (getCollectionsApi.data || []).map((c) => enrichCollection(c, tree));
+  }, [getCollectionsApi.data, tree]);
 
   const pagination = usePagination({ count: collections.length });
   const select = useSelection<CollectionDetail>(collections);

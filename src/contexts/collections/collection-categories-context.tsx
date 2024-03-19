@@ -11,13 +11,15 @@ import {
   CollectionTreeResponse,
   CollectionsApi,
   initialCollectionCategories,
+  initialCollectionTree,
 } from "src/api/collections";
 import Loading from "src/components/Loading";
 import useFunction from "src/hooks/use-function";
-import { CollectionDetail, enrichCollection } from "src/types/collection";
+import { CollectionDetail } from "src/types/collection";
 
-interface ContextValue extends CollectionCategoriesResponse {
-  tree?: CollectionTreeResponse;
+interface ContextValue {
+  tree: CollectionTreeResponse;
+  categories: CollectionCategoriesResponse;
   updateTree: (
     callback: (prev: CollectionTreeResponse) => CollectionTreeResponse
   ) => void;
@@ -25,24 +27,16 @@ interface ContextValue extends CollectionCategoriesResponse {
   goSutra: (id: string) => void;
   goVolume: (id: string) => void;
   goOrison: (id: string) => void;
-
-  getCollections: () => CollectionDetail[];
 }
 
 export const CollectionCategoriesContext = createContext<ContextValue>({
-  authors: [],
-  format_sutras: [],
-  format_words: [],
-  format_pages: [],
-  circas: [],
-  translators: [],
+  tree: initialCollectionTree,
+  categories: initialCollectionCategories,
   updateTree: () => {},
   goCollection: () => {},
   goSutra: () => {},
   goVolume: () => {},
   goOrison: () => {},
-
-  getCollections: () => [],
 });
 
 const CollectionCategoriesProvider = ({
@@ -63,20 +57,6 @@ const CollectionCategoriesProvider = ({
     },
     [getCollectionTreeApi]
   );
-
-  const getCollections = useCallback(() => {
-    const tree = getCollectionTreeApi.data;
-    if (!tree) {
-      return [];
-    }
-    return tree.collections.map((c) =>
-      enrichCollection(
-        c,
-        tree,
-        getCategoriesApi.data || initialCollectionCategories
-      )
-    );
-  }, [getCategoriesApi.data, getCollectionTreeApi.data]);
 
   const goCollection = useCallback(
     (id: string) => {
@@ -187,15 +167,13 @@ const CollectionCategoriesProvider = ({
   return (
     <CollectionCategoriesContext.Provider
       value={{
+        tree: getCollectionTreeApi.data || initialCollectionTree,
+        categories: getCategoriesApi.data || initialCollectionCategories,
         updateTree,
-        ...getCategoriesApi.data,
-        tree: getCollectionTreeApi.data,
         goCollection,
         goSutra,
         goVolume,
         goOrison,
-
-        getCollections,
       }}
     >
       {children}

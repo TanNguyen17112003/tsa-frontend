@@ -28,7 +28,8 @@ const SutraEditSheet: FC<SutraEditSheetProps> = ({
   const { user } = useAuth();
   const { updateSutra, createSutra } = useSutrasContext();
   const [files, setFiles] = useState<File[]>([]);
-  const { authors, circas, translators } = useCollectionCategoriesContext();
+  const { categories } = useCollectionCategoriesContext();
+  const { authors, translators, circas } = categories;
 
   const authorOptions = useMemo(() => {
     return authors.map((author) => ({

@@ -1,27 +1,29 @@
-import { useCallback, type FC, useState, FormEvent } from "react";
-import CollectionBreadcrumb from "../../../CollectionBreadcrumb";
 import clsx from "clsx";
 import { useRouter } from "next/router";
+import { FormEvent, useCallback, useState, type FC } from "react";
 import { BiSearch } from "react-icons/bi";
-import FormInput from "src/components/ui/FormInput";
 import { BsArrowsAngleContract, BsArrowsAngleExpand } from "react-icons/bs";
-import OrisonList from "./OrisonList";
 import {
-  PiFlagBold,
   PiDownloadSimpleBold,
+  PiFlagBold,
   PiNotePencilBold,
 } from "react-icons/pi";
 import Loading from "src/components/Loading";
-import { useOrisonsContext } from "src/contexts/orisons/orisons-context";
-import OrisonPagination from "./OrisonPagination";
-import PlateEditor from "src/modules/Editor";
 import { Button } from "src/components/shadcn/ui/button";
+import FormInput from "src/components/ui/FormInput";
+import { useOrisonsContext } from "src/contexts/orisons/orisons-context";
+import PlateEditor from "src/modules/Editor";
 import AudioPlayer from "../../../AudioPlayer";
+import CollectionBreadcrumb from "../../../CollectionBreadcrumb";
+import OrisonList from "./OrisonList";
+import OrisonPagination from "./OrisonPagination";
+import { useAuth } from "src/hooks/use-auth";
 
 interface OrisonPageProps {}
 
 const OrisonPage: FC<OrisonPageProps> = ({}) => {
-  const { getOrisonsApi, orisonId, getOrisonDetailApi } = useOrisonsContext();
+  const { user } = useAuth();
+  const { getOrisonDetailApi } = useOrisonsContext();
   const [searchText, setSearchText] = useState("");
   const router = useRouter();
 
@@ -106,14 +108,16 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
                     <PiDownloadSimpleBold className="w-5 h-5" /> Tải văn bản
                     dịch
                   </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="gap-2 px-4"
-                    onClick={handleClickEdit}
-                  >
-                    <PiNotePencilBold className="w-5 h-5" /> Chỉnh sửa
-                  </Button>
+                  {user?.role == "admin" && (
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="gap-2 px-4"
+                      onClick={handleClickEdit}
+                    >
+                      <PiNotePencilBold className="w-5 h-5" /> Chỉnh sửa
+                    </Button>
+                  )}
                   <Button size="lg" className="px-4">
                     Xem văn bản gốc
                   </Button>

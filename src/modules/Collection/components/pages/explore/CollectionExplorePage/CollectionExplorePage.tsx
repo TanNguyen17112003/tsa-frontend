@@ -16,10 +16,12 @@ import useFunction from "src/hooks/use-function";
 import { useRouter } from "next/router";
 import getPaginationText from "src/utils/get-pagination-text";
 import { useCollectionCategoriesContext } from "src/contexts/collections/collection-categories-context";
+import { useAuth } from "src/hooks/use-auth";
 
 interface CollectionExplorePageProps {}
 
 const CollectionExplorePage: FC<CollectionExplorePageProps> = ({}) => {
+  const { user } = useAuth();
   const router = useRouter();
   const { tree } = useCollectionCategoriesContext();
   const { deleteCollection, getCollectionsApi } = useCollectionsContext();
@@ -57,35 +59,41 @@ const CollectionExplorePage: FC<CollectionExplorePageProps> = ({}) => {
     <>
       <div className="flex justify-between p-5 py-6 sticky top-0 z-10 bg-white">
         <CollectionBreadcrumb />
-        <div className="flex gap-2">
-          <Button
-            variant="ghost"
-            color="destructive"
-            className="gap-2 text-destructive hover:bg-destructive/20 hover:text-destructive"
-            disabled={select.selected.length == 0 || handleDeleteHelper.loading}
-            onClick={handleDeleteHelper.call}
-          >
-            <PiTrashBold className="w-5 h-5" /> Xoá
-          </Button>
-          <Button variant="outline" className="gap-2">
-            Xuất báo cáo <BiDownload className="w-5 h-5" />
-          </Button>
-          <CollectionEditSheet
-            open={editDrawer.open}
-            onOpenChange={(open) =>
-              open ? editDrawer.handleOpen() : editDrawer.handleClose()
-            }
-            collection={editDrawer.data}
-          />
-        </div>
+        {user?.role == "admin" && (
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              color="destructive"
+              className="gap-2 text-destructive hover:bg-destructive/20 hover:text-destructive"
+              disabled={
+                select.selected.length == 0 || handleDeleteHelper.loading
+              }
+              onClick={handleDeleteHelper.call}
+            >
+              <PiTrashBold className="w-5 h-5" /> Xoá
+            </Button>
+            <Button variant="outline" className="gap-2">
+              Xuất báo cáo <BiDownload className="w-5 h-5" />
+            </Button>
+            <CollectionEditSheet
+              open={editDrawer.open}
+              onOpenChange={(open) =>
+                open ? editDrawer.handleOpen() : editDrawer.handleClose()
+              }
+              collection={editDrawer.data}
+            />
+          </div>
+        )}
       </div>
       <div className="px-4 flex-1 pb-6">
         <CustomTable
-          select={select}
+          select={user?.role == "admin" ? select : undefined}
           rows={collections}
           configs={collectionTableConfigs}
           pagination={pagination}
-          onClickEdit={editDrawer.handleOpen}
+          onClickEdit={
+            user?.role == "admin" ? editDrawer.handleOpen : undefined
+          }
           onClickRow={handleClickRow}
           hidePagination
         />

@@ -17,12 +17,13 @@ import CollectionBreadcrumb from "../../../CollectionBreadcrumb";
 import { useVolumesContext } from "src/contexts/volumes/volumes-context";
 import { initialVolume } from "src/types/volume";
 import getPaginationText from "src/utils/get-pagination-text";
+import { useAuth } from "src/hooks/use-auth";
 
 interface OrisonExplorePageProps {}
 
 const OrisonExplorePage: FC<OrisonExplorePageProps> = ({}) => {
   const router = useRouter();
-
+  const { user } = useAuth();
   const { sutra } = useVolumesContext();
   const { getOrisonsApi, deleteOrison, volume } = useOrisonsContext();
   const editDrawer = useDrawer<OrisonDetail>();
@@ -62,36 +63,42 @@ const OrisonExplorePage: FC<OrisonExplorePageProps> = ({}) => {
     <>
       <div className="flex justify-between p-5 py-6 sticky top-0 z-10 bg-white">
         <CollectionBreadcrumb />
-        <div className="flex gap-2">
-          <Button
-            variant="ghost"
-            color="destructive"
-            className="gap-2 text-destructive hover:bg-destructive/20 hover:text-destructive"
-            disabled={select.selected.length == 0 || handleDeleteHelper.loading}
-            onClick={handleDeleteHelper.call}
-          >
-            <PiTrashBold className="w-5 h-5" /> Xoá
-          </Button>
+        {user?.role == "admin" && (
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              color="destructive"
+              className="gap-2 text-destructive hover:bg-destructive/20 hover:text-destructive"
+              disabled={
+                select.selected.length == 0 || handleDeleteHelper.loading
+              }
+              onClick={handleDeleteHelper.call}
+            >
+              <PiTrashBold className="w-5 h-5" /> Xoá
+            </Button>
 
-          <OrisonEditSheet
-            volume={volume || initialVolume}
-            sutra={sutra || initialSutra}
-            open={editDrawer.open}
-            onOpenChange={(open) =>
-              open ? editDrawer.handleOpen() : editDrawer.handleClose()
-            }
-            orison={editDrawer.data}
-          />
-        </div>
+            <OrisonEditSheet
+              volume={volume || initialVolume}
+              sutra={sutra || initialSutra}
+              open={editDrawer.open}
+              onOpenChange={(open) =>
+                open ? editDrawer.handleOpen() : editDrawer.handleClose()
+              }
+              orison={editDrawer.data}
+            />
+          </div>
+        )}
       </div>
       <div className="px-4 flex-1 pb-6">
         <CustomTable
           loading={getOrisonsApi.loading}
-          select={select}
+          select={user?.role == "admin" ? select : undefined}
           rows={orisons}
           configs={orisonTableConfigs}
           pagination={pagination}
-          onClickEdit={editDrawer.handleOpen}
+          onClickEdit={
+            user?.role == "admin" ? editDrawer.handleOpen : undefined
+          }
           onClickRow={handleClickRow}
           hidePagination
         />

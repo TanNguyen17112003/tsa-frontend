@@ -143,7 +143,7 @@ const VolumeEditSheet: FC<VolumeEditSheetProps> = ({
             handleSubmitHelper.loading || handleSubmitMultipleHelper.loading
           }
         >
-          Tạo quyển kinh
+          {volume ? "Sửa" : "Tạo"} quyển kinh
         </Button>
       }
       tabs={
@@ -202,6 +202,8 @@ const VolumeEditSheet: FC<VolumeEditSheetProps> = ({
               "image/*": [".png", ".jpg", ".jpeg"],
               "application/pdf": [".pdf"],
             }}
+            title="Tải lên file văn bản gốc"
+            subtitle="File Ảnh (PDF,PNG hoặc JPG)"
           />
         </div>
         {handleSubmitMultipleHelper.error ? (

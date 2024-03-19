@@ -1,32 +1,39 @@
-import { useCallback, type FC, useState, FormEvent } from "react";
-import CollectionBreadcrumb from "../../../CollectionBreadcrumb";
 import clsx from "clsx";
 import { useRouter } from "next/router";
+import { FormEvent, useCallback, useState, type FC } from "react";
 import { BiSearch } from "react-icons/bi";
-import FormInput from "src/components/ui/FormInput";
 import { BsArrowsAngleContract, BsArrowsAngleExpand } from "react-icons/bs";
-import OrisonList from "./OrisonList";
 import {
-  PiFlagBold,
   PiDownloadSimpleBold,
+  PiFlagBold,
   PiNotePencilBold,
 } from "react-icons/pi";
 import Loading from "src/components/Loading";
-import { useOrisonsContext } from "src/contexts/orisons/orisons-context";
-import OrisonPagination from "./OrisonPagination";
-import PlateEditor from "src/modules/Editor";
 import { Button } from "src/components/shadcn/ui/button";
+import FormInput from "src/components/ui/FormInput";
+import { useOrisonsContext } from "src/contexts/orisons/orisons-context";
+import PlateEditor from "src/modules/Editor";
 import AudioPlayer from "../../../AudioPlayer";
+import CollectionBreadcrumb from "../../../CollectionBreadcrumb";
+import OrisonList from "./OrisonList";
+import OrisonPagination from "./OrisonPagination";
+import { useAuth } from "src/hooks/use-auth";
+import exportDocx from "src/modules/Editor/utils/docx";
+import { downloadFile } from "src/utils/url-handler";
+import useFunction from "src/hooks/use-function";
 
 interface OrisonPageProps {}
 
 const OrisonPage: FC<OrisonPageProps> = ({}) => {
-  const { getOrisonsApi, orisonId, getOrisonDetailApi } = useOrisonsContext();
+  const { user } = useAuth();
+  const { getOrisonsApi, orisonId, getOrisonDetailApi, updateOrison } =
+    useOrisonsContext();
   const [searchText, setSearchText] = useState("");
   const router = useRouter();
 
   const isEditting = router.query.isEditting == "true";
   const isFullScreen = router.query.isFullScreen == "true";
+  const currentOrison = getOrisonDetailApi.data;
 
   const handleSearch = useCallback((e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -54,14 +61,25 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
     });
   }, [router]);
 
-  const handleSave = useCallback(
-    (value: any) => {
-      router.replace({
-        pathname: router.pathname,
-        query: { ...router.query, isEditting: "" },
-      });
-    },
-    [router]
+  const handleDownload = useCallback(async () => {
+    if (currentOrison) {
+      const file = await exportDocx(currentOrison.content);
+      downloadFile(file, currentOrison.name + ".docx");
+    }
+  }, [currentOrison]);
+
+  const handleSave = useFunction(
+    useCallback(
+      async (value: any) => {
+        updateOrison({ ...currentOrison, content: value });
+        router.replace({
+          pathname: router.pathname,
+          query: { ...router.query, isEditting: "" },
+        });
+      },
+      [currentOrison, router, updateOrison]
+    ),
+    { successMessage: "Lưu thành công!" }
   );
 
   const handleCancel = useCallback(() => {
@@ -102,18 +120,25 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
                     <PiFlagBold className="w-5 h-5" />
                     Khiếu nại
                   </Button>
-                  <Button size="lg" variant="outline" className="gap-2 px-4">
-                    <PiDownloadSimpleBold className="w-5 h-5" /> Tải văn bản
-                    dịch
-                  </Button>
                   <Button
                     size="lg"
                     variant="outline"
                     className="gap-2 px-4"
-                    onClick={handleClickEdit}
+                    onClick={handleDownload}
                   >
-                    <PiNotePencilBold className="w-5 h-5" /> Chỉnh sửa
+                    <PiDownloadSimpleBold className="w-5 h-5" /> Tải văn bản
+                    dịch
                   </Button>
+                  {user?.role == "admin" && (
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="gap-2 px-4"
+                      onClick={handleClickEdit}
+                    >
+                      <PiNotePencilBold className="w-5 h-5" /> Chỉnh sửa
+                    </Button>
+                  )}
                   <Button size="lg" className="px-4">
                     Xem văn bản gốc
                   </Button>
@@ -123,11 +148,11 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
           </>
         )}
       </div>
-      <div className="flex flex-col flex-1 min-h-0 gap-3">
+      <div className="flex flex-col flex-1 min-h-0">
         {!isEditting && (
           <div
             className={clsx(
-              "flex justify-end w-full bg-white left-0 relative z-40 gap-4",
+              "flex justify-end w-full bg-white left-0 relative z-40 gap-4 py-3 px-3",
               isFullScreen ? "p-0" : "px-4 pt-3"
             )}
           >
@@ -156,14 +181,14 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
               <div className="flex h-[100px] items-center justify-center mt-4">
                 <Loading />
               </div>
-            ) : getOrisonDetailApi.data ? (
+            ) : currentOrison ? (
               <PlateEditor
                 readOnly={!isEditting}
-                initialValue={getOrisonDetailApi.data.content}
-                notes={getOrisonDetailApi.data.notes}
+                initialValue={currentOrison.content}
+                notes={currentOrison.notes}
                 onUpdateNotes={() => {}}
                 onChange={() => {}}
-                onSave={handleSave}
+                onSave={handleSave.call}
                 onCancel={handleCancel}
                 searchText={searchText.toLowerCase()}
               />

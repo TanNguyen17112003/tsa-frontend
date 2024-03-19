@@ -9,7 +9,7 @@ import {
 } from "src/utils/api-request";
 
 type SignInRequest = {
-  user_name: string;
+  username: string;
   password: string;
 };
 
@@ -17,7 +17,7 @@ type SignInResponse = UserDetail & { token: string };
 
 type SignUpRequest = {
   email: string;
-  user_name: string;
+  username: string;
   password: string;
   full_name: string;
   confirm_password: string;

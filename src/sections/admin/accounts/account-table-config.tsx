@@ -22,7 +22,7 @@ const getAccountTableConfig = ({
     type: "string",
   },
   {
-    key: "user_name",
+    key: "username",
     headerLabel: "Tên tài khoản",
     type: "string",
   },

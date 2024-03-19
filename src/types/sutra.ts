@@ -1,6 +1,10 @@
 import * as yup from "yup";
 import { Author, initialAuthor } from "./author";
 import { Circa, initialCirca } from "./circas";
+import {
+  CollectionCategoriesResponse,
+  CollectionTreeResponse,
+} from "src/api/collections";
 
 export interface Sutra {
   id: string;
@@ -25,6 +29,24 @@ export interface SutraDetail extends Sutra {
   circa: Circa;
   translator: SutraTransaltor;
 }
+
+export const enrichSutra = (
+  sutra: Sutra,
+  tree: CollectionTreeResponse,
+  categories: CollectionCategoriesResponse
+): SutraDetail => {
+  const volumeIds = tree.volumes
+    .filter((v) => v.sutras_id == sutra.id)
+    .map((v) => v.id);
+  const orisons = tree.orisons.filter((o) => volumeIds.includes(o.volume_id));
+  return {
+    ...sutra,
+    num_orisons: orisons.length,
+    author: categories.authors.find((a) => a.id == sutra.author_id)!,
+    translator: categories.translators.find((t) => t.id == sutra.user_id)!,
+    circa: categories.circas.find((c) => c.id == sutra.circa_id)!,
+  };
+};
 
 export const sutraSchema = yup.object().shape({
   name: yup.string().required("Vui lòng nhập name"),

@@ -11,6 +11,8 @@ interface FileDropzoneProps {
   onClear?: () => void;
   multiple?: boolean;
   accept?: Accept | undefined;
+  title: string;
+  subtitle?: string;
 }
 
 const FileDropzone: React.FC<FileDropzoneProps> = ({
@@ -19,6 +21,8 @@ const FileDropzone: React.FC<FileDropzoneProps> = ({
   onClear,
   multiple,
   accept,
+  title,
+  subtitle,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null); // Create a ref for the input element
 
@@ -84,10 +88,8 @@ const FileDropzone: React.FC<FileDropzoneProps> = ({
               </div>
             </div>
             <div>
-              <p className="text-lg font-medium mb-1">
-                Tải lên file văn bản gốc
-              </p>
-              <p className="text-gray-600">File Ảnh (PDF,PNG hoặc JPG)</p>
+              <p className="text-lg font-medium mb-1">{title}</p>
+              <p className="text-gray-600">{subtitle}</p>
             </div>
           </div>
         </>

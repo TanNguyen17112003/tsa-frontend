@@ -18,17 +18,22 @@ import CollectionBreadcrumb from "../../../CollectionBreadcrumb";
 import OrisonList from "./OrisonList";
 import OrisonPagination from "./OrisonPagination";
 import { useAuth } from "src/hooks/use-auth";
+import exportDocx from "src/modules/Editor/utils/docx";
+import { downloadFile } from "src/utils/url-handler";
+import useFunction from "src/hooks/use-function";
 
 interface OrisonPageProps {}
 
 const OrisonPage: FC<OrisonPageProps> = ({}) => {
   const { user } = useAuth();
-  const { getOrisonDetailApi } = useOrisonsContext();
+  const { getOrisonsApi, orisonId, getOrisonDetailApi, updateOrison } =
+    useOrisonsContext();
   const [searchText, setSearchText] = useState("");
   const router = useRouter();
 
   const isEditting = router.query.isEditting == "true";
   const isFullScreen = router.query.isFullScreen == "true";
+  const currentOrison = getOrisonDetailApi.data;
 
   const handleSearch = useCallback((e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -56,14 +61,25 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
     });
   }, [router]);
 
-  const handleSave = useCallback(
-    (value: any) => {
-      router.replace({
-        pathname: router.pathname,
-        query: { ...router.query, isEditting: "" },
-      });
-    },
-    [router]
+  const handleDownload = useCallback(async () => {
+    if (currentOrison) {
+      const file = await exportDocx(currentOrison.content);
+      downloadFile(file, currentOrison.name + ".docx");
+    }
+  }, [currentOrison]);
+
+  const handleSave = useFunction(
+    useCallback(
+      async (value: any) => {
+        updateOrison({ ...currentOrison, content: value });
+        router.replace({
+          pathname: router.pathname,
+          query: { ...router.query, isEditting: "" },
+        });
+      },
+      [currentOrison, router, updateOrison]
+    ),
+    { successMessage: "Lưu thành công!" }
   );
 
   const handleCancel = useCallback(() => {
@@ -104,7 +120,12 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
                     <PiFlagBold className="w-5 h-5" />
                     Khiếu nại
                   </Button>
-                  <Button size="lg" variant="outline" className="gap-2 px-4">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="gap-2 px-4"
+                    onClick={handleDownload}
+                  >
                     <PiDownloadSimpleBold className="w-5 h-5" /> Tải văn bản
                     dịch
                   </Button>
@@ -160,14 +181,14 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
               <div className="flex h-[100px] items-center justify-center mt-4">
                 <Loading />
               </div>
-            ) : getOrisonDetailApi.data ? (
+            ) : currentOrison ? (
               <PlateEditor
                 readOnly={!isEditting}
-                initialValue={getOrisonDetailApi.data.content}
-                notes={getOrisonDetailApi.data.notes}
+                initialValue={currentOrison.content}
+                notes={currentOrison.notes}
                 onUpdateNotes={() => {}}
                 onChange={() => {}}
-                onSave={handleSave}
+                onSave={handleSave.call}
                 onCancel={handleCancel}
                 searchText={searchText.toLowerCase()}
               />

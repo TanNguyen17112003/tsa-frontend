@@ -67,16 +67,18 @@ import { createTrailingBlockPlugin } from "@udecode/plate-trailing-block";
 import { createDeserializeDocxPlugin } from "@udecode/plate-serializer-docx";
 import { createJuicePlugin } from "@udecode/plate-juice";
 
-import { BlockquoteElement } from "./components/plate-ui/blockquote-element";
-import { HeadingElement } from "./components/plate-ui/heading-element";
-import { HrElement } from "./components/plate-ui/hr-element";
-import { KbdLeaf } from "./components/plate-ui/kbd-leaf";
-import { ParagraphElement } from "./components/plate-ui/paragraph-element";
-import { withPlaceholders } from "./components/plate-ui/placeholder";
-import { NoteElement } from "./components/plate-ui/note-element";
+import { BlockquoteElement } from "../components/plate-ui/blockquote-element";
+import { HeadingElement } from "../components/plate-ui/heading-element";
+import { HrElement } from "../components/plate-ui/hr-element";
+import { KbdLeaf } from "../components/plate-ui/kbd-leaf";
+import { ParagraphElement } from "../components/plate-ui/paragraph-element";
+import { withPlaceholders } from "../components/plate-ui/placeholder";
+import { NoteElement } from "../components/plate-ui/note-element";
+import createCustomPlugin from "./custom";
 
 const plugins = createPlugins(
   [
+    createCustomPlugin(),
     createDeserializeDocxPlugin(),
     createParagraphPlugin(),
     createHeadingPlugin(),

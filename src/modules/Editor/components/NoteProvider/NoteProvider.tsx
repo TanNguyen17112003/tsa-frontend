@@ -76,30 +76,6 @@ const NotesProvider = ({
     [notes, onUpdateNotes]
   );
 
-  useEffect(() => {
-    const { apply } = editor;
-    const newApply = (o: TOperation) => {
-      if (o.type == "remove_text") {
-        const mark: any = editor.getMarks();
-        if (mark && mark.noteId && mark.superscript) {
-          return;
-        }
-      } else if (
-        o.type == "remove_node" &&
-        o.node.noteId &&
-        o.node.superscript
-      ) {
-        return;
-      }
-      apply(o);
-    };
-    editor.apply = newApply;
-    return () => {
-      editor.apply = apply;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return (
     <NotesContext.Provider
       value={{

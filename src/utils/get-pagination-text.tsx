@@ -1,10 +1,9 @@
-import Pagination from "src/components/ui/Pagination";
-import { SIDE_NAV_WIDTH } from "src/config";
+import { UsePaginationResult } from "src/hooks/use-pagination";
 
-const getPaginationText = (pagination: any): string => {
+const getPaginationText = (pagination: UsePaginationResult): string => {
   return `
           Đang hiển thị kết quả thứ${" "} ${
-    pagination.page * pagination.rowsPerPage + 1
+    pagination.page * pagination.rowsPerPage + (pagination.count > 0 ? 1 : 0)
   } tới${" "}
           ${Math.min(
             pagination.count,

@@ -102,11 +102,6 @@ const CollectionsProvider = ({ children }: { children: ReactNode }) => {
     [getCollectionsApi, updateTree]
   );
 
-  useEffect(() => {
-    getCollectionsApi.call(new FormData());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return (
     <CollectionsContext.Provider
       value={{

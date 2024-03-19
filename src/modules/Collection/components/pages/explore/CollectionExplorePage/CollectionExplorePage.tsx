@@ -8,24 +8,26 @@ import { useCollectionsContext } from "src/contexts/collections/collections-cont
 import { useDrawer } from "src/hooks/use-drawer";
 import usePagination from "src/hooks/use-pagination";
 import { useSelection } from "src/hooks/use-selection";
-import { CollectionDetail } from "src/types/collection";
+import { CollectionDetail, enrichCollection } from "src/types/collection";
 import CollectionBreadcrumb from "../../../CollectionBreadcrumb";
 import CollectionEditSheet from "./CollectionEditSheet";
 import collectionTableConfigs from "./collectionTableConfigs";
 import useFunction from "src/hooks/use-function";
 import { useRouter } from "next/router";
 import getPaginationText from "src/utils/get-pagination-text";
+import { useCollectionCategoriesContext } from "src/contexts/collections/collection-categories-context";
 
 interface CollectionExplorePageProps {}
 
 const CollectionExplorePage: FC<CollectionExplorePageProps> = ({}) => {
   const router = useRouter();
-  const { getCollectionsApi, deleteCollection } = useCollectionsContext();
+  const { getCollections } = useCollectionCategoriesContext();
+  const { deleteCollection } = useCollectionsContext();
   const editDrawer = useDrawer<CollectionDetail>();
 
   const collections = useMemo(() => {
-    return getCollectionsApi.data || [];
-  }, [getCollectionsApi.data]);
+    return getCollections();
+  }, [getCollections]);
 
   const pagination = usePagination({ count: collections.length });
   const select = useSelection<CollectionDetail>(collections);
@@ -79,7 +81,6 @@ const CollectionExplorePage: FC<CollectionExplorePageProps> = ({}) => {
       </div>
       <div className="px-4 flex-1 pb-6">
         <CustomTable
-          loading={getCollectionsApi.loading}
           select={select}
           rows={collections}
           configs={collectionTableConfigs}

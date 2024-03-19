@@ -5,15 +5,11 @@ import { useCollectionsContext } from "src/contexts/collections/collections-cont
 import useFunction from "src/hooks/use-function";
 import { Sutra } from "src/types/sutra";
 
-const GetCollection = (id: string) => {
-  const { getCollectionsApi } = useCollectionsContext();
-  const collection = getCollectionsApi.data?.find(
-    (item) => item.id == id
-  )?.name;
-  return <div>{collection}</div>;
-};
-
-const getAuthorSearchTableConfig: CustomTableConfig<Sutra["id"], Sutra>[] = [
+const getAuthorSearchTableConfig = ({
+  getCollection,
+}: {
+  getCollection: (id: string) => string;
+}): CustomTableConfig<Sutra["id"], Sutra>[] => [
   {
     key: "author.author",
     headerLabel: "Tên tác giả",
@@ -23,7 +19,7 @@ const getAuthorSearchTableConfig: CustomTableConfig<Sutra["id"], Sutra>[] = [
     key: "collection",
     headerLabel: "Tuyển tập kinh",
     type: "string",
-    renderCell: (data) => <div>{GetCollection(data.collection_id)}</div>,
+    renderCell: (data) => <div>{getCollection(data.collection_id)}</div>,
   },
   {
     key: "code",

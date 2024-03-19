@@ -11,6 +11,8 @@ interface CollectionBreadcrumbProps {}
 const CollectionBreadcrumb: FC<CollectionBreadcrumbProps> = ({}) => {
   const { tree, goCollection, goSutra, goVolume, goOrison } =
     useCollectionCategoriesContext();
+
+  console.log("tree", tree);
   const router = useRouter();
 
   const items = useMemo(() => {
@@ -35,7 +37,9 @@ const CollectionBreadcrumb: FC<CollectionBreadcrumbProps> = ({}) => {
       });
       if (router.query.translatorId) {
         bItems.push({
-          label: `Kết quả tìm kiếm dịch giả "${router.query.translatorName || ""}"`,
+          label: `Kết quả tìm kiếm dịch giả "${
+            router.query.translatorName || ""
+          }"`,
         });
       }
       if (router.query.authorId) {

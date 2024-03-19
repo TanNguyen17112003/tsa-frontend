@@ -6,6 +6,7 @@ import { SutrasApi } from "src/api/sutras";
 import { CustomTable } from "src/components/custom-table";
 import { Button } from "src/components/shadcn/ui/button";
 import FormInput from "src/components/ui/FormInput";
+import { useCollectionsContext } from "src/contexts/collections/collections-context";
 import useFunction from "src/hooks/use-function";
 import getAuthorSearchTableConfig from "src/sections/admin/author-search/author-search-table-config";
 import { SutraDetail } from "src/types/sutra";
@@ -39,9 +40,26 @@ const AuthorSearchForm = () => {
   const handleClick = (row: SutraDetail) => {
     router.replace({
       pathname: router.pathname,
-      query: { ...router.query, authorId: row.author_id, authorName: row.author.author },
+      query: {
+        ...router.query,
+        authorId: row.author_id,
+        authorName: row.author.author,
+      },
     });
   };
+
+  const { getCollectionsApi } = useCollectionsContext();
+
+  const authorSearchTableConfig = useMemo(() => {
+    return getAuthorSearchTableConfig({
+      getCollection: (id: string) => {
+        const collection = getCollectionsApi.data?.find(
+          (item) => item.id == id
+        )?.name;
+        return collection?.toString() || "";
+      },
+    });
+  }, []);
 
   return (
     <>
@@ -59,7 +77,7 @@ const AuthorSearchForm = () => {
       <hr />
       <CustomTable
         rows={data}
-        configs={getAuthorSearchTableConfig}
+        configs={authorSearchTableConfig}
         onClickRow={(row) => handleClick(row)}
       />
     </>

@@ -5,37 +5,32 @@ import { useCollectionsContext } from "src/contexts/collections/collections-cont
 import useFunction from "src/hooks/use-function";
 import { Sutra } from "src/types/sutra";
 
-const GetCollection = (id: string) => {
-  const { getCollectionsApi } = useCollectionsContext();
-  const collection = getCollectionsApi.data?.find(
-    (item) => item.id == id
-  )?.name;
-  return <div>{collection}</div>;
-};
-
-const getTranslatorSearchTableConfig: CustomTableConfig<Sutra["id"], Sutra>[] =
-  [
-    {
-      key: "translator.full_name",
-      headerLabel: "Tên tác giả",
-      type: "string",
-    },
-    {
-      key: "collection",
-      headerLabel: "Tuyển tập kinh",
-      type: "string",
-      renderCell: (data) => <div>{GetCollection(data.collection_id)}</div>,
-    },
-    {
-      key: "code",
-      headerLabel: "Bộ kinh",
-      type: "string",
-    },
-    {
-      key: "name",
-      headerLabel: "Bài kinh",
-      type: "string",
-    },
-  ];
+const getTranslatorSearchTableConfig = ({
+  getCollection,
+}: {
+  getCollection: (id: string) => string;
+}): CustomTableConfig<Sutra["id"], Sutra>[] => [
+  {
+    key: "translator.full_name",
+    headerLabel: "Tên tác giả",
+    type: "string",
+  },
+  {
+    key: "collection",
+    headerLabel: "Tuyển tập kinh",
+    type: "string",
+    renderCell: (data) => <div>{getCollection(data.collection_id)}</div>,
+  },
+  {
+    key: "code",
+    headerLabel: "Bộ kinh",
+    type: "string",
+  },
+  {
+    key: "name",
+    headerLabel: "Bài kinh",
+    type: "string",
+  },
+];
 
 export default getTranslatorSearchTableConfig;

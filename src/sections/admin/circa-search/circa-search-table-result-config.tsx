@@ -10,7 +10,7 @@ const getCircaSearchResultTableConfig = ({
 }): CustomTableConfig<Sutra["id"], any>[] => [
   {
     key: "name",
-    headerLabel: "Bộ kinh",
+    headerLabel: "Tên bộ kinh",
     type: "string",
   },
   {
@@ -20,8 +20,21 @@ const getCircaSearchResultTableConfig = ({
   },
   {
     key: "original_text",
-    headerLabel: "Bộ kinh",
+    headerLabel: "Văn bản gốc",
     type: "string",
+    renderCell: (data) => (
+      <div>
+        {data.original_text ? (
+          <div className="border border-green-300 w-fit px-2 py-0.5 rounded-lg text-green-700 bg-green-50">
+            Đã có
+          </div>
+        ) : (
+          <div className="border border-rose-200 w-fit px-1 py-0.5 rounded-lg text-rose-700 bg-rose-50">
+            Chưa có
+          </div>
+        )}
+      </div>
+    ),
   },
   {
     key: "sutra_number",

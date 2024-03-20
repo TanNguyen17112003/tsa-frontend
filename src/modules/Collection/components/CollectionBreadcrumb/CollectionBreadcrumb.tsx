@@ -9,10 +9,9 @@ import { useCollectionCategoriesContext } from "src/contexts/collections/collect
 interface CollectionBreadcrumbProps {}
 
 const CollectionBreadcrumb: FC<CollectionBreadcrumbProps> = ({}) => {
-  const { tree, goCollection, goSutra, goVolume, goOrison } =
+  const { tree, categories, goCollection, goSutra, goVolume, goOrison } =
     useCollectionCategoriesContext();
 
-  console.log("tree", tree);
   const router = useRouter();
 
   const items = useMemo(() => {
@@ -36,15 +35,19 @@ const CollectionBreadcrumb: FC<CollectionBreadcrumbProps> = ({}) => {
           router.replace({ pathname: router.pathname, query: newQuery }),
       });
       if (router.query.translatorId) {
+        const translator = categories.translators.find(
+          (item) => item.id == router.query.translatorId
+        )?.full_name;
         bItems.push({
-          label: `Kết quả tìm kiếm dịch giả "${
-            router.query.translatorName || ""
-          }"`,
+          label: `Kết quả tìm kiếm dịch giả "${translator || ""}"`,
         });
       }
       if (router.query.authorId) {
+        const author = categories.authors.find(
+          (item) => item.id == router.query.authorId
+        )?.author;
         bItems.push({
-          label: `Kết quả tìm kiếm tác giả "${router.query.authorName || ""}"`,
+          label: `Kết quả tìm kiếm tác giả "${author || ""}"`,
         });
       }
       if (router.query.qCircaFrom && router.query.qCircaTo) {

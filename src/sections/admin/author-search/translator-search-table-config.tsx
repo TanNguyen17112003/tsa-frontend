@@ -1,30 +1,32 @@
-import { useEffect, useMemo } from "react";
-import { CollectionsApi } from "src/api/collections";
 import { CustomTableConfig } from "src/components/custom-table";
-import { useCollectionsContext } from "src/contexts/collections/collections-context";
-import useFunction from "src/hooks/use-function";
-import { Sutra } from "src/types/sutra";
+import { Orison } from "src/types/orison";
 
 const getTranslatorSearchTableConfig = ({
   getCollection,
+  getTranslator,
+  getSutra,
 }: {
   getCollection: (id: string) => string;
-}): CustomTableConfig<Sutra["id"], Sutra>[] => [
+  getTranslator: (id: string) => string;
+  getSutra: (id: string) => string;
+}): CustomTableConfig<Orison["id"], Orison>[] => [
   {
     key: "translator.full_name",
-    headerLabel: "Tên tác giả",
+    headerLabel: "Tên dịch giả",
     type: "string",
+    renderCell: (data) => <div>{getTranslator(data.volume_id)}</div>,
   },
   {
     key: "collection",
     headerLabel: "Tuyển tập kinh",
     type: "string",
-    renderCell: (data) => <div>{getCollection(data.collection_id)}</div>,
+    renderCell: (data) => <div>{getCollection(data.volume_id)}</div>,
   },
   {
     key: "code",
     headerLabel: "Bộ kinh",
     type: "string",
+    renderCell: (data) => <div>{getSutra(data.volume_id)}</div>,
   },
   {
     key: "name",

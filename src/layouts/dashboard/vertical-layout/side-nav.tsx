@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useCallback } from "react";
 import Link from "next/link";
 import { useAuth } from "src/hooks/use-auth"; // Import your auth hook
 import { usePathname } from "src/hooks/use-pathname";
@@ -7,6 +7,9 @@ import SimpleBar from "simplebar-react";
 import { SideNavSection } from "./side-nav-section";
 import { NavColor } from "src/types/settings";
 import { SIDE_NAV_WIDTH } from "src/config";
+import { Button } from "src/components/shadcn/ui/button";
+import { useRouter } from "next/router";
+import { paths } from "src/paths";
 
 interface SideNavProps {
   color?: NavColor;
@@ -15,8 +18,17 @@ interface SideNavProps {
 
 export const SideNav: FC<SideNavProps> = (props) => {
   const { user } = useAuth();
+  const router = useRouter();
   const { sections = [] } = props;
   const pathname = usePathname();
+
+  const handleLogin = useCallback(() => {
+    router.replace(paths.auth.login);
+  }, [router]);
+
+  const handleRegister = useCallback(() => {
+    router.replace(paths.auth.register);
+  }, [router]);
 
   return (
     <div
@@ -75,17 +87,34 @@ export const SideNav: FC<SideNavProps> = (props) => {
             </nav>
           </div>
         </SimpleBar>
-        <div className="sticky w-full bottom-0 p-2 cursor-pointer flex bg-white z-10">
-          <Link
-            href={"#"}
-            className="sticky w-full bottom-0 p-2 cursor-pointer flex gap-[12px]"
-          >
-            <div className="inline-flex flex-col items-start relative flex-[0_0_auto]">
-              <div className="text-sm font-semibold">Quản trị viên</div>
-              <div className="text-xs text-text-secondary">Nguyễn Văn Long</div>
-            </div>
-          </Link>
-        </div>
+        {user?.role ? (
+          <div className="sticky w-full bottom-0 p-2 cursor-pointer flex bg-white z-10">
+            <Link
+              href={"#"}
+              className="sticky w-full bottom-0 p-2 cursor-pointer flex gap-[12px]"
+            >
+              <div className="inline-flex flex-col items-start relative flex-[0_0_auto]">
+                {user.role == "admin" ? (
+                  <div className="text-sm font-semibold">Quản trị viên</div>
+                ) : (
+                  <div className="text-sm font-semibold">Đọc giả</div>
+                )}
+                <div className="text-xs text-text-secondary">
+                  {user.full_name}
+                </div>
+              </div>
+            </Link>
+          </div>
+        ) : (
+          <div className="p-4 flex space-x-4">
+            <Button className="w-full" onClick={handleLogin}>
+              Login
+            </Button>
+            <Button className="w-full" onClick={handleRegister}>
+              Register
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -7,13 +7,7 @@ import { CustomTable } from "src/components/custom-table";
 import getAuthorSearchResultTableConfig from "src/sections/admin/author-search/author-search-result-table-config";
 import { useSutrasContext } from "src/contexts/sutras/sutras-context";
 import { useCollectionCategoriesContext } from "src/contexts/collections/collection-categories-context";
-import { useSelection } from "src/hooks/use-selection";
-import { Sutra } from "src/types/sutra";
-import useFunction from "src/hooks/use-function";
-import { OrisonsApi } from "src/api/orisons";
-import { format } from "date-fns";
-import { Orison, OrisonDetail } from "src/types/orison";
-import { getFormData } from "src/utils/api-request";
+import { SutraDetail } from "src/types/sutra";
 
 interface AuthorSearchFormProps {
   qAuthorId: string;
@@ -33,7 +27,6 @@ const AuthorSearchResultPage: FC<AuthorSearchFormProps> = ({
   qAuthorId: string;
 }) => {
   const router = useRouter();
-  const getOrisonsApi = useFunction(OrisonsApi.getOrisons);
   const { getSutrasApi } = useSutrasContext();
   const { categories, tree } = useCollectionCategoriesContext();
 
@@ -64,87 +57,49 @@ const AuthorSearchResultPage: FC<AuthorSearchFormProps> = ({
 
   useEffect(() => {
     getSutrasApi.call({});
-    getOrisonsApi.call({ volume_id: "" });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const sutras = useMemo(() => {
-    return getSutrasApi.data || [];
-  }, [getSutrasApi.data, qAuthorId]);
-
-  const orison = useMemo(() => {
     return (
-      getOrisonsApi.data?.filter(
-        (item) =>
-          item.volume_id ==
-          tree.volumes.find(
-            (volume) =>
-              volume.sutras_id ==
-              sutras.find((sutra) => sutra.author_id == qAuthorId)?.id
-          )?.id
-      ) || []
+      getSutrasApi.data?.filter((item) => item.author_id == qAuthorId) || []
     );
-  }, [getOrisonsApi.data, qAuthorId]);
+  }, [getSutrasApi.data, qAuthorId]);
 
   const AuthorSearchTableConfig = useMemo(() => {
     return getAuthorSearchResultTableConfig({
       onClickEdit: (data) => {},
-      getVolume: (volumeId: string) => {
-        const volumeCode =
-          tree.volumes.find((item) => item.id == volumeId)?.name || "";
-        return volumeCode.toString();
+      getVolume: (id: string) => {
+        const volume = tree.volumes.find((item) => item.sutras_id == id)?.name;
+        return volume?.toString() || "";
       },
-      getAuthor: (volumeId: string) => {
-        const idSutra =
-          tree.sutras.find(
-            (item) =>
-              item.id ==
-              tree.volumes.find((volume) => volume.id == volumeId)?.sutras_id
-          )?.id || "";
-        const authorId =
-          sutras.find((item) => item.id == idSutra)?.author_id || "";
+      getAuthor: (id: string) => {
         const author = categories.authors?.find(
-          (item) => item.id == authorId
+          (item) => item.id == id
         )?.author;
         return author?.toString() || "";
       },
-      getTranslator: (volumeId: string) => {
-        const idSutra =
-          tree.sutras.find(
-            (item) =>
-              item.id ==
-              tree.volumes.find((volume) => volume.id == volumeId)?.sutras_id
-          )?.id || "";
-        const translatorId =
-          sutras.find((item) => item.id == idSutra)?.user_id || "";
+      getTranslator: (id: string) => {
         const translator = categories.translators?.find(
-          (item) => item.id == translatorId
+          (item) => item.id == id
         )?.full_name;
         return translator?.toString() || "";
       },
-      getCirca: (volumeId: string) => {
-        const idSutra =
-          tree.sutras.find(
-            (item) =>
-              item.id ==
-              tree.volumes.find((volume) => volume.id == volumeId)?.sutras_id
-          )?.id || "";
-        const circa =
-          sutras.find((item) => item.id == idSutra)?.circa.start_year +
-          " TCN - " +
-          sutras.find((item) => item.id == idSutra)?.circa.start_year +
-          " TCN";
-        return circa;
-      },
     });
-  }, [categories, tree, sutras]);
+  }, [categories, tree]);
 
   const handleClickRow = useCallback(
-    (row: Orison) => {
+    (row: SutraDetail) => {
+      const volumeId = tree.volumes.find(
+        (item) => item.sutras_id == row.id
+      )?.id;
+      const orisonsId = tree.orisons.find(
+        (item) => item.volume_id == volumeId
+      )?.id;
       router.replace({
         pathname: router.pathname,
-        query: { orisonId: row.id },
+        query: { orisonId: orisonsId },
       });
     },
     [router]
@@ -161,7 +116,7 @@ const AuthorSearchResultPage: FC<AuthorSearchFormProps> = ({
         </Button>
       </div>
       <CustomTable
-        rows={orison}
+        rows={sutras}
         configs={AuthorSearchTableConfig}
         // select={select}
         onClickRow={handleClickRow}

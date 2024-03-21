@@ -1,6 +1,4 @@
 import { FC, useEffect } from "react";
-import { BsSearch } from "react-icons/bs";
-import { Input } from "src/components/shadcn/ui/input";
 import {
   Tabs,
   TabsContent,
@@ -20,13 +18,12 @@ const AuthorSearchPage: FC<AuthorSearchPageProps> = ({}) => {
   useEffect(() => {
     router.replace({
       pathname: router.pathname,
-      query: {searchType : "author"},
+      query: { searchType: "author" },
     });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  
   return (
     <>
       <div className="flex justify-between p-5">

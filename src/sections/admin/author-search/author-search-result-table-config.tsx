@@ -1,50 +1,51 @@
 import { FaRegEdit } from "react-icons/fa";
 import { CustomTableConfig } from "src/components/custom-table";
 import { Button } from "src/components/shadcn/ui/button";
-import { Orison } from "src/types/orison";
-import { Sutra } from "src/types/sutra";
+import { SutraDetail } from "src/types/sutra";
 
 const getAuthorSearchResultTableConfig = ({
   onClickEdit,
   getAuthor,
   getTranslator,
   getVolume,
-  getCirca,
 }: {
-  onClickEdit: (data: Sutra) => void;
-  getVolume: (id: string) => string;
+  onClickEdit: (data: SutraDetail) => void;
   getAuthor: (id: string) => string;
   getTranslator: (id: string) => string;
-  getCirca: (id: string) => string;
-}): CustomTableConfig<Orison["id"], any>[] => [
+  getVolume: (id: string) => string;
+}): CustomTableConfig<SutraDetail["id"], SutraDetail>[] => [
   {
     key: "name",
-    headerLabel: "Tên bài kinh",
+    headerLabel: "Tên bộ kinh",
     type: "string",
   },
   {
-    key: "volume",
+    key: "code",
     headerLabel: "Mã quyển kinh",
     type: "string",
-    renderCell: (data) => <div>{getVolume(data.volume_id)}</div>,
+    renderCell: (data) => <div>{getVolume(data.id)}</div>,
   },
   {
     key: "author",
     headerLabel: "Tác giả",
     type: "string",
-    renderCell: (data) => <div>{getAuthor(data.volume_id)}</div>,
+    renderCell: (data) => <div>{getAuthor(data.author_id)}</div>,
   },
   {
     key: "translator",
     headerLabel: "Dịch giả",
     type: "string",
-    renderCell: (data) => <div>{getTranslator(data.volume_id)}</div>,
+    renderCell: (data) => <div>{getTranslator(data.user_id)}</div>,
   },
   {
     key: "circa",
     headerLabel: "Niên đại",
     type: "string",
-    renderCell: (data) => <div>{getCirca(data.volume_id)}</div>,
+    renderCell: (data) => (
+      <div>
+        {data.circa.start_year + " TCN - " + data.circa.end_year + " TCN"}
+      </div>
+    ),
   },
   {
     key: "created_at",

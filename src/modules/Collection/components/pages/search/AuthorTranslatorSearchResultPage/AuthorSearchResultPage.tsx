@@ -108,19 +108,21 @@ const AuthorSearchResultPage: FC<AuthorSearchFormProps> = ({
   // const select = useSelection<Sutra>(sutras);
 
   return (
-    <div>
+    <div className="px-4">
       <div className="flex justify-between p-5">
         <CollectionBreadcrumb />
         <Button variant="outline" onClick={handleBackToAuthorSearch}>
           Tìm kiếm kết quả khác
         </Button>
       </div>
-      <CustomTable
-        rows={sutras}
-        configs={AuthorSearchTableConfig}
-        // select={select}
-        onClickRow={handleClickRow}
-      />
+      <div className="p-4">
+        <CustomTable
+          rows={sutras}
+          configs={AuthorSearchTableConfig}
+          // select={select}
+          onClickRow={handleClickRow}
+        />
+      </div>
     </div>
   );
 };

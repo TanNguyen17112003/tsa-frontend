@@ -1,13 +1,17 @@
 import { FaRegEdit } from "react-icons/fa";
 import { CustomTableConfig } from "src/components/custom-table";
 import { Button } from "src/components/shadcn/ui/button";
-import { Sutra } from "src/types/sutra";
+import { SutraDetail } from "src/types/sutra";
 
 const getCircaSearchResultTableConfig = ({
   onClickEdit,
+  getAuthor,
+  getTranslator,
 }: {
-  onClickEdit: (data: Sutra) => void;
-}): CustomTableConfig<Sutra["id"], any>[] => [
+  onClickEdit: (data: SutraDetail) => void;
+  getAuthor: (id: string) => string;
+  getTranslator: (id: string) => string;
+}): CustomTableConfig<SutraDetail["id"], SutraDetail>[] => [
   {
     key: "name",
     headerLabel: "Tên bộ kinh",
@@ -37,7 +41,7 @@ const getCircaSearchResultTableConfig = ({
     ),
   },
   {
-    key: "sutra_number",
+    key: "num_orisons",
     headerLabel: "Số lượng bài kinh",
     type: "number",
   },
@@ -45,11 +49,13 @@ const getCircaSearchResultTableConfig = ({
     key: "author.author",
     headerLabel: "Tác giả",
     type: "string",
+    renderCell: (data) => <div>{getAuthor(data.author_id)}</div>,
   },
   {
     key: "translator.full_name",
     headerLabel: "Dịch giả",
     type: "string",
+    renderCell: (data) => <div>{getTranslator(data.user_id)}</div>,
   },
   {
     key: "circa",

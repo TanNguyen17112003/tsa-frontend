@@ -10,6 +10,15 @@ import {
 } from "src/components/shadcn/ui/dialog";
 import { Input } from "src/components/shadcn/ui/input";
 import { Label } from "src/components/shadcn/ui/label";
+import CollectionBreadcrumb from "../../../CollectionBreadcrumb";
+import FormInput from "src/components/ui/FormInput";
+import { useFormik } from "formik";
+import { formatReportSchema, initialReport } from "src/types/report";
+import useFunction from "src/hooks/use-function";
+import { useReportsContext } from "src/contexts/reports/reports-context";
+import { useAuth } from "src/hooks/use-auth";
+import useAppSnackbar from "src/hooks/use-app-snackbar";
+import { Textarea } from "src/components/shadcn/ui/textarea";
 
 const OrisonComplainDialog = ({
   isOpen,
@@ -18,35 +27,87 @@ const OrisonComplainDialog = ({
   isOpen: boolean;
   onClose: () => void;
 }) => {
+  const { createReport } = useReportsContext();
+  const createReportHelper = useFunction(createReport);
+  const { user } = useAuth();
+  const { showSnackbarSuccess, showSnackbarError } = useAppSnackbar();
+
+  const formik = useFormik({
+    initialValues: initialReport,
+    validationSchema: formatReportSchema,
+    onSubmit: async (values) => {
+      try {
+        const { error } = await createReportHelper.call({
+          ...values,
+          user_id: user?.id || "",
+          report_status: "pending",
+        });
+
+        if (!error) {
+          showSnackbarSuccess("Gửi khiếu nại thành công!");
+          formik.resetForm();
+          onClose();
+        } else {
+          showSnackbarError("Gửi khiếu nại không thành công!");
+        }
+      } catch (error: any) {
+        console.error(error);
+      }
+    },
+  });
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogTrigger asChild>
         {/* <Button variant="outline">Edit Profile</Button> */}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>Edit profile</DialogTitle>
+          <DialogTitle className="text-2xl font-semibold">
+            Khiếu nại
+          </DialogTitle>
           <DialogDescription>
-            Make changes to your profile here. Click save when you're done.
+            <CollectionBreadcrumb />
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Name
-            </Label>
-            <Input id="name" value="Pedro Duarte" className="col-span-3" />
+        <div className="space-y-6">
+          <div>
+            <div className="text-sm font-semibold pb-2">Email</div>
+            <FormInput
+              type="text"
+              placeholder="Nhập email của bạn tại đây"
+              className="w-full px-3"
+              {...formik.getFieldProps("email")}
+              error={formik.touched.email && !!formik.errors.email}
+              helperText={!!formik.touched.email && formik.errors.email}
+            />
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="username" className="text-right">
-              Username
-            </Label>
-            <Input id="username" value="@peduarte" className="col-span-3" />
+          <div>
+            <div className="text-sm font-semibold pb-2">Tiêu đề</div>
+            <FormInput
+              type="text"
+              placeholder="Nhập tiêu đề"
+              className="w-full px-3"
+              {...formik.getFieldProps("title")}
+              error={formik.touched.title && !!formik.errors.title}
+              helperText={!!formik.touched.title && formik.errors.title}
+            />
+          </div>
+          <div>
+            <div className="text-sm font-semibold pb-2">Nội dung</div>
+            <Textarea
+              placeholder="Nhập nội dung feedback tại đây."
+              {...formik.getFieldProps("content")}
+              className="h-52"
+            />
+            <div className="text-xs font-normal text-secondary pt-2">
+              Tối đa 500 ký tự
+            </div>
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit" onClick={onClose}>
-            Save changes
+          <Button type="submit" onClick={() => formik.handleSubmit()}>
+            Gửi khiếu nại
           </Button>
         </DialogFooter>
       </DialogContent>

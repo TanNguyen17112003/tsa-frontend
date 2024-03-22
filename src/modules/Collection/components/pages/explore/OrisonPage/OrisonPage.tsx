@@ -21,6 +21,7 @@ import { useAuth } from "src/hooks/use-auth";
 import exportDocx from "src/modules/Editor/utils/docx";
 import { downloadFile } from "src/utils/url-handler";
 import useFunction from "src/hooks/use-function";
+import OrisonComplainDialog from "./OrisonCompainDialog";
 
 interface OrisonPageProps {}
 
@@ -30,6 +31,7 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
     useOrisonsContext();
   const [searchText, setSearchText] = useState("");
   const router = useRouter();
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const isEditting = router.query.isEditting == "true";
   const isFullScreen = router.query.isFullScreen == "true";
@@ -116,10 +118,21 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
               </form>
               {!isEditting && (
                 <>
-                  <Button size="lg" variant="outline" className="gap-2 px-4">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="gap-2 px-4"
+                    onClick={() => {
+                      setIsOpen(true);
+                    }}
+                  >
                     <PiFlagBold className="w-5 h-5" />
                     Khiếu nại
                   </Button>
+                  <OrisonComplainDialog
+                    isOpen={isOpen}
+                    onClose={() => setIsOpen(false)}
+                  />
                   <Button
                     size="lg"
                     variant="outline"

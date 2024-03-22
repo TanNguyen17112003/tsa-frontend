@@ -26,10 +26,6 @@ export const SideNav: FC<SideNavProps> = (props) => {
     router.push(paths.auth.login);
   }, [router]);
 
-  const handleRegister = useCallback(() => {
-    router.push(paths.auth.register);
-  }, [router]);
-
   return (
     <div
       className="fixed inset-0 z-50 h-screen bg-white rounded-[0px_24px_24px_0px] overflow-hidden border-r border-solid border-background-other-divider shadow-lg"
@@ -111,13 +107,33 @@ export const SideNav: FC<SideNavProps> = (props) => {
             </Link>
           </div>
         ) : (
-          <div className="p-4 flex space-x-4">
-            <Button className="w-full" onClick={handleLogin}>
-              Login
-            </Button>
-            <Button className="w-full" onClick={handleRegister}>
-              Register
-            </Button>
+          <div className="mb-5">
+            <div className="m-4 p-5 space-y-5 border rounded-3xl">
+              <img
+                className="flex w-full h-full items-center rounded-3xl"
+                alt="Logo"
+                src="/ui/background-siu.png"
+              />
+              <div className="space-y-3">
+                <div className="flex justify-center text-sm font-semibold">
+                  Dịch giả
+                </div>
+                <div className="text-xs font-normal text-secondary">
+                  <div className="flex justify-center">
+                    Đăng nhập tới trang quản trị
+                  </div>
+                  <div className="flex justify-center">dành cho dịch giả</div>
+                </div>
+              </div>
+
+              <Button
+                variant="secondary"
+                className="w-full"
+                onClick={handleLogin}
+              >
+                Đăng nhập
+              </Button>
+            </div>
           </div>
         )}
       </div>

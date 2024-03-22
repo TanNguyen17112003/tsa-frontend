@@ -23,11 +23,11 @@ export const SideNav: FC<SideNavProps> = (props) => {
   const pathname = usePathname();
 
   const handleLogin = useCallback(() => {
-    router.replace(paths.auth.login);
+    router.push(paths.auth.login);
   }, [router]);
 
   const handleRegister = useCallback(() => {
-    router.replace(paths.auth.register);
+    router.push(paths.auth.register);
   }, [router]);
 
   return (
@@ -88,16 +88,21 @@ export const SideNav: FC<SideNavProps> = (props) => {
           </div>
         </SimpleBar>
         {user?.role ? (
-          <div className="sticky w-full bottom-0 p-2 cursor-pointer flex bg-white z-10">
+          <div className="sticky w-full bottom-0 p-2 cursor-pointer flex bg-white z-10 items-center">
             <Link
               href={"#"}
               className="sticky w-full bottom-0 p-2 cursor-pointer flex gap-[12px]"
             >
+              <img
+                className="flex w-[12%] h-full items-center pt-0.5"
+                alt="Logo"
+                src="/logos/logo.png"
+              />
               <div className="inline-flex flex-col items-start relative flex-[0_0_auto]">
                 {user.role == "admin" ? (
                   <div className="text-sm font-semibold">Quản trị viên</div>
                 ) : (
-                  <div className="text-sm font-semibold">Đọc giả</div>
+                  <div className="text-sm font-semibold">Dịch giả</div>
                 )}
                 <div className="text-xs text-text-secondary">
                   {user.full_name}

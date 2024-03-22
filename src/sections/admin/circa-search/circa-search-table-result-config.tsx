@@ -5,12 +5,8 @@ import { SutraDetail } from "src/types/sutra";
 
 const getCircaSearchResultTableConfig = ({
   onClickEdit,
-  getAuthor,
-  getTranslator,
 }: {
   onClickEdit: (data: SutraDetail) => void;
-  getAuthor: (id: string) => string;
-  getTranslator: (id: string) => string;
 }): CustomTableConfig<SutraDetail["id"], SutraDetail>[] => [
   {
     key: "name",
@@ -44,18 +40,19 @@ const getCircaSearchResultTableConfig = ({
     key: "num_orisons",
     headerLabel: "Số lượng bài kinh",
     type: "number",
+    renderCell: (data) => (
+      <div className="flex justify-start">{data.num_orisons}</div>
+    ),
   },
   {
     key: "author.author",
     headerLabel: "Tác giả",
     type: "string",
-    renderCell: (data) => <div>{getAuthor(data.author_id)}</div>,
   },
   {
     key: "translator.full_name",
     headerLabel: "Dịch giả",
     type: "string",
-    renderCell: (data) => <div>{getTranslator(data.user_id)}</div>,
   },
   {
     key: "circa",

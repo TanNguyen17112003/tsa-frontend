@@ -9,7 +9,7 @@ import FormInput from "src/components/ui/FormInput";
 import { useCollectionCategoriesContext } from "src/contexts/collections/collection-categories-context";
 import useFunction from "src/hooks/use-function";
 import getAuthorSearchTableConfig from "src/sections/admin/author-search/author-search-table-config";
-import { SutraDetail } from "src/types/sutra";
+import { SutraDetail, enrichSutra } from "src/types/sutra";
 
 const AuthorSearchForm = () => {
   const router = useRouter();
@@ -21,21 +21,20 @@ const AuthorSearchForm = () => {
     getSutrasApi.call({});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const data = useMemo(() => {
+
+  const sutras = useMemo(() => {
     if (searchData.length != 0) {
-      return (
-        getSutrasApi.data?.filter(
-          (item) =>
-            item.author_id ==
-            categories.authors?.find((category) =>
-              category.author.toLowerCase().includes(searchData.toLowerCase())
-            )?.id
-        ) || []
-      );
+      return (getSutrasApi.data || [])
+        .map((s) => enrichSutra(s, tree, categories))
+        .filter((item) =>
+          item.author.author.toLowerCase().includes(searchData.toLowerCase())
+        );
     } else {
-      return getSutrasApi.data || [];
+      return (getSutrasApi.data || []).map((s) =>
+        enrichSutra(s, tree, categories)
+      );
     }
-  }, [getSutrasApi.data, searchData]);
+  }, [categories, getSutrasApi.data, tree, searchData]);
 
   const formik = useFormik({
     initialValues: { author: "" },
@@ -54,21 +53,6 @@ const AuthorSearchForm = () => {
     });
   };
 
-  const authorSearchTableConfig = useMemo(() => {
-    return getAuthorSearchTableConfig({
-      getCollection: (id: string) => {
-        const collection = tree.collections.find((item) => item.id == id)?.name;
-        return collection?.toString() || "";
-      },
-      getAuthor: (id: string) => {
-        const author = categories.authors?.find(
-          (item) => item.id == id
-        )?.author;
-        return author?.toString() || "";
-      },
-    });
-  }, [tree, categories]);
-
   return (
     <>
       <div className="flex border border-gray-300 rounded-md w-full items-center my-6">
@@ -84,8 +68,8 @@ const AuthorSearchForm = () => {
       </div>
       <hr />
       <CustomTable
-        rows={data}
-        configs={authorSearchTableConfig}
+        rows={sutras}
+        configs={getAuthorSearchTableConfig}
         onClickRow={(row) => handleClick(row)}
       />
     </>

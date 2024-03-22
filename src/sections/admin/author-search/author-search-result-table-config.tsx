@@ -5,14 +5,8 @@ import { SutraDetail } from "src/types/sutra";
 
 const getAuthorSearchResultTableConfig = ({
   onClickEdit,
-  getAuthor,
-  getTranslator,
-  getVolume,
 }: {
   onClickEdit: (data: SutraDetail) => void;
-  getAuthor: (id: string) => string;
-  getTranslator: (id: string) => string;
-  getVolume: (id: string) => string;
 }): CustomTableConfig<SutraDetail["id"], SutraDetail>[] => [
   {
     key: "name",
@@ -20,22 +14,19 @@ const getAuthorSearchResultTableConfig = ({
     type: "string",
   },
   {
-    key: "code",
+    key: "volumes.name",
     headerLabel: "Mã quyển kinh",
     type: "string",
-    renderCell: (data) => <div>{getVolume(data.id)}</div>,
   },
   {
-    key: "author",
+    key: "author.author",
     headerLabel: "Tác giả",
     type: "string",
-    renderCell: (data) => <div>{getAuthor(data.author_id)}</div>,
   },
   {
-    key: "translator",
+    key: "translator.full_name",
     headerLabel: "Dịch giả",
     type: "string",
-    renderCell: (data) => <div>{getTranslator(data.user_id)}</div>,
   },
   {
     key: "circa",

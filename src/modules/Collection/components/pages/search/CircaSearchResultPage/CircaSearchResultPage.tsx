@@ -5,11 +5,9 @@ import { useCollectionCategoriesContext } from "src/contexts/collections/collect
 import useFunction from "src/hooks/use-function";
 import { CustomTable } from "src/components/custom-table";
 import getCircaSearchResultTableConfig from "src/sections/admin/circa-search/circa-search-table-result-config";
-import { useSelection } from "src/hooks/use-selection";
 import CollectionBreadcrumb from "../../../CollectionBreadcrumb";
 import { Button } from "src/components/shadcn/ui/button";
-import { Sutra } from "src/types/sutra";
-import getAuthorSearchResultTableConfig from "src/sections/admin/author-search/author-search-result-table-config";
+import { enrichSutra } from "src/types/sutra";
 
 const CircaSearchResultPage = ({
   qCircaFrom,
@@ -19,7 +17,7 @@ const CircaSearchResultPage = ({
   qCircaTo?: string;
 }) => {
   const getSutrasApi = useFunction(SutrasApi.getSutras);
-  const { goSutra } = useCollectionCategoriesContext();
+  const { goSutra, tree } = useCollectionCategoriesContext();
   const router = useRouter();
   useEffect(() => {
     getSutrasApi.call({
@@ -33,24 +31,14 @@ const CircaSearchResultPage = ({
   const { categories } = useCollectionCategoriesContext();
 
   const sutras = useMemo(() => {
-    return getSutrasApi.data || [];
-  }, [getSutrasApi]);
+    return (getSutrasApi.data || []).map((s) =>
+      enrichSutra(s, tree, categories)
+    );
+  }, [categories, getSutrasApi.data, tree]);
 
   const circaSearchResultTableConfig = useMemo(() => {
     return getCircaSearchResultTableConfig({
       onClickEdit: (data) => {},
-      getAuthor: (id: string) => {
-        const author = categories.authors?.find(
-          (item) => item.id == id
-        )?.author;
-        return author?.toString() || "";
-      },
-      getTranslator: (id: string) => {
-        const translator = categories.translators?.find(
-          (item) => item.id == id
-        )?.full_name;
-        return translator?.toString() || "";
-      },
     });
   }, [categories]);
 

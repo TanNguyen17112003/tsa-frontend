@@ -1,24 +1,19 @@
 import { CustomTableConfig } from "src/components/custom-table";
 import { SutraDetail } from "src/types/sutra";
 
-const getTranslatorSearchTableConfig = ({
-  getCollection,
-  getTranslator,
-}: {
-  getCollection: (id: string) => string;
-  getTranslator: (id: string) => string;
-}): CustomTableConfig<SutraDetail["id"], SutraDetail>[] => [
+const getTranslatorSearchTableConfig: CustomTableConfig<
+  SutraDetail["id"],
+  SutraDetail
+>[] = [
   {
-    key: "translator",
+    key: "translator.full_name",
     headerLabel: "Tên dịch giả",
     type: "string",
-    renderCell: (data) => <div>{getTranslator(data.user_id)}</div>,
   },
   {
-    key: "collection",
+    key: "collections.name",
     headerLabel: "Tuyển tập kinh",
     type: "string",
-    renderCell: (data) => <div>{getCollection(data.collection_id)}</div>,
   },
   {
     key: "name",

@@ -7,7 +7,7 @@ import { CustomTable } from "src/components/custom-table";
 import getAuthorSearchResultTableConfig from "src/sections/admin/author-search/author-search-result-table-config";
 import { useSutrasContext } from "src/contexts/sutras/sutras-context";
 import { useCollectionCategoriesContext } from "src/contexts/collections/collection-categories-context";
-import { SutraDetail } from "src/types/sutra";
+import { SutraDetail, enrichSutra } from "src/types/sutra";
 
 interface AuthorSearchFormProps {
   qAuthorId: string;
@@ -62,30 +62,14 @@ const AuthorSearchResultPage: FC<AuthorSearchFormProps> = ({
   }, []);
 
   const sutras = useMemo(() => {
-    return (
-      getSutrasApi.data?.filter((item) => item.author_id == qAuthorId) || []
-    );
-  }, [getSutrasApi.data, qAuthorId]);
+    return (getSutrasApi.data || [])
+      .filter((item) => item.author_id == qAuthorId)
+      .map((s) => enrichSutra(s, tree, categories));
+  }, [categories, getSutrasApi.data, tree, qAuthorId]);
 
   const AuthorSearchTableConfig = useMemo(() => {
     return getAuthorSearchResultTableConfig({
       onClickEdit: (data) => {},
-      getVolume: (id: string) => {
-        const volume = tree.volumes.find((item) => item.sutras_id == id)?.name;
-        return volume?.toString() || "";
-      },
-      getAuthor: (id: string) => {
-        const author = categories.authors?.find(
-          (item) => item.id == id
-        )?.author;
-        return author?.toString() || "";
-      },
-      getTranslator: (id: string) => {
-        const translator = categories.translators?.find(
-          (item) => item.id == id
-        )?.full_name;
-        return translator?.toString() || "";
-      },
     });
   }, [categories, tree]);
 

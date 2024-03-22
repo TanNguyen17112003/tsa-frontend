@@ -1,14 +1,13 @@
 import { useRouter } from "next/router";
 import { useEffect, useMemo } from "react";
-import { SutraMin } from "src/api/collections";
 import { SutrasApi } from "src/api/sutras";
 import { useCollectionCategoriesContext } from "src/contexts/collections/collection-categories-context";
 import useFunction from "src/hooks/use-function";
 import { CustomTable } from "src/components/custom-table";
 import getCircaSearchResultTableConfig from "src/sections/admin/circa-search/circa-search-table-result-config";
-import { useSelection } from "src/hooks/use-selection";
 import CollectionBreadcrumb from "../../../CollectionBreadcrumb";
 import { Button } from "src/components/shadcn/ui/button";
+import { enrichSutra } from "src/types/sutra";
 
 const CircaSearchResultPage = ({
   qCircaFrom,
@@ -18,7 +17,7 @@ const CircaSearchResultPage = ({
   qCircaTo?: string;
 }) => {
   const getSutrasApi = useFunction(SutrasApi.getSutras);
-  const { goSutra } = useCollectionCategoriesContext();
+  const { goSutra, tree } = useCollectionCategoriesContext();
   const router = useRouter();
   useEffect(() => {
     getSutrasApi.call({
@@ -29,24 +28,28 @@ const CircaSearchResultPage = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const { categories } = useCollectionCategoriesContext();
+
   const sutras = useMemo(() => {
-    return getSutrasApi.data || [];
-  }, [getSutrasApi]);
+    return (getSutrasApi.data || []).map((s) =>
+      enrichSutra(s, tree, categories)
+    );
+  }, [categories, getSutrasApi.data, tree]);
 
   const circaSearchResultTableConfig = useMemo(() => {
     return getCircaSearchResultTableConfig({
       onClickEdit: (data) => {},
     });
-  }, []);
+  }, [categories]);
 
   const backToSearchCirca = () => {
     router.replace({
       pathname: router.pathname,
-      query: "searchType=circa",
+      query: { searchType: "circa" },
     });
   };
 
-  const select = useSelection<SutraMin>(sutras);
+  // const select = useSelection<Sutra>(sutras);
 
   return (
     <div>
@@ -62,7 +65,7 @@ const CircaSearchResultPage = ({
         <CustomTable
           rows={sutras}
           configs={circaSearchResultTableConfig}
-          select={select}
+          // select={select}
           onClickRow={(row) => goSutra(row.id)}
         ></CustomTable>
       </div>

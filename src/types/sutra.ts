@@ -5,6 +5,8 @@ import {
   CollectionCategoriesResponse,
   CollectionTreeResponse,
 } from "src/api/collections";
+import { Volume } from "./volume";
+import { Collection } from "./collection";
 
 export interface Sutra {
   id: string;
@@ -14,6 +16,7 @@ export interface Sutra {
   created_at?: Date;
   collection_id: string;
   circa_id: string;
+  circa: Circa;
   author_id: string;
   user_id: string;
 }
@@ -28,6 +31,8 @@ export interface SutraDetail extends Sutra {
   author: Author;
   circa: Circa;
   translator: SutraTransaltor;
+  volumes: Volume;
+  collections: Collection;
 }
 
 export const enrichSutra = (
@@ -45,6 +50,8 @@ export const enrichSutra = (
     author: categories.authors.find((a) => a.id == sutra.author_id)!,
     translator: categories.translators.find((t) => t.id == sutra.user_id)!,
     circa: categories.circas.find((c) => c.id == sutra.circa_id)!,
+    volumes: tree.volumes.find((t) => t.sutras_id == sutra.id)!,
+    collections: tree.collections.find((t) => t.id == sutra.collection_id)!,
   };
 };
 
@@ -69,4 +76,20 @@ export const initialSutra: SutraDetail = {
   author: initialAuthor,
   circa: initialCirca,
   translator: { id: "", full_name: "" },
+  volumes: {
+    id: "",
+    name: "",
+    code: "",
+    sutras_id: "",
+    created_at: new Date(),
+    file_id: "",
+  },
+  collections: {
+    id: "",
+    name: "",
+    code: "",
+    circa: "",
+    created_at: new Date(),
+    user_id: "",
+  },
 };

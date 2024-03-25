@@ -22,16 +22,18 @@ import exportDocx from "src/modules/Editor/utils/docx";
 import { downloadFile } from "src/utils/url-handler";
 import useFunction from "src/hooks/use-function";
 import OrisonComplainDialog from "./OrisonCompainDialog";
+import { BaseSelection } from "slate";
 
 interface OrisonPageProps {}
 
 const OrisonPage: FC<OrisonPageProps> = ({}) => {
   const { user } = useAuth();
-  const { getOrisonsApi, orisonId, getOrisonDetailApi, updateOrison } =
-    useOrisonsContext();
+  const { getOrisonDetailApi, updateOrison } = useOrisonsContext();
   const [searchText, setSearchText] = useState("");
   const router = useRouter();
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [data, setData] = useState<string>("");
+  const [selection, setSelection] = useState<BaseSelection>();
 
   const isEditting = router.query.isEditting == "true";
   const isFullScreen = router.query.isFullScreen == "true";
@@ -132,6 +134,8 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
                   <OrisonComplainDialog
                     isOpen={isOpen}
                     onClose={() => setIsOpen(false)}
+                    data={data}
+                    selection={selection}
                   />
                   <Button
                     size="lg"
@@ -204,6 +208,8 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
                 onSave={handleSave.call}
                 onCancel={handleCancel}
                 searchText={searchText.toLowerCase()}
+                setDataReport={setData}
+                setSelectionReport={setSelection}
               />
             ) : null}
           </div>

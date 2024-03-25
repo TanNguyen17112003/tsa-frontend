@@ -19,13 +19,18 @@ import { useReportsContext } from "src/contexts/reports/reports-context";
 import { useAuth } from "src/hooks/use-auth";
 import useAppSnackbar from "src/hooks/use-app-snackbar";
 import { Textarea } from "src/components/shadcn/ui/textarea";
+import { BaseSelection } from "slate";
 
 const OrisonComplainDialog = ({
   isOpen,
   onClose,
+  data,
+  selection,
 }: {
   isOpen: boolean;
   onClose: () => void;
+  data: string;
+  selection?: BaseSelection;
 }) => {
   const { createReport } = useReportsContext();
   const createReportHelper = useFunction(createReport);

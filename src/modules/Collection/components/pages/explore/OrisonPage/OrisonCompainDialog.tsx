@@ -20,17 +20,20 @@ import { useAuth } from "src/hooks/use-auth";
 import useAppSnackbar from "src/hooks/use-app-snackbar";
 import { Textarea } from "src/components/shadcn/ui/textarea";
 import { BaseSelection } from "slate";
+import { formatDate } from "date-fns";
 
 const OrisonComplainDialog = ({
   isOpen,
   onClose,
   data,
   selection,
+  orison,
 }: {
   isOpen: boolean;
   onClose: () => void;
   data: string;
   selection?: BaseSelection;
+  orison?: string;
 }) => {
   const { createReport } = useReportsContext();
   const createReportHelper = useFunction(createReport);
@@ -50,6 +53,18 @@ const OrisonComplainDialog = ({
 
         if (!error) {
           showSnackbarSuccess("Gửi khiếu nại thành công!");
+
+          const activityLog = localStorage.getItem("activityLogs");
+          const activity = activityLog ? JSON.parse(activityLog) : [];
+          const currentDay = new Date();
+
+          activity.unshift({
+            title: "Khiếu nại bài kinh " + orison,
+            time: formatDate(currentDay, "hh:mm - dd/MM/yy"),
+          });
+
+          localStorage.setItem("activityLogs", JSON.stringify(activity));
+
           formik.resetForm();
           onClose();
         } else {

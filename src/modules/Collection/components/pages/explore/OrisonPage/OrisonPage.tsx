@@ -101,8 +101,11 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
       const currentDay = new Date();
 
       activity.unshift({
-        title: "Đọc bài kinh " + currentOrison?.name,
-        time: formatDate(currentDay, "hh:mm - dd/MM/yy"),
+        action: "Đọc",
+        updated_at: formatDate(currentDay, "hh:mm - dd/MM/yy"),
+        lines: "",
+        orison_id: currentOrison.id,
+        user_id: user?.id || "",
       });
 
       localStorage.setItem("activityLogs", JSON.stringify(activity));
@@ -153,7 +156,7 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
                     onClose={() => setIsOpen(false)}
                     data={data}
                     selection={selection}
-                    orison={currentOrison?.name}
+                    orisonId={currentOrison?.id}
                   />
                   <Button
                     size="lg"

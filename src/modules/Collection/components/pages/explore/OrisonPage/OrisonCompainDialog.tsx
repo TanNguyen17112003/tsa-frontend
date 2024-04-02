@@ -27,13 +27,13 @@ const OrisonComplainDialog = ({
   onClose,
   data,
   selection,
-  orison,
+  orisonId,
 }: {
   isOpen: boolean;
   onClose: () => void;
   data: string;
   selection?: BaseSelection;
-  orison?: string;
+  orisonId?: string;
 }) => {
   const { createReport } = useReportsContext();
   const createReportHelper = useFunction(createReport);
@@ -59,8 +59,11 @@ const OrisonComplainDialog = ({
           const currentDay = new Date();
 
           activity.unshift({
-            title: "Khiếu nại bài kinh " + orison,
-            time: formatDate(currentDay, "hh:mm - dd/MM/yy"),
+            action: "Khiếu nại",
+            updated_at: formatDate(currentDay, "hh:mm - dd/MM/yy"),
+            lines: selection?.anchor.path[0],
+            orison_id: orisonId,
+            user_id: user?.id || "",
           });
 
           localStorage.setItem("activityLogs", JSON.stringify(activity));

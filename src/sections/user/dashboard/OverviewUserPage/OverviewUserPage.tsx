@@ -22,10 +22,12 @@ import useFunction from "src/hooks/use-function";
 import { paths } from "src/paths";
 import getDashboardSutraTableConfigs from "../getDashboardSutraTableConfigs";
 import OverviewStats from "./OverviewStats";
+import { useCollectionCategoriesContext } from "src/contexts/collections/collection-categories-context";
 
 const OverviewUserPage = () => {
   const router = useRouter();
   const getSutrasApi = useFunction(SutrasApi.getSutras);
+  const { tree } = useCollectionCategoriesContext();
 
   const dashboardSutraTableConfigs = useMemo(
     () =>
@@ -60,6 +62,36 @@ const OverviewUserPage = () => {
     const activity = activityLog ? JSON.parse(activityLog) : [];
     return activity;
   }, []);
+
+  const getNameOrisonById = (id: string) => {
+    return tree.orisons.find((item) => item.id == id)?.name;
+  };
+
+  const goOrison = useCallback(
+    (id: string) => {
+      const orison = tree?.orisons.find((orison) => orison.id == id);
+      const volume = tree?.volumes.find(
+        (volume) => volume.id == orison?.volume_id
+      );
+      const sutra = tree?.sutras?.find(
+        (sutra) => sutra.id == volume?.sutras_id
+      );
+      const collection = tree?.collections?.find(
+        (collection) => collection.id == sutra?.collection_id
+      );
+      router.replace({
+        pathname: paths.dashboard.collections,
+        query: {
+          ...router.query,
+          collectionId: collection?.id || "",
+          sutraId: sutra?.id || "",
+          volumeId: volume?.id || "",
+          orisonId: orison?.id || "",
+        },
+      });
+    },
+    [router]
+  );
 
   return (
     <div
@@ -154,42 +186,51 @@ const OverviewUserPage = () => {
           </div>
           <CommonCard title="Nhật ký hoạt động">
             {history?.slice(0, 5).map((c: any, index: number) => (
-              <div key={index} className="pb-4">
+              <div
+                key={index}
+                className="pb-4 hover:bg-slate-100 cursor-pointer"
+                onClick={() => {
+                  handleSeeAll();
+                  setTimeout(() => goOrison(c.orison_id), 500);
+                }}
+              >
                 <div className="flex space-x-2">
-                  {c?.title?.slice(0, 3) == "Đọc" && (
-                    <div className="flex space-x-1">
+                  {c?.action == "Đọc" && (
+                    <div className="flex space-x-1 ">
                       <PiBookOpen style={{ fontSize: "1.4em" }} />
                       <div className="text-cyan-600 text-nowrap">
-                        {c?.title.slice(0, 3)}
+                        {c?.action}
                       </div>
                       <div className="text-black text-nowrap">
-                        {" " + c?.title.slice(4, 12)}
+                        {" bài kinh "}
                       </div>
                       <div className="text-cyan-600 text-nowrap">
-                        {c?.title.slice(13)}
+                        {getNameOrisonById(c?.orison_id)}
                       </div>
                     </div>
                   )}
-                  {c?.title?.slice(0, 8) == "Tìm kiếm" && (
+                  {c?.action == "Tìm kiếm" && (
                     <IoSearch style={{ fontSize: "1.4em" }} />
                   )}
-                  {c?.title?.slice(0, 9) == "Khiếu nại" && (
+                  {c?.action == "Khiếu nại" && (
                     <div className="flex space-x-1">
                       <BsExclamationCircle style={{ fontSize: "1.4em" }} />
                       <div className="text-cyan-600 text-nowrap">
-                        {c?.title.slice(0, 9)}
+                        {c?.action}
                       </div>
-                      <div className="text-black text-nowrap">
-                        {c?.title.slice(10, 18)}
-                      </div>
+                      <div className="text-black text-nowrap">{" lỗi "}</div>
                       <div className="text-cyan-600 text-nowrap">
-                        {c?.title.slice(19)}
+                        {"dòng " + c?.lines}
+                      </div>
+                      <div className="text-black text-nowrap">{" bài "}</div>
+                      <div className="text-cyan-600 text-nowrap">
+                        {getNameOrisonById(c?.orison_id)}
                       </div>
                     </div>
                   )}
                 </div>
                 <div key={index} className="text-gray-500 text-xs">
-                  {c?.time}
+                  {c?.updated_at}
                 </div>
               </div>
             ))}

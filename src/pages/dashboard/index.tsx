@@ -1,3 +1,4 @@
+import CollectionCategoriesProvider from "src/contexts/collections/collection-categories-context";
 import { useAuth } from "src/hooks/use-auth";
 import { Layout as DashboardLayout } from "src/layouts/dashboard";
 import OverviewAdminPage from "src/sections/admin/dashboard/OverviewAdminPage";
@@ -13,6 +14,10 @@ const Page: PageType = () => {
   );
 };
 
-Page.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
+Page.getLayout = (page) => (
+  <DashboardLayout>
+    <CollectionCategoriesProvider>{page}</CollectionCategoriesProvider>
+  </DashboardLayout>
+);
 
 export default Page;

@@ -189,11 +189,9 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
           </div>
         )}
 
-        <div className="pl-[260px] flex-1 min-h-0 bg-white">
-          <div className="bg-white absolute left-0 px-4 w-[260px]">
-            <OrisonList />
-          </div>
-          <div className="border rounded-xl h-full overflow-y-auto">
+        <div className="flex-1 min-h-0 bg-white flex gap-4 pl-4">
+          <OrisonList className="w-[228px] h-full" />
+          <div className="border rounded-xl h-full overflow-y-auto flex-1">
             {getOrisonDetailApi.loading ? (
               <div className="flex h-[100px] items-center justify-center mt-4">
                 <Loading />

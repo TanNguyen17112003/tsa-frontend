@@ -30,8 +30,9 @@ const OrisonEditorPopup = ({
   const countWord = useCallback((text: string) => {
     const textFilter = text
       .toLowerCase()
-      .split(" ")
+      .split(/[ .]+/)
       .filter((item) => item != "");
+    console.log("textFilter", textFilter);
     return textFilter.length;
   }, []);
   const { showSnackbarSuccess } = useAppSnackbar();

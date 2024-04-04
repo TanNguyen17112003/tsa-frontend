@@ -12,6 +12,7 @@ import { Button } from "src/components/shadcn/ui/button";
 import { HiMiniArrowSmallRight } from "react-icons/hi2";
 import { format } from "date-fns";
 import useAppSnackbar from "src/hooks/use-app-snackbar";
+import { useCallback } from "react";
 
 const OrisonEditorPopup = ({
   state = false,
@@ -26,59 +27,13 @@ const OrisonEditorPopup = ({
   titleDialog: string;
   contentDialog: string;
 }) => {
-  const countWord = (text: string) => {
-    const vietnameseCharacters = [
-      "a",
-      "ă",
-      "â",
-      "b",
-      "c",
-      "d",
-      "đ",
-      "e",
-      "ê",
-      "g",
-      "h",
-      "i",
-      "k",
-      "l",
-      "m",
-      "n",
-      "o",
-      "ô",
-      "ơ",
-      "p",
-      "q",
-      "r",
-      "s",
-      "t",
-      "u",
-      "ư",
-      "v",
-      "x",
-      "y",
-      "0",
-      "1",
-      "2",
-      "3",
-      "4",
-      "5",
-      "6",
-      "7",
-      "8",
-      "9",
-    ];
-
-    const lowerCaseStr = text.toLowerCase();
-
-    let count = 0;
-    for (let i = 0; i < lowerCaseStr.length; i++) {
-      if (vietnameseCharacters.includes(lowerCaseStr[i])) {
-        count++;
-      }
-    }
-    return count;
-  };
+  const countWord = useCallback((text: string) => {
+    const textFilter = text
+      .toLowerCase()
+      .split(" ")
+      .filter((item) => item != "");
+    return textFilter.length;
+  }, []);
   const { showSnackbarSuccess } = useAppSnackbar();
 
   return (

@@ -65,9 +65,6 @@ const PlateEditor: FC<PlateEditorProps> = ({
   const valueRef = useRef<any | null>();
   const [data, setData] = useState<string>("");
   const [selection, setSelection] = useState<BaseSelection>();
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [titleDialog, setTitleDialog] = useState<string>("");
-  const [contentDialog, setContentDialog] = useState<string>("");
   const decorate = useCallback(
     ([node, path]: TNodeEntry): (SlateRange &
       EditorHighlight &
@@ -143,51 +140,16 @@ const PlateEditor: FC<PlateEditorProps> = ({
             />
           </FixedToolbar>
         )}
-        <ContextMenu>
-          <ContextMenuTrigger>
-            <Editor
-              readOnly={readOnly}
-              style={{
-                fontFamily: `"Times New Roman", Times, serif`,
-              }}
-              renderLeaf={(props) => <Leaf {...props} />}
-              decorate={decorate}
-            />
-          </ContextMenuTrigger>
-          <ContextMenuContent className="w-64">
-            <ContextMenuItem
-              inset
-              onClick={() => {
-                setIsOpen(true);
-                setTitleDialog("Đếm số từ");
-                setContentDialog("Số từ đã đếm trong khu vực bôi đen là:");
-              }}
-            >
-              Đếm số từ
-            </ContextMenuItem>
-            <ContextMenuItem
-              inset
-              onClick={() => {
-                setIsOpen(true);
-                setTitleDialog("Trích dẫn nguồn");
-                setContentDialog(
-                  `"Một thời, đức Phật ở tại vườn của Trưởng giả Cấp-cô-độc" (VTTET 2024.V1, T001, T0001, p0001l004 )`
-                );
-              }}
-            >
-              Trích dẫn nguồn
-            </ContextMenuItem>
-          </ContextMenuContent>
-        </ContextMenu>
-        <OrisonEditorPopup
-          state={isOpen}
-          onClose={() => setIsOpen(false)}
-          data={data}
-          contentDialog={contentDialog}
-          titleDialog={titleDialog}
+        <Editor
+          readOnly={readOnly}
+          style={{
+            fontFamily: `"Times New Roman", Times, serif`,
+          }}
+          renderLeaf={(props) => <Leaf {...props} />}
+          decorate={decorate}
         />
         <FloatingToolbar>
-          <NoteCard noteIndex={1} />
+          <NoteCard noteIndex={1} data={data} />
         </FloatingToolbar>
       </NotesProvider>
     </Plate>

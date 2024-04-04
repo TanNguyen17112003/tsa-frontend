@@ -22,12 +22,12 @@ import useFunction from "src/hooks/use-function";
 import { paths } from "src/paths";
 import getDashboardSutraTableConfigs from "../getDashboardSutraTableConfigs";
 import OverviewStats from "./OverviewStats";
-import { useCollectionCategoriesContext } from "src/contexts/collections/collection-categories-context";
+import { useDiaryOrisonsContext } from "src/contexts/diary/diary-orisons-context";
 
 const OverviewUserPage = () => {
   const router = useRouter();
   const getSutrasApi = useFunction(SutrasApi.getSutras);
-  const { tree } = useCollectionCategoriesContext();
+  const { orison, goOrison } = useDiaryOrisonsContext();
 
   const dashboardSutraTableConfigs = useMemo(
     () =>
@@ -64,34 +64,8 @@ const OverviewUserPage = () => {
   }, []);
 
   const getNameOrisonById = (id: string) => {
-    return tree.orisons.find((item) => item.id == id)?.name;
+    return orison.find((item) => item.id == id)?.name;
   };
-
-  const goOrison = useCallback(
-    (id: string) => {
-      const orison = tree?.orisons.find((orison) => orison.id == id);
-      const volume = tree?.volumes.find(
-        (volume) => volume.id == orison?.volume_id
-      );
-      const sutra = tree?.sutras?.find(
-        (sutra) => sutra.id == volume?.sutras_id
-      );
-      const collection = tree?.collections?.find(
-        (collection) => collection.id == sutra?.collection_id
-      );
-      router.replace({
-        pathname: paths.dashboard.collections,
-        query: {
-          ...router.query,
-          collectionId: collection?.id || "",
-          sutraId: sutra?.id || "",
-          volumeId: volume?.id || "",
-          orisonId: orison?.id || "",
-        },
-      });
-    },
-    [router]
-  );
 
   return (
     <div
@@ -190,8 +164,7 @@ const OverviewUserPage = () => {
                 key={index}
                 className="pb-4 hover:bg-slate-100 cursor-pointer"
                 onClick={() => {
-                  handleSeeAll();
-                  setTimeout(() => goOrison(c.orison_id), 500);
+                  goOrison(c.orison_id);
                 }}
               >
                 <div className="flex space-x-2">

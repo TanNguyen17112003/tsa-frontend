@@ -52,17 +52,54 @@ const BasicSearchForm: FC<BasicSearchFormProps> = ({ className }) => {
   const orisons = useMemo(() => {
     return searchOrisonsApi.data;
   }, [searchOrisonsApi]);
-  const data: any[] = [
-    {
-      name: "data1",
-    },
-    {
-      name: "data2",
-    },
-    {
-      name: "data3",
-    },
-  ];
+
+  const data = useMemo(() => {
+    const temp: any[][] = [];
+    orisons?.rows.map((item, index) => {
+      temp[index] = [];
+      if (searchKey != "") {
+        let savedString: string = item.plain_text;
+        let searchText: string = searchKey;
+        let currentIndex: number = 0;
+        let count: number = 0;
+        const maxCount: number = 3;
+
+        while (
+          (currentIndex = savedString
+            .toLowerCase()
+            .indexOf(searchText.toLowerCase(), currentIndex)) !== -1 &&
+          count < maxCount
+        ) {
+          if (currentIndex < 30) {
+            temp[index]?.push({
+              firstText: "",
+              secondText: savedString.substring(
+                currentIndex,
+                currentIndex + searchText.length
+              ),
+              thirdText: savedString.substring(
+                currentIndex + searchText.length,
+                currentIndex + 30
+              ),
+            });
+            count++;
+          } else {
+            temp[index]?.push({
+              firstText: savedString.substring(currentIndex - 30, currentIndex),
+              secondText: savedString.substring(
+                currentIndex,
+                currentIndex + searchText.length
+              ),
+              thirdText: "",
+            });
+            count++;
+          }
+          currentIndex += searchText.length;
+        }
+      }
+    });
+    return temp;
+  }, [orisons]);
   const pagination = usePagination({ count: orisons?.count || 0 });
 
   const resultFrom = useMemo(() => {
@@ -91,6 +128,20 @@ const BasicSearchForm: FC<BasicSearchFormProps> = ({ className }) => {
     return tree.sutras.find((item) => item.id == sutraId)?.name;
   };
 
+  const handleClick = useCallback(
+    (orisonId: string, searchText: string) => {
+      router.replace({
+        pathname: router.pathname,
+        query: {
+          ...router.query,
+          orisonId: orisonId,
+          searchText: searchText,
+        },
+      });
+    },
+    [router]
+  );
+
   return (
     <div>
       <form className={className}>
@@ -101,7 +152,7 @@ const BasicSearchForm: FC<BasicSearchFormProps> = ({ className }) => {
                 type="text"
                 placeholder="Nhập từ khóa tìm kiếm..."
                 className="border-none"
-                onChange={(value: any) => setSearchKey(value.nativeEvent.data)}
+                id="search"
               />
             </div>
             <CustomSelect
@@ -114,8 +165,13 @@ const BasicSearchForm: FC<BasicSearchFormProps> = ({ className }) => {
           <Button
             type="button"
             onClick={() => {
+              const searchInput: HTMLInputElement = document.getElementById(
+                "search"
+              ) as HTMLInputElement;
+              const searchValue = searchInput?.value;
+              setSearchKey(searchValue);
               searchOrisonsApi.call({
-                q: searchKey,
+                q: searchValue,
                 limit: 10,
                 offset: 0,
               });
@@ -126,14 +182,17 @@ const BasicSearchForm: FC<BasicSearchFormProps> = ({ className }) => {
           </Button>
         </div>
         <div className="pt-8 space-y-6 mb-10">
-          <div className="text-xl font-medium">Kết quả tìm kiếm</div>
+          {orisons && (
+            <div className="text-xl font-medium">Kết quả tìm kiếm</div>
+          )}
           <Accordion type="multiple" className="w-full">
             {orisons?.rows.map(
               (item, index) =>
                 index <= resultTo - 1 &&
-                resultFrom - 1 <= index && (
+                resultFrom - 1 <= index &&
+                !searchOrisonsApi.loading && (
                   <AccordionItem value={item.id} key={index}>
-                    <AccordionTrigger className="flex bg-slate-100 p-4 rounded-md">
+                    <AccordionTrigger className="flex bg-slate-200 p-4 rounded-md">
                       <div className="flex items-center space-x-6">
                         <div>{getCollectionName(item.volume_id)}</div>
                         <div className="flex flex-col items-start">
@@ -146,14 +205,23 @@ const BasicSearchForm: FC<BasicSearchFormProps> = ({ className }) => {
                         </div>
                       </div>
                       <div className="flex ml-auto text-xs font-medium text-blue-600 bg-blue-100 p-2 rounded-md border-blue-200 border mr-2">
-                        {data.length + " Kết quả phù hợp"}
+                        {data[index].length + " Kết quả phù hợp"}
                       </div>
                     </AccordionTrigger>
                     <div className="mb-6">
-                      {data.map((d, index) => (
-                        <AccordionContent className="flex border-b border-x rounded-b-md pt-4 pl-4 space-x-8 text-base font-normal">
+                      {data[index].map((d, index) => (
+                        <AccordionContent
+                          className="flex border-b border-x rounded-b-md pt-4 pl-4 space-x-8 text-base font-normal cursor-pointer hover:bg-slate-100"
+                          onClick={() => {
+                            handleClick(item.id, searchKey);
+                          }}
+                        >
                           <div>{index + 1}</div>
-                          <div>{d.name}</div>
+                          <div className="flex space-x-0.5">
+                            <div>{d.firstText}</div>
+                            <div className="bg-blue-200">{d.secondText}</div>
+                            <div>{d.thirdText}</div>
+                          </div>
                         </AccordionContent>
                       ))}
                     </div>

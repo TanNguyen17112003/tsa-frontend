@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo } from "react";
-import { FaLongArrowAltRight } from "react-icons/fa";
+import { FaLongArrowAltRight, FaMapMarkerAlt } from "react-icons/fa";
 import { HiMagnifyingGlass, HiMiniArrowSmallRight } from "react-icons/hi2";
-import { PiBookOpen } from "react-icons/pi";
+import { PiBookOpen, PiPhoneCallFill } from "react-icons/pi";
 import CommonCard from "src/components/CommonCard";
 import { Button } from "src/components/shadcn/ui/button";
+import { SiGmail } from "react-icons/si";
 import { Input } from "src/components/shadcn/ui/input";
 import {
   Select,
@@ -21,24 +22,12 @@ import useFunction from "src/hooks/use-function";
 import { paths } from "src/paths";
 import getDashboardSutraTableConfigs from "../getDashboardSutraTableConfigs";
 import OverviewStats from "./OverviewStats";
-
-const history = [
-  { title: "Đọc bài kinh 1: Bài dịch số 2", time: "15:30 - 01/12/2023" },
-  { title: "Tìm kiếm bài dịch số 62", time: "15:30 - 01/12/2023" },
-  { title: "Đọc bài kinh 7: Bài dịch số 20", time: "15:30 - 01/12/2023" },
-  { title: "Đọc bài kinh 3: Bài dịch số 21", time: "15:30 - 01/12/2023" },
-  { title: "Tìm kiếm bài dịch số 62", time: "15:30 - 01/12/2023" },
-  {
-    title: "Khiếu nại lỗi dòng 23 bài Kinh dịch số 82",
-    time: "15:30 - 01/12/2023",
-  },
-  { title: "Tìm kiếm bài dịch số 62", time: "15:30 - 01/12/2023" },
-  { title: "Đọc bài kinh 5: Bài dịch số 26", time: "15:30 - 01/12/2023" },
-];
+import { useDiaryOrisonsContext } from "src/contexts/diary/activity-logs-context";
 
 const OverviewUserPage = () => {
   const router = useRouter();
   const getSutrasApi = useFunction(SutrasApi.getSutras);
+  const { orison, goOrison } = useDiaryOrisonsContext();
 
   const dashboardSutraTableConfigs = useMemo(
     () =>
@@ -67,6 +56,16 @@ const OverviewUserPage = () => {
   const sutras = useMemo(() => {
     return (getSutrasApi.data || []).slice(0, 6);
   }, [getSutrasApi.data]);
+
+  const history = useMemo(() => {
+    const activityLog = localStorage.getItem("activityLogs");
+    const activity = activityLog ? JSON.parse(activityLog) : [];
+    return activity;
+  }, []);
+
+  const getNameOrisonById = (id: string) => {
+    return orison.find((item) => item.id == id)?.name;
+  };
 
   return (
     <div
@@ -138,7 +137,9 @@ const OverviewUserPage = () => {
             <div>Tìm kiếm</div>
           </Button>
         </div>
-        <OverviewStats />
+        <div className="overflow-hidden">
+          <OverviewStats />
+        </div>
         <div className="my-8 flex overflow-hidden space-x-5">
           <div className="w-full max-w-[80%] border rounded-3xl bg-white">
             <div className="flex p-5 ">
@@ -158,28 +159,121 @@ const OverviewUserPage = () => {
             </div>
           </div>
           <CommonCard title="Nhật ký hoạt động">
-            {history.map((c, index) => (
-              <div key={index} className="pb-4">
+            {history?.slice(0, 5).map((c: any, index: number) => (
+              <div
+                key={index}
+                className="pb-4 hover:bg-slate-100 cursor-pointer"
+                onClick={() => {
+                  goOrison(c.orison_id);
+                }}
+              >
                 <div className="flex space-x-2">
-                  {c.title.slice(0, 3) == "Đọc" && (
-                    <PiBookOpen style={{ fontSize: "1.4em" }} />
+                  {c?.action == "Đọc" && (
+                    <div className="flex space-x-1 ">
+                      <PiBookOpen style={{ fontSize: "1.4em" }} />
+                      <div className="text-cyan-600 text-nowrap">
+                        {c?.action}
+                      </div>
+                      <div className="text-black text-nowrap">
+                        {" bài kinh "}
+                      </div>
+                      <div className="text-cyan-600 text-nowrap">
+                        {getNameOrisonById(c?.orison_id)}
+                      </div>
+                    </div>
                   )}
-                  {c.title.slice(0, 8) == "Tìm kiếm" && (
+                  {c?.action == "Tìm kiếm" && (
                     <IoSearch style={{ fontSize: "1.4em" }} />
                   )}
-                  {c.title.slice(0, 9) == "Khiếu nại" && (
-                    <BsExclamationCircle style={{ fontSize: "1.4em" }} />
+                  {c?.action == "Khiếu nại" && (
+                    <div className="flex space-x-1">
+                      <BsExclamationCircle style={{ fontSize: "1.4em" }} />
+                      <div className="text-cyan-600 text-nowrap">
+                        {c?.action}
+                      </div>
+                      <div className="text-black text-nowrap">{" lỗi "}</div>
+                      <div className="text-cyan-600 text-nowrap">
+                        {"dòng " + c?.lines}
+                      </div>
+                      <div className="text-black text-nowrap">{" bài "}</div>
+                      <div className="text-cyan-600 text-nowrap">
+                        {getNameOrisonById(c?.orison_id)}
+                      </div>
+                    </div>
                   )}
-                  <div key={index} className="text-black-700">
-                    {c.title}
-                  </div>
                 </div>
                 <div key={index} className="text-gray-500 text-xs">
-                  {c.time}
+                  {c?.updated_at}
                 </div>
               </div>
             ))}
           </CommonCard>
+        </div>
+        <div className="flex border bg-white p-4 justify-center  overflow-hidden w-full rounded-3xl">
+          <div>
+            <div className="flex w-full pt-4 space-x-20">
+              <div className=" my-4">
+                <div className="border p-4 rounded-3xl mb-4">
+                  <img src="/logos/logo.png" alt="logo" width="20%" />
+                  <div className="text-sm font-medium text-nowrap">
+                    Viện nghiên cứu Châu Á
+                  </div>
+                </div>
+                <div>
+                  <Button
+                    variant={"ghost"}
+                    className="pl-4 text-primary text-md"
+                    onClick={() => {
+                      router.push(paths.dashboard.index);
+                    }}
+                  >
+                    Trang chủ
+                  </Button>
+                  <Button
+                    variant={"ghost"}
+                    className="pl-4 text-primary text-md"
+                    onClick={() => {
+                      router.push(paths.dashboard.collections);
+                    }}
+                  >
+                    Kho dữ liệu
+                  </Button>
+                  <Button
+                    variant={"ghost"}
+                    className="pl-4 text-primary text-md"
+                    onClick={() => {
+                      router.push(paths.dashboard["add-report"]);
+                    }}
+                  >
+                    Khiếu nại
+                  </Button>
+                </div>
+              </div>
+              <div className="w-full my-5 pt-5">
+                <div className="text-xl font-semibold">Thông tin liên hệ:</div>
+                <div className="space-y-5">
+                  <div className="flex w-96 mt-6 items-center space-x-3">
+                    <FaMapMarkerAlt className="size-7 text-primary" />
+                    <div>
+                      Địa chỉ: 52/1a tổ 1 khu phố 2, P.An Bình, TP. Biên Hoà,
+                      Tỉnh Đồng Nai
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <SiGmail className="size-6 text-primary" />
+                    <div>Email: huynguyen21122002@gmail.com</div>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <PiPhoneCallFill className="size-7 text-primary" />
+                    <div>SĐT: 09731259400</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="flex text-xs font-normal text-secondary w-full justify-center">
+              © All rights reserved. Contact: viennghiencuuchaua@gmail.com
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { useRouter } from "next/router";
-import { FormEvent, useCallback, useState, type FC } from "react";
+import { FormEvent, useCallback, useState, type FC, useEffect } from "react";
 import { BiSearch } from "react-icons/bi";
 import { BsArrowsAngleContract, BsArrowsAngleExpand } from "react-icons/bs";
 import {
@@ -23,6 +23,7 @@ import { downloadFile } from "src/utils/url-handler";
 import useFunction from "src/hooks/use-function";
 import OrisonComplainDialog from "./OrisonCompainDialog";
 import { BaseSelection } from "slate";
+import { formatDate } from "date-fns";
 
 interface OrisonPageProps {}
 
@@ -93,6 +94,25 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
     });
   }, [router]);
 
+  useEffect(() => {
+    if (currentOrison?.name) {
+      const activityLog = localStorage.getItem("activityLogs");
+      const activity = activityLog ? JSON.parse(activityLog) : [];
+      const currentDay = new Date();
+
+      activity.unshift({
+        action: "Đọc",
+        updated_at: formatDate(currentDay, "hh:mm - dd/MM/yy"),
+        lines: "",
+        orison_id: currentOrison.id,
+        user_id: user?.id || "",
+      });
+
+      localStorage.setItem("activityLogs", JSON.stringify(activity));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentOrison]);
+
   return (
     <div className="h-full flex flex-col">
       <div
@@ -136,6 +156,7 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
                     onClose={() => setIsOpen(false)}
                     data={data}
                     selection={selection}
+                    orisonId={currentOrison?.id}
                   />
                   <Button
                     size="lg"

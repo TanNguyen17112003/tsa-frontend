@@ -43,7 +43,7 @@ const OrisonEditorPopup = ({
         {/* <Button variant="outline">Chi tiết khiếu nại</Button> */}
       </DialogTrigger>
       {titleDialog == "Đếm số từ" ? (
-        <DialogContent className="sm:max-w-[20%]">
+        <DialogContent className="sm:max-w-[20%] sm:min-w-[500px]">
           <DialogHeader>
             <DialogTitle className="py-4">{titleDialog}</DialogTitle>
           </DialogHeader>
@@ -58,7 +58,7 @@ const OrisonEditorPopup = ({
           </DialogFooter>
         </DialogContent>
       ) : (
-        <DialogContent className="sm:max-w-[30%]">
+        <DialogContent className="sm:max-w-[30%] sm:min-w-[600px]">
           <DialogHeader>
             <DialogTitle className="py-4">{titleDialog}</DialogTitle>
           </DialogHeader>

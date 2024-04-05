@@ -35,6 +35,7 @@ import {
   ContextMenuTrigger,
 } from "src/components/shadcn/ui/context-menu";
 import OrisonEditorPopup from "src/sections/admin/orisons/OrisonEditorPopup";
+import Menu from "./components/Menu";
 
 interface PlateEditorProps {
   initialValue: any;
@@ -149,7 +150,8 @@ const PlateEditor: FC<PlateEditorProps> = ({
           decorate={decorate}
         />
         <FloatingToolbar>
-          <NoteCard noteIndex={1} data={data} />
+          <NoteCard noteIndex={1} />
+          <Menu data={data} />
         </FloatingToolbar>
       </NotesProvider>
     </Plate>

@@ -22,7 +22,7 @@ import useFunction from "src/hooks/use-function";
 import { paths } from "src/paths";
 import getDashboardSutraTableConfigs from "../getDashboardSutraTableConfigs";
 import OverviewStats from "./OverviewStats";
-import { useDiaryOrisonsContext } from "src/contexts/diary/diary-orisons-context";
+import { useDiaryOrisonsContext } from "src/contexts/diary/activity-logs-context";
 
 const OverviewUserPage = () => {
   const router = useRouter();

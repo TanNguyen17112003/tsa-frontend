@@ -5,6 +5,7 @@ import OrisonsProvider from "src/contexts/orisons/orisons-context";
 import SutrasProvider from "src/contexts/sutras/sutras-context";
 import VolumesProvider from "src/contexts/volumes/volumes-context";
 import CollectionContent from "./CollectionContent";
+import ReportsProvider from "src/contexts/reports/reports-context";
 
 interface CollectionProps {}
 
@@ -16,7 +17,9 @@ const Collection: FC<CollectionProps> = ({}) => {
           <SutrasProvider>
             <VolumesProvider>
               <OrisonsProvider>
-                <CollectionContent />
+                <ReportsProvider>
+                  <CollectionContent />
+                </ReportsProvider>
               </OrisonsProvider>
             </VolumesProvider>
           </SutrasProvider>

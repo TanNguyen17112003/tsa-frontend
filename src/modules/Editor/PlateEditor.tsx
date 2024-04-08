@@ -46,8 +46,8 @@ interface PlateEditorProps {
   onCancel?: () => void;
   onSave?: (value: any) => void;
   onChange: (value: any) => void;
-  setDataReport: (value: string) => void;
-  setSelectionReport: (value: BaseSelection) => void;
+  setDataReport?: (value: string) => void;
+  setSelectionReport?: (value: BaseSelection) => void;
 }
 
 const PlateEditor: FC<PlateEditorProps> = ({
@@ -114,8 +114,8 @@ const PlateEditor: FC<PlateEditorProps> = ({
   );
 
   useEffect(() => {
-    setDataReport(data);
-    if (selection) setSelectionReport(selection);
+    if (setDataReport) setDataReport(data);
+    if (selection && setSelectionReport) setSelectionReport(selection);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selection, data]);

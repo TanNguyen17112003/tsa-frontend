@@ -47,35 +47,39 @@ const NoteCard: FC<NoteCardProps> = ({ noteIndex }) => {
   }, [note]);
 
   return (
-    <div className="inline-flex flex-col items-start gap-2 px-2 py-3 relative rounded-lg max-w-[400px]">
-      <div className="flex items-center gap-2 relative self-stretch w-full">
-        <div className="relative flex-1 text-lg">Chú thích</div>
-        {!readOnly && (
-          <>
-            <Button variant="destructive" size="sm" onClick={handleDelete}>
-              Xoá
-            </Button>
-            <Button variant="outline" size="sm" onClick={handleCancel}>
-              Huỷ
-            </Button>
-            <Button size="sm" onClick={handleSave}>
-              Lưu
-            </Button>
-          </>
-        )}
-      </div>
-      {readOnly ? (
-        <div className="w-full border rounded-lg p-2">
-          <p className="text-wrap">{note?.note || ""}</p>
+    <>
+      {activeNoteId && (
+        <div className="inline-flex flex-col items-start gap-2 px-2 py-3 relative rounded-lg max-w-[400px]">
+          <div className="flex items-center gap-2 relative self-stretch w-full">
+            <div className="relative flex-1 text-lg">Chú thích</div>
+            {!readOnly && (
+              <>
+                <Button variant="destructive" size="sm" onClick={handleDelete}>
+                  Xoá
+                </Button>
+                <Button variant="outline" size="sm" onClick={handleCancel}>
+                  Huỷ
+                </Button>
+                <Button size="sm" onClick={handleSave}>
+                  Lưu
+                </Button>
+              </>
+            )}
+          </div>
+          {readOnly ? (
+            <div className="w-full border rounded-lg p-2">
+              <p className="text-wrap">{note?.note || ""}</p>
+            </div>
+          ) : (
+            <textarea
+              ref={ref}
+              className="w-full border min-w-[320px] rounded-lg p-2"
+              rows={4}
+            />
+          )}
         </div>
-      ) : (
-        <textarea
-          ref={ref}
-          className="w-full border min-w-[320px] rounded-lg p-2"
-          rows={4}
-        />
       )}
-    </div>
+    </>
   );
 };
 

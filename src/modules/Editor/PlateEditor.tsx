@@ -19,6 +19,23 @@ import NotesProvider from "./components/NoteProvider/NoteProvider";
 import { EditorFormat, EditorHighlight } from "./types";
 import { Note } from "./types/note";
 import { DetectDataSelected } from "./components/plate-ui/detect-data-selected";
+import {
+  ContextMenu,
+  ContextMenuCheckboxItem,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuLabel,
+  ContextMenuRadioGroup,
+  ContextMenuRadioItem,
+  ContextMenuSeparator,
+  ContextMenuShortcut,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
+  ContextMenuTrigger,
+} from "src/components/shadcn/ui/context-menu";
+import OrisonEditorPopup from "src/sections/admin/orisons/OrisonEditorPopup";
+import Menu from "./components/Menu";
 
 interface PlateEditorProps {
   initialValue: any;
@@ -132,9 +149,9 @@ const PlateEditor: FC<PlateEditorProps> = ({
           renderLeaf={(props) => <Leaf {...props} />}
           decorate={decorate}
         />
-
         <FloatingToolbar>
           <NoteCard noteIndex={1} />
+          <Menu data={data} />
         </FloatingToolbar>
       </NotesProvider>
     </Plate>

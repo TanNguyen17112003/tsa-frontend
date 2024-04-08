@@ -31,5 +31,5 @@ export class OrisonsApi {
 }
 
 export interface GetOrisonPayload {
-  volume_id: string;
+  volume_id?: string;
 }

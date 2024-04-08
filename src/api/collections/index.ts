@@ -4,6 +4,9 @@ import { Collection, CollectionDetail } from "src/types/collection";
 import { FormatPage } from "src/types/format-page";
 import { FormatSutra } from "src/types/format-sutra";
 import { FormatWord } from "src/types/format-word";
+import { Orison } from "src/types/orison";
+import { Sutra } from "src/types/sutra";
+import { Volume } from "src/types/volume";
 import {
   apiGet,
   apiPost,
@@ -48,28 +51,28 @@ export class CollectionsApi {
   }
 }
 
-export interface CollectionMin {
-  id: string;
-  name: string;
-}
+// export interface CollectionMin {
+//   id: string;
+//   name: string;
+// }
 
-export interface SutraMin {
-  id: string;
-  name: string;
-  collection_id: string;
-}
+// export interface SutraMin {
+//   id: string;
+//   name: string;
+//   collection_id: string;
+// }
 
-export interface VolumeMin {
-  id: string;
-  name: string;
-  sutras_id: string;
-}
+// export interface VolumeMin {
+//   id: string;
+//   name: string;
+//   sutras_id: string;
+// }
 
-export interface OrisonMin {
-  id: string;
-  name: string;
-  volume_id: string;
-}
+// export interface OrisonMin {
+//   id: string;
+//   name: string;
+//   volume_id: string;
+// }
 
 export interface UserMin {
   id: string;
@@ -78,11 +81,18 @@ export interface UserMin {
 
 // Define interface for the entire data structure
 export interface CollectionTreeResponse {
-  collections: CollectionMin[];
-  sutras: SutraMin[];
-  volumes: VolumeMin[];
-  orisons: OrisonMin[];
+  collections: Collection[];
+  sutras: Sutra[];
+  volumes: Volume[];
+  orisons: Orison[];
 }
+
+export const initialCollectionTree: CollectionTreeResponse = {
+  collections: [],
+  sutras: [],
+  volumes: [],
+  orisons: [],
+};
 
 export interface CollectionCategoriesResponse {
   authors: Author[];
@@ -92,3 +102,12 @@ export interface CollectionCategoriesResponse {
   circas: Circa[];
   translators: UserMin[];
 }
+
+export const initialCollectionCategories: CollectionCategoriesResponse = {
+  authors: [],
+  format_sutras: [],
+  format_words: [],
+  format_pages: [],
+  circas: [],
+  translators: [],
+};

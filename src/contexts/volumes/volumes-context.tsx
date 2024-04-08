@@ -12,7 +12,7 @@ import useFunction, {
   DEFAULT_FUNCTION_RETURN,
   UseFunctionReturnType,
 } from "src/hooks/use-function";
-import { SutraDetail, initialSutra } from "src/types/sutra";
+import { SutraDetail, enrichSutra, initialSutra } from "src/types/sutra";
 import { Volume, VolumeDetail } from "src/types/volume";
 import { useSutrasContext } from "../sutras/sutras-context";
 import { useCollectionCategoriesContext } from "../collections/collection-categories-context";
@@ -42,7 +42,7 @@ export const VolumesContext = createContext<ContextValue>({
 
 const VolumesProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
-  const { updateTree } = useCollectionCategoriesContext();
+  const { updateTree, tree, categories } = useCollectionCategoriesContext();
   const { getSutrasApi } = useSutrasContext();
   const sutra = useMemo(() => {
     const sutraId = (
@@ -50,8 +50,18 @@ const VolumesProvider = ({ children }: { children: ReactNode }) => {
       router.query.qSutraId ||
       ""
     )?.toString();
-    return getSutrasApi.data?.find((c) => c.id == sutraId);
-  }, [getSutrasApi.data, router.query.sutraId, router.query.qSutraId]);
+    const sutra = getSutrasApi.data?.find((c) => c.id == sutraId);
+    if (sutra) {
+      return enrichSutra(sutra, tree, categories);
+    }
+    return sutra;
+  }, [
+    router.query.sutraId,
+    router.query.qSutraId,
+    getSutrasApi.data,
+    tree,
+    categories,
+  ]);
 
   const getVolumesApi = useFunction(VolumesApi.getVolumes);
 

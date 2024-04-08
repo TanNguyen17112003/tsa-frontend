@@ -28,7 +28,9 @@ const SutraEditSheet: FC<SutraEditSheetProps> = ({
   const { user } = useAuth();
   const { updateSutra, createSutra } = useSutrasContext();
   const [files, setFiles] = useState<File[]>([]);
-  const { authors, circas, translators } = useCollectionCategoriesContext();
+  const { categories } = useCollectionCategoriesContext();
+  const { authors, translators, circas } = categories;
+  const createSutraHelper = useFunction(createSutra);
 
   const authorOptions = useMemo(() => {
     return authors.map((author) => ({
@@ -52,7 +54,7 @@ const SutraEditSheet: FC<SutraEditSheetProps> = ({
   }, [circas]);
 
   const handleSubmit = useCallback(
-    async (values: Sutra) => {
+    async (values: SutraDetail) => {
       if (sutra) {
         await updateSutra({
           ...values,
@@ -117,7 +119,9 @@ const SutraEditSheet: FC<SutraEditSheetProps> = ({
       sheetTrigger={<Button>Tạo bộ kinh</Button>}
       title={sutra ? "Sửa bộ kinh" : "Tạo bộ kinh"}
       actions={
-        <Button onClick={() => formik.handleSubmit()}>Tạo bộ kinh</Button>
+        <Button onClick={() => formik.handleSubmit()}>
+          {sutra ? "Sửa" : "Tạo"} bộ kinh
+        </Button>
       }
     >
       <form onSubmit={formik.submitForm} className="grid grid-cols-2 gap-4">
@@ -185,6 +189,8 @@ const SutraEditSheet: FC<SutraEditSheetProps> = ({
             onUpload={(newFiles) => setFiles([...files, ...newFiles])}
             onClear={() => setFiles([])}
             fileCount={files.length}
+            title="Tải lên file văn bản gốc"
+            subtitle="File Ảnh (PDF,PNG hoặc JPG)"
           />
         </div>
       </form>

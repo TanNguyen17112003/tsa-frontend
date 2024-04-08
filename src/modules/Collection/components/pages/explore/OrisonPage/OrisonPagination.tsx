@@ -34,6 +34,7 @@ const OrisonPagination: FC<OrisonPaginationProps> = ({}) => {
       page={currentIndex}
       count={getOrisonsApi.data?.length || 0}
       rowsPerPage={1}
+      length={2}
       onChange={handleChange}
     />
   );

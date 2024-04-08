@@ -77,7 +77,7 @@ const CollectionEditSheet: FC<CollectionEditSheetProps> = ({
       title={collection ? "Sửa tuyển tập kinh" : "Tạo tuyển tập kinh"}
       actions={
         <Button onClick={() => formik.handleSubmit()}>
-          Tạo tuyển tập kinh
+          {collection ? "Sửa" : "Tạo"} tuyển tập kinh
         </Button>
       }
     >

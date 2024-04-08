@@ -13,7 +13,7 @@ import useFunction from "src/hooks/use-function";
 import * as yup from "yup";
 
 const userSchemaWithoutPass = yup.object().shape({
-  user_name: yup.string().required("Vui lòng nhập username"),
+  username: yup.string().required("Vui lòng nhập username"),
   email: yup
     .string()
     .email("Vui lòng nhập đúng định dạng email")
@@ -134,9 +134,9 @@ const AccountEditSheet: FC<AccountEditSheetProps> = ({
             type="text"
             placeholder="Tên tài khoản"
             className="w-full px-3"
-            {...formik.getFieldProps("user_name")}
-            error={formik.touched.user_name && !!formik.errors.user_name}
-            helperText={!!formik.touched.user_name && formik.errors.user_name}
+            {...formik.getFieldProps("username")}
+            error={formik.touched.username && !!formik.errors.username}
+            helperText={!!formik.touched.username && formik.errors.username}
           />
 
           {!account && (

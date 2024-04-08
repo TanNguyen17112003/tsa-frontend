@@ -19,6 +19,23 @@ import NotesProvider from "./components/NoteProvider/NoteProvider";
 import { EditorFormat, EditorHighlight } from "./types";
 import { Note } from "./types/note";
 import { DetectDataSelected } from "./components/plate-ui/detect-data-selected";
+import {
+  ContextMenu,
+  ContextMenuCheckboxItem,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuLabel,
+  ContextMenuRadioGroup,
+  ContextMenuRadioItem,
+  ContextMenuSeparator,
+  ContextMenuShortcut,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
+  ContextMenuTrigger,
+} from "src/components/shadcn/ui/context-menu";
+import OrisonEditorPopup from "src/sections/admin/orisons/OrisonEditorPopup";
+import Menu from "./components/Menu";
 
 interface PlateEditorProps {
   initialValue: any;
@@ -30,8 +47,8 @@ interface PlateEditorProps {
   onCancel?: () => void;
   onSave?: (value: any) => void;
   onChange: (value: any) => void;
-  setDataReport: (value: string) => void;
-  setSelectionReport: (value: BaseSelection) => void;
+  setDataReport?: (value: string) => void;
+  setSelectionReport?: (value: BaseSelection) => void;
 }
 
 const PlateEditor: FC<PlateEditorProps> = ({
@@ -99,8 +116,8 @@ const PlateEditor: FC<PlateEditorProps> = ({
   );
 
   useEffect(() => {
-    setDataReport(data);
-    if (selection) setSelectionReport(selection);
+    if (setDataReport) setDataReport(data);
+    if (selection && setSelectionReport) setSelectionReport(selection);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selection, data]);
@@ -144,9 +161,9 @@ const PlateEditor: FC<PlateEditorProps> = ({
           decorate={decorate}
           itemRef={searchText}
         />
-
         <FloatingToolbar>
           <NoteCard noteIndex={1} />
+          <Menu data={data} />
         </FloatingToolbar>
       </NotesProvider>
     </Plate>

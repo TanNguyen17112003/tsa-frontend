@@ -79,7 +79,6 @@ export function FixedToolbarButtons({
     "text"
   > | null>(null);
   const read = useEditorReadOnly();
-
   useEffect(() => {
     const mark = editorState.getMarks();
     const el = window.getSelection()?.focusNode?.parentElement;

@@ -49,6 +49,9 @@ const OrisonComplainDialog = ({
           ...values,
           user_id: user?.id || "",
           report_status: "pending",
+          selection: selection,
+          selection_content: data,
+          orison_id: orisonId || "",
         });
 
         if (!error) {

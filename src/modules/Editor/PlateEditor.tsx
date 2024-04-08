@@ -23,6 +23,7 @@ import { DetectDataSelected } from "./components/plate-ui/detect-data-selected";
 interface PlateEditorProps {
   initialValue: any;
   searchText?: string;
+  numElement?: number;
   notes?: Note[];
   readOnly?: boolean;
   onUpdateNotes: (notes: Note[]) => void;
@@ -36,6 +37,7 @@ interface PlateEditorProps {
 const PlateEditor: FC<PlateEditorProps> = ({
   initialValue,
   searchText,
+  numElement,
   readOnly,
   notes,
   onUpdateNotes,
@@ -103,6 +105,15 @@ const PlateEditor: FC<PlateEditorProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selection, data]);
 
+  useEffect(() => {
+    setTimeout(() => {
+      const el = document?.querySelectorAll(".search-node");
+      if (el) {
+        el[numElement || 0]?.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 500);
+  }, [searchText, numElement]);
+
   return (
     <Plate
       plugins={plugins}
@@ -131,6 +142,7 @@ const PlateEditor: FC<PlateEditorProps> = ({
           }}
           renderLeaf={(props) => <Leaf {...props} />}
           decorate={decorate}
+          itemRef={searchText}
         />
 
         <FloatingToolbar>
@@ -155,7 +167,7 @@ const Leaf = ({
       }}
       className={clsx(
         leaf.highlightNote && "bg-orange-200",
-        leaf.highlightSearch && "bg-cyan-200"
+        leaf.highlightSearch && "bg-cyan-200 search-node"
         // leaf.color && `text-[${leaf.color}]`,
         // leaf.fontSize && `text-[${leaf.fontSize}]`
         // leaf.bold && "font-bold",

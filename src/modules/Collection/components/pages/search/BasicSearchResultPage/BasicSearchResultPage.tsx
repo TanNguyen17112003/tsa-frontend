@@ -8,15 +8,18 @@ import getPaginationText from "src/utils/get-pagination-text";
 import { useRouter } from "next/router";
 import useFunction from "src/hooks/use-function";
 import { OrisonsApi } from "src/api/orisons";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Loading from "src/components/Loading";
+import { useCollectionCategoriesContext } from "src/contexts/collections/collection-categories-context";
+import { cn } from "src/utils/shadcn";
 
 const BasicSearchResultPage = () => {
-  const { getOrisonDetailApi } = useOrisonsContext();
   const router = useRouter();
   const getOrisonByIdApi = useFunction(OrisonsApi.getOrisonById);
-
+  const { goOrison } = useCollectionCategoriesContext();
+  const [searchNum, setSearchNum] = useState(0);
   const pagination = usePagination({ count: 10 });
+  let searchText: string = router.query.searchText as string;
 
   useEffect(() => {
     getOrisonByIdApi.call(router.query.orisonId as string);
@@ -30,18 +33,16 @@ const BasicSearchResultPage = () => {
   const data = useMemo(() => {
     const temp: any[] = [];
     if (router.query.searchText != "") {
-      console.log("searchKey", router.query.searchText);
       let savedString: string = orison?.plain_text || "";
-      let searchText: string = router.query.searchText as string;
+
       let currentIndex: number = 0;
       let count: number = 0;
       const maxCount: number = 3;
-      console.log("savedString", savedString);
 
       while (
         (currentIndex = savedString
           .toLowerCase()
-          .indexOf(searchText.toLowerCase(), currentIndex)) !== -1 &&
+          .indexOf(searchText?.toLowerCase(), currentIndex)) !== -1 &&
         count < maxCount
       ) {
         if (currentIndex < 30) {
@@ -74,8 +75,6 @@ const BasicSearchResultPage = () => {
     return temp;
   }, [orison]);
 
-  console.log("orison", orison);
-
   const handleBack = useCallback(() => {
     router.replace({
       pathname: router.pathname,
@@ -83,14 +82,26 @@ const BasicSearchResultPage = () => {
     });
   }, []);
   return (
-    <div className="space-y-4 max-h-svh">
+    <div className="space-y-4 max-h-[calc(100vh-230px)]">
       <div className="flex justify-between p-5">
         <CollectionBreadcrumb />
-        <Button variant={"ghost"} className="text-primary" onClick={handleBack}>
-          Tìm kiếm kết quả khác
-        </Button>
+        <div>
+          <Button
+            variant={"ghost"}
+            className="text-primary"
+            onClick={handleBack}
+          >
+            Tìm kiếm kết quả khác
+          </Button>
+          <Button
+            variant={"default"}
+            onClick={() => goOrison(router.query.orisonId as string)}
+          >
+            Xem văn bản gốc
+          </Button>
+        </div>
       </div>
-      <div className="flex-1 min-h-0 bg-white flex gap-4 pl-4">
+      <div className="flex-1 min-h-0 h-full bg-white flex gap-4 pl-4">
         <div className="w-1/6 border rounded-xl">
           <div className="sticky top-0 bg-white">
             <div className="p-3 text-lg font-semibold text-text-secondary ">
@@ -103,26 +114,28 @@ const BasicSearchResultPage = () => {
             </div>
             <hr />
           </div>
-          <div className="flex flex-col gap-1 pt-4 px-2">
-            {data.map((item) => (
-              <div>{item}</div>
+          <div className="flex flex-col gap-1">
+            {data.map((item, index) => (
+              <div
+                className={cn(
+                  "flex space-x-4 border-b px-2 min-h-14 items-center cursor-pointer hover:bg-cyan-50",
+                  searchNum == index ? "bg-cyan-50" : ""
+                )}
+                onClick={() => {
+                  setSearchNum(index);
+                }}
+              >
+                <div>{index + 1}</div>
+                <div className="">
+                  {item.firstText}
+                  {item.secondText}
+                  {item.thirdText}
+                </div>
+              </div>
             ))}
-            {/* {getOrisonsApi.data?.map((orison) => (
-          <Button
-            key={orison.id}
-            variant="ghost"
-            className={clsx(
-              "w-full justify-start text-primary",
-              orison.id == orisonId && "bg-accent"
-            )}
-            onClick={() => handleChangeOrison(orison.id)}
-          >
-            {orison.name}
-          </Button>
-        ))} */}
           </div>
         </div>
-        <div className="border rounded-xl max-h-[calc(100vh-290px)] overflow-y-auto flex-1">
+        <div className="border h-full rounded-xl overflow-y-auto flex-1">
           {getOrisonByIdApi.loading ? (
             <Loading />
           ) : (
@@ -132,20 +145,13 @@ const BasicSearchResultPage = () => {
               notes={orison?.notes}
               onUpdateNotes={() => {}}
               onChange={() => {}}
-              // onSave={handleSave.call}
-              // onCancel={handleCancel}
-              //   searchText={searchText.toLowerCase()}
+              searchText={searchText?.toLowerCase()}
+              numElement={searchNum}
               setDataReport={() => {}}
               setSelectionReport={() => {}}
             />
           )}
         </div>
-      </div>
-      <div className="fixed bg-white flex bottom-0 px-7 justify-between py-2 w-[calc(100vw-280px)] border-t">
-        <div className="flex text-sm text-gray-500 font-normal items-center overflow-hidden text-nowrap">
-          {getPaginationText(pagination)}
-        </div>
-        <Pagination {...pagination} onChange={pagination.onPageChange} />
       </div>
     </div>
   );

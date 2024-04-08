@@ -82,6 +82,10 @@ export function FixedToolbarButtons({
 
   useEffect(() => {
     const mark = editorState.getMarks();
+    const el = window.getSelection()?.focusNode?.parentElement;
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
     if ((!mark || Object.keys(mark).length == 0) && selectionMark) {
       setMarks(editorState, selectionMark);
     } else {

@@ -10,12 +10,16 @@ import {
   CollectionCategoriesResponse,
   CollectionTreeResponse,
   CollectionsApi,
+  initialCollectionCategories,
+  initialCollectionTree,
 } from "src/api/collections";
 import Loading from "src/components/Loading";
 import useFunction from "src/hooks/use-function";
+import { CollectionDetail } from "src/types/collection";
 
-interface ContextValue extends CollectionCategoriesResponse {
-  tree?: CollectionTreeResponse;
+interface ContextValue {
+  tree: CollectionTreeResponse;
+  categories: CollectionCategoriesResponse;
   updateTree: (
     callback: (prev: CollectionTreeResponse) => CollectionTreeResponse
   ) => void;
@@ -26,12 +30,8 @@ interface ContextValue extends CollectionCategoriesResponse {
 }
 
 export const CollectionCategoriesContext = createContext<ContextValue>({
-  authors: [],
-  format_sutras: [],
-  format_words: [],
-  format_pages: [],
-  circas: [],
-  translators: [],
+  tree: initialCollectionTree,
+  categories: initialCollectionCategories,
   updateTree: () => {},
   goCollection: () => {},
   goSutra: () => {},
@@ -167,9 +167,9 @@ const CollectionCategoriesProvider = ({
   return (
     <CollectionCategoriesContext.Provider
       value={{
+        tree: getCollectionTreeApi.data || initialCollectionTree,
+        categories: getCategoriesApi.data || initialCollectionCategories,
         updateTree,
-        ...getCategoriesApi.data,
-        tree: getCollectionTreeApi.data,
         goCollection,
         goSutra,
         goVolume,

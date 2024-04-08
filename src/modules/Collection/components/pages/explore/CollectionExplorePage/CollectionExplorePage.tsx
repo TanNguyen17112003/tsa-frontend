@@ -8,23 +8,28 @@ import { useCollectionsContext } from "src/contexts/collections/collections-cont
 import { useDrawer } from "src/hooks/use-drawer";
 import usePagination from "src/hooks/use-pagination";
 import { useSelection } from "src/hooks/use-selection";
-import { CollectionDetail } from "src/types/collection";
+import { CollectionDetail, enrichCollection } from "src/types/collection";
 import CollectionBreadcrumb from "../../../CollectionBreadcrumb";
 import CollectionEditSheet from "./CollectionEditSheet";
 import collectionTableConfigs from "./collectionTableConfigs";
 import useFunction from "src/hooks/use-function";
 import { useRouter } from "next/router";
+import getPaginationText from "src/utils/get-pagination-text";
+import { useCollectionCategoriesContext } from "src/contexts/collections/collection-categories-context";
+import { useAuth } from "src/hooks/use-auth";
 
 interface CollectionExplorePageProps {}
 
 const CollectionExplorePage: FC<CollectionExplorePageProps> = ({}) => {
+  const { user } = useAuth();
   const router = useRouter();
-  const { getCollectionsApi, deleteCollection } = useCollectionsContext();
+  const { tree } = useCollectionCategoriesContext();
+  const { deleteCollection, getCollectionsApi } = useCollectionsContext();
   const editDrawer = useDrawer<CollectionDetail>();
 
   const collections = useMemo(() => {
-    return getCollectionsApi.data || [];
-  }, [getCollectionsApi.data]);
+    return (getCollectionsApi.data || []).map((c) => enrichCollection(c, tree));
+  }, [getCollectionsApi.data, tree]);
 
   const pagination = usePagination({ count: collections.length });
   const select = useSelection<CollectionDetail>(collections);
@@ -54,49 +59,48 @@ const CollectionExplorePage: FC<CollectionExplorePageProps> = ({}) => {
     <>
       <div className="flex justify-between p-5 py-6 sticky top-0 z-10 bg-white">
         <CollectionBreadcrumb />
-        <div className="flex gap-2">
-          <Button
-            variant="ghost"
-            color="destructive"
-            className="gap-2 text-destructive hover:bg-destructive/20 hover:text-destructive"
-            disabled={select.selected.length == 0 || handleDeleteHelper.loading}
-            onClick={handleDeleteHelper.call}
-          >
-            <PiTrashBold className="w-5 h-5" /> Xoá
-          </Button>
-          <Button variant="outline" className="gap-2">
-            Xuất báo cáo <BiDownload className="w-5 h-5" />
-          </Button>
-          <CollectionEditSheet
-            open={editDrawer.open}
-            onOpenChange={(open) =>
-              open ? editDrawer.handleOpen() : editDrawer.handleClose()
-            }
-            collection={editDrawer.data}
-          />
-        </div>
+        {user?.role == "admin" && (
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              color="destructive"
+              className="gap-2 text-destructive hover:bg-destructive/20 hover:text-destructive"
+              disabled={
+                select.selected.length == 0 || handleDeleteHelper.loading
+              }
+              onClick={handleDeleteHelper.call}
+            >
+              <PiTrashBold className="w-5 h-5" /> Xoá
+            </Button>
+            <Button variant="outline" className="gap-2">
+              Xuất báo cáo <BiDownload className="w-5 h-5" />
+            </Button>
+            <CollectionEditSheet
+              open={editDrawer.open}
+              onOpenChange={(open) =>
+                open ? editDrawer.handleOpen() : editDrawer.handleClose()
+              }
+              collection={editDrawer.data}
+            />
+          </div>
+        )}
       </div>
       <div className="px-4 flex-1 pb-6">
         <CustomTable
-          loading={getCollectionsApi.loading}
-          select={select}
+          select={user?.role == "admin" ? select : undefined}
           rows={collections}
           configs={collectionTableConfigs}
           pagination={pagination}
-          onClickEdit={editDrawer.handleOpen}
+          onClickEdit={
+            user?.role == "admin" ? editDrawer.handleOpen : undefined
+          }
           onClickRow={handleClickRow}
           hidePagination
         />
       </div>
       <div className="sticky bg-white flex bottom-0 px-7 justify-between py-2 border-t">
         <div className="flex text-sm text-gray-500 font-normal items-center overflow-hidden text-nowrap">
-          Đang hiển thị kết quả thứ{" "}
-          {pagination.page * pagination.rowsPerPage + 1} tới{" "}
-          {Math.min(
-            pagination.count,
-            pagination.rowsPerPage * (pagination.page + 1)
-          )}{" "}
-          trên {pagination.count} kết quả
+          {getPaginationText(pagination)}
         </div>
         <Pagination {...pagination} onChange={pagination.onPageChange} />
       </div>

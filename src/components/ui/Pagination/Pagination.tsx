@@ -8,6 +8,7 @@ interface PaginationProps {
   count: number;
   rowsPerPage: number;
   onChange: (event: any, page: number) => void;
+  length?: number;
 }
 
 const Pagination: FC<PaginationProps> = ({
@@ -15,19 +16,32 @@ const Pagination: FC<PaginationProps> = ({
   count,
   onChange,
   rowsPerPage,
+  length = 1,
 }) => {
   const totalPages = Math.ceil(count / rowsPerPage) || 1;
 
   const buttonIndexes = useMemo(() => {
-    const indexes: number[] = [
-      0,
-      totalPages - 1,
-      (page || 1) - 1,
-      page,
-      page < totalPages - 1 ? page + 1 : page,
-    ];
-    return _.sortedUniq(indexes.sort());
-  }, [page, totalPages]);
+    let indexes: number[] = [0, 1, page, totalPages - 1, totalPages - 2];
+    for (let i = 1; i <= length; i++) {
+      indexes.push(...[page - i, page + i]);
+    }
+    for (let i = 0; i < indexes.length; i++) {
+      indexes[i] = Math.min(Math.max(0, indexes[i]), totalPages - 1);
+    }
+    indexes = _.sortedUniq(indexes.sort());
+    const results: number[] = [];
+    for (let i = 0; i < indexes.length; i++) {
+      results.push(indexes[i]);
+      if (i < indexes.length - 1) {
+        if (indexes[i + 1] == indexes[i] + 2) {
+          results.push(indexes[i] + 1);
+        } else if (indexes[i + 1] > indexes[i] + 2) {
+          results.push(-1);
+        }
+      }
+    }
+    return results;
+  }, [length, page, totalPages]);
 
   return (
     <div className="flex">
@@ -45,9 +59,10 @@ const Pagination: FC<PaginationProps> = ({
           className="rounded-none"
           variant={page == index ? undefined : "outline"}
           key={index}
-          onClick={(e) => onChange(e, index)}
+          onClick={index >= 0 ? (e) => onChange(e, index) : undefined}
+          disabled={index == -1}
         >
-          {index + 1}
+          {index >= 0 ? index + 1 : "..."}
         </Button>
       ))}
       <Button

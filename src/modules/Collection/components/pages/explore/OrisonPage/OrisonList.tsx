@@ -24,16 +24,14 @@ const OrisonList: FC<OrisonListProps> = ({ className }) => {
 
   return (
     <div
-      className={clsx(
-        "border rounded-lg overflow-y-auto pb-[40px]",
-        className
-        // isFullScreen && "absolute top-0 left-0 w-full z-50"
-      )}
+      className={clsx("border rounded-lg pb-[40px] overflow-y-auto", className)}
     >
-      <div className="p-3 text-lg font-semibold text-text-secondary">
-        Mục lục
+      <div className="sticky top-0 bg-white">
+        <div className="p-3 text-lg font-semibold text-text-secondary ">
+          Mục lục
+        </div>
+        <hr />
       </div>
-      <hr />
       <div className="flex flex-col gap-1 pt-4 px-2">
         {getOrisonsApi.data?.map((orison) => (
           <Button

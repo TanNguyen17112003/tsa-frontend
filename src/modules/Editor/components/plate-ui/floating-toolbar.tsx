@@ -94,7 +94,7 @@ export const FloatingToolbar = withRef<
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editorRef.selection]);
 
-  if (hidden || !isSelectedNote || !activeNoteId) return null;
+  if (hidden) return null;
 
   return (
     <PortalBody>

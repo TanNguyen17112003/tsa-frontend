@@ -28,4 +28,6 @@ export class SutrasApi {
 
 export interface GetSutrasPayload {
   collection_id?: string;
+  qCircaFrom?: string;
+  qCircaTo?: string;
 }

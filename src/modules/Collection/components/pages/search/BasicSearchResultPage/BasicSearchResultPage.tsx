@@ -1,10 +1,6 @@
 import { Button } from "src/components/shadcn/ui/button";
 import CollectionBreadcrumb from "../../../CollectionBreadcrumb";
 import PlateEditor from "src/modules/Editor";
-import { useOrisonsContext } from "src/contexts/orisons/orisons-context";
-import Pagination from "src/components/ui/Pagination";
-import usePagination from "src/hooks/use-pagination";
-import getPaginationText from "src/utils/get-pagination-text";
 import { useRouter } from "next/router";
 import useFunction from "src/hooks/use-function";
 import { OrisonsApi } from "src/api/orisons";
@@ -18,7 +14,6 @@ const BasicSearchResultPage = () => {
   const getOrisonByIdApi = useFunction(OrisonsApi.getOrisonById);
   const { goOrison } = useCollectionCategoriesContext();
   const [searchNum, setSearchNum] = useState(0);
-  const pagination = usePagination({ count: 10 });
   let searchText: string = router.query.searchText as string;
 
   useEffect(() => {
@@ -45,27 +40,49 @@ const BasicSearchResultPage = () => {
           .indexOf(searchText?.toLowerCase(), currentIndex)) !== -1 &&
         count < maxCount
       ) {
-        if (currentIndex < 30) {
+        if (currentIndex < 15) {
           temp.push({
-            firstText: "",
-            secondText: savedString.substring(
+            beforeTextSearch: savedString.substring(0, currentIndex),
+            textSearch: savedString.substring(
               currentIndex,
               currentIndex + searchText.length
             ),
-            thirdText: savedString.substring(
+            afterTextSearch: savedString.substring(
               currentIndex + searchText.length,
-              currentIndex + 30
+              searchText.length + 15
+            ),
+          });
+          count++;
+        } else if (currentIndex > savedString.length - 14) {
+          temp.push({
+            beforeTextSearch: savedString.substring(
+              currentIndex - 15,
+              currentIndex
+            ),
+            textSearch: savedString.substring(
+              currentIndex,
+              currentIndex + searchText.length
+            ),
+            afterTextSearch: savedString.substring(
+              currentIndex + searchText.length,
+              savedString.length
             ),
           });
           count++;
         } else {
           temp.push({
-            firstText: savedString.substring(currentIndex - 30, currentIndex),
-            secondText: savedString.substring(
+            beforeTextSearch: savedString.substring(
+              currentIndex - 15,
+              currentIndex
+            ),
+            textSearch: savedString.substring(
               currentIndex,
               currentIndex + searchText.length
             ),
-            thirdText: "",
+            afterTextSearch: savedString.substring(
+              currentIndex + searchText.length,
+              currentIndex + searchText.length + 15
+            ),
           });
           count++;
         }
@@ -78,7 +95,7 @@ const BasicSearchResultPage = () => {
   const handleBack = useCallback(() => {
     router.replace({
       pathname: router.pathname,
-      query: { searchType: "basic" },
+      query: { searchType: "basic", searchText: router.query.searchText },
     });
   }, []);
   return (
@@ -127,9 +144,9 @@ const BasicSearchResultPage = () => {
               >
                 <div>{index + 1}</div>
                 <div className="">
-                  {item.firstText}
-                  {item.secondText}
-                  {item.thirdText}
+                  {item.beforeTextSearch}
+                  {item.textSearch}
+                  {item.afterTextSearch}
                 </div>
               </div>
             ))}

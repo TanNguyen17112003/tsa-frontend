@@ -20,6 +20,7 @@ import AuthorSearchResultPage from "./components/pages/search/AuthorTranslatorSe
 import CircaSearchResultPage from "./components/pages/search/CircaSearchResultPage/CircaSearchResultPage";
 import TranslatorSearchResultPage from "./components/pages/search/AuthorTranslatorSearchResultPage/TranslatorSearchResultPage";
 import BasicSearchResultPage from "./components/pages/search/BasicSearchResultPage/BasicSearchResultPage";
+import BasicSearchResult from "./components/pages/search/BasicSearchPage/BasicSearchResult";
 
 interface CollectionContentProps {}
 

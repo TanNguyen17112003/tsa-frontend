@@ -7,6 +7,7 @@ export interface Orison {
   name: string;
   code: string;
   volume_id: string;
+  plain_text: string;
   created_at?: Date;
   updated_at?: Date;
 }

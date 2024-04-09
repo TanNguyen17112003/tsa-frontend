@@ -39,10 +39,7 @@ export type EditorProps = PlateContentProps &
   VariantProps<typeof editorVariants>;
 
 const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
-  (
-    { className, disabled, readOnly, size, variant, decorate, ...props },
-    ref
-  ) => {
+  ({ className, disabled, readOnly, size, variant, ...props }, ref) => {
     return (
       <div ref={ref} className="relative w-full">
         <PlateContent
@@ -58,7 +55,6 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
           readOnly={disabled ?? readOnly}
           aria-disabled={disabled}
           {...props}
-          decorate={decorate}
         />
       </div>
     );

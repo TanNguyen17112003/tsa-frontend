@@ -1,4 +1,9 @@
-import { Orison, OrisonDetail, OrisonEditor } from "src/types/orison";
+import {
+  Orison,
+  OrisonDetail,
+  OrisonEditor,
+  initialOrison,
+} from "src/types/orison";
 import {
   apiGet,
   apiPost,
@@ -42,20 +47,12 @@ export interface GetOrisonPayload {
 }
 
 export interface SearchOrisonPayload {
-  q?: string;
+  q: string[];
   limit: number;
   offset: number;
 }
 
 export interface SearchOrison {
   count: number;
-  rows: [
-    {
-      id: string;
-      name: string;
-      code: string;
-      volume_id: string;
-      plain_text: string;
-    }
-  ];
+  rows: Orison[];
 }

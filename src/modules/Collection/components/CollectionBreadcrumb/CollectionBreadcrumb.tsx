@@ -56,6 +56,14 @@ const CollectionBreadcrumb: FC<CollectionBreadcrumbProps> = ({}) => {
           label: `Kết quả "${searchText}"`,
         });
       }
+      if (searchType.value == "advance" && router.query.orisonId) {
+        const orisonName = tree.orisons.find(
+          (item) => item.id == router.query.orisonId
+        )?.name;
+        bItems.push({
+          label: `Kết quả "${orisonName}"`,
+        });
+      }
       if (router.query.qCircaFrom && router.query.qCircaTo) {
         bItems.push({
           label: `Kết quả tìm kiếm "${router.query.qCircaFrom} TCN - ${router.query.qCircaTo} TCN"`,
@@ -106,6 +114,8 @@ const CollectionBreadcrumb: FC<CollectionBreadcrumbProps> = ({}) => {
     }
     return bItems;
   }, [
+    categories.authors,
+    categories.translators,
     goCollection,
     goOrison,
     goSutra,

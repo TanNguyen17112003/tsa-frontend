@@ -55,12 +55,7 @@ const AdvanceSearchPage: FC<AdvanceSearchPageProps> = ({}) => {
         updateTextSearch={(index, value) => updateTextSearch(index, value)}
         updateTypeSearch={(index, value) => updateTypeSearch(index, value)}
       />
-      {textSearch && textSearch != "" && (
-        <AdvanceSearchResult
-          textSearchAdvance={curentSearchAdvance}
-          typeSearchAdvance={curentSearchOption}
-        />
-      )}
+      {textSearch && textSearch != "" && <AdvanceSearchResult />}
     </>
   );
 };

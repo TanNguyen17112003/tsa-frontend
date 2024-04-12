@@ -34,7 +34,10 @@ const AdvanceSearchForm: FC<AdvanceSearchFormProps> = ({
       );
       router.replace({
         pathname: router.pathname,
-        query: { ...newQuery, searchType: value },
+        query: {
+          ...newQuery,
+          searchType: value,
+        },
       });
     },
     [router]
@@ -63,11 +66,16 @@ const AdvanceSearchForm: FC<AdvanceSearchFormProps> = ({
   ];
 
   const handleSubmit = (event: any) => {
+    let temp = textSearch;
+    curentSearchAdvance.map((item, index) => {
+      if (item && item != "")
+        temp = temp + "_" + curentSearchOption[index] + "_" + item;
+    });
     router.replace({
       pathname: router.pathname,
       query: {
         ...router.query,
-        textSearch: textSearch,
+        textSearch: temp,
       },
     });
 

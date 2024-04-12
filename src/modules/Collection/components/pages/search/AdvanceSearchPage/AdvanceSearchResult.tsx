@@ -13,27 +13,46 @@ import useFunction from "src/hooks/use-function";
 import usePagination from "src/hooks/use-pagination";
 import getPaginationText from "src/utils/get-pagination-text";
 
-interface AdvanceSearchResultProps {
-  textSearchAdvance: string[];
-  typeSearchAdvance: string[];
-}
+interface AdvanceSearchResultProps {}
 
-const AdvanceSearchResult: FC<AdvanceSearchResultProps> = ({
-  textSearchAdvance,
-  typeSearchAdvance,
-}) => {
+const AdvanceSearchResult: FC<AdvanceSearchResultProps> = ({}) => {
   const router = useRouter();
   const searchOrisonsApi = useFunction(OrisonsApi.searchOrisons);
   const { tree } = useCollectionCategoriesContext();
+
+  const textSearchAdvance: string[] = useMemo(() => {
+    const temp = (router.query.textSearch as string)?.split("_");
+    const textTemp: string[] = [];
+    temp.map((item, index) => {
+      if (index != 0 && index % 2 == 0) {
+        textTemp.push(item);
+      }
+    });
+
+    return textTemp;
+  }, [router.query.textSearch]);
+  const typeSearchAdvance: string[] = useMemo(() => {
+    const temp = (router.query.textSearch as string)?.split("_");
+    const textTemp: string[] = [];
+    temp.map((item, index) => {
+      if (index != 0 && index % 2 == 1) {
+        textTemp.push(item);
+      }
+    });
+
+    return textTemp;
+  }, [router.query.textSearch]);
+
   const orisons = useMemo(() => {
     return searchOrisonsApi.data;
   }, [searchOrisonsApi]);
 
   const textSearch = useMemo(() => {
-    return router.query.textSearch as string;
-  }, [router]);
+    const temp = (router.query.textSearch as string)?.split("_");
+    return temp[0] as string;
+  }, [router.query.textSearch]);
 
-  const data = useMemo(() => {
+  const dataSearch = useMemo(() => {
     const temp: any[][] = [];
     orisons?.rows.map((item, index) => {
       temp[index] = [];
@@ -214,11 +233,11 @@ const AdvanceSearchResult: FC<AdvanceSearchResultProps> = ({
                       </div>
                     </div>
                     <div className="flex ml-auto text-xs font-medium text-blue-600 bg-blue-100 p-2 rounded-md border-blue-200 border mr-2">
-                      {data[index].length + " Kết quả phù hợp"}
+                      {dataSearch[index].length + " Kết quả phù hợp"}
                     </div>
                   </AccordionTrigger>
                   <div className="mb-6">
-                    {data[index].map((d, index) => (
+                    {dataSearch[index].map((d, index) => (
                       <AccordionContent
                         className="flex border-b border-x rounded-b-md pt-4 pl-4 space-x-8 text-base font-normal cursor-pointer hover:bg-slate-100"
                         onClick={() => {

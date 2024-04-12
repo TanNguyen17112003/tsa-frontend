@@ -184,6 +184,7 @@ const OverviewAdminPage = () => {
               rows={report}
               configs={getReportTableConfig}
               tableClassName="rounded-xl border-2"
+              indexColumn
             ></CustomTable>
 
             <ReportDialog

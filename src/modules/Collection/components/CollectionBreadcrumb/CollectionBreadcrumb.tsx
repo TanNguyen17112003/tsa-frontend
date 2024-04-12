@@ -50,6 +50,12 @@ const CollectionBreadcrumb: FC<CollectionBreadcrumbProps> = ({}) => {
           label: `Kết quả tìm kiếm tác giả "${author || ""}"`,
         });
       }
+      if (searchType.value == "basic" && router.query.orisonId) {
+        const searchText = router.query.searchText;
+        bItems.push({
+          label: `Kết quả "${searchText}"`,
+        });
+      }
       if (router.query.qCircaFrom && router.query.qCircaTo) {
         bItems.push({
           label: `Kết quả tìm kiếm "${router.query.qCircaFrom} TCN - ${router.query.qCircaTo} TCN"`,

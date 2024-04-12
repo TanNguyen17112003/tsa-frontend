@@ -19,6 +19,8 @@ import OrisonExplorePage from "./components/pages/explore/OrisonExplorePage";
 import AuthorSearchResultPage from "./components/pages/search/AuthorTranslatorSearchResultPage/AuthorSearchResultPage";
 import CircaSearchResultPage from "./components/pages/search/CircaSearchResultPage/CircaSearchResultPage";
 import TranslatorSearchResultPage from "./components/pages/search/AuthorTranslatorSearchResultPage/TranslatorSearchResultPage";
+import BasicSearchResultPage from "./components/pages/search/BasicSearchResultPage/BasicSearchResultPage";
+import BasicSearchResult from "./components/pages/search/BasicSearchPage/BasicSearchResult";
 
 interface CollectionContentProps {}
 
@@ -67,6 +69,8 @@ const CollectionContent: FC<CollectionContentProps> = ({}) => {
           <AuthorSearchPage />
         ) : query.searchType == "circa" ? (
           <CircaSearchPage />
+        ) : query.searchType == "basic" && query.orisonId ? (
+          <BasicSearchResultPage />
         ) : query.searchType == "basic" ? (
           <BasicSearchPage />
         ) : query.searchType == "advance" ? (

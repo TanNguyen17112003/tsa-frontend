@@ -1,9 +1,11 @@
 import { useRouter } from "next/router";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { HiMagnifyingGlass, HiMiniArrowSmallRight } from "react-icons/hi2";
 import { LuClock } from "react-icons/lu";
 import { PiBookOpen } from "react-icons/pi";
+import { ReportsApi } from "src/api/reports";
 import CommonCard from "src/components/CommonCard";
+import { CustomTable } from "src/components/custom-table";
 import { Button } from "src/components/shadcn/ui/button";
 import { Input } from "src/components/shadcn/ui/input";
 import {
@@ -13,7 +15,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "src/components/shadcn/ui/select";
+import useFunction from "src/hooks/use-function";
 import { paths } from "src/paths";
+import reportTableConfig from "./ReportTableConfig";
+import { initialReport } from "src/types/report";
+import ReportDialog from "../../reports/ReportDialog";
 
 const children = [
   { title: "Bài dịch số 23", time: "15:30 - 01/12/2023" },
@@ -40,12 +46,36 @@ const OverviewAdminPage = () => {
   const handleModeChange = (newMode: string) => {
     setSearchMode(newMode);
   };
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [data, setData] = useState(initialReport);
+
+  const getReportsApi = useFunction(ReportsApi.getReports);
+
+  useEffect(() => {
+    getReportsApi.call({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSeeAll = useCallback(() => {
     router.push({
-      pathname: paths.dashboard.collections,
+      pathname: paths.dashboard.reports,
     });
   }, [router]);
+
+  const report = useMemo(() => {
+    return getReportsApi.data || [];
+  }, [getReportsApi.data]);
+
+  const getReportTableConfig = useMemo(() => {
+    return reportTableConfig({
+      setData: (data) => {
+        setData(data);
+      },
+      setIsOpen: (đata) => {
+        setIsOpen(true);
+      },
+    });
+  }, []);
 
   return (
     <div
@@ -137,10 +167,10 @@ const OverviewAdminPage = () => {
           </div> */}
         </div>
         <div className="flex mt-4">
-          <div className="flex bg-white border border-gray-300 rounded-2xl mr-4 p-5 overflow-auto h-full w-full">
+          <div className="bg-white border border-gray-300 rounded-2xl mr-4 p-5 overflow-auto h-full w-full">
             <div className="flex space-x-64 w-full">
               <p className="text-lg font-semibold w-full text-nowrap p-3">
-                Khiếu nại chưa giải quyết (3)
+                Khiếu nại chưa giải quyết ({report.length})
               </p>
               <Button
                 variant="ghost"
@@ -150,7 +180,17 @@ const OverviewAdminPage = () => {
                 Xem tất cả <HiMiniArrowSmallRight className="h-6 w-6" />
               </Button>
             </div>
-            {/* <CustomTable /> */}
+            <CustomTable
+              rows={report}
+              configs={getReportTableConfig}
+              tableClassName="rounded-xl border-2"
+            ></CustomTable>
+
+            <ReportDialog
+              state={isOpen}
+              onClose={() => setIsOpen(false)}
+              data={data}
+            />
           </div>
           <CommonCard
             link="/dashboard"

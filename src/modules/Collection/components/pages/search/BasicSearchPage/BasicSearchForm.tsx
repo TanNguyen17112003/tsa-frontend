@@ -13,9 +13,6 @@ interface BasicSearchFormProps {
 const BasicSearchForm: FC<BasicSearchFormProps> = ({ className }) => {
   const router = useRouter();
   const currentSearchType = router.query.searchType;
-  const searchKey = useMemo(() => {
-    return router.query.searchText as string;
-  }, [router.query.searchText]);
 
   const handleChange = useCallback(
     (value: string) => {
@@ -81,7 +78,6 @@ const BasicSearchForm: FC<BasicSearchFormProps> = ({ className }) => {
           <Button type="submit"> Tìm kiếm</Button>
         </div>
       </form>
-      {searchKey && searchKey != "" && <BasicSearchResult />}
     </div>
   );
 };

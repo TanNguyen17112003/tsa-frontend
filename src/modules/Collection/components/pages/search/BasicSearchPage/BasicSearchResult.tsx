@@ -27,7 +27,7 @@ const BasicSearchResult: FC<BasicSearchResultProps> = ({}) => {
     return router.query.searchText as string;
   }, [router]);
 
-  const data = useMemo(() => {
+  const dataSearch = useMemo(() => {
     const temp: any[][] = [];
     orisons?.rows.map((item, index) => {
       temp[index] = [];
@@ -94,7 +94,7 @@ const BasicSearchResult: FC<BasicSearchResultProps> = ({}) => {
       }
     });
     return temp;
-  }, [orisons]);
+  }, [orisons?.rows, searchText]);
 
   useEffect(() => {
     searchOrisonsApi.call({
@@ -176,16 +176,17 @@ const BasicSearchResult: FC<BasicSearchResultProps> = ({}) => {
                       </div>
                     </div>
                     <div className="flex ml-auto text-xs font-medium text-blue-600 bg-blue-100 p-2 rounded-md border-blue-200 border mr-2">
-                      {data[index].length + " Kết quả phù hợp"}
+                      {dataSearch[index].length + " Kết quả phù hợp"}
                     </div>
                   </AccordionTrigger>
                   <div className="mb-6">
-                    {data[index].map((d, index) => (
+                    {dataSearch[index].map((d, index) => (
                       <AccordionContent
                         className="flex border-b border-x rounded-b-md pt-4 pl-4 space-x-8 text-base font-normal cursor-pointer hover:bg-slate-100"
                         onClick={() => {
                           handleClick(item.id, searchText);
                         }}
+                        key={index}
                       >
                         <div>{index + 1}</div>
                         <div className="flex">

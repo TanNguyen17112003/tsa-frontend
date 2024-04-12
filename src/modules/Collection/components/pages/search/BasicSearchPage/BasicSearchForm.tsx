@@ -1,9 +1,10 @@
 import { useRouter } from "next/router";
-import { useMemo, type FC, useCallback } from "react";
+import { useMemo, type FC, useCallback, useEffect, useState } from "react";
 import CustomSelect from "src/components/CustomSelect/CustomSelect";
 import { Button } from "src/components/shadcn/ui/button";
 import FormInput from "src/components/ui/FormInput";
 import searchTypes from "src/modules/Collection/constants/searchTypes";
+import BasicSearchResult from "./BasicSearchResult";
 
 interface BasicSearchFormProps {
   className: string;
@@ -27,6 +28,25 @@ const BasicSearchForm: FC<BasicSearchFormProps> = ({ className }) => {
     [router]
   );
 
+  const handleClickSearch = useCallback(
+    (value: string) => {
+      router.replace({
+        pathname: router.pathname,
+        query: { ...router.query, searchText: value },
+      });
+    },
+    [router]
+  );
+
+  const handleSubmit = (event: any) => {
+    const searchInput: HTMLInputElement = document.getElementById(
+      "search"
+    ) as HTMLInputElement;
+    const searchValue = searchInput?.value;
+    handleClickSearch(searchValue);
+    event.preventDefault();
+  };
+
   const acceptSearchTypes = useMemo(
     () =>
       searchTypes.filter((searchType) =>
@@ -34,27 +54,31 @@ const BasicSearchForm: FC<BasicSearchFormProps> = ({ className }) => {
       ),
     []
   );
+
   return (
-    <form className={className}>
-      <div className="flex gap-4">
-        <div className="flex items-center border border-gray-300 rounded-md w-full divide-x">
-          <div className="flex w-full items-center">
-            <FormInput
-              type="text"
-              placeholder="Nhập từ khóa tìm kiếm..."
+    <div>
+      <form className={className} onSubmit={handleSubmit}>
+        <div className="flex gap-4">
+          <div className="flex items-center border border-gray-300 rounded-md w-full divide-x">
+            <div className="flex w-full items-center">
+              <FormInput
+                type="text"
+                placeholder="Nhập từ khóa tìm kiếm..."
+                className="border-none"
+                id="search"
+              />
+            </div>
+            <CustomSelect
+              options={acceptSearchTypes}
+              value={currentSearchType ? currentSearchType.toString() : ""}
+              onValueChange={handleChange}
               className="border-none"
             />
           </div>
-          <CustomSelect
-            options={acceptSearchTypes}
-            value={currentSearchType ? currentSearchType.toString() : ""}
-            onValueChange={handleChange}
-            className="border-none"
-          />
+          <Button type="submit"> Tìm kiếm</Button>
         </div>
-        <Button> Tìm kiếm</Button>
-      </div>
-    </form>
+      </form>
+    </div>
   );
 };
 

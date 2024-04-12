@@ -30,6 +30,7 @@ const SutraEditSheet: FC<SutraEditSheetProps> = ({
   const [files, setFiles] = useState<File[]>([]);
   const { categories } = useCollectionCategoriesContext();
   const { authors, translators, circas } = categories;
+  const createSutraHelper = useFunction(createSutra);
 
   const authorOptions = useMemo(() => {
     return authors.map((author) => ({
@@ -53,7 +54,7 @@ const SutraEditSheet: FC<SutraEditSheetProps> = ({
   }, [circas]);
 
   const handleSubmit = useCallback(
-    async (values: Sutra) => {
+    async (values: SutraDetail) => {
       if (sutra) {
         await updateSutra({
           ...values,

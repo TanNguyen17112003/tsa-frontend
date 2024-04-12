@@ -40,19 +40,21 @@ import Menu from "./components/Menu";
 interface PlateEditorProps {
   initialValue: any;
   searchText?: string;
+  numElement?: number;
   notes?: Note[];
   readOnly?: boolean;
   onUpdateNotes: (notes: Note[]) => void;
   onCancel?: () => void;
   onSave?: (value: any) => void;
   onChange: (value: any) => void;
-  setDataReport: (value: string) => void;
-  setSelectionReport: (value: BaseSelection) => void;
+  setDataReport?: (value: string) => void;
+  setSelectionReport?: (value: BaseSelection) => void;
 }
 
 const PlateEditor: FC<PlateEditorProps> = ({
   initialValue,
   searchText,
+  numElement,
   readOnly,
   notes,
   onUpdateNotes,
@@ -114,11 +116,20 @@ const PlateEditor: FC<PlateEditorProps> = ({
   );
 
   useEffect(() => {
-    setDataReport(data);
-    if (selection) setSelectionReport(selection);
+    if (setDataReport) setDataReport(data);
+    if (selection && setSelectionReport) setSelectionReport(selection);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selection, data]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      const el = document?.querySelectorAll(".search-node");
+      if (el) {
+        el[numElement || 0]?.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 500);
+  }, [searchText, numElement]);
 
   return (
     <Plate
@@ -148,6 +159,7 @@ const PlateEditor: FC<PlateEditorProps> = ({
           }}
           renderLeaf={(props) => <Leaf {...props} />}
           decorate={decorate}
+          itemRef={searchText}
         />
         <FloatingToolbar>
           <NoteCard noteIndex={1} />
@@ -172,7 +184,7 @@ const Leaf = ({
       }}
       className={clsx(
         leaf.highlightNote && "bg-orange-200",
-        leaf.highlightSearch && "bg-cyan-200"
+        leaf.highlightSearch && "bg-cyan-200 search-node"
         // leaf.color && `text-[${leaf.color}]`,
         // leaf.fontSize && `text-[${leaf.fontSize}]`
         // leaf.bold && "font-bold",

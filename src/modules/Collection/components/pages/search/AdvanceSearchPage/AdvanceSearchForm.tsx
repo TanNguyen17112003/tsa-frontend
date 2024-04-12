@@ -8,42 +8,23 @@ import AdvanceSearchResult from "./AdvanceSearchResult";
 
 interface AdvanceSearchFormProps {
   className: string;
+  updateTextSearch: (index: number, value: string) => void;
+  curentSearchAdvance: string[];
+  updateTypeSearch: (index: number, value: string) => void;
+  curentSearchOption: string[];
 }
 
-const AdvanceSearchForm: FC<AdvanceSearchFormProps> = ({ className }) => {
+const AdvanceSearchForm: FC<AdvanceSearchFormProps> = ({
+  className,
+  updateTextSearch,
+  curentSearchAdvance,
+  updateTypeSearch,
+  curentSearchOption,
+}) => {
   const router = useRouter();
   const currentSearchType = router.query.searchType;
-  const [curentSearchAdvance, setCurentSearchAdvance] = useState<string[]>([
-    "",
-  ]);
-  const [curentSearchOption, setCurentSearchOption] = useState<string[]>([
-    "and",
-  ]);
+
   const [textSearch, setTextSearch] = useState<string>("");
-
-  const updateTextSearch = (index: number, newValue: string) => {
-    setCurentSearchAdvance((prevItems) => {
-      let updatedItems = [...prevItems];
-      updatedItems[index] = newValue;
-      if (updatedItems[updatedItems.length - 1] != "")
-        updatedItems[updatedItems.length] = "";
-      else if (
-        updatedItems.length > 1 &&
-        updatedItems[updatedItems.length - 1] == "" &&
-        updatedItems[updatedItems.length - 2] == ""
-      )
-        updatedItems = updatedItems.slice(0, updatedItems.length - 1);
-      return updatedItems;
-    });
-  };
-
-  const updateTypeSearch = (index: number, newValue: string) => {
-    setCurentSearchOption((prevItems) => {
-      let updatedItems = [...prevItems];
-      updatedItems[index] = newValue;
-      return updatedItems;
-    });
-  };
 
   const handleChange = useCallback(
     (value: string) => {
@@ -156,12 +137,6 @@ const AdvanceSearchForm: FC<AdvanceSearchFormProps> = ({ className }) => {
           Tìm kiếm
         </Button>
       </div>
-      {textSearch && textSearch != "" && (
-        <AdvanceSearchResult
-          textSearchAdvance={curentSearchAdvance}
-          typeSearchAdvance={curentSearchOption}
-        />
-      )}
     </form>
   );
 };

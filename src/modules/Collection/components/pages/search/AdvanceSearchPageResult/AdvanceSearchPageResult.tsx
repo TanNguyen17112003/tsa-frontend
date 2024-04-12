@@ -141,6 +141,7 @@ const AdvanceSearchResultPage = () => {
                 onClick={() => {
                   setSearchNum(index);
                 }}
+                key={index}
               >
                 <div>{index + 1}</div>
                 <div className="">

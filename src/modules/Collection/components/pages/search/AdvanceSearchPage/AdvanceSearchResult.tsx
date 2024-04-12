@@ -100,7 +100,7 @@ const AdvanceSearchResult: FC<AdvanceSearchResultProps> = ({
       }
     });
     return temp;
-  }, [orisons]);
+  }, [orisons?.rows, textSearch]);
 
   useEffect(() => {
     if (textSearch && textSearch != "") {
@@ -224,6 +224,7 @@ const AdvanceSearchResult: FC<AdvanceSearchResultProps> = ({
                         onClick={() => {
                           handleClick(item.id, textSearch);
                         }}
+                        key={index}
                       >
                         <div>{index + 1}</div>
                         <div className="flex">

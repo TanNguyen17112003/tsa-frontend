@@ -4,6 +4,7 @@ import CustomSelect from "src/components/CustomSelect/CustomSelect";
 import { Button } from "src/components/shadcn/ui/button";
 import FormInput from "src/components/ui/FormInput";
 import searchTypes from "src/modules/Collection/constants/searchTypes";
+import AdvanceSearchResult from "./AdvanceSearchResult";
 
 interface AdvanceSearchFormProps {
   className: string;
@@ -12,9 +13,37 @@ interface AdvanceSearchFormProps {
 const AdvanceSearchForm: FC<AdvanceSearchFormProps> = ({ className }) => {
   const router = useRouter();
   const currentSearchType = router.query.searchType;
-  const [curentSearchAdvance1, setCurentSearchAdvance1] = useState("And");
-  const [curentSearchAdvance2, setCurentSearchAdvance2] = useState("And");
-  const [curentSearchAdvance3, setCurentSearchAdvance3] = useState("And");
+  const [curentSearchAdvance, setCurentSearchAdvance] = useState<string[]>([
+    "",
+  ]);
+  const [curentSearchOption, setCurentSearchOption] = useState<string[]>([
+    "and",
+  ]);
+  const [textSearch, setTextSearch] = useState<string>("");
+
+  const updateTextSearch = (index: number, newValue: string) => {
+    setCurentSearchAdvance((prevItems) => {
+      let updatedItems = [...prevItems];
+      updatedItems[index] = newValue;
+      if (updatedItems[updatedItems.length - 1] != "")
+        updatedItems[updatedItems.length] = "";
+      else if (
+        updatedItems.length > 1 &&
+        updatedItems[updatedItems.length - 1] == "" &&
+        updatedItems[updatedItems.length - 2] == ""
+      )
+        updatedItems = updatedItems.slice(0, updatedItems.length - 1);
+      return updatedItems;
+    });
+  };
+
+  const updateTypeSearch = (index: number, newValue: string) => {
+    setCurentSearchOption((prevItems) => {
+      let updatedItems = [...prevItems];
+      updatedItems[index] = newValue;
+      return updatedItems;
+    });
+  };
 
   const handleChange = useCallback(
     (value: string) => {
@@ -40,20 +69,32 @@ const AdvanceSearchForm: FC<AdvanceSearchFormProps> = ({ className }) => {
   const advanceSearchType = [
     {
       label: "And",
-      value: "And",
+      value: "and",
     },
     {
       label: "Or",
-      value: "Or",
+      value: "or",
     },
     {
       label: "Not",
-      value: "Not",
+      value: "not",
     },
   ];
 
+  const handleSubmit = (event: any) => {
+    router.replace({
+      pathname: router.pathname,
+      query: {
+        ...router.query,
+        textSearch: textSearch,
+      },
+    });
+
+    event.preventDefault();
+  };
+
   return (
-    <form className={className}>
+    <form className={className} onSubmit={handleSubmit}>
       <div className="gap-4 space-y-4">
         <div className="flex items-center border border-gray-300 rounded-md w-full divide-x">
           <div className="flex w-full items-center">
@@ -61,6 +102,13 @@ const AdvanceSearchForm: FC<AdvanceSearchFormProps> = ({ className }) => {
               type="text"
               placeholder="Nhập từ khóa"
               className="border-none"
+              id="textSearch"
+              onChange={() => {
+                const temp: HTMLInputElement = document.getElementById(
+                  "textSearch"
+                ) as HTMLInputElement;
+                setTextSearch(temp.value.trim());
+              }}
             />
           </div>
           <CustomSelect
@@ -70,53 +118,50 @@ const AdvanceSearchForm: FC<AdvanceSearchFormProps> = ({ className }) => {
             className="border-none"
           />
         </div>
-        <div className="flex items-center border border-gray-300 rounded-md w-full divide-x">
-          <div className="flex w-full items-center">
-            <FormInput
-              type="text"
-              placeholder="Nhập từ khóa"
-              className="border-none"
-            />
-          </div>
-          <CustomSelect
-            options={advanceSearchType}
-            value={curentSearchAdvance1 ? curentSearchAdvance1.toString() : ""}
-            onValueChange={(value) => setCurentSearchAdvance1(value)}
-            className="border-none"
-          />
-        </div>
-        <div className="flex items-center border border-gray-300 rounded-md w-full divide-x">
-          <div className="flex w-full items-center">
-            <FormInput
-              type="text"
-              placeholder="Nhập từ khóa"
-              className="border-none"
-            />
-          </div>
-          <CustomSelect
-            options={advanceSearchType}
-            value={curentSearchAdvance2 ? curentSearchAdvance2.toString() : ""}
-            onValueChange={(value) => setCurentSearchAdvance2(value)}
-            className="border-none"
-          />
-        </div>
-        <div className="flex items-center border border-gray-300 rounded-md w-full divide-x">
-          <div className="flex w-full items-center">
-            <FormInput
-              type="text"
-              placeholder="Nhập từ khóa"
-              className="border-none"
-            />
-          </div>
-          <CustomSelect
-            options={advanceSearchType}
-            value={curentSearchAdvance3 ? curentSearchAdvance3.toString() : ""}
-            onValueChange={(value) => setCurentSearchAdvance3(value)}
-            className="border-none"
-          />
-        </div>
-        <Button className="flex ml-auto"> Tìm kiếm</Button>
+        {curentSearchAdvance.map((item, index) => (
+          <>
+            <div className="flex items-center border border-gray-300 rounded-md w-full divide-x">
+              <div className="flex w-full items-center">
+                <FormInput
+                  type="text"
+                  placeholder="Nhập từ khóa"
+                  className="border-none"
+                  onChange={() => {
+                    const temp: HTMLInputElement = document.getElementById(
+                      `textSearch${index}`
+                    ) as HTMLInputElement;
+                    updateTextSearch(index, temp.value);
+                    updateTypeSearch(index, curentSearchOption[index] || "and");
+                  }}
+                  id={`textSearch${index}`}
+                />
+              </div>
+              <CustomSelect
+                options={advanceSearchType}
+                value={
+                  curentSearchOption[index]
+                    ? curentSearchOption[index].toString()
+                    : "and"
+                }
+                onValueChange={(value) => {
+                  updateTypeSearch(index, value);
+                }}
+                className="border-none"
+              />
+            </div>
+          </>
+        ))}
+        <Button className="flex ml-auto" type="submit">
+          {" "}
+          Tìm kiếm
+        </Button>
       </div>
+      {textSearch && textSearch != "" && (
+        <AdvanceSearchResult
+          textSearchAdvance={curentSearchAdvance}
+          typeSearchAdvance={curentSearchOption}
+        />
+      )}
     </form>
   );
 };

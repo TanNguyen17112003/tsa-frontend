@@ -19,20 +19,22 @@ const Page: PageType = () => {
       >
         click
       </button>
-      {url && (
-        <PdfViewer
-          doc={{
-            url,
-            // url: "http://localhost:3000/pdf/test.pdf",
-            // url: "https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/examples/learning/helloworld.pdf",
-          }}
-          showThumbnail={{ scale: 0.5 }}
-          pageNum={page}
-          changePage={setPage}
-          scale={1}
-          rotation={0}
-        ></PdfViewer>
-      )}
+      <div className="h-screen">
+        {url && (
+          <PdfViewer
+            doc={{
+              url,
+              // url: "http://localhost:3000/pdf/test.pdf",
+              // url: "https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/examples/learning/helloworld.pdf",
+            }}
+            showThumbnail={{ scale: 0.5 }}
+            pageNum={page}
+            changePage={setPage}
+            scale={1}
+            rotation={0}
+          ></PdfViewer>
+        )}
+      </div>
     </>
   );
 };

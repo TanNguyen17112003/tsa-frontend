@@ -6,7 +6,7 @@ import clsx from "clsx";
 import Pagination from "src/components/ui/Pagination";
 
 interface PdfViewerProps {
-  doc: { url?: string; base64?: string };
+  src: string | ArrayBuffer;
   password?: { url?: string; base64?: string };
   pageNum: number;
   scale: number;
@@ -25,7 +25,7 @@ interface PdfViewerProps {
 }
 
 const PdfViewer: React.FC<PdfViewerProps> = ({
-  doc,
+  src,
   password,
   pageNum,
   scale,
@@ -196,7 +196,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
         pdfJS.current.GlobalWorkerOptions.workerSrc = "/pdf/pdf.worker.min.mjs";
       }
 
-      const task = pdfJS.current.getDocument(doc.url || atob(doc.base64 || ""));
+      const task = pdfJS.current.getDocument(src);
       pdfDoc = await task.promise;
       setPDF(pdfDoc);
       setPageCount(pdfDoc.numPages);
@@ -207,7 +207,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
         message: "Error while opening the document !",
       });
     }
-  }, [doc.base64, doc.url]);
+  }, [src]);
 
   const renderPDF = useCallback(async () => {
     try {
@@ -227,12 +227,12 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
   }, [displayPage, pdf]);
 
   useEffect(() => {
-    if (doc.url) {
+    if (src) {
       console.log("fetchPDF", fetchPDF);
       fetchPDF();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [doc.url]);
+  }, [src]);
 
   useEffect(() => {
     if (pdf) {

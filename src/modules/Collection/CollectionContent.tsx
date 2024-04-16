@@ -21,12 +21,15 @@ import CircaSearchResultPage from "./components/pages/search/CircaSearchResultPa
 import TranslatorSearchResultPage from "./components/pages/search/AuthorTranslatorSearchResultPage/TranslatorSearchResultPage";
 import BasicSearchResultPage from "./components/pages/search/BasicSearchResultPage/BasicSearchResultPage";
 import BasicSearchResult from "./components/pages/search/BasicSearchPage/BasicSearchResult";
+import VolumeOriginalPage from "./components/pages/explore/VolumeOriginalPage";
 
 interface CollectionContentProps {}
 
 const CollectionContent: FC<CollectionContentProps> = ({}) => {
   const { query } = useRouter();
   const isFullScreen = query.isFullScreen == "true";
+
+  console.log("query", query);
 
   return (
     <>
@@ -79,6 +82,8 @@ const CollectionContent: FC<CollectionContentProps> = ({}) => {
           <AdjacentSearchPage />
         ) : query.orisonId ? (
           <OrisonPage />
+        ) : query.volumeId && query.viewOriginalDoc ? (
+          <VolumeOriginalPage />
         ) : query.volumeId ? (
           <OrisonExplorePage />
         ) : query.sutraId ? (

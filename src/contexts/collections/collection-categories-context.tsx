@@ -25,7 +25,12 @@ interface ContextValue {
   ) => void;
   goCollection: (id: string) => void;
   goSutra: (id: string) => void;
-  goVolume: (id: string) => void;
+  goVolume: (
+    id: string,
+    viewOriginalDoc?: {
+      page: number;
+    }
+  ) => void;
   goOrison: (id: string) => void;
 }
 
@@ -98,7 +103,12 @@ const CollectionCategoriesProvider = ({
   );
 
   const goVolume = useCallback(
-    (id: string) => {
+    (
+      id: string,
+      viewOriginalDoc?: {
+        page: number;
+      }
+    ) => {
       const tree = getCollectionTreeApi.data;
       const volume = tree?.volumes.find((volume) => volume.id == id);
       const sutra = tree?.sutras?.find(
@@ -116,6 +126,9 @@ const CollectionCategoriesProvider = ({
           sutraId: sutra?.id || "",
           volumeId: volume?.id || "",
           orisonId: "",
+          ...(viewOriginalDoc
+            ? { viewOriginalDoc: true, page: viewOriginalDoc.page }
+            : {}),
         },
       });
     },

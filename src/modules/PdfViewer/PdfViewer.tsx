@@ -67,7 +67,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
         const page = await pdfDoc.getPage(pageNum);
 
         const viewport = page.getViewport({
-          scale: 1,
+          scale: scale,
           rotation,
         });
 

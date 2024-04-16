@@ -4,6 +4,7 @@ import type PdfLib from "pdfjs-dist/types/src/pdf";
 import Thumbnails from "./Thumbnails";
 import clsx from "clsx";
 import Pagination from "src/components/ui/Pagination";
+import ControlWrapper from "./ControlWrapper";
 
 interface PdfViewerProps {
   src: string | ArrayBuffer;
@@ -14,11 +15,6 @@ interface PdfViewerProps {
   changePage?: (pageNumber: number) => void;
   showThumbnail?: {
     scale?: number;
-    rotationAngle?: number;
-    onTop?: boolean;
-    backgroundColor?: string;
-    thumbCss?: string;
-    selectedThumbCss?: string;
   };
   protectContent?: boolean;
   canvasCss?: string;
@@ -69,12 +65,9 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
 
       try {
         const page = await pdfDoc.getPage(pageNum);
-        const originalViewport = page.getViewport({ scale: 1, rotation });
 
         const viewport = page.getViewport({
-          scale:
-            ((wrapperRef.current.clientHeight - 32) / originalViewport.height) *
-            scale,
+          scale: 1,
           rotation,
         });
 
@@ -82,6 +75,9 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
         const canvas = canvasRef.current;
         canvas.height = viewport.height;
         canvas.width = viewport.width;
+        canvas.style.transform = `scale(${
+          (wrapperRef.current.clientHeight - 16) / viewport.height
+        })`;
 
         // Render PDF page into canvas context
         let canvasContext = canvas.getContext("2d");
@@ -103,6 +99,24 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
 
         try {
           await renderTask.promise;
+          // const textContent = await page.getTextContent();
+          // console.log("textContent", textContent);
+          // const textLayer = document.getElementById("textLayer");
+          // if (textLayer) {
+          //   textLayer.style.left = canvas.offsetLeft + "px";
+          //   textLayer.style.top = canvas.offsetTop + "px";
+          //   textLayer.style.height = canvas.offsetHeight + "px";
+          //   textLayer.style.width = canvas.offsetWidth + "px";
+          //   // textLayer.style.transform = canvas.style.transform;
+
+          //   // Pass the data to the method for rendering of text over the pdf canvas.
+          //   pdfJS.current?.renderTextLayer({
+          //     textContentSource: textContent,
+          //     container: textLayer,
+          //     viewport: viewport,
+          //     textDivs: [],
+          //   });
+          // }
         } catch (error) {
           console.log("Error occured while rendering !\n", error);
           setError({
@@ -137,12 +151,6 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
         let rotation = 0;
         if (1 <= thumbnailScal && thumbnailScal <= 5) {
           scale = thumbnailScal / 10;
-        }
-        if (
-          showThumbnail?.rotationAngle === -90 ||
-          showThumbnail?.rotationAngle === 90
-        ) {
-          rotation = showThumbnail.rotationAngle;
         }
 
         for (let pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
@@ -273,27 +281,30 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
         >
           <div className="text-error">{error.message}</div>
         </div>
-        <div className="flex-1 ml-[292px] flex flex-col">
+        <div className="flex-1 ml-[280px] flex flex-col">
           <div
-            className="p-3 flex-1 flex items-center justify-center z-0"
+            className="flex-1 flex items-center justify-center z-0 overflow-hidden relative"
             ref={wrapperRef}
           >
-            <canvas
-              className={clsx(
-                "border rounded-md z-0",
-                error.status && "hidden"
-              )}
-              style={error.status ? { display: "none" } : undefined}
-              onContextMenu={(e) =>
-                protectContent ? e.preventDefault() : null
-              }
-              ref={canvasRef}
-            />
+            <ControlWrapper className="w-full h-full flex items-center justify-center">
+              <canvas
+                className={clsx(
+                  "border rounded-md z-0",
+                  error.status && "hidden"
+                )}
+                style={error.status ? { display: "none" } : undefined}
+                onContextMenu={(e) =>
+                  protectContent ? e.preventDefault() : null
+                }
+                ref={canvasRef}
+              />
+              <div id="textLayer" className="absolute"></div>
+            </ControlWrapper>
           </div>
 
           <div
             className={clsx(
-              "flex justify-end w-fullleft-0 relative z-40 gap-4 py-3 px-3 border-top"
+              "flex justify-end w-full left-0 relative z-40 gap-4 py-3 px-3 border-top"
             )}
           >
             <div></div>

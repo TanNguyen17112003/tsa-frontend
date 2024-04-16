@@ -75,7 +75,7 @@ const VolumeOriginalPage: FC<OrisonPageProps> = ({}) => {
             src={getDocStringHelper.data}
             pageNum={page}
             changePage={setPage}
-            scale={1}
+            scale={2.5}
             showThumbnail={{ scale: 0.5 }}
             rotation={0}
           />

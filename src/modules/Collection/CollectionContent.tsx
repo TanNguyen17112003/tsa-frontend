@@ -21,6 +21,7 @@ import CircaSearchResultPage from "./components/pages/search/CircaSearchResultPa
 import TranslatorSearchResultPage from "./components/pages/search/AuthorTranslatorSearchResultPage/TranslatorSearchResultPage";
 import BasicSearchResultPage from "./components/pages/search/BasicSearchResultPage/BasicSearchResultPage";
 import BasicSearchResult from "./components/pages/search/BasicSearchPage/BasicSearchResult";
+import AdjacentSearchResultPage from "./components/pages/search/AdjacentSearchResultPage/AdjacentSearchResultPage";
 
 interface CollectionContentProps {}
 
@@ -75,6 +76,8 @@ const CollectionContent: FC<CollectionContentProps> = ({}) => {
           <BasicSearchPage />
         ) : query.searchType == "advance" ? (
           <AdvanceSearchPage />
+        ) : query.searchType == "adjacent" && query.orisonId ? (
+          <AdjacentSearchResultPage />
         ) : query.searchType == "adjacent" ? (
           <AdjacentSearchPage />
         ) : query.orisonId ? (

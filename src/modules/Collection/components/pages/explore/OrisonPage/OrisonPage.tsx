@@ -24,12 +24,20 @@ import useFunction from "src/hooks/use-function";
 import OrisonComplainDialog from "./OrisonCompainDialog";
 import { BaseSelection } from "slate";
 import { formatDate } from "date-fns";
+import { useCollectionCategoriesContext } from "src/contexts/collections/collection-categories-context";
+import {
+  TooltipProvider,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@radix-ui/react-tooltip";
 
 interface OrisonPageProps {}
 
 const OrisonPage: FC<OrisonPageProps> = ({}) => {
   const { user } = useAuth();
-  const { getOrisonDetailApi, updateOrison } = useOrisonsContext();
+  const { goVolume } = useCollectionCategoriesContext();
+  const { getOrisonDetailApi, updateOrison, volume } = useOrisonsContext();
   const [searchText, setSearchText] = useState("");
   const router = useRouter();
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -93,6 +101,12 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
       query: { ...router.query, isEditting: "" },
     });
   }, [router]);
+
+  const handleViewOriginal = useCallback(() => {
+    if (volume?.id) {
+      goVolume(volume?.id, { page: 1 });
+    }
+  }, [goVolume, volume?.id]);
 
   useEffect(() => {
     if (currentOrison?.name) {
@@ -177,9 +191,17 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
                       <PiNotePencilBold className="w-5 h-5" /> Chỉnh sửa
                     </Button>
                   )}
-                  <Button size="lg" className="px-4">
-                    Xem văn bản gốc
-                  </Button>
+
+                  {volume?.file_id && (
+                    <Button
+                      size="lg"
+                      className="px-4"
+                      disabled={!volume?.file_id}
+                      onClick={handleViewOriginal}
+                    >
+                      Xem văn bản gốc
+                    </Button>
+                  )}
                 </>
               )}
             </div>

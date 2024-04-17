@@ -68,7 +68,7 @@ const VolumeOriginalPage: FC<OrisonPageProps> = ({}) => {
           </div>
         ) : getDocStringHelper.error ? (
           <div className="flex h-[100px] items-center justify-center mt-4">
-            {getDocStringHelper.error.message}
+            {String(getDocStringHelper.error)}
           </div>
         ) : getDocStringHelper.data ? (
           <PdfViewer

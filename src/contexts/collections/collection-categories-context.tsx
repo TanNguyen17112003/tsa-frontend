@@ -128,7 +128,7 @@ const CollectionCategoriesProvider = ({
           orisonId: "",
           ...(viewOriginalDoc
             ? { viewOriginalDoc: true, page: viewOriginalDoc.page }
-            : {}),
+            : { viewOriginalDoc: false }),
         },
       });
     },

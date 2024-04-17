@@ -13,29 +13,13 @@ import { FloatingToolbar } from "./components/plate-ui/floating-toolbar";
 import plugins from "./plugins";
 
 import clsx from "clsx";
-import { useCallback, type FC, useState, useRef, useEffect } from "react";
+import { useCallback, useEffect, useRef, useState, type FC } from "react";
+import Menu from "./components/Menu";
 import NoteCard from "./components/NoteCard";
 import NotesProvider from "./components/NoteProvider/NoteProvider";
+import { DetectDataSelected } from "./components/plate-ui/detect-data-selected";
 import { EditorFormat, EditorHighlight } from "./types";
 import { Note } from "./types/note";
-import { DetectDataSelected } from "./components/plate-ui/detect-data-selected";
-import {
-  ContextMenu,
-  ContextMenuCheckboxItem,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuLabel,
-  ContextMenuRadioGroup,
-  ContextMenuRadioItem,
-  ContextMenuSeparator,
-  ContextMenuShortcut,
-  ContextMenuSub,
-  ContextMenuSubContent,
-  ContextMenuSubTrigger,
-  ContextMenuTrigger,
-} from "src/components/shadcn/ui/context-menu";
-import OrisonEditorPopup from "src/sections/admin/orisons/OrisonEditorPopup";
-import Menu from "./components/Menu";
 
 interface PlateEditorProps {
   initialValue: any;

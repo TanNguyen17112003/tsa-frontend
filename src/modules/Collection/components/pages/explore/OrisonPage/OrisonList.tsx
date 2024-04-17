@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { useRouter } from "next/router";
-import { useCallback, useMemo, type FC } from "react";
+import { useCallback, useEffect, useMemo, type FC } from "react";
 import { Button } from "src/components/shadcn/ui/button";
 import { useOrisonsContext } from "src/contexts/orisons/orisons-context";
 
@@ -29,6 +29,19 @@ const OrisonList: FC<OrisonListProps> = ({ className }) => {
     [router]
   );
 
+  useEffect(() => {
+    if (orisonId) {
+      const item = document.getElementById(orisonId);
+      if (item) {
+        item.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+          inline: "center",
+        });
+      }
+    }
+  }, [orisonId]);
+
   return (
     <div
       className={clsx("border rounded-lg pb-[40px] overflow-y-auto", className)}
@@ -43,6 +56,7 @@ const OrisonList: FC<OrisonListProps> = ({ className }) => {
         {orisons.map((orison) => (
           <Button
             key={orison.id}
+            id={orison.id}
             variant="ghost"
             className={clsx(
               "w-full justify-start text-primary py-2 px-2 h-auto",

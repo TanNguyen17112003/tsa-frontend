@@ -160,6 +160,10 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
           const viewport = page.getViewport({ scale, rotation });
 
           // Prepare canvas using PDF page dimensions
+          if (!thumbnailRef.current) {
+            console.log("no thumb canvas");
+            return;
+          }
           const canvas = thumbnailRef.current;
           canvas.height = viewport.height;
           canvas.width = viewport.width;

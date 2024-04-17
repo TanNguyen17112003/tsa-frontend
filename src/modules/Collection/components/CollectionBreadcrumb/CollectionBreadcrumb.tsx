@@ -96,12 +96,16 @@ const CollectionBreadcrumb: FC<CollectionBreadcrumbProps> = ({}) => {
           onClick: () => goVolume(volume.id),
         });
       }
-      const orison = tree?.orisons.find((c) => c.id == router.query.orisonId);
-      if (orison) {
-        bItems.push({
-          label: orison.name,
-          onClick: () => goOrison(orison.id),
-        });
+      if (router.query.viewOriginalDoc == "true") {
+        bItems.push({ label: "Xem văn bản gốc" });
+      } else {
+        const orison = tree?.orisons.find((c) => c.id == router.query.orisonId);
+        if (orison) {
+          bItems.push({
+            label: orison.name,
+            onClick: () => goOrison(orison.id),
+          });
+        }
       }
     }
     return bItems;

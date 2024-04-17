@@ -26,7 +26,18 @@ const Thumbnails: FC<ThumbnailsProps> = ({
         inline: "center",
       });
     }
-  }, [selectedPage, images]);
+  }, [selectedPage]);
+
+  useEffect(() => {
+    const thumb = document.getElementById("pdf-thumb-" + selectedPage);
+    if (thumb) {
+      thumb.scrollIntoView({
+        block: "nearest",
+        inline: "center",
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [images]);
 
   return (
     <div

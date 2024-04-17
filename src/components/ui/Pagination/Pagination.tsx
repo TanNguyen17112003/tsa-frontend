@@ -37,7 +37,7 @@ const Pagination: FC<PaginationProps> = ({
         if (indexes[i + 1] == indexes[i] + 2) {
           results.push(indexes[i] + 1);
         } else if (indexes[i + 1] > indexes[i] + 2) {
-          results.push(-1);
+          results.push(Math.random() * -1);
         }
       }
     }

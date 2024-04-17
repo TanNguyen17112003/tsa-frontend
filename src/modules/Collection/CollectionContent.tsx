@@ -77,7 +77,7 @@ const CollectionContent: FC<CollectionContentProps> = ({}) => {
           <AdvanceSearchPage />
         ) : query.searchType == "adjacent" ? (
           <AdjacentSearchPage />
-        ) : query.orisonId ? (
+        ) : query.orisonId && query.viewOriginalDoc !== "true" ? (
           <OrisonPage />
         ) : query.volumeId && query.viewOriginalDoc == "true" ? (
           <VolumeOriginalPage />

@@ -26,7 +26,7 @@ const Thumbnails: FC<ThumbnailsProps> = ({
         inline: "center",
       });
     }
-  }, [selectedPage]);
+  }, [selectedPage, images]);
 
   return (
     <div
@@ -40,7 +40,7 @@ const Thumbnails: FC<ThumbnailsProps> = ({
       </div>
       <div className="grid grid-cols-2 gap-3 pt-4 px-2 bg-white">
         {images.map((image, index) => (
-          <div key={image} id={"pdf-thumb-" + (index + 1)}>
+          <div key={index} id={"pdf-thumb-" + (index + 1)}>
             <Item
               selected={selectedPage == index + 1}
               imgSrc={image}

@@ -45,11 +45,11 @@ const VolumeOriginalPage: FC<OrisonPageProps> = ({}) => {
   }, [volume]);
 
   useEffect(() => {
-    const newPage = Number(router.query.page);
+    const newPage = Number(router.query.originalDocPage);
     if (!isNaN(newPage)) {
       setPage(newPage);
     }
-  }, [router.query.page]);
+  }, [router.query.originalDocPage]);
 
   console.log("getDocStringHelper", getDocStringHelper);
 

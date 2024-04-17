@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { useRouter } from "next/router";
-import { useCallback, type FC } from "react";
+import { useCallback, useMemo, type FC } from "react";
 import { Button } from "src/components/shadcn/ui/button";
 import { useOrisonsContext } from "src/contexts/orisons/orisons-context";
 
@@ -12,6 +12,13 @@ const OrisonList: FC<OrisonListProps> = ({ className }) => {
   const router = useRouter();
 
   const { getOrisonsApi, orisonId } = useOrisonsContext();
+
+  const orisons = useMemo(() => {
+    return (
+      getOrisonsApi.data?.sort((a, b) => a.code.localeCompare(b.code)) || []
+    );
+  }, [getOrisonsApi.data]);
+
   const handleChangeOrison = useCallback(
     (id: string) => {
       router.replace({
@@ -33,7 +40,7 @@ const OrisonList: FC<OrisonListProps> = ({ className }) => {
         <hr />
       </div>
       <div className="flex flex-col gap-1 pt-4 px-1">
-        {getOrisonsApi.data?.map((orison) => (
+        {orisons.map((orison) => (
           <Button
             key={orison.id}
             variant="ghost"

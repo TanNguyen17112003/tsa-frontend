@@ -32,7 +32,7 @@ const ControlWrapper: FC<ControlWrapperProps> = ({ className, children }) => {
 
   const handleWheelZoom = useCallback(
     (e: React.WheelEvent) => {
-      e.preventDefault();
+      // e.preventDefault();
       e.stopPropagation();
       if (e.deltaY < 0) {
         handleZoomIn();

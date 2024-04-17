@@ -125,10 +125,10 @@ const CollectionCategoriesProvider = ({
           collectionId: collection?.id || "",
           sutraId: sutra?.id || "",
           volumeId: volume?.id || "",
-          orisonId: "",
+
           ...(viewOriginalDoc
-            ? { viewOriginalDoc: true, page: viewOriginalDoc.page }
-            : { viewOriginalDoc: false }),
+            ? { viewOriginalDoc: "true", originalDocPage: viewOriginalDoc.page }
+            : { viewOriginalDoc: "", orisonId: "", originalDocPage: "" }),
         },
       });
     },

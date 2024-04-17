@@ -28,8 +28,6 @@ const CollectionContent: FC<CollectionContentProps> = ({}) => {
   const { query } = useRouter();
   const isFullScreen = query.isFullScreen == "true";
 
-  console.log("query", query);
-
   return (
     <>
       <div

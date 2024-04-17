@@ -28,10 +28,11 @@ export const convertDocx2Editor = async (
 
   const htmlContent = container.innerHTML;
   container.remove();
-  const htmlArticleString = htmlContent.substring(
-    htmlContent.indexOf("<article>"),
-    htmlContent.indexOf("</article>") + 11
-  );
+
+  const htmlArticleString = htmlContent.match(/<article(.*)<\/article>/g)?.[0];
+  if (!htmlArticleString) {
+    throw "Có lỗi khi đọc bài kinh";
+  }
 
   const tmpEditor = createPlateEditor({ plugins });
   const blocks: any[] = deserializeHtml(tmpEditor, {

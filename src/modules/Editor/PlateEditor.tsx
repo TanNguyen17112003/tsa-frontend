@@ -5,7 +5,7 @@ import {
   TText,
   Value,
 } from "@udecode/plate-common";
-import { BaseSelection, Range as SlateRange, Text as SlateText } from "slate";
+import { Range as SlateRange, Text as SlateText } from "slate";
 import { Editor } from "./components/plate-ui/editor";
 import { FixedToolbar } from "./components/plate-ui/fixed-toolbar";
 import { FixedToolbarButtons } from "./components/plate-ui/fixed-toolbar-buttons";
@@ -18,7 +18,7 @@ import Menu from "./components/Menu";
 import NoteCard from "./components/NoteCard";
 import NotesProvider from "./components/NoteProvider/NoteProvider";
 import { DetectDataSelected } from "./components/plate-ui/detect-data-selected";
-import { EditorFormat, EditorHighlight } from "./types";
+import { EditorFormat, EditorHighlight, SelectionData } from "./types";
 import { Note } from "./types/note";
 
 interface PlateEditorProps {
@@ -31,8 +31,7 @@ interface PlateEditorProps {
   onCancel?: () => void;
   onSave?: (value: any) => void;
   onChange: (value: any) => void;
-  setDataReport?: (value: string) => void;
-  setSelectionReport?: (value: BaseSelection) => void;
+  onChangeSelection: (selectionData: SelectionData) => void;
 }
 
 const PlateEditor: FC<PlateEditorProps> = ({
@@ -45,13 +44,12 @@ const PlateEditor: FC<PlateEditorProps> = ({
   onChange,
   onCancel,
   onSave,
-  setDataReport,
-  setSelectionReport,
+  onChangeSelection,
 }) => {
   const [activeNoteId, setActiveNoteId] = useState("");
+  const [selectionData, setSelectionData] = useState<SelectionData>();
   const valueRef = useRef<any | null>();
-  const [data, setData] = useState<string>("");
-  const [selection, setSelection] = useState<BaseSelection>();
+
   const decorate = useCallback(
     ([node, path]: TNodeEntry): (SlateRange &
       EditorHighlight &
@@ -91,6 +89,14 @@ const PlateEditor: FC<PlateEditorProps> = ({
     [activeNoteId, searchText]
   );
 
+  const handleChangeSelection = useCallback(
+    (selectionData: SelectionData) => {
+      onChangeSelection(selectionData);
+      setSelectionData(selectionData);
+    },
+    [onChangeSelection]
+  );
+
   const handleChange = useCallback(
     (value: any) => {
       onChange(value);
@@ -98,13 +104,6 @@ const PlateEditor: FC<PlateEditorProps> = ({
     },
     [onChange]
   );
-
-  useEffect(() => {
-    if (setDataReport) setDataReport(data);
-    if (selection && setSelectionReport) setSelectionReport(selection);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selection, data]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -127,7 +126,7 @@ const PlateEditor: FC<PlateEditorProps> = ({
         onChangeActiveNoteId={setActiveNoteId}
         onUpdateNotes={onUpdateNotes}
       >
-        <DetectDataSelected setData={setData} setSelection={setSelection} />
+        <DetectDataSelected onSelectionChange={handleChangeSelection} />
         {!readOnly && (
           <FixedToolbar>
             <FixedToolbarButtons
@@ -147,7 +146,7 @@ const PlateEditor: FC<PlateEditorProps> = ({
         />
         <FloatingToolbar>
           <NoteCard noteIndex={1} />
-          <Menu data={data} />
+          <Menu />
         </FloatingToolbar>
       </NotesProvider>
     </Plate>

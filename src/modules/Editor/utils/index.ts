@@ -128,6 +128,11 @@ export const cleanBlock = (block: any): any => {
   };
 };
 
+/**
+ * Xoá đánh dấu note khỏi content và tạo note id
+ * @param block
+ * @returns
+ */
 const getNoteIds = (block: any): { block: any; noteIds: string[] } => {
   if (!block.children) {
     return { block, noteIds: [] };
@@ -252,6 +257,8 @@ export interface GetAllNotePathsResult {
   id: string;
   path: number[];
 }
+
+// Trả về tất cả id và path của các note trong block
 export const getAllNotePaths = (
   blocks: TDescendant[],
   currentPath: number[],
@@ -277,6 +284,83 @@ export const getAllNotePaths = (
   return result;
 };
 
+export const comparePath = (a: number[], b: number[]): number => {
+  const _a: number[] = [...a];
+  _a.push(...Array<number>(Math.max(b.length - a.length, 0)).fill(0));
+  const _b: number[] = [...b];
+  _b.push(...Array(Math.max(a.length - b.length, 0)).fill(0));
+  for (let i = 0; i < a.length; i++) {
+    if (_a[i] < _b[i]) {
+      return -1;
+    }
+    if (_a[i] > _b[i]) {
+      return 1;
+    }
+  }
+  return 0;
+};
+export const getPageMarkFromBlocks = (
+  blocks: TDescendant[],
+  targetPath: number[] | undefined,
+  currentPath: number[]
+): string => {
+  if (targetPath && comparePath(currentPath, targetPath) > 0) {
+    return "";
+  }
+  let result = "";
+  blocks.forEach((block, pathIndex) => {
+    if (block.text) {
+      const text: string = block.text as string;
+      const matches = text.match(/\[.*\]/g) || [];
+      const index = matches.findLastIndex((t) => t);
+      if (index >= 0) {
+        result = matches[index]!;
+      }
+    }
+    if (block.children) {
+      const mark = getPageMarkFromBlocks(
+        block.children as TDescendant[],
+        targetPath,
+        [...currentPath, pathIndex]
+      );
+      if (mark) {
+        result = mark;
+      }
+    }
+    if (result && !targetPath) {
+      return result;
+    }
+  });
+  return result;
+};
+
+/**
+ * Trả về page mark có dạng [xxxxxxxx] gần nhất so với selection hiện tại
+ * Nếu không có selection thì trả về page mark đầu tiên của bài
+ * @param editor
+ * @returns
+ */
+export const getPageMark = (editor: PlateEditor<Value>): string => {
+  const selection = editor.selection;
+  let mark = "";
+  for (let index = 0; index < editor.children.length; index++) {
+    const child = editor.children[index];
+    const tmpMark = getPageMarkFromBlocks(
+      child.children,
+      selection?.anchor.path,
+      [index]
+    );
+    if (tmpMark) {
+      mark = tmpMark;
+      if (!selection) {
+        break;
+      }
+    }
+  }
+  return mark;
+};
+
+// Check block đó có chứa note
 export const isContainNote = (
   blocks: TDescendant[],
   options?: { noSuperscript?: boolean }
@@ -313,6 +397,7 @@ export const getNodeByPath = (
   return node;
 };
 
+// Update lại stt của các note trong toàn bộ bài
 export const updateNoteIndexes = (editor: PlateEditor<Value>) => {
   const paths = getAllNotePaths(editor.children, []);
   const selection = editor.selection;
@@ -330,6 +415,7 @@ export const updateNoteIndexes = (editor: PlateEditor<Value>) => {
   }
 };
 
+// Select đoạn text của note để hiện pop-up
 export const showNote = (editor: PlateEditor<Value>, noteId: string) => {
   const path = getPathByNoteId(editor.children, noteId);
   if (path) {

@@ -106,6 +106,8 @@ const CollectionBreadcrumb: FC<CollectionBreadcrumbProps> = ({}) => {
     }
     return bItems;
   }, [
+    categories.authors,
+    categories.translators,
     goCollection,
     goOrison,
     goSutra,

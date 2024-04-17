@@ -9,14 +9,21 @@ import {
 import { useNotesContext } from "../NoteProvider/NoteProvider";
 import { Button } from "src/components/shadcn/ui/button";
 import OrisonEditorPopup from "src/sections/admin/orisons/OrisonEditorPopup";
+import { getSelectionText, useEditorState } from "@udecode/plate-common";
+import { getPageMark } from "../../utils";
+import { useSutrasContext } from "src/contexts/sutras/sutras-context";
+import { useVolumesContext } from "src/contexts/volumes/volumes-context";
+import { useOrisonsContext } from "src/contexts/orisons/orisons-context";
 
-interface MenuProps {
-  data: string;
-}
+interface MenuProps {}
 
-const Menu: FC<MenuProps> = ({ data }) => {
+const Menu: FC<MenuProps> = () => {
+  const { collection } = useSutrasContext();
+  const { sutra } = useVolumesContext();
+  const { volume, getOrisonDetailApi } = useOrisonsContext();
   const { activeNoteId, notes } = useNotesContext();
   const ref = useRef<HTMLTextAreaElement | null>(null);
+  const editor = useEditorState();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [titleDialog, setTitleDialog] = useState<string>("");
   const [contentDialog, setContentDialog] = useState<string>("");
@@ -24,6 +31,31 @@ const Menu: FC<MenuProps> = ({ data }) => {
   const note = useMemo(() => {
     return notes.find((note) => note.id == activeNoteId);
   }, [activeNoteId, notes]);
+
+  const selectionText = useMemo(() => getSelectionText(editor), [editor]);
+
+  const handleClickCount = useCallback(() => {
+    setIsOpen(true);
+    setTitleDialog("Đếm số từ");
+    setContentDialog("Số từ đã đếm trong khu vực bôi đen là:");
+  }, []);
+
+  const handleClickQuote = useCallback(() => {
+    setIsOpen(true);
+    setTitleDialog("Trích dẫn nguồn");
+    const pageMark = getPageMark(editor);
+    setContentDialog(
+      `(${collection?.code || ""}, ${sutra?.code || ""}, ${
+        volume?.code || ""
+      }, ${getOrisonDetailApi.data?.code || ""}, ${pageMark || ""} )`
+    );
+  }, [
+    collection?.code,
+    editor,
+    getOrisonDetailApi.data?.code,
+    sutra?.code,
+    volume?.code,
+  ]);
 
   useEffect(() => {
     if (ref.current) {
@@ -40,11 +72,7 @@ const Menu: FC<MenuProps> = ({ data }) => {
             <Button
               variant={"ghost"}
               className="text-primary text-lg font-normal"
-              onClick={() => {
-                setIsOpen(true);
-                setTitleDialog("Đếm số từ");
-                setContentDialog("Số từ đã đếm trong khu vực bôi đen là:");
-              }}
+              onClick={handleClickCount}
             >
               Đếm số từ
             </Button>
@@ -52,13 +80,7 @@ const Menu: FC<MenuProps> = ({ data }) => {
             <Button
               variant={"ghost"}
               className="text-primary text-lg font-normal"
-              onClick={() => {
-                setIsOpen(true);
-                setTitleDialog("Trích dẫn nguồn");
-                setContentDialog(
-                  `"Một thời, đức Phật ở tại vườn của Trưởng giả Cấp-cô-độc" (VTTET 2024.V1, T001, T0001, p0001l004 )`
-                );
-              }}
+              onClick={handleClickQuote}
             >
               Trích dẫn nguồn
             </Button>
@@ -66,7 +88,7 @@ const Menu: FC<MenuProps> = ({ data }) => {
           <OrisonEditorPopup
             state={isOpen}
             onClose={() => setIsOpen(false)}
-            data={data}
+            data={selectionText}
             contentDialog={contentDialog}
             titleDialog={titleDialog}
           />

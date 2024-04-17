@@ -32,18 +32,20 @@ const OrisonList: FC<OrisonListProps> = ({ className }) => {
         </div>
         <hr />
       </div>
-      <div className="flex flex-col gap-1 pt-4 px-2">
+      <div className="flex flex-col gap-1 pt-4 px-1">
         {getOrisonsApi.data?.map((orison) => (
           <Button
             key={orison.id}
             variant="ghost"
             className={clsx(
-              "w-full justify-start text-primary",
+              "w-full justify-start text-primary py-2 px-2 h-auto",
               orison.id == orisonId && "bg-accent"
             )}
             onClick={() => handleChangeOrison(orison.id)}
           >
-            {orison.name}
+            <div className="text-left whitespace-break-spaces">
+              {orison.name}
+            </div>
           </Button>
         ))}
       </div>

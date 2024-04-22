@@ -5,10 +5,10 @@ import Thumbnails from "./Thumbnails";
 import clsx from "clsx";
 import Pagination from "src/components/ui/Pagination";
 import ControlWrapper from "./ControlWrapper";
+import { Progress } from "src/components/shadcn/ui/progress";
 
 interface PdfViewerProps {
   src: string | ArrayBuffer;
-  password?: { url?: string; base64?: string };
   pageNum: number;
   scale: number;
   rotation: number;
@@ -17,25 +17,27 @@ interface PdfViewerProps {
     scale?: number;
   };
   protectContent?: boolean;
-  canvasCss?: string;
 }
 
 const PdfViewer: React.FC<PdfViewerProps> = ({
   src,
-  password,
   pageNum,
   scale,
   rotation,
   changePage,
   showThumbnail,
   protectContent,
-  canvasCss,
 }) => {
   const [pageCount, setPageCount] = useState(0);
   const [pdf, setPDF] = useState<PDFDocumentProxy | null>(null);
   const [thumbnailImages, setThumbnailImages] = useState<string[]>([]);
-  const prevRenderTask = useRef<RenderTask | null>(null);
   const [error, setError] = useState({ status: false, message: "" });
+  const [fetchStatus, setFetchStatus] = useState<{
+    progress: number;
+    error: string;
+  }>();
+
+  const prevRenderTask = useRef<RenderTask | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const thumbnailRef = useRef<HTMLCanvasElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
@@ -139,7 +141,6 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
     async (pdf: PDFDocumentProxy) => {
       // create images for all pages
       const imgList = [];
-      console.log("createImages", pdf);
       if (Object.entries(showThumbnail || {}).length !== 0) {
         if (!thumbnailRef.current) {
           console.log("no thumb canvas");
@@ -158,6 +159,10 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
           const viewport = page.getViewport({ scale, rotation });
 
           // Prepare canvas using PDF page dimensions
+          if (!thumbnailRef.current) {
+            console.log("no thumb canvas");
+            return;
+          }
           const canvas = thumbnailRef.current;
           canvas.height = viewport.height;
           canvas.width = viewport.width;
@@ -181,11 +186,18 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
             height: viewport.height,
             width: viewport.width,
           });
+          if (pageNo % 20 == 0) {
+            setThumbnailImages([
+              ...imgList.map((img) => img.image),
+              ...Array(pageCount - imgList.length).fill(""),
+            ]);
+          }
         }
       }
+      setThumbnailImages(imgList.map((img) => img.image));
       return imgList;
     },
-    [showThumbnail]
+    [pageCount, showThumbnail]
   );
 
   const fetchPDF = useCallback(async () => {
@@ -193,27 +205,33 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
     let pdfDoc: PDFDocumentProxy | null = null;
     try {
       if (!pdfJS.current) {
-        const script = document.createElement("script");
-
-        script.src = "/pdf/pdf.worker.min.mjs";
-        script.async = true;
-        script.type = "module";
-
-        document.body.appendChild(script);
+        const existScript = document.getElementById("pdf-worker");
+        if (!existScript) {
+          const script = document.createElement("script");
+          script.src = "/pdf/pdf.worker.min.mjs";
+          script.async = true;
+          script.type = "module";
+          script.id = "pdf-worker";
+          document.body.appendChild(script);
+        }
         pdfJS.current = await import("pdfjs-dist");
         pdfJS.current.GlobalWorkerOptions.workerSrc = "/pdf/pdf.worker.min.mjs";
       }
 
       const task = pdfJS.current.getDocument(src);
+      task.onProgress = (loaded: number, total: number) =>
+        setFetchStatus({ error: "", progress: loaded / (total || 1) });
       pdfDoc = await task.promise;
       setPDF(pdfDoc);
       setPageCount(pdfDoc.numPages);
+      setFetchStatus(undefined);
     } catch (error) {
       console.warn("Error while opening the document !\n", error);
       setError({
         status: true,
         message: "Error while opening the document !",
       });
+      setFetchStatus({ progress: 0, error: "Không thể mở file" });
     }
   }, [src]);
 
@@ -244,11 +262,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
 
   useEffect(() => {
     if (pdf) {
-      const getThumbs = async () => {
-        const thumbImages = (await createImages(pdf)) || [];
-        setThumbnailImages(thumbImages.map((image) => image.image));
-      };
-      getThumbs();
+      createImages(pdf);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pdf]);
@@ -264,59 +278,74 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
   return (
     <>
       <div className="flex bg-black/5 relative h-full">
-        <div className="absolute top-0 left-0 p-3 w-[280px] h-full z-10">
-          <Thumbnails
-            images={thumbnailImages}
-            className="h-full"
-            symbol="a"
-            onPageChange={changePage}
-            selectedPage={pageNum}
-          />
-        </div>
-        <div
-          className={clsx(
-            "absolute top-0 left-[260px]",
-            error.status && "hidden"
-          )}
-        >
-          <div className="text-error">{error.message}</div>
-        </div>
-        <div className="flex-1 ml-[280px] flex flex-col">
-          <div
-            className="flex-1 flex items-center justify-center z-0 overflow-hidden relative"
-            ref={wrapperRef}
-          >
-            <ControlWrapper className="w-full h-full flex items-center justify-center">
-              <canvas
-                className={clsx(
-                  "border rounded-md z-0",
-                  error.status && "hidden"
-                )}
-                style={error.status ? { display: "none" } : undefined}
-                onContextMenu={(e) =>
-                  protectContent ? e.preventDefault() : null
-                }
-                ref={canvasRef}
+        {fetchStatus ? (
+          <div className="flex h-[100px] items-center justify-center mt-4">
+            {fetchStatus.error ? (
+              <div className="text-destructive"></div>
+            ) : (
+              <Progress
+                value={fetchStatus.progress * 100}
+                className="bg-gray-300 h-3"
               />
-              <div id="textLayer" className="absolute"></div>
-            </ControlWrapper>
-          </div>
-
-          <div
-            className={clsx(
-              "flex justify-end w-full left-0 relative z-40 gap-4 py-3 px-3 border-top"
             )}
-          >
-            <div></div>
-            <Pagination
-              page={pageNum - 1}
-              count={pageCount}
-              rowsPerPage={1}
-              length={2}
-              onChange={(_, page) => changePage?.(page + 1)}
-            />
           </div>
-        </div>
+        ) : (
+          <>
+            <div className="absolute top-0 left-0 p-3 w-[280px] h-full z-10">
+              <Thumbnails
+                images={thumbnailImages}
+                className="h-full"
+                symbol="a"
+                onPageChange={changePage}
+                selectedPage={pageNum}
+              />
+            </div>
+            <div
+              className={clsx(
+                "absolute top-0 left-[260px]",
+                error.status && "hidden"
+              )}
+            >
+              <div className="text-error">{error.message}</div>
+            </div>
+            <div className="flex-1 ml-[280px] flex flex-col">
+              <div
+                className="flex-1 flex items-center justify-center z-0 overflow-hidden relative"
+                ref={wrapperRef}
+              >
+                <ControlWrapper className="w-full h-full flex items-center justify-center">
+                  <canvas
+                    className={clsx(
+                      "border rounded-md z-0",
+                      error.status && "hidden"
+                    )}
+                    style={error.status ? { display: "none" } : undefined}
+                    onContextMenu={(e) =>
+                      protectContent ? e.preventDefault() : null
+                    }
+                    ref={canvasRef}
+                  />
+                  <div id="textLayer" className="absolute"></div>
+                </ControlWrapper>
+              </div>
+
+              <div
+                className={clsx(
+                  "flex justify-end w-full left-0 relative z-40 gap-4 py-3 px-3 border-top"
+                )}
+              >
+                <div></div>
+                <Pagination
+                  page={pageNum - 1}
+                  count={pageCount}
+                  rowsPerPage={1}
+                  length={2}
+                  onChange={(_, page) => changePage?.(page + 1)}
+                />
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
       <canvas ref={thumbnailRef} className="hidden" />

@@ -5,7 +5,7 @@ import {
   TText,
   Value,
 } from "@udecode/plate-common";
-import { BaseSelection, Range as SlateRange, Text as SlateText } from "slate";
+import { Range as SlateRange, Text as SlateText } from "slate";
 import { Editor } from "./components/plate-ui/editor";
 import { FixedToolbar } from "./components/plate-ui/fixed-toolbar";
 import { FixedToolbarButtons } from "./components/plate-ui/fixed-toolbar-buttons";
@@ -13,29 +13,13 @@ import { FloatingToolbar } from "./components/plate-ui/floating-toolbar";
 import plugins from "./plugins";
 
 import clsx from "clsx";
-import { useCallback, type FC, useState, useRef, useEffect } from "react";
+import { useCallback, useEffect, useRef, useState, type FC } from "react";
+import Menu from "./components/Menu";
 import NoteCard from "./components/NoteCard";
 import NotesProvider from "./components/NoteProvider/NoteProvider";
-import { EditorFormat, EditorHighlight } from "./types";
-import { Note } from "./types/note";
 import { DetectDataSelected } from "./components/plate-ui/detect-data-selected";
-import {
-  ContextMenu,
-  ContextMenuCheckboxItem,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuLabel,
-  ContextMenuRadioGroup,
-  ContextMenuRadioItem,
-  ContextMenuSeparator,
-  ContextMenuShortcut,
-  ContextMenuSub,
-  ContextMenuSubContent,
-  ContextMenuSubTrigger,
-  ContextMenuTrigger,
-} from "src/components/shadcn/ui/context-menu";
-import OrisonEditorPopup from "src/sections/admin/orisons/OrisonEditorPopup";
-import Menu from "./components/Menu";
+import { EditorFormat, EditorHighlight, SelectionData } from "./types";
+import { Note } from "./types/note";
 
 interface PlateEditorProps {
   initialValue: any;
@@ -43,12 +27,11 @@ interface PlateEditorProps {
   numElement?: number;
   notes?: Note[];
   readOnly?: boolean;
-  onUpdateNotes: (notes: Note[]) => void;
+  onUpdateNotes?: (notes: Note[]) => void;
   onCancel?: () => void;
   onSave?: (value: any) => void;
-  onChange: (value: any) => void;
-  setDataReport?: (value: string) => void;
-  setSelectionReport?: (value: BaseSelection) => void;
+  onChange?: (value: any) => void;
+  onChangeSelection?: (selectionData: SelectionData) => void;
 }
 
 const PlateEditor: FC<PlateEditorProps> = ({
@@ -61,13 +44,12 @@ const PlateEditor: FC<PlateEditorProps> = ({
   onChange,
   onCancel,
   onSave,
-  setDataReport,
-  setSelectionReport,
+  onChangeSelection,
 }) => {
   const [activeNoteId, setActiveNoteId] = useState("");
+  const [selectionData, setSelectionData] = useState<SelectionData>();
   const valueRef = useRef<any | null>();
-  const [data, setData] = useState<string>("");
-  const [selection, setSelection] = useState<BaseSelection>();
+
   const decorate = useCallback(
     ([node, path]: TNodeEntry): (SlateRange &
       EditorHighlight &
@@ -107,20 +89,21 @@ const PlateEditor: FC<PlateEditorProps> = ({
     [activeNoteId, searchText]
   );
 
+  const handleChangeSelection = useCallback(
+    (selectionData: SelectionData) => {
+      onChangeSelection?.(selectionData);
+      setSelectionData(selectionData);
+    },
+    [onChangeSelection]
+  );
+
   const handleChange = useCallback(
     (value: any) => {
-      onChange(value);
+      onChange?.(value);
       valueRef.current = value;
     },
     [onChange]
   );
-
-  useEffect(() => {
-    if (setDataReport) setDataReport(data);
-    if (selection && setSelectionReport) setSelectionReport(selection);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selection, data]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -143,7 +126,7 @@ const PlateEditor: FC<PlateEditorProps> = ({
         onChangeActiveNoteId={setActiveNoteId}
         onUpdateNotes={onUpdateNotes}
       >
-        <DetectDataSelected setData={setData} setSelection={setSelection} />
+        <DetectDataSelected onSelectionChange={handleChangeSelection} />
         {!readOnly && (
           <FixedToolbar>
             <FixedToolbarButtons
@@ -163,7 +146,7 @@ const PlateEditor: FC<PlateEditorProps> = ({
         />
         <FloatingToolbar>
           <NoteCard noteIndex={1} />
-          <Menu data={data} />
+          <Menu />
         </FloatingToolbar>
       </NotesProvider>
     </Plate>

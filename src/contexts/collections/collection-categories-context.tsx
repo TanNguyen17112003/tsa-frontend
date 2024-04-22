@@ -15,7 +15,6 @@ import {
 } from "src/api/collections";
 import Loading from "src/components/Loading";
 import useFunction from "src/hooks/use-function";
-import { CollectionDetail } from "src/types/collection";
 
 interface ContextValue {
   tree: CollectionTreeResponse;
@@ -125,10 +124,10 @@ const CollectionCategoriesProvider = ({
           collectionId: collection?.id || "",
           sutraId: sutra?.id || "",
           volumeId: volume?.id || "",
-          orisonId: "",
+
           ...(viewOriginalDoc
-            ? { viewOriginalDoc: true, page: viewOriginalDoc.page }
-            : {}),
+            ? { viewOriginalDoc: "true", docPage: viewOriginalDoc.page }
+            : { viewOriginalDoc: "", orisonId: "", docPage: "" }),
         },
       });
     },
@@ -157,6 +156,8 @@ const CollectionCategoriesProvider = ({
           sutraId: sutra?.id || "",
           volumeId: volume?.id || "",
           orisonId: orison?.id || "",
+          viewOriginalDoc: "",
+          docPage: "",
         },
       });
     },

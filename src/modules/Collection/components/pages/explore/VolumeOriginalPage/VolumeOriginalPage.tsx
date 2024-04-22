@@ -8,11 +8,14 @@ import useFunction from "src/hooks/use-function";
 import PdfViewer from "src/modules/PdfViewer";
 import Loading from "src/components/Loading";
 import { API_HOST } from "src/utils/api-request";
+import { Button } from "src/components/shadcn/ui/button";
+import { useCollectionCategoriesContext } from "src/contexts/collections/collection-categories-context";
 
 interface OrisonPageProps {}
 
 const VolumeOriginalPage: FC<OrisonPageProps> = ({}) => {
   const router = useRouter();
+  const { goOrison } = useCollectionCategoriesContext();
   const { volume } = useOrisonsContext();
   const [page, setPage] = useState(1);
 
@@ -37,6 +40,13 @@ const VolumeOriginalPage: FC<OrisonPageProps> = ({}) => {
   );
   const getDocStringHelper = useFunction(getDocString);
 
+  const handleViewOrison = useCallback(() => {
+    if (router.query.orisonId) {
+      const orisonId = router.query.orisonId.toString();
+      goOrison(orisonId);
+    }
+  }, [goOrison, router.query.orisonId]);
+
   useEffect(() => {
     if (volume) {
       getDocStringHelper.call({});
@@ -45,11 +55,11 @@ const VolumeOriginalPage: FC<OrisonPageProps> = ({}) => {
   }, [volume]);
 
   useEffect(() => {
-    const newPage = Number(router.query.page);
+    const newPage = Number(router.query.docPage);
     if (!isNaN(newPage)) {
       setPage(newPage);
     }
-  }, [router.query.page]);
+  }, [router.query.docPage]);
 
   console.log("getDocStringHelper", getDocStringHelper);
 
@@ -59,6 +69,9 @@ const VolumeOriginalPage: FC<OrisonPageProps> = ({}) => {
         className={clsx("flex justify-between z-50 bg-white sticky top-0 p-4")}
       >
         <CollectionBreadcrumb />
+        <Button size="lg" className="px-4" onClick={handleViewOrison}>
+          Xem văn bản dịch
+        </Button>
       </div>
 
       <div className="flex-1 min-h-0 bg-white w-full">
@@ -68,7 +81,7 @@ const VolumeOriginalPage: FC<OrisonPageProps> = ({}) => {
           </div>
         ) : getDocStringHelper.error ? (
           <div className="flex h-[100px] items-center justify-center mt-4">
-            {getDocStringHelper.error.message}
+            {String(getDocStringHelper.error)}
           </div>
         ) : getDocStringHelper.data ? (
           <PdfViewer

@@ -172,8 +172,6 @@ const AdvanceSearchResultPage = () => {
               onChange={() => {}}
               searchText={textSearch?.toLowerCase()}
               numElement={searchNum}
-              setDataReport={() => {}}
-              setSelectionReport={() => {}}
             />
           )}
         </div>

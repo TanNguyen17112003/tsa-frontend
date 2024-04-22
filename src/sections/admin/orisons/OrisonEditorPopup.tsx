@@ -1,18 +1,14 @@
-import { Report } from "src/types/report";
+import { useCallback } from "react";
+import { Button } from "src/components/shadcn/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "src/components/shadcn/ui/dialog";
-import { Button } from "src/components/shadcn/ui/button";
-import { HiMiniArrowSmallRight } from "react-icons/hi2";
-import { format } from "date-fns";
 import useAppSnackbar from "src/hooks/use-app-snackbar";
-import { useCallback } from "react";
 
 const OrisonEditorPopup = ({
   state = false,
@@ -32,7 +28,6 @@ const OrisonEditorPopup = ({
       .toLowerCase()
       .split(/[ .]+/)
       .filter((item) => item != "");
-    console.log("textFilter", textFilter);
     return textFilter.length;
   }, []);
   const { showSnackbarSuccess } = useAppSnackbar();

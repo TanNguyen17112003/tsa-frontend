@@ -23,7 +23,7 @@ interface SutraExplorePageProps {}
 const SutraExplorePage: FC<SutraExplorePageProps> = ({}) => {
   const router = useRouter();
   const { user } = useAuth();
-  const { tree, categories } = useCollectionCategoriesContext();
+  const { tree, categories, goSutra } = useCollectionCategoriesContext();
   const { collection } = useSutrasContext();
 
   const { getSutrasApi, deleteSutra } = useSutrasContext();
@@ -47,12 +47,9 @@ const SutraExplorePage: FC<SutraExplorePageProps> = ({}) => {
 
   const handleClickRow = useCallback(
     (row: SutraDetail) => {
-      router.replace({
-        pathname: router.pathname,
-        query: { ...router.query, sutraId: row.id },
-      });
+      goSutra(row.id);
     },
-    [router]
+    [goSutra]
   );
 
   const handleDeleteHelper = useFunction(handleDelete, {

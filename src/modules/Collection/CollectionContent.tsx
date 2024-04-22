@@ -1,5 +1,7 @@
 import { useRouter } from "next/router";
 import type { FC } from "react";
+import clsx from "clsx";
+import CollectionTree from "./components/CollectionTree";
 import SearchNavigator from "./components/SearchNavigator";
 import ViewNavigator from "./components/ViewNavigator";
 import AuthorSearchPage from "./components/pages/search/AuthorSearchPage/AuthorSearchPage";
@@ -10,8 +12,6 @@ import BasicSearchPage from "./components/pages/search/BasicSearchPage";
 import AdvanceSearchPage from "./components/pages/search/AdvanceSearchPage";
 import AdjacentSearchPage from "./components/pages/search/AdjacentSearchPage";
 import CollectionExplorePage from "./components/pages/explore/CollectionExplorePage";
-import clsx from "clsx";
-import CollectionTree from "./components/CollectionTree";
 import OrisonPage from "./components/pages/explore/OrisonPage";
 import VolumnExplorePage from "./components/pages/explore/VolumeExplorePage";
 import SutraExplorePage from "./components/pages/explore/SutraExplorePage";
@@ -20,6 +20,7 @@ import AuthorSearchResultPage from "./components/pages/search/AuthorTranslatorSe
 import CircaSearchResultPage from "./components/pages/search/CircaSearchResultPage/CircaSearchResultPage";
 import TranslatorSearchResultPage from "./components/pages/search/AuthorTranslatorSearchResultPage/TranslatorSearchResultPage";
 import AdvanceSearchResultPage from "./components/pages/search/SearchPageResult/SearchPageResult";
+import VolumeOriginalPage from "./components/pages/explore/VolumeOriginalPage";
 
 interface CollectionContentProps {}
 
@@ -78,8 +79,10 @@ const CollectionContent: FC<CollectionContentProps> = ({}) => {
           <AdvanceSearchPage />
         ) : query.searchType == "adjacent" ? (
           <AdjacentSearchPage />
-        ) : query.orisonId ? (
+        ) : query.orisonId && query.viewOriginalDoc !== "true" ? (
           <OrisonPage />
+        ) : query.volumeId && query.viewOriginalDoc == "true" ? (
+          <VolumeOriginalPage />
         ) : query.volumeId ? (
           <OrisonExplorePage />
         ) : query.sutraId ? (

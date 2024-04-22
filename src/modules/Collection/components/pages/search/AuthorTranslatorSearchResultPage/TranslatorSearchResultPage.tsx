@@ -71,7 +71,7 @@ const TranslatorSearchResultPage: FC<TranslatorSearchFormProps> = ({
     return getAuthorSearchResultTableConfig({
       onClickEdit: (data) => {},
     });
-  }, [categories, tree]);
+  }, []);
 
   const handleClickRow = useCallback(
     (row: SutraDetail) => {
@@ -86,7 +86,7 @@ const TranslatorSearchResultPage: FC<TranslatorSearchFormProps> = ({
         query: { orisonId: orisonsId },
       });
     },
-    [router]
+    [router, tree.orisons, tree.volumes]
   );
 
   // const select = useSelection<Sutra>(sutras);

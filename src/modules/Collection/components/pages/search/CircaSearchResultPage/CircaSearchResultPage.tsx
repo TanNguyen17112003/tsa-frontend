@@ -40,7 +40,7 @@ const CircaSearchResultPage = ({
     return getCircaSearchResultTableConfig({
       onClickEdit: (data) => {},
     });
-  }, [categories]);
+  }, []);
 
   const backToSearchCirca = () => {
     router.replace({

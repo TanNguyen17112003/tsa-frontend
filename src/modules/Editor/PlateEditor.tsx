@@ -27,11 +27,11 @@ interface PlateEditorProps {
   numElement?: number;
   notes?: Note[];
   readOnly?: boolean;
-  onUpdateNotes: (notes: Note[]) => void;
+  onUpdateNotes?: (notes: Note[]) => void;
   onCancel?: () => void;
   onSave?: (value: any) => void;
-  onChange: (value: any) => void;
-  onChangeSelection: (selectionData: SelectionData) => void;
+  onChange?: (value: any) => void;
+  onChangeSelection?: (selectionData: SelectionData) => void;
 }
 
 const PlateEditor: FC<PlateEditorProps> = ({
@@ -91,7 +91,7 @@ const PlateEditor: FC<PlateEditorProps> = ({
 
   const handleChangeSelection = useCallback(
     (selectionData: SelectionData) => {
-      onChangeSelection(selectionData);
+      onChangeSelection?.(selectionData);
       setSelectionData(selectionData);
     },
     [onChangeSelection]
@@ -99,7 +99,7 @@ const PlateEditor: FC<PlateEditorProps> = ({
 
   const handleChange = useCallback(
     (value: any) => {
-      onChange(value);
+      onChange?.(value);
       valueRef.current = value;
     },
     [onChange]

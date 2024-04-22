@@ -13,6 +13,20 @@ interface AdvanceSearchFormProps {
   updateTypeSearch: (index: number, value: string) => void;
   curentSearchOption: string[];
 }
+const advanceSearchType = [
+  {
+    label: "And",
+    value: "and",
+  },
+  {
+    label: "Or",
+    value: "or",
+  },
+  {
+    label: "Not",
+    value: "not",
+  },
+];
 
 const AdvanceSearchForm: FC<AdvanceSearchFormProps> = ({
   className,
@@ -50,37 +64,26 @@ const AdvanceSearchForm: FC<AdvanceSearchFormProps> = ({
       ),
     []
   );
-  const advanceSearchType = [
-    {
-      label: "And",
-      value: "and",
-    },
-    {
-      label: "Or",
-      value: "or",
-    },
-    {
-      label: "Not",
-      value: "not",
-    },
-  ];
 
-  const handleSubmit = (event: any) => {
-    let temp = textSearch;
-    curentSearchAdvance.map((item, index) => {
-      if (item && item != "")
-        temp = temp + "_" + curentSearchOption[index] + "_" + item;
-    });
-    router.replace({
-      pathname: router.pathname,
-      query: {
-        ...router.query,
-        textSearch: temp,
-      },
-    });
+  const handleSubmit = useCallback(
+    (event: any) => {
+      let temp = textSearch;
+      curentSearchAdvance.map((item, index) => {
+        if (item && item != "")
+          temp = temp + "_" + curentSearchOption[index] + "_" + item;
+      });
+      router.replace({
+        pathname: router.pathname,
+        query: {
+          ...router.query,
+          textSearch: temp,
+        },
+      });
 
-    event.preventDefault();
-  };
+      event.preventDefault();
+    },
+    [curentSearchAdvance, curentSearchOption, router, textSearch]
+  );
 
   return (
     <form className={className} onSubmit={handleSubmit}>
@@ -108,37 +111,36 @@ const AdvanceSearchForm: FC<AdvanceSearchFormProps> = ({
           />
         </div>
         {curentSearchAdvance.map((item, index) => (
-          <>
-            <div className="flex items-center border border-gray-300 rounded-md w-full divide-x">
-              <div className="flex w-full items-center">
-                <FormInput
-                  type="text"
-                  placeholder="Nhập từ khóa"
-                  className="border-none"
-                  onChange={() => {
-                    const temp: HTMLInputElement = document.getElementById(
-                      `textSearch${index}`
-                    ) as HTMLInputElement;
-                    updateTextSearch(index, temp.value);
-                    updateTypeSearch(index, curentSearchOption[index] || "and");
-                  }}
-                  id={`textSearch${index}`}
-                />
-              </div>
-              <CustomSelect
-                options={advanceSearchType}
-                value={
-                  curentSearchOption[index]
-                    ? curentSearchOption[index].toString()
-                    : "and"
-                }
-                onValueChange={(value) => {
-                  updateTypeSearch(index, value);
-                }}
+          <div
+            className="flex items-center border border-gray-300 rounded-md w-full divide-x"
+            key={index}
+          >
+            <div className="flex w-full items-center">
+              <FormInput
+                type="text"
+                placeholder="Nhập từ khóa"
                 className="border-none"
+                onChange={(e) => {
+                  const temp = e.target.value;
+                  updateTextSearch(index, temp);
+                  updateTypeSearch(index, curentSearchOption[index] || "and");
+                }}
+                id={`textSearch${index}`}
               />
             </div>
-          </>
+            <CustomSelect
+              options={advanceSearchType}
+              value={
+                curentSearchOption[index]
+                  ? curentSearchOption[index].toString()
+                  : "and"
+              }
+              onValueChange={(value) => {
+                updateTypeSearch(index, value);
+              }}
+              className="border-none"
+            />
+          </div>
         ))}
         <Button className="flex ml-auto" type="submit">
           {" "}

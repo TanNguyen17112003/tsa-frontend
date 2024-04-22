@@ -99,7 +99,10 @@ const AdvanceSearchResultPage = () => {
   const handleBack = useCallback(() => {
     router.replace({
       pathname: router.pathname,
-      query: { searchType: "advance", textSearch: router.query.textSearch },
+      query: {
+        searchType: router.query.searchType,
+        textSearch: router.query.textSearch,
+      },
     });
   }, [router]);
   return (

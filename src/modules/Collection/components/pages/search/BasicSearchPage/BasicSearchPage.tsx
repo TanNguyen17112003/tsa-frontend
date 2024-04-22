@@ -9,8 +9,8 @@ interface BasicSearchPageProps {}
 const BasicSearchPage: FC<BasicSearchPageProps> = ({}) => {
   const router = useRouter();
   const searchKey = useMemo(() => {
-    return router.query.searchText as string;
-  }, [router.query.searchText]);
+    return router.query.textSearch as string;
+  }, [router.query.textSearch]);
 
   return (
     <>

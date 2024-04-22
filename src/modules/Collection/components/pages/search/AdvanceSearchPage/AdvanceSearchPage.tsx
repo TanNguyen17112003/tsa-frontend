@@ -1,4 +1,4 @@
-import { useMemo, useState, type FC } from "react";
+import { useCallback, useMemo, useState, type FC } from "react";
 import CollectionBreadcrumb from "../../../CollectionBreadcrumb";
 import AdvanceSearchForm from "./AdvanceSearchForm";
 import { useRouter } from "next/router";
@@ -18,7 +18,7 @@ const AdvanceSearchPage: FC<AdvanceSearchPageProps> = ({}) => {
     "and",
   ]);
 
-  const updateTextSearch = (index: number, newValue: string) => {
+  const updateTextSearch = useCallback((index: number, newValue: string) => {
     setCurentSearchAdvance((prevItems) => {
       let updatedItems = [...prevItems];
       updatedItems[index] = newValue;
@@ -32,15 +32,15 @@ const AdvanceSearchPage: FC<AdvanceSearchPageProps> = ({}) => {
         updatedItems = updatedItems.slice(0, updatedItems.length - 1);
       return updatedItems;
     });
-  };
+  }, []);
 
-  const updateTypeSearch = (index: number, newValue: string) => {
+  const updateTypeSearch = useCallback((index: number, newValue: string) => {
     setCurentSearchOption((prevItems) => {
       let updatedItems = [...prevItems];
       updatedItems[index] = newValue;
       return updatedItems;
     });
-  };
+  }, []);
 
   return (
     <>
@@ -52,8 +52,8 @@ const AdvanceSearchPage: FC<AdvanceSearchPageProps> = ({}) => {
         className={"py-4 px-6"}
         curentSearchAdvance={curentSearchAdvance}
         curentSearchOption={curentSearchOption}
-        updateTextSearch={(index, value) => updateTextSearch(index, value)}
-        updateTypeSearch={(index, value) => updateTypeSearch(index, value)}
+        updateTextSearch={updateTextSearch}
+        updateTypeSearch={updateTypeSearch}
       />
       {textSearch && textSearch != "" && <AdvanceSearchResult />}
     </>

@@ -141,7 +141,6 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
     async (pdf: PDFDocumentProxy) => {
       // create images for all pages
       const imgList = [];
-      console.log("createImages", pdf);
       if (Object.entries(showThumbnail || {}).length !== 0) {
         if (!thumbnailRef.current) {
           console.log("no thumb canvas");
@@ -206,13 +205,15 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
     let pdfDoc: PDFDocumentProxy | null = null;
     try {
       if (!pdfJS.current) {
-        const script = document.createElement("script");
-
-        script.src = "/pdf/pdf.worker.min.mjs";
-        script.async = true;
-        script.type = "module";
-
-        document.body.appendChild(script);
+        const existScript = document.getElementById("pdf-worker");
+        if (!existScript) {
+          const script = document.createElement("script");
+          script.src = "/pdf/pdf.worker.min.mjs";
+          script.async = true;
+          script.type = "module";
+          script.id = "pdf-worker";
+          document.body.appendChild(script);
+        }
         pdfJS.current = await import("pdfjs-dist");
         pdfJS.current.GlobalWorkerOptions.workerSrc = "/pdf/pdf.worker.min.mjs";
       }

@@ -90,14 +90,14 @@ const BasicSearchResultPage = () => {
       }
     }
     return temp;
-  }, [orison]);
+  }, [orison?.plain_text, router.query.searchText, searchText]);
 
   const handleBack = useCallback(() => {
     router.replace({
       pathname: router.pathname,
       query: { searchType: "basic", searchText: router.query.searchText },
     });
-  }, []);
+  }, [router]);
   return (
     <div className="space-y-4 max-h-[calc(100vh-230px)]">
       <div className="flex justify-between p-5">
@@ -161,12 +161,8 @@ const BasicSearchResultPage = () => {
               readOnly={true}
               initialValue={orison?.content}
               notes={orison?.notes}
-              onUpdateNotes={() => {}}
-              onChange={() => {}}
               searchText={searchText?.toLowerCase()}
               numElement={searchNum}
-              setDataReport={() => {}}
-              setSelectionReport={() => {}}
             />
           )}
         </div>

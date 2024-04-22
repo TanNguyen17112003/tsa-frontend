@@ -1,22 +1,22 @@
 import { getSelectionText, useEditorState } from "@udecode/plate-common";
 import { useEffect } from "react";
 import { BaseSelection } from "slate";
+import { getPageMark } from "../../utils";
+import { SelectionData } from "../../types";
 
 interface DetectDataSelectedProps {
-  setData: (value: string) => void;
-  setSelection: (value: BaseSelection) => void;
+  onSelectionChange: (selectionData: SelectionData) => void;
 }
 
 export function DetectDataSelected({
-  setData,
-  setSelection,
+  onSelectionChange,
 }: DetectDataSelectedProps) {
   const editorState = useEditorState();
 
   useEffect(() => {
-    const data = getSelectionText(editorState);
-    setData(data);
-    setSelection(editorState.selection);
+    const text = getSelectionText(editorState);
+    const pageMark = getPageMark(editorState);
+    onSelectionChange({ selection: editorState.selection, text, pageMark });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editorState.selection]);

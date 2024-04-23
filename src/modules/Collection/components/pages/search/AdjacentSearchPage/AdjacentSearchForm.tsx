@@ -125,7 +125,7 @@ const AdjacentSearchForm: FC<AdjacentSearchFormProps> = ({ className }) => {
           <div>
             <Input
               type="number"
-              className="w-12 border-none"
+              className="w-14 border-none"
               defaultValue={5}
               {...formik.getFieldProps("pre_range")}
             ></Input>
@@ -159,7 +159,7 @@ const AdjacentSearchForm: FC<AdjacentSearchFormProps> = ({ className }) => {
           <div>
             <Input
               type="number"
-              className="w-12 border-none"
+              className="w-14 border-none"
               defaultValue={5}
               {...formik.getFieldProps("next_range")}
             ></Input>

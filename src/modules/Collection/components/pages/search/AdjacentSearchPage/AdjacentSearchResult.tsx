@@ -24,15 +24,15 @@ const AdjacentSearchResult: FC<AdjacentSearchResultProps> = ({}) => {
   }, [searchOrisonsApi]);
 
   const textSearch = useMemo(() => {
-    return router.query.textSearch as string;
+    return router.query.textSearch?.toString();
   }, [router]);
 
   const dataSearch = useMemo(() => {
-    const tempText = textSearch.split("_");
+    const tempText = textSearch?.split("_");
     const temp: any[][] = [];
     orisons?.rows.map((item, index) => {
       temp[index] = [];
-      if (tempText[2] != "") {
+      if (tempText && tempText[2] != "") {
         let savedString: string = item.plain_text;
         let currentIndex: number = 0;
         let count: number = 0;
@@ -44,81 +44,71 @@ const AdjacentSearchResult: FC<AdjacentSearchResultProps> = ({}) => {
             .indexOf(tempText[2]?.toLowerCase(), currentIndex)) !== -1 &&
           count < maxCount
         ) {
-          if (currentIndex < 15) {
-            if (
-              savedString
-                .substring(currentIndex - parseInt(tempText[1]), currentIndex)
-                .indexOf(tempText[0]) != -1 &&
-              savedString
-                .substring(currentIndex, parseInt(tempText[4]) + currentIndex)
-                .indexOf(tempText[3]) != -1
-            ) {
-              temp[index].push({
-                beforeTextSearch: savedString.substring(0, currentIndex),
-                textSearch: savedString.substring(
-                  currentIndex,
-                  currentIndex + tempText[2].length
-                ),
-                afterTextSearch: savedString.substring(
-                  currentIndex + tempText[2].length,
-                  tempText[2].length + 15
-                ),
-              });
-              count++;
-            }
-          } else if (currentIndex > savedString.length - 14) {
-            if (
-              savedString
-                .substring(currentIndex - parseInt(tempText[1]), currentIndex)
-                .indexOf(tempText[0]) != -1 &&
-              savedString
-                .substring(currentIndex, parseInt(tempText[4]) + currentIndex)
-                .indexOf(tempText[3]) != -1
-            ) {
-              temp[index].push({
-                beforeTextSearch: savedString.substring(
-                  currentIndex - 15,
-                  currentIndex
-                ),
-                textSearch: savedString.substring(
-                  currentIndex,
-                  currentIndex + tempText[2].length
-                ),
-                afterTextSearch: savedString.substring(
-                  currentIndex + tempText[2].length,
-                  savedString.length
-                ),
-              });
-              count++;
-            }
-          } else {
-            if (
-              savedString
-                .substring(currentIndex - parseInt(tempText[1]), currentIndex)
-                .indexOf(tempText[0]) != -1 &&
-              savedString
-                .substring(
-                  currentIndex + tempText[2].length,
-                  parseInt(tempText[4]) + currentIndex + tempText[2].length
-                )
-                .indexOf(tempText[3]) != -1
-            ) {
-              temp[index].push({
-                beforeTextSearch: savedString.substring(
-                  currentIndex - 15 - parseInt(tempText[1]),
-                  currentIndex - parseInt(tempText[1])
-                ),
-                textSearch: savedString.substring(
-                  currentIndex - parseInt(tempText[1]),
-                  currentIndex + tempText[2].length + parseInt(tempText[4])
-                ),
-                afterTextSearch: savedString.substring(
-                  currentIndex + tempText[2].length + parseInt(tempText[4]),
-                  currentIndex + tempText[2].length + 15 + parseInt(tempText[4])
-                ),
-              });
-              count++;
-            }
+          const beforeIndex = savedString
+            .toLowerCase()
+            .substring(
+              currentIndex - parseInt(tempText[1]) > 0
+                ? currentIndex - parseInt(tempText[1])
+                : 0,
+              currentIndex
+            )
+            .indexOf(tempText[0].toLowerCase());
+
+          const afterIndex = savedString
+            .toLowerCase()
+            .substring(
+              currentIndex + tempText[2].length,
+              parseInt(tempText[4]) + currentIndex + tempText[2].length <
+                savedString.length
+                ? parseInt(tempText[4]) + currentIndex + tempText[2].length
+                : savedString.length
+            )
+            .indexOf(tempText[3].toLowerCase());
+
+          if (beforeIndex != -1 && afterIndex != -1) {
+            temp[index].push({
+              text1: savedString.substring(
+                currentIndex - 30 - parseInt(tempText[1]),
+                currentIndex - parseInt(tempText[1]) + beforeIndex
+              ),
+              beforeTextSearch: savedString.substring(
+                currentIndex - parseInt(tempText[1]) + beforeIndex,
+                currentIndex -
+                  parseInt(tempText[1]) +
+                  beforeIndex +
+                  tempText[0].length
+              ),
+              text2: savedString.substring(
+                currentIndex -
+                  parseInt(tempText[1]) +
+                  beforeIndex +
+                  tempText[0].length,
+                currentIndex
+              ),
+              textSearch: savedString.substring(
+                currentIndex,
+                currentIndex + tempText[2].length
+              ),
+              text3: savedString.substring(
+                currentIndex + tempText[2].length,
+                currentIndex + tempText[2].length + afterIndex
+              ),
+              afterTextSearch: savedString.substring(
+                currentIndex + tempText[2].length + afterIndex,
+                currentIndex +
+                  tempText[2].length +
+                  afterIndex +
+                  tempText[3].length
+              ),
+              text4: savedString.substring(
+                currentIndex +
+                  tempText[2].length +
+                  afterIndex +
+                  tempText[3].length,
+                currentIndex + tempText[2].length + 30 + parseInt(tempText[4])
+              ),
+            });
+            count++;
           }
           currentIndex += tempText[2].length;
         }
@@ -130,28 +120,29 @@ const AdjacentSearchResult: FC<AdjacentSearchResultProps> = ({}) => {
   const pagination = usePagination({ count: orisons?.count || 0 });
 
   useEffect(() => {
-    const temp = textSearch.split("_");
-    searchOrisonsApi.call({
-      q: [
-        JSON.stringify({
-          op: "and",
-          text: [temp[0]],
-          range: parseInt(temp[1]),
-        }),
-        JSON.stringify({
-          op: "and",
-          text: [temp[2]],
-          range: 0,
-        }),
-        JSON.stringify({
-          op: "and",
-          text: [temp[3]],
-          range: parseInt(temp[4]),
-        }),
-      ],
-      limit: 10,
-      offset: resultFrom - 1 < 0 ? 0 : resultFrom - 1,
-    });
+    const temp = textSearch?.split("_");
+    if (temp)
+      searchOrisonsApi.call({
+        q: [
+          JSON.stringify({
+            op: "and",
+            text: [temp[0]],
+            range: parseInt(temp[1]),
+          }),
+          JSON.stringify({
+            op: "and",
+            text: [temp[2]],
+            range: 0,
+          }),
+          JSON.stringify({
+            op: "and",
+            text: [temp[3]],
+            range: parseInt(temp[4]),
+          }),
+        ],
+        limit: 10,
+        offset: resultFrom - 1 < 0 ? 0 : resultFrom - 1,
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [textSearch, pagination.page]);
 
@@ -229,19 +220,16 @@ const AdjacentSearchResult: FC<AdjacentSearchResultProps> = ({}) => {
                         key={index}
                       >
                         <div>{index + 1}</div>
-                        <div className="flex">
-                          {d.beforeTextSearch[d.beforeTextSearch.length - 1] !=
-                          " " ? (
-                            <div>{d.beforeTextSearch}</div>
-                          ) : (
-                            <div className="mr-0.5">{d.beforeTextSearch}</div>
-                          )}
+                        <div className="flex space-x-0.5">
+                          <div>{d.text1}</div>
+                          <div className="bg-blue-200">
+                            {d.beforeTextSearch}
+                          </div>
+                          <div>{d.text2}</div>
                           <div className="bg-blue-200">{d.textSearch}</div>
-                          {d.afterTextSearch[0] != " " ? (
-                            <div>{d.afterTextSearch}</div>
-                          ) : (
-                            <div className="ml-0.5">{d.afterTextSearch}</div>
-                          )}
+                          <div>{d.text3}</div>
+                          <div className="bg-blue-200">{d.afterTextSearch}</div>
+                          <div>{d.text4}</div>
                         </div>
                       </AccordionContent>
                     ))}

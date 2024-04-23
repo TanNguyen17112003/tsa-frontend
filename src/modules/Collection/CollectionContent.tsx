@@ -19,7 +19,7 @@ import OrisonExplorePage from "./components/pages/explore/OrisonExplorePage";
 import AuthorSearchResultPage from "./components/pages/search/AuthorTranslatorSearchResultPage/AuthorSearchResultPage";
 import CircaSearchResultPage from "./components/pages/search/CircaSearchResultPage/CircaSearchResultPage";
 import TranslatorSearchResultPage from "./components/pages/search/AuthorTranslatorSearchResultPage/TranslatorSearchResultPage";
-import AdvanceSearchResultPage from "./components/pages/search/SearchPageResult/SearchPageResult";
+import AdvanceSearchResultPage from "./components/pages/search/SearchResultPage/SearchResultPage";
 import VolumeOriginalPage from "./components/pages/explore/VolumeOriginalPage";
 
 interface CollectionContentProps {}

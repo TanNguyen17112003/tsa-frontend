@@ -11,36 +11,6 @@ const AdvanceSearchPage: FC<AdvanceSearchPageProps> = ({}) => {
   const textSearch = useMemo(() => {
     return router.query.textSearch as string;
   }, [router]);
-  const [curentSearchAdvance, setCurentSearchAdvance] = useState<string[]>([
-    "",
-  ]);
-  const [curentSearchOption, setCurentSearchOption] = useState<string[]>([
-    "and",
-  ]);
-
-  const updateTextSearch = useCallback((index: number, newValue: string) => {
-    setCurentSearchAdvance((prevItems) => {
-      let updatedItems = [...prevItems];
-      updatedItems[index] = newValue;
-      if (updatedItems[updatedItems.length - 1] != "")
-        updatedItems[updatedItems.length] = "";
-      else if (
-        updatedItems.length > 1 &&
-        updatedItems[updatedItems.length - 1] == "" &&
-        updatedItems[updatedItems.length - 2] == ""
-      )
-        updatedItems = updatedItems.slice(0, updatedItems.length - 1);
-      return updatedItems;
-    });
-  }, []);
-
-  const updateTypeSearch = useCallback((index: number, newValue: string) => {
-    setCurentSearchOption((prevItems) => {
-      let updatedItems = [...prevItems];
-      updatedItems[index] = newValue;
-      return updatedItems;
-    });
-  }, []);
 
   return (
     <>
@@ -48,13 +18,7 @@ const AdvanceSearchPage: FC<AdvanceSearchPageProps> = ({}) => {
         <CollectionBreadcrumb />
         <div></div>
       </div>
-      <AdvanceSearchForm
-        className={"py-4 px-6"}
-        curentSearchAdvance={curentSearchAdvance}
-        curentSearchOption={curentSearchOption}
-        updateTextSearch={updateTextSearch}
-        updateTypeSearch={updateTypeSearch}
-      />
+      <AdvanceSearchForm className={"py-4 px-6"} />
       {textSearch && textSearch != "" && <AdvanceSearchResult />}
     </>
   );

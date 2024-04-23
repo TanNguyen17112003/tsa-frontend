@@ -21,9 +21,9 @@ const AdvanceSearchResult: FC<AdvanceSearchResultProps> = ({}) => {
   const { tree } = useCollectionCategoriesContext();
 
   const textSearchAdvance: string[] = useMemo(() => {
-    const temp = (router.query.textSearch as string)?.split("_");
+    const temp = router.query.textSearch?.toString()?.split("_");
     const textTemp: string[] = [];
-    temp.map((item, index) => {
+    temp?.map((item, index) => {
       if (index != 0 && index % 2 == 0) {
         textTemp.push(item);
       }
@@ -32,9 +32,9 @@ const AdvanceSearchResult: FC<AdvanceSearchResultProps> = ({}) => {
     return textTemp;
   }, [router.query.textSearch]);
   const typeSearchAdvance: string[] = useMemo(() => {
-    const temp = (router.query.textSearch as string)?.split("_");
+    const temp = router.query.textSearch?.toString()?.split("_");
     const textTemp: string[] = [];
-    temp.map((item, index) => {
+    temp?.map((item, index) => {
       if (index != 0 && index % 2 == 1) {
         textTemp.push(item);
       }
@@ -48,8 +48,8 @@ const AdvanceSearchResult: FC<AdvanceSearchResultProps> = ({}) => {
   }, [searchOrisonsApi]);
 
   const textSearch = useMemo(() => {
-    const temp = (router.query.textSearch as string)?.split("_");
-    return temp[0] as string;
+    const temp = router.query.textSearch?.toString()?.split("_");
+    return temp ? temp[0].toString() : "";
   }, [router.query.textSearch]);
 
   const dataSearch = useMemo(() => {
@@ -125,8 +125,8 @@ const AdvanceSearchResult: FC<AdvanceSearchResultProps> = ({}) => {
 
   useEffect(() => {
     if (textSearch && textSearch != "") {
-      const qTemp: any[] = [];
-      let textTemp: any[] = [textSearch];
+      const qTemp: string[] = [];
+      let textTemp: string[] = [textSearch];
       let type = "and";
       textSearchAdvance.map((item, index) => {
         if (typeSearchAdvance[index] == "and" && item && item != "") {
@@ -172,18 +172,28 @@ const AdvanceSearchResult: FC<AdvanceSearchResultProps> = ({}) => {
 
   console.log(resultFrom);
 
-  const getCollectionName = (volumeId: string) => {
-    const sutraId = tree.volumes.find((item) => item.id == volumeId)?.sutras_id;
-    const collectionId = tree.sutras.find(
-      (item) => item.id == sutraId
-    )?.collection_id;
-    return tree.collections.find((item) => item.id == collectionId)?.name;
-  };
+  const getCollectionName = useCallback(
+    (volumeId: string) => {
+      const sutraId = tree.volumes.find(
+        (item) => item.id == volumeId
+      )?.sutras_id;
+      const collectionId = tree.sutras.find(
+        (item) => item.id == sutraId
+      )?.collection_id;
+      return tree.collections.find((item) => item.id == collectionId)?.name;
+    },
+    [tree.collections, tree.sutras, tree.volumes]
+  );
 
-  const getSutraName = (volumeId: string) => {
-    const sutraId = tree.volumes.find((item) => item.id == volumeId)?.sutras_id;
-    return tree.sutras.find((item) => item.id == sutraId)?.name;
-  };
+  const getSutraName = useCallback(
+    (volumeId: string) => {
+      const sutraId = tree.volumes.find(
+        (item) => item.id == volumeId
+      )?.sutras_id;
+      return tree.sutras.find((item) => item.id == sutraId)?.name;
+    },
+    [tree.sutras, tree.volumes]
+  );
 
   const handleClick = useCallback(
     (orisonId: string) => {

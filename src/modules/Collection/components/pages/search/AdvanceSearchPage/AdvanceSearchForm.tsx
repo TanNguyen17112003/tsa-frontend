@@ -8,10 +8,6 @@ import AdvanceSearchResult from "./AdvanceSearchResult";
 
 interface AdvanceSearchFormProps {
   className: string;
-  updateTextSearch: (index: number, value: string) => void;
-  curentSearchAdvance: string[];
-  updateTypeSearch: (index: number, value: string) => void;
-  curentSearchOption: string[];
 }
 const advanceSearchType = [
   {
@@ -28,17 +24,18 @@ const advanceSearchType = [
   },
 ];
 
-const AdvanceSearchForm: FC<AdvanceSearchFormProps> = ({
-  className,
-  updateTextSearch,
-  curentSearchAdvance,
-  updateTypeSearch,
-  curentSearchOption,
-}) => {
+const AdvanceSearchForm: FC<AdvanceSearchFormProps> = ({ className }) => {
   const router = useRouter();
   const currentSearchType = router.query.searchType;
 
   const [textSearch, setTextSearch] = useState<string>("");
+
+  const [curentSearchAdvance, setCurentSearchAdvance] = useState<string[]>([
+    "",
+  ]);
+  const [curentSearchOption, setCurentSearchOption] = useState<string[]>([
+    "and",
+  ]);
 
   const handleChange = useCallback(
     (value: string) => {
@@ -85,6 +82,30 @@ const AdvanceSearchForm: FC<AdvanceSearchFormProps> = ({
     [curentSearchAdvance, curentSearchOption, router, textSearch]
   );
 
+  const updateTextSearch = useCallback((index: number, newValue: string) => {
+    setCurentSearchAdvance((prevItems) => {
+      let updatedItems = [...prevItems];
+      updatedItems[index] = newValue;
+      if (updatedItems[updatedItems.length - 1] != "")
+        updatedItems[updatedItems.length] = "";
+      else if (
+        updatedItems.length > 1 &&
+        updatedItems[updatedItems.length - 1] == "" &&
+        updatedItems[updatedItems.length - 2] == ""
+      )
+        updatedItems = updatedItems.slice(0, updatedItems.length - 1);
+      return updatedItems;
+    });
+  }, []);
+
+  const updateTypeSearch = useCallback((index: number, newValue: string) => {
+    setCurentSearchOption((prevItems) => {
+      let updatedItems = [...prevItems];
+      updatedItems[index] = newValue;
+      return updatedItems;
+    });
+  }, []);
+
   return (
     <form className={className} onSubmit={handleSubmit}>
       <div className="gap-4 space-y-4">
@@ -95,11 +116,8 @@ const AdvanceSearchForm: FC<AdvanceSearchFormProps> = ({
               placeholder="Nhập từ khóa"
               className="border-none"
               id="textSearch"
-              onChange={() => {
-                const temp: HTMLInputElement = document.getElementById(
-                  "textSearch"
-                ) as HTMLInputElement;
-                setTextSearch(temp.value.trim());
+              onChange={(e) => {
+                setTextSearch(e.target.value);
               }}
             />
           </div>
@@ -121,8 +139,7 @@ const AdvanceSearchForm: FC<AdvanceSearchFormProps> = ({
                 placeholder="Nhập từ khóa"
                 className="border-none"
                 onChange={(e) => {
-                  const temp = e.target.value;
-                  updateTextSearch(index, temp);
+                  updateTextSearch(index, e.target.value);
                   updateTypeSearch(index, curentSearchOption[index] || "and");
                 }}
                 id={`textSearch${index}`}

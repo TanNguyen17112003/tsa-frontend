@@ -168,8 +168,6 @@ const AdvanceSearchResultPage = () => {
               readOnly={true}
               initialValue={orison?.content}
               notes={orison?.notes}
-              onUpdateNotes={() => {}}
-              onChange={() => {}}
               searchText={textSearch?.toLowerCase()}
               numElement={searchNum}
             />

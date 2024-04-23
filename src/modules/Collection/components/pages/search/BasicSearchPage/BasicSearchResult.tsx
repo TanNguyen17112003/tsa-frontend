@@ -96,6 +96,8 @@ const BasicSearchResult: FC<BasicSearchResultProps> = ({}) => {
     return temp;
   }, [orisons?.rows, searchText]);
 
+  const pagination = usePagination({ count: orisons?.count || 0 });
+
   useEffect(() => {
     searchOrisonsApi.call({
       q: [
@@ -109,9 +111,7 @@ const BasicSearchResult: FC<BasicSearchResultProps> = ({}) => {
       offset: resultFrom - 1 < 0 ? 0 : resultFrom - 1,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchText]);
-
-  const pagination = usePagination({ count: orisons?.count || 0 });
+  }, [searchText, pagination.page]);
 
   const resultFrom = useMemo(() => {
     return (
@@ -159,8 +159,6 @@ const BasicSearchResult: FC<BasicSearchResultProps> = ({}) => {
         <Accordion type="multiple" className="w-full">
           {orisons?.rows.map(
             (item, index) =>
-              index <= resultTo - 1 &&
-              resultFrom - 1 <= index &&
               !searchOrisonsApi.loading && (
                 <AccordionItem value={item.id} key={index}>
                   <AccordionTrigger className="flex bg-slate-200 p-4 rounded-md">

@@ -152,25 +152,28 @@ const AdjacentSearchResult: FC<AdjacentSearchResultProps> = ({}) => {
     );
   }, [pagination]);
 
-  const resultTo = useMemo(() => {
-    return Math.min(
-      pagination.count,
-      pagination.rowsPerPage * (pagination.page + 1)
-    );
-  }, [pagination]);
+  const getCollectionName = useCallback(
+    (volumeId: string) => {
+      const sutraId = tree.volumes.find(
+        (item) => item.id == volumeId
+      )?.sutras_id;
+      const collectionId = tree.sutras.find(
+        (item) => item.id == sutraId
+      )?.collection_id;
+      return tree.collections.find((item) => item.id == collectionId)?.name;
+    },
+    [tree.collections, tree.sutras, tree.volumes]
+  );
 
-  const getCollectionName = (volumeId: string) => {
-    const sutraId = tree.volumes.find((item) => item.id == volumeId)?.sutras_id;
-    const collectionId = tree.sutras.find(
-      (item) => item.id == sutraId
-    )?.collection_id;
-    return tree.collections.find((item) => item.id == collectionId)?.name;
-  };
-
-  const getSutraName = (volumeId: string) => {
-    const sutraId = tree.volumes.find((item) => item.id == volumeId)?.sutras_id;
-    return tree.sutras.find((item) => item.id == sutraId)?.name;
-  };
+  const getSutraName = useCallback(
+    (volumeId: string) => {
+      const sutraId = tree.volumes.find(
+        (item) => item.id == volumeId
+      )?.sutras_id;
+      return tree.sutras.find((item) => item.id == sutraId)?.name;
+    },
+    [tree.sutras, tree.volumes]
+  );
 
   const handleClick = useCallback(
     (orisonId: string) => {

@@ -193,8 +193,6 @@ const SearchResultPage = () => {
     });
   }, [router]);
 
-  console.log("dataSearch", dataSearch);
-
   return (
     <div className="space-y-4 max-h-[calc(100vh-230px)]">
       <div className="flex justify-between p-5">

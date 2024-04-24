@@ -70,7 +70,7 @@ const AdjacentSearchForm: FC<AdjacentSearchFormProps> = ({ className }) => {
 
   useEffect(() => {
     if (router.query.textSearch) {
-      const temp = (router.query.textSearch as string)?.split("_");
+      const temp = router.query.textSearch.toString()?.split("_");
       formik.setValues({
         pre_adjacent_word: temp[0],
         pre_range: parseInt(temp[1]),

@@ -9,12 +9,11 @@ import Loading from "src/components/Loading";
 import { useCollectionCategoriesContext } from "src/contexts/collections/collection-categories-context";
 import { cn } from "src/utils/shadcn";
 
-const BasicSearchResultPage = () => {
+const AdvanceSearchResultPage = () => {
   const router = useRouter();
   const getOrisonByIdApi = useFunction(OrisonsApi.getOrisonById);
   const { goOrison } = useCollectionCategoriesContext();
   const [searchNum, setSearchNum] = useState(0);
-  let searchText: string = router.query.searchText as string;
 
   useEffect(() => {
     getOrisonByIdApi.call(router.query.orisonId as string);
@@ -25,9 +24,14 @@ const BasicSearchResultPage = () => {
     return getOrisonByIdApi.data;
   }, [getOrisonByIdApi.data]);
 
-  const data = useMemo(() => {
+  const textSearch = useMemo(() => {
+    const temp = (router.query.textSearch as string)?.split("_");
+    return temp[0] as string;
+  }, [router.query.textSearch]);
+
+  const dataSearch = useMemo(() => {
     const temp: any[] = [];
-    if (router.query.searchText != "") {
+    if (textSearch != "") {
       let savedString: string = orison?.plain_text || "";
 
       let currentIndex: number = 0;
@@ -37,7 +41,7 @@ const BasicSearchResultPage = () => {
       while (
         (currentIndex = savedString
           .toLowerCase()
-          .indexOf(searchText?.toLowerCase(), currentIndex)) !== -1 &&
+          .indexOf(textSearch?.toLowerCase(), currentIndex)) !== -1 &&
         count < maxCount
       ) {
         if (currentIndex < 15) {
@@ -45,11 +49,11 @@ const BasicSearchResultPage = () => {
             beforeTextSearch: savedString.substring(0, currentIndex),
             textSearch: savedString.substring(
               currentIndex,
-              currentIndex + searchText.length
+              currentIndex + textSearch.length
             ),
             afterTextSearch: savedString.substring(
-              currentIndex + searchText.length,
-              searchText.length + 15
+              currentIndex + textSearch.length,
+              textSearch.length + 15
             ),
           });
           count++;
@@ -61,10 +65,10 @@ const BasicSearchResultPage = () => {
             ),
             textSearch: savedString.substring(
               currentIndex,
-              currentIndex + searchText.length
+              currentIndex + textSearch.length
             ),
             afterTextSearch: savedString.substring(
-              currentIndex + searchText.length,
+              currentIndex + textSearch.length,
               savedString.length
             ),
           });
@@ -77,25 +81,28 @@ const BasicSearchResultPage = () => {
             ),
             textSearch: savedString.substring(
               currentIndex,
-              currentIndex + searchText.length
+              currentIndex + textSearch.length
             ),
             afterTextSearch: savedString.substring(
-              currentIndex + searchText.length,
-              currentIndex + searchText.length + 15
+              currentIndex + textSearch.length,
+              currentIndex + textSearch.length + 15
             ),
           });
           count++;
         }
-        currentIndex += searchText.length;
+        currentIndex += textSearch.length;
       }
     }
     return temp;
-  }, [orison?.plain_text, router.query.searchText, searchText]);
+  }, [orison?.plain_text, textSearch]);
 
   const handleBack = useCallback(() => {
     router.replace({
       pathname: router.pathname,
-      query: { searchType: "basic", searchText: router.query.searchText },
+      query: {
+        searchType: router.query.searchType,
+        textSearch: router.query.textSearch,
+      },
     });
   }, [router]);
   return (
@@ -132,7 +139,7 @@ const BasicSearchResultPage = () => {
             <hr />
           </div>
           <div className="flex flex-col gap-1">
-            {data.map((item, index) => (
+            {dataSearch.map((item, index) => (
               <div
                 className={cn(
                   "flex space-x-4 border-b px-2 min-h-14 items-center cursor-pointer hover:bg-cyan-50",
@@ -161,7 +168,7 @@ const BasicSearchResultPage = () => {
               readOnly={true}
               initialValue={orison?.content}
               notes={orison?.notes}
-              searchText={searchText?.toLowerCase()}
+              searchText={textSearch?.toLowerCase()}
               numElement={searchNum}
             />
           )}
@@ -171,4 +178,4 @@ const BasicSearchResultPage = () => {
   );
 };
 
-export default BasicSearchResultPage;
+export default AdvanceSearchResultPage;

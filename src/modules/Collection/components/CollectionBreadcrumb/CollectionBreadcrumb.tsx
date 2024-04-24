@@ -51,9 +51,17 @@ const CollectionBreadcrumb: FC<CollectionBreadcrumbProps> = ({}) => {
         });
       }
       if (searchType.value == "basic" && router.query.orisonId) {
-        const searchText = router.query.searchText;
+        const textSearch = router.query.textSearch;
         bItems.push({
-          label: `Kết quả "${searchText}"`,
+          label: `Kết quả "${textSearch}"`,
+        });
+      }
+      if (searchType.value == "advance" && router.query.orisonId) {
+        const orisonName = tree.orisons.find(
+          (item) => item.id == router.query.orisonId
+        )?.name;
+        bItems.push({
+          label: `Kết quả "${orisonName}"`,
         });
       }
       if (searchType.value == "adjacent" && router.query.orisonId) {

@@ -19,9 +19,9 @@ import OrisonExplorePage from "./components/pages/explore/OrisonExplorePage";
 import AuthorSearchResultPage from "./components/pages/search/AuthorTranslatorSearchResultPage/AuthorSearchResultPage";
 import CircaSearchResultPage from "./components/pages/search/CircaSearchResultPage/CircaSearchResultPage";
 import TranslatorSearchResultPage from "./components/pages/search/AuthorTranslatorSearchResultPage/TranslatorSearchResultPage";
-import BasicSearchResultPage from "./components/pages/search/BasicSearchResultPage/BasicSearchResultPage";
-import AdjacentSearchResultPage from "./components/pages/search/AdjacentSearchResultPage/AdjacentSearchResultPage";
+import AdvanceSearchResultPage from "./components/pages/search/SearchResultPage/SearchResultPage";
 import VolumeOriginalPage from "./components/pages/explore/VolumeOriginalPage";
+import AdjacentSearchResultPage from "./components/pages/search/AdjacentSearchResultPage/AdjacentSearchResultPage";
 
 interface CollectionContentProps {}
 
@@ -71,9 +71,11 @@ const CollectionContent: FC<CollectionContentProps> = ({}) => {
         ) : query.searchType == "circa" ? (
           <CircaSearchPage />
         ) : query.searchType == "basic" && query.orisonId ? (
-          <BasicSearchResultPage />
+          <AdvanceSearchResultPage />
         ) : query.searchType == "basic" ? (
           <BasicSearchPage />
+        ) : query.searchType == "advance" && query.orisonId ? (
+          <AdvanceSearchResultPage />
         ) : query.searchType == "advance" ? (
           <AdvanceSearchPage />
         ) : query.searchType == "adjacent" && query.orisonId ? (

@@ -32,7 +32,7 @@ const BasicSearchForm: FC<BasicSearchFormProps> = ({ className }) => {
     (value: string) => {
       router.replace({
         pathname: router.pathname,
-        query: { ...router.query, searchText: value },
+        query: { ...router.query, textSearch: value },
       });
     },
     [router]

@@ -223,16 +223,18 @@ const AdjacentSearchResult: FC<AdjacentSearchResultProps> = ({}) => {
                         key={index}
                       >
                         <div>{index + 1}</div>
-                        <div className="flex space-x-0.5">
-                          <div>{d.text1}</div>
-                          <div className="bg-blue-200">
+                        <div className="space-x-0.5">
+                          <span>{d.text1}</span>
+                          <span className="bg-blue-200">
                             {d.beforeTextSearch}
-                          </div>
-                          <div>{d.text2}</div>
-                          <div className="bg-blue-200">{d.textSearch}</div>
-                          <div>{d.text3}</div>
-                          <div className="bg-blue-200">{d.afterTextSearch}</div>
-                          <div>{d.text4}</div>
+                          </span>
+                          <span>{d.text2}</span>
+                          <span className="bg-blue-200">{d.textSearch}</span>
+                          <span>{d.text3}</span>
+                          <span className="bg-blue-200">
+                            {d.afterTextSearch}
+                          </span>
+                          <span>{d.text4}</span>
                         </div>
                       </AccordionContent>
                     ))}

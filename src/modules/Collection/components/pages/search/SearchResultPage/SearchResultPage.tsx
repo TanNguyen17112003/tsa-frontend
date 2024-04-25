@@ -273,15 +273,16 @@ const SearchResultPage = () => {
               searchText={
                 router.query.searchType != "adjacent"
                   ? textSearch?.toLowerCase()
-                  : dataSearch[searchNum]?.beforeTextSearch +
-                    (dataSearch[searchNum]?.beforeTextSearch == ""
+                  : dataSearch[searchNum]?.beforeTextSearch?.toLowerCase() +
+                    (dataSearch[searchNum]?.beforeTextSearch?.toLowerCase() ==
+                    ""
                       ? ""
-                      : dataSearch[searchNum]?.text2) +
-                    dataSearch[searchNum]?.textSearch +
-                    (dataSearch[searchNum]?.afterTextSearch == ""
+                      : dataSearch[searchNum]?.text2?.toLowerCase()) +
+                    dataSearch[searchNum]?.textSearch?.toLowerCase() +
+                    (dataSearch[searchNum]?.afterTextSearch?.toLowerCase() == ""
                       ? ""
-                      : dataSearch[searchNum]?.text3) +
-                    dataSearch[searchNum]?.afterTextSearch
+                      : dataSearch[searchNum]?.text3?.toLowerCase()) +
+                    dataSearch[searchNum]?.afterTextSearch?.toLowerCase()
               }
               numElement={searchNum}
             />

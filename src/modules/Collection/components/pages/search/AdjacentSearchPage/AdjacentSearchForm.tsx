@@ -178,9 +178,9 @@ const AdjacentSearchForm: FC<AdjacentSearchFormProps> = ({ className }) => {
           className="flex ml-auto"
           onClick={() => formik.handleSubmit()}
           disabled={
-            formik.values.middle_word.trim() == "" ||
-            formik.values.next_adjacent_word.trim() == "" ||
-            formik.values.pre_adjacent_word.trim() == ""
+            !formik.values.middle_word?.trim() ||
+            !formik.values.next_adjacent_word?.trim() ||
+            !formik.values.pre_adjacent_word?.trim()
           }
         >
           {" "}

@@ -63,7 +63,7 @@ const AdjacentSearchResult: FC<AdjacentSearchResultProps> = ({}) => {
                 ? parseInt(tempText[4]) + currentIndex + tempText[2].length
                 : savedString.length
             )
-            .indexOf(tempText[3].toLowerCase());
+            .indexOf(tempText[3]?.toLowerCase());
 
           if (beforeIndex != -1 && afterIndex != -1) {
             temp[index].push({

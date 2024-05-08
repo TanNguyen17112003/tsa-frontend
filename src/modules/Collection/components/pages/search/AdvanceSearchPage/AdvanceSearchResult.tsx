@@ -21,35 +21,28 @@ const AdvanceSearchResult: FC<AdvanceSearchResultProps> = ({}) => {
   const { tree } = useCollectionCategoriesContext();
 
   const textSearchAdvance: string[] = useMemo(() => {
-    const temp = router.query.textSearch?.toString()?.split("_");
-    const textTemp: string[] = [];
-    temp?.map((item, index) => {
-      if (index != 0 && index % 2 == 0) {
-        textTemp.push(item);
-      }
-    });
-
-    return textTemp;
+    if (typeof router.query.textSearch == "string") {
+      return [router.query.textSearch];
+    }
+    return router.query.textSearch?.slice(1) || [];
   }, [router.query.textSearch]);
+
   const typeSearchAdvance: string[] = useMemo(() => {
-    const temp = router.query.textSearch?.toString()?.split("_");
-    const textTemp: string[] = [];
-    temp?.map((item, index) => {
-      if (index != 0 && index % 2 == 1) {
-        textTemp.push(item);
-      }
-    });
-
-    return textTemp;
-  }, [router.query.textSearch]);
+    if (typeof router.query.optionSearch == "string") {
+      return [router.query.optionSearch];
+    }
+    return router.query.optionSearch || [];
+  }, [router.query.optionSearch]);
 
   const orisons = useMemo(() => {
     return searchOrisonsApi.data;
   }, [searchOrisonsApi]);
 
   const textSearch = useMemo(() => {
-    const temp = router.query.textSearch?.toString()?.split("_");
-    return temp ? temp?.[0].toString() : "";
+    if (typeof router.query.textSearch == "string") {
+      return "";
+    }
+    return router.query.textSearch?.[0] || "";
   }, [router.query.textSearch]);
 
   const dataSearch = useMemo(() => {
@@ -129,7 +122,7 @@ const AdvanceSearchResult: FC<AdvanceSearchResultProps> = ({}) => {
       let textTemp: string[] = [textSearch];
       let type = "and";
       textSearchAdvance.map((item, index) => {
-        if (typeSearchAdvance[index] == "and" && item && item != "") {
+        if (typeSearchAdvance[index] == "and" && item) {
           qTemp.push(
             JSON.stringify({
               op: type,
@@ -139,7 +132,7 @@ const AdvanceSearchResult: FC<AdvanceSearchResultProps> = ({}) => {
           );
           textTemp = [item];
           type = "and";
-        } else if (typeSearchAdvance[index] == "not" && item && item != "") {
+        } else if (typeSearchAdvance[index] == "not" && item) {
           qTemp.push(
             JSON.stringify({
               op: type,
@@ -149,7 +142,7 @@ const AdvanceSearchResult: FC<AdvanceSearchResultProps> = ({}) => {
           );
           textTemp = [item];
           type = "not";
-        } else if (typeSearchAdvance[index] == "or" && item && item != "") {
+        } else if (typeSearchAdvance[index] == "or" && item) {
           textTemp.push(item);
         }
       });

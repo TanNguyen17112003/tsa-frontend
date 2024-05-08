@@ -13,9 +13,9 @@ import useFunction from "src/hooks/use-function";
 import usePagination from "src/hooks/use-pagination";
 import getPaginationText from "src/utils/get-pagination-text";
 
-interface BasicSearchResultProps {}
+interface AdjacentSearchResultProps {}
 
-const BasicSearchResult: FC<BasicSearchResultProps> = ({}) => {
+const AdjacentSearchResult: FC<AdjacentSearchResultProps> = ({}) => {
   const router = useRouter();
   const searchOrisonsApi = useFunction(OrisonsApi.searchOrisons);
   const { tree } = useCollectionCategoriesContext();
@@ -24,14 +24,15 @@ const BasicSearchResult: FC<BasicSearchResultProps> = ({}) => {
   }, [searchOrisonsApi]);
 
   const textSearch = useMemo(() => {
-    return router.query.textSearch as string;
+    return router.query.textSearch?.toString();
   }, [router]);
 
   const dataSearch = useMemo(() => {
+    const tempText = textSearch?.split("_");
     const temp: any[][] = [];
     orisons?.rows.map((item, index) => {
       temp[index] = [];
-      if (textSearch != "") {
+      if (tempText && tempText[2] != "") {
         let savedString: string = item.plain_text;
         let currentIndex: number = 0;
         let count: number = 0;
@@ -40,56 +41,76 @@ const BasicSearchResult: FC<BasicSearchResultProps> = ({}) => {
         while (
           (currentIndex = savedString
             .toLowerCase()
-            .indexOf(textSearch?.toLowerCase(), currentIndex)) !== -1 &&
+            .indexOf(tempText[2]?.toLowerCase(), currentIndex)) !== -1 &&
           count < maxCount
         ) {
-          if (currentIndex < 15) {
-            temp[index].push({
-              beforeTextSearch: savedString.substring(0, currentIndex),
-              textSearch: savedString.substring(
-                currentIndex,
-                currentIndex + textSearch.length
-              ),
-              afterTextSearch: savedString.substring(
-                currentIndex + textSearch.length,
-                textSearch.length + 15
-              ),
-            });
-            count++;
-          } else if (currentIndex > savedString.length - 14) {
-            temp[index].push({
-              beforeTextSearch: savedString.substring(
-                currentIndex - 15,
-                currentIndex
-              ),
-              textSearch: savedString.substring(
-                currentIndex,
-                currentIndex + textSearch.length
-              ),
-              afterTextSearch: savedString.substring(
-                currentIndex + textSearch.length,
+          const beforeIndex = savedString
+            .toLowerCase()
+            .substring(
+              currentIndex - parseInt(tempText[1]) > 0
+                ? currentIndex - parseInt(tempText[1])
+                : 0,
+              currentIndex
+            )
+            .indexOf(tempText[0].toLowerCase());
+
+          const afterIndex = savedString
+            .toLowerCase()
+            .substring(
+              currentIndex + tempText[2].length,
+              parseInt(tempText[4]) + currentIndex + tempText[2].length <
                 savedString.length
-              ),
-            });
-            count++;
-          } else {
+                ? parseInt(tempText[4]) + currentIndex + tempText[2].length
+                : savedString.length
+            )
+            .indexOf(tempText[3].toLowerCase());
+
+          if (beforeIndex != -1 && afterIndex != -1) {
             temp[index].push({
+              text1: savedString.substring(
+                currentIndex - 30 - parseInt(tempText[1]),
+                currentIndex - parseInt(tempText[1]) + beforeIndex
+              ),
               beforeTextSearch: savedString.substring(
-                currentIndex - 15,
+                currentIndex - parseInt(tempText[1]) + beforeIndex,
+                currentIndex -
+                  parseInt(tempText[1]) +
+                  beforeIndex +
+                  tempText[0].length
+              ),
+              text2: savedString.substring(
+                currentIndex -
+                  parseInt(tempText[1]) +
+                  beforeIndex +
+                  tempText[0].length,
                 currentIndex
               ),
               textSearch: savedString.substring(
                 currentIndex,
-                currentIndex + textSearch.length
+                currentIndex + tempText[2].length
+              ),
+              text3: savedString.substring(
+                currentIndex + tempText[2].length,
+                currentIndex + tempText[2].length + afterIndex
               ),
               afterTextSearch: savedString.substring(
-                currentIndex + textSearch.length,
-                currentIndex + textSearch.length + 15
+                currentIndex + tempText[2].length + afterIndex,
+                currentIndex +
+                  tempText[2].length +
+                  afterIndex +
+                  tempText[3].length
+              ),
+              text4: savedString.substring(
+                currentIndex +
+                  tempText[2].length +
+                  afterIndex +
+                  tempText[3].length,
+                currentIndex + tempText[2].length + 30 + parseInt(tempText[4])
               ),
             });
             count++;
           }
-          currentIndex += textSearch.length;
+          currentIndex += tempText[2].length;
         }
       }
     });
@@ -99,17 +120,29 @@ const BasicSearchResult: FC<BasicSearchResultProps> = ({}) => {
   const pagination = usePagination({ count: orisons?.count || 0 });
 
   useEffect(() => {
-    searchOrisonsApi.call({
-      q: [
-        JSON.stringify({
-          op: "and",
-          text: [textSearch],
-          range: 0,
-        }),
-      ],
-      limit: 10,
-      offset: resultFrom - 1 < 0 ? 0 : resultFrom - 1,
-    });
+    const temp = textSearch?.split("_");
+    if (temp)
+      searchOrisonsApi.call({
+        q: [
+          JSON.stringify({
+            op: "and",
+            text: [temp[0]],
+            range: parseInt(temp[1]),
+          }),
+          JSON.stringify({
+            op: "and",
+            text: [temp[2]],
+            range: 0,
+          }),
+          JSON.stringify({
+            op: "and",
+            text: [temp[3]],
+            range: parseInt(temp[4]),
+          }),
+        ],
+        limit: 10,
+        offset: resultFrom - 1 < 0 ? 0 : resultFrom - 1,
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [textSearch, pagination.page]);
 
@@ -119,28 +152,31 @@ const BasicSearchResult: FC<BasicSearchResultProps> = ({}) => {
     );
   }, [pagination]);
 
-  const resultTo = useMemo(() => {
-    return Math.min(
-      pagination.count,
-      pagination.rowsPerPage * (pagination.page + 1)
-    );
-  }, [pagination]);
+  const getCollectionName = useCallback(
+    (volumeId: string) => {
+      const sutraId = tree.volumes.find(
+        (item) => item.id == volumeId
+      )?.sutras_id;
+      const collectionId = tree.sutras.find(
+        (item) => item.id == sutraId
+      )?.collection_id;
+      return tree.collections.find((item) => item.id == collectionId)?.name;
+    },
+    [tree.collections, tree.sutras, tree.volumes]
+  );
 
-  const getCollectionName = (volumeId: string) => {
-    const sutraId = tree.volumes.find((item) => item.id == volumeId)?.sutras_id;
-    const collectionId = tree.sutras.find(
-      (item) => item.id == sutraId
-    )?.collection_id;
-    return tree.collections.find((item) => item.id == collectionId)?.name;
-  };
-
-  const getSutraName = (volumeId: string) => {
-    const sutraId = tree.volumes.find((item) => item.id == volumeId)?.sutras_id;
-    return tree.sutras.find((item) => item.id == sutraId)?.name;
-  };
+  const getSutraName = useCallback(
+    (volumeId: string) => {
+      const sutraId = tree.volumes.find(
+        (item) => item.id == volumeId
+      )?.sutras_id;
+      return tree.sutras.find((item) => item.id == sutraId)?.name;
+    },
+    [tree.sutras, tree.volumes]
+  );
 
   const handleClick = useCallback(
-    (orisonId: string, textSearch: string) => {
+    (orisonId: string) => {
       router.replace({
         pathname: router.pathname,
         query: {
@@ -182,24 +218,23 @@ const BasicSearchResult: FC<BasicSearchResultProps> = ({}) => {
                       <AccordionContent
                         className="flex border-b border-x rounded-b-md pt-4 pl-4 space-x-8 text-base font-normal cursor-pointer hover:bg-slate-100"
                         onClick={() => {
-                          handleClick(item.id, textSearch);
+                          handleClick(item.id);
                         }}
                         key={index}
                       >
                         <div>{index + 1}</div>
-                        <div className="flex">
-                          {d.beforeTextSearch[d.beforeTextSearch.length - 1] !=
-                          " " ? (
-                            <div>{d.beforeTextSearch}</div>
-                          ) : (
-                            <div className="mr-0.5">{d.beforeTextSearch}</div>
-                          )}
-                          <div className="bg-blue-200">{d.textSearch}</div>
-                          {d.afterTextSearch[0] != " " ? (
-                            <div>{d.afterTextSearch}</div>
-                          ) : (
-                            <div className="ml-0.5">{d.afterTextSearch}</div>
-                          )}
+                        <div className="space-x-0.5">
+                          <span>{d.text1}</span>
+                          <span className="bg-blue-200">
+                            {d.beforeTextSearch}
+                          </span>
+                          <span>{d.text2}</span>
+                          <span className="bg-blue-200">{d.textSearch}</span>
+                          <span>{d.text3}</span>
+                          <span className="bg-blue-200">
+                            {d.afterTextSearch}
+                          </span>
+                          <span>{d.text4}</span>
                         </div>
                       </AccordionContent>
                     ))}
@@ -219,4 +254,4 @@ const BasicSearchResult: FC<BasicSearchResultProps> = ({}) => {
   );
 };
 
-export default BasicSearchResult;
+export default AdjacentSearchResult;

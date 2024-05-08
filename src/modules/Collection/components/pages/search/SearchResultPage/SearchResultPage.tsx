@@ -26,7 +26,7 @@ const AdvanceSearchResultPage = () => {
 
   const textSearch = useMemo(() => {
     const temp = (router.query.textSearch as string)?.split("_");
-    return temp[0] as string;
+    return temp?.[0] as string;
   }, [router.query.textSearch]);
 
   const dataSearch = useMemo(() => {

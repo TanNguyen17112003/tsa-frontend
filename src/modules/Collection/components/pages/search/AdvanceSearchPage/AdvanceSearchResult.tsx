@@ -49,7 +49,7 @@ const AdvanceSearchResult: FC<AdvanceSearchResultProps> = ({}) => {
 
   const textSearch = useMemo(() => {
     const temp = router.query.textSearch?.toString()?.split("_");
-    return temp ? temp[0].toString() : "";
+    return temp ? temp?.[0].toString() : "";
   }, [router.query.textSearch]);
 
   const dataSearch = useMemo(() => {

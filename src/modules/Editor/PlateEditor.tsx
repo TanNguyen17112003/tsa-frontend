@@ -27,6 +27,7 @@ interface PlateEditorProps {
   numElement?: number;
   notes?: Note[];
   readOnly?: boolean;
+  scrollOffset?: number;
   onUpdateNotes?: (notes: Note[]) => void;
   onCancel?: () => void;
   onSave?: (value: any) => void;
@@ -40,6 +41,7 @@ const PlateEditor: FC<PlateEditorProps> = ({
   numElement,
   readOnly,
   notes,
+  scrollOffset,
   onUpdateNotes,
   onChange,
   onCancel,
@@ -107,12 +109,15 @@ const PlateEditor: FC<PlateEditorProps> = ({
 
   useEffect(() => {
     setTimeout(() => {
-      const el = document?.querySelectorAll(".search-node");
+      const container = document.getElementById("editor-container");
+      const el = document?.querySelectorAll(".search-node")?.[numElement || 0];
       if (el) {
-        el[numElement || 0]?.scrollIntoView({ behavior: "smooth" });
+        const y =
+          el.getBoundingClientRect().top + window.scrollY + (scrollOffset || 0);
+        container?.scrollTo({ top: y, behavior: "smooth" });
       }
     }, 500);
-  }, [searchText, numElement]);
+  }, [searchText, numElement, scrollOffset]);
 
   return (
     <Plate

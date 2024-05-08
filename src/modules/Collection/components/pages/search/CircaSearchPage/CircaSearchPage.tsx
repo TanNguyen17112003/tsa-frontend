@@ -79,7 +79,7 @@ const CircaSearchPage: FC<CircaSearchPageProps> = ({}) => {
                   return <div key={item.id} />;
                 }
                 return (
-                  <AccordionItem value={item.name} key={index}>
+                  <AccordionItem value={item.name} key={index} className="mb-2">
                     <AccordionTrigger className="bg-slate-200 p-4 rounded-t-md">
                       {item.name}
                     </AccordionTrigger>

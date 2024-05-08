@@ -229,7 +229,10 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
 
         <div className="flex-1 min-h-0 bg-white flex gap-4 pl-4">
           <OrisonList className="w-[228px] h-full" />
-          <div className="border rounded-xl h-full overflow-y-auto flex-1">
+          <div
+            className="border rounded-xl h-full overflow-y-auto flex-1"
+            id="editor-container"
+          >
             {getOrisonDetailApi.loading ? (
               <div className="flex h-[100px] items-center justify-center mt-4">
                 <Loading />
@@ -245,6 +248,7 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
                 onCancel={handleCancel}
                 searchText={searchText.toLowerCase()}
                 onChangeSelection={setSelectionData}
+                scrollOffset={-300}
               />
             ) : null}
           </div>

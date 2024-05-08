@@ -64,6 +64,14 @@ const CollectionBreadcrumb: FC<CollectionBreadcrumbProps> = ({}) => {
           label: `Kết quả "${orisonName}"`,
         });
       }
+      if (searchType.value == "adjacent" && router.query.orisonId) {
+        const orison = tree.orisons.find(
+          (item) => item.id == router.query.orisonId
+        )?.name;
+        bItems.push({
+          label: `Kết quả "${orison}"`,
+        });
+      }
       if (router.query.qCircaFrom && router.query.qCircaTo) {
         bItems.push({
           label: `Kết quả tìm kiếm "${router.query.qCircaFrom} TCN - ${router.query.qCircaTo} TCN"`,

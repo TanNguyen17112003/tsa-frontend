@@ -71,22 +71,28 @@ const CircaSearchPage: FC<CircaSearchPageProps> = ({}) => {
           <div className="font-medium text-lg pt-8">Niên đại bộ kinh</div>
           <div className="pt-4">
             <Accordion type="multiple" className="w-full">
-              {collection.map((item, index) => (
-                <AccordionItem value={item.name} key={index}>
-                  <AccordionTrigger className="bg-slate-200 p-4 rounded-t-md">
-                    {item.name}
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <CustomTable
-                      rows={sutras.filter((s) => {
-                        return s.collection_id == item.id;
-                      })}
-                      configs={getCircaSearchTableConfig}
-                      onClickRow={(e) => handleClick(e)}
-                    />
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
+              {collection.map((item, index) => {
+                const collectionSutras = sutras.filter(
+                  (s) => s.collection_id == item.id
+                );
+                if (collectionSutras.length == 0) {
+                  return <div key={item.id} />;
+                }
+                return (
+                  <AccordionItem value={item.name} key={index}>
+                    <AccordionTrigger className="bg-slate-200 p-4 rounded-t-md">
+                      {item.name}
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <CustomTable
+                        rows={collectionSutras}
+                        configs={getCircaSearchTableConfig}
+                        onClickRow={(e) => handleClick(e)}
+                      />
+                    </AccordionContent>
+                  </AccordionItem>
+                );
+              })}
             </Accordion>
           </div>
         </div>

@@ -23,7 +23,7 @@ const AdjacentSearchForm: FC<AdjacentSearchFormProps> = ({ className }) => {
       );
       router.replace({
         pathname: router.pathname,
-        query: { ...newQuery, searchType: value },
+        query: { searchType: value },
       });
     },
     [router]

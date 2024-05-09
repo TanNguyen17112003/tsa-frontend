@@ -46,7 +46,6 @@ const AdvanceSearchForm: FC<AdvanceSearchFormProps> = ({ className }) => {
       router.replace({
         pathname: router.pathname,
         query: {
-          ...newQuery,
           searchType: value,
         },
       });

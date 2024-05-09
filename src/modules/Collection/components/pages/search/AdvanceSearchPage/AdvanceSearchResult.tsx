@@ -46,9 +46,9 @@ const AdvanceSearchResult: FC<AdvanceSearchResultProps> = ({}) => {
   }, [router.query.textSearch]);
 
   const dataSearch = useMemo(() => {
-    const temp: any[][][] = [];
+    const result: { text: string; deco: boolean }[][][] = [];
     orisons?.rows.map((item, index) => {
-      temp[index] = [];
+      result[index] = [];
       if (textSearch != "") {
         let savedString: string = item.plain_text;
         let currentIndex: number = 0;
@@ -61,12 +61,12 @@ const AdvanceSearchResult: FC<AdvanceSearchResultProps> = ({}) => {
             .indexOf(textSearch?.toLowerCase(), currentIndex)) !== -1 &&
           count < maxCount
         ) {
-          temp[index][count] = [];
-          temp[index][count].push({
+          result[index][count] = [];
+          result[index][count].push({
             deco: false,
             text: savedString.substring(0, currentIndex),
           });
-          temp[index][count].push({
+          result[index][count].push({
             deco: true,
             text: savedString.substring(
               currentIndex,
@@ -80,11 +80,11 @@ const AdvanceSearchResult: FC<AdvanceSearchResultProps> = ({}) => {
                 .toLowerCase()
                 .indexOf(textSearchAdvance[i]?.toLowerCase(), currentIndex);
               if (currentIndex != -1) {
-                temp[index][count].push({
+                result[index][count].push({
                   deco: false,
                   text: savedString.substring(fromIndex, currentIndex),
                 });
-                temp[index][count].push({
+                result[index][count].push({
                   deco: true,
                   text: savedString.substring(
                     currentIndex,
@@ -95,7 +95,7 @@ const AdvanceSearchResult: FC<AdvanceSearchResultProps> = ({}) => {
               }
             }
           });
-          temp[index][count].push({
+          result[index][count].push({
             deco: false,
             text: savedString.substring(fromIndex, savedString.length - 8),
           });
@@ -105,7 +105,7 @@ const AdvanceSearchResult: FC<AdvanceSearchResultProps> = ({}) => {
         }
       }
     });
-    return temp;
+    return result;
   }, [orisons?.rows, textSearch, textSearchAdvance, typeSearchAdvance]);
 
   const pagination = usePagination({ count: orisons?.count || 0 });
@@ -118,43 +118,43 @@ const AdvanceSearchResult: FC<AdvanceSearchResultProps> = ({}) => {
 
   useEffect(() => {
     if (textSearch && textSearch != "") {
-      const qTemp: string[] = [];
-      let textTemp: string[] = [textSearch];
+      const qResult: string[] = [];
+      let textResult: string[] = [textSearch];
       let type = "and";
       textSearchAdvance.map((item, index) => {
         if (typeSearchAdvance[index] == "and" && item) {
-          qTemp.push(
+          qResult.push(
             JSON.stringify({
               op: type,
-              text: textTemp,
+              text: textResult,
               range: 0,
             })
           );
-          textTemp = [item];
+          textResult = [item];
           type = "and";
         } else if (typeSearchAdvance[index] == "not" && item) {
-          qTemp.push(
+          qResult.push(
             JSON.stringify({
               op: type,
-              text: textTemp,
+              text: textResult,
               range: 0,
             })
           );
-          textTemp = [item];
+          textResult = [item];
           type = "not";
         } else if (typeSearchAdvance[index] == "or" && item) {
-          textTemp.push(item);
+          textResult.push(item);
         }
       });
-      qTemp.push(
+      qResult.push(
         JSON.stringify({
           op: type,
-          text: textTemp,
+          text: textResult,
           range: 0,
         })
       );
       searchOrisonsApi.call({
-        q: qTemp,
+        q: qResult,
         limit: 10,
         offset: resultFrom - 1 < 0 ? 0 : resultFrom - 1,
       });

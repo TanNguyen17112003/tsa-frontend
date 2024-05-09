@@ -27,7 +27,7 @@ const Page: PageType = () => {
     );
     router.replace({
       pathname: router.pathname,
-      query: { ...newQuery, searchType: "basic" },
+      query: { searchType: "basic" },
     });
   }, [router]);
 

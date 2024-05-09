@@ -48,7 +48,7 @@ const OrisonEditorPopup = ({
           </div>
           <DialogFooter className="flex">
             <Button type="submit" variant={"default"} onClick={onClose}>
-              Xác nhân
+              Xác nhận
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -65,14 +65,14 @@ const OrisonEditorPopup = ({
               type="submit"
               variant={"outline"}
               onClick={() => {
-                navigator.clipboard.writeText(contentDialog);
+                navigator.clipboard?.writeText(contentDialog);
                 showSnackbarSuccess("Copy Trích dẫn nguồn thành công!");
               }}
             >
               Sao chép
             </Button>
             <Button type="submit" variant={"default"} onClick={onClose}>
-              Xác nhân
+              Xác nhận
             </Button>
           </DialogFooter>
         </DialogContent>

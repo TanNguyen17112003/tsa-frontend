@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { useRouter } from "next/router";
 import { FC, useCallback, useEffect, useMemo } from "react";
 import { OrisonsApi } from "src/api/orisons";
@@ -15,6 +16,122 @@ import getPaginationText from "src/utils/get-pagination-text";
 
 interface AdjacentSearchResultProps {}
 
+interface TextDeco {
+  text: string;
+  deco: boolean;
+}
+
+const getOrisonAdjacentSearch = (
+  savedString: string,
+  textSearch: string
+): TextDeco[][] => {
+  const tempText = textSearch?.split("_");
+  const [prevText, _prevRange, midText, nextText, _nextRange] = tempText || [];
+  const prevRange = parseInt(_prevRange);
+  const nextRange = parseInt(_nextRange);
+  console.log("tempText", tempText);
+  if (!tempText || !textSearch) {
+    return [];
+  }
+  const result: TextDeco[][] = [];
+  let currentIndex: number = 0;
+  let count: number = 0;
+  const maxCount: number = 3;
+
+  while (count < maxCount) {
+    console.log("currentIndex", currentIndex);
+    const prevIndex = savedString.toLowerCase().indexOf(midText, currentIndex);
+    if (prevIndex < 0) {
+      break;
+    }
+    const midIndex = savedString
+      .toLowerCase()
+      .indexOf(midText, prevIndex + prevText.length);
+    if (midIndex < 0) {
+      break;
+    }
+    const nextIndex = savedString
+      .toLowerCase()
+      .indexOf(midText, midIndex + midText.length);
+    if (nextIndex < 0) {
+      break;
+    }
+
+    console.log("prevIndex", prevIndex);
+    console.log("midIndex", midIndex);
+    console.log("nextIndex", nextIndex);
+
+    currentIndex = nextIndex + nextText.length;
+
+    // if (
+    //   savedString
+    //     .substring(prevIndex + prevText.length, midIndex)
+    //     .replace(/\s\s+/g, " ")
+    //     .split(" ").length > nextRange
+    // ) {
+    //   continue;
+    // }
+
+    // if (
+    //   savedString
+    //     .substring(midIndex + midText.length, nextIndex)
+    //     .replace(/\s\s+/g, " ")
+    //     .split(" ").length > prevRange
+    // ) {
+    //   continue;
+    // }
+
+    const beforeResultString = savedString.substring(currentIndex, prevIndex);
+    const leftMidString = savedString.substring(
+      prevIndex + prevText.length,
+      midIndex
+    );
+    const rightMidString = savedString.substring(
+      midIndex + midText.length,
+      nextIndex
+    );
+
+    result.push([
+      {
+        text:
+          (currentIndex != 0 || beforeResultString.length > 30 ? "..." : "") +
+          beforeResultString.substring(beforeResultString.length - 30),
+        deco: false,
+      },
+      { text: prevText, deco: true },
+      {
+        text:
+          leftMidString.length < 35
+            ? leftMidString
+            : `${leftMidString.substring(0, 15)}...${leftMidString.substring(
+                leftMidString.length - 15
+              )}`,
+        deco: false,
+      },
+      { text: midText, deco: true },
+      {
+        text:
+          rightMidString.length < 35
+            ? rightMidString
+            : `${rightMidString.substring(0, 15)}...${rightMidString.substring(
+                rightMidString.length - 15
+              )}`,
+        deco: false,
+      },
+      { text: nextText, deco: true },
+      {
+        text: savedString.substring(
+          nextIndex + nextText.length,
+          nextIndex + nextText.length + 30
+        ),
+        deco: false,
+      },
+    ]);
+    count++;
+  }
+  return result;
+};
+
 const AdjacentSearchResult: FC<AdjacentSearchResultProps> = ({}) => {
   const router = useRouter();
   const searchOrisonsApi = useFunction(OrisonsApi.searchOrisons);
@@ -22,122 +139,40 @@ const AdjacentSearchResult: FC<AdjacentSearchResultProps> = ({}) => {
   const orisons = useMemo(() => {
     return searchOrisonsApi.data;
   }, [searchOrisonsApi]);
+  console.log("orisons", orisons);
 
   const textSearch = useMemo(() => {
     return router.query.textSearch?.toString();
   }, [router]);
 
   const dataSearch = useMemo(() => {
-    const tempText = textSearch?.split("_");
-    const temp: any[][] = [];
-    orisons?.rows.map((item, index) => {
-      temp[index] = [];
-      if (tempText && tempText[2] != "") {
-        let savedString: string = item.plain_text;
-        let currentIndex: number = 0;
-        let count: number = 0;
-        const maxCount: number = 3;
-
-        while (
-          (currentIndex = savedString
-            .toLowerCase()
-            .indexOf(tempText[2]?.toLowerCase(), currentIndex)) !== -1 &&
-          count < maxCount
-        ) {
-          const beforeIndex = savedString
-            .toLowerCase()
-            .substring(
-              currentIndex - parseInt(tempText[1]) > 0
-                ? currentIndex - parseInt(tempText[1])
-                : 0,
-              currentIndex
-            )
-            .indexOf(tempText[0].toLowerCase());
-
-          const afterIndex = savedString
-            .toLowerCase()
-            .substring(
-              currentIndex + tempText[2].length,
-              parseInt(tempText[4]) + currentIndex + tempText[2].length <
-                savedString.length
-                ? parseInt(tempText[4]) + currentIndex + tempText[2].length
-                : savedString.length
-            )
-            .indexOf(tempText[3].toLowerCase());
-
-          if (beforeIndex != -1 && afterIndex != -1) {
-            temp[index].push({
-              text1: savedString.substring(
-                currentIndex - 30 - parseInt(tempText[1]),
-                currentIndex - parseInt(tempText[1]) + beforeIndex
-              ),
-              beforeTextSearch: savedString.substring(
-                currentIndex - parseInt(tempText[1]) + beforeIndex,
-                currentIndex -
-                  parseInt(tempText[1]) +
-                  beforeIndex +
-                  tempText[0].length
-              ),
-              text2: savedString.substring(
-                currentIndex -
-                  parseInt(tempText[1]) +
-                  beforeIndex +
-                  tempText[0].length,
-                currentIndex
-              ),
-              textSearch: savedString.substring(
-                currentIndex,
-                currentIndex + tempText[2].length
-              ),
-              text3: savedString.substring(
-                currentIndex + tempText[2].length,
-                currentIndex + tempText[2].length + afterIndex
-              ),
-              afterTextSearch: savedString.substring(
-                currentIndex + tempText[2].length + afterIndex,
-                currentIndex +
-                  tempText[2].length +
-                  afterIndex +
-                  tempText[3].length
-              ),
-              text4: savedString.substring(
-                currentIndex +
-                  tempText[2].length +
-                  afterIndex +
-                  tempText[3].length,
-                currentIndex + tempText[2].length + 30 + parseInt(tempText[4])
-              ),
-            });
-            count++;
-          }
-          currentIndex += tempText[2].length;
-        }
-      }
-    });
-    return temp;
+    const result = (orisons?.rows || []).map((orison, index) =>
+      getOrisonAdjacentSearch(orison.plain_text, textSearch || "")
+    );
+    return result;
   }, [orisons?.rows, textSearch]);
 
   const pagination = usePagination({ count: orisons?.count || 0 });
 
   useEffect(() => {
-    const temp = textSearch?.split("_");
-    if (temp)
+    const result = textSearch?.split("_");
+    if (result)
       searchOrisonsApi.call({
         q: [
           JSON.stringify({
             op: "and",
-            text: [temp[0]],
-            range: parseInt(temp[1]),
+            text: [result[0]],
+            range: parseInt(result[1]),
           }),
           JSON.stringify({
             op: "and",
-            text: [temp[2]],
+            text: [result[2]],
             range: 0,
           }),
           JSON.stringify({
             op: "and",
-            text: [temp[3]],
-            range: parseInt(temp[4]),
+            text: [result[3]],
+            range: parseInt(result[4]),
           }),
         ],
         limit: 10,
@@ -210,11 +245,11 @@ const AdjacentSearchResult: FC<AdjacentSearchResultProps> = ({}) => {
                       </div>
                     </div>
                     <div className="flex ml-auto text-xs font-medium text-blue-600 bg-blue-100 p-2 rounded-md border-blue-200 border mr-2">
-                      {dataSearch[index].length + " Kết quả phù hợp"}
+                      {(dataSearch[index] || []).length + " Kết quả phù hợp"}
                     </div>
                   </AccordionTrigger>
                   <div className="mb-6">
-                    {dataSearch[index].map((d, index) => (
+                    {dataSearch[index].map((orisonTextDecos, index) => (
                       <AccordionContent
                         className="flex border-b border-x rounded-b-md pt-4 pl-4 space-x-8 text-base font-normal cursor-pointer hover:bg-slate-100"
                         onClick={() => {
@@ -222,19 +257,22 @@ const AdjacentSearchResult: FC<AdjacentSearchResultProps> = ({}) => {
                         }}
                         key={index}
                       >
-                        <div>{index + 1}</div>
-                        <div className="space-x-0.5">
-                          <span>{d.text1}</span>
-                          <span className="bg-blue-200">
-                            {d.beforeTextSearch}
+                        <div>
+                          <span className="mr-2" key={index}>
+                            {index + 1}.
                           </span>
-                          <span>{d.text2}</span>
-                          <span className="bg-blue-200">{d.textSearch}</span>
-                          <span>{d.text3}</span>
-                          <span className="bg-blue-200">
-                            {d.afterTextSearch}
-                          </span>
-                          <span>{d.text4}</span>
+                          <div className="space-x-0.5">
+                            {orisonTextDecos.map((orisonTextDeco, index) => (
+                              <span
+                                key={index}
+                                className={clsx(
+                                  orisonTextDeco.deco && "bg-blue-200"
+                                )}
+                              >
+                                {orisonTextDeco.text}
+                              </span>
+                            ))}
+                          </div>
                         </div>
                       </AccordionContent>
                     ))}

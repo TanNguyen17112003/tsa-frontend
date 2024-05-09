@@ -46,7 +46,6 @@ const AdvanceSearchForm: FC<AdvanceSearchFormProps> = ({ className }) => {
       router.replace({
         pathname: router.pathname,
         query: {
-          ...newQuery,
           searchType: value,
         },
       });
@@ -64,16 +63,14 @@ const AdvanceSearchForm: FC<AdvanceSearchFormProps> = ({ className }) => {
 
   const handleSubmit = useCallback(
     (event: any) => {
-      let temp = textSearch;
-      curentSearchAdvance.map((item, index) => {
-        if (item && item != "")
-          temp = temp + "_" + curentSearchOption[index] + "_" + item;
-      });
       router.replace({
         pathname: router.pathname,
         query: {
           ...router.query,
-          textSearch: temp,
+          textSearch: [textSearch, ...curentSearchAdvance].filter(
+            (text) => text
+          ),
+          optionSearch: curentSearchOption,
         },
       });
 

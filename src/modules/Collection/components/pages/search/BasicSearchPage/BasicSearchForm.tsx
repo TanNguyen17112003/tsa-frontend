@@ -4,7 +4,7 @@ import CustomSelect from "src/components/CustomSelect/CustomSelect";
 import { Button } from "src/components/shadcn/ui/button";
 import FormInput from "src/components/ui/FormInput";
 import searchTypes from "src/modules/Collection/constants/searchTypes";
-import BasicSearchResult from "./BasicSearchResult";
+import useAppSnackbar from "src/hooks/use-app-snackbar";
 
 interface BasicSearchFormProps {
   className: string;
@@ -13,6 +13,8 @@ interface BasicSearchFormProps {
 const BasicSearchForm: FC<BasicSearchFormProps> = ({ className }) => {
   const router = useRouter();
   const currentSearchType = router.query.searchType;
+
+  const { showSnackbarError } = useAppSnackbar();
 
   const handleChange = useCallback(
     (value: string) => {
@@ -39,12 +41,17 @@ const BasicSearchForm: FC<BasicSearchFormProps> = ({ className }) => {
   );
 
   const handleSubmit = (event: any) => {
+    event.preventDefault();
     const searchInput: HTMLInputElement = document.getElementById(
       "search"
     ) as HTMLInputElement;
+    const wordLength = searchInput.value.replace(/\s+/g, " ").split(" ").length;
+    if (wordLength > 15) {
+      showSnackbarError("Không thể tìm kiếm quá 15 từ!");
+      return;
+    }
     const searchValue = searchInput?.value;
     handleClickSearch(searchValue);
-    event.preventDefault();
   };
 
   const acceptSearchTypes = useMemo(

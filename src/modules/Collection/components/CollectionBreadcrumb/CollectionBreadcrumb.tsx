@@ -50,6 +50,28 @@ const CollectionBreadcrumb: FC<CollectionBreadcrumbProps> = ({}) => {
           label: `Kết quả tìm kiếm tác giả "${author || ""}"`,
         });
       }
+      if (searchType.value == "basic" && router.query.orisonId) {
+        const textSearch = router.query.textSearch;
+        bItems.push({
+          label: `Kết quả "${textSearch}"`,
+        });
+      }
+      if (searchType.value == "advance" && router.query.orisonId) {
+        const orisonName = tree.orisons.find(
+          (item) => item.id == router.query.orisonId
+        )?.name;
+        bItems.push({
+          label: `Kết quả "${orisonName}"`,
+        });
+      }
+      if (searchType.value == "adjacent" && router.query.orisonId) {
+        const orison = tree.orisons.find(
+          (item) => item.id == router.query.orisonId
+        )?.name;
+        bItems.push({
+          label: `Kết quả "${orison}"`,
+        });
+      }
       if (router.query.qCircaFrom && router.query.qCircaTo) {
         bItems.push({
           label: `Kết quả tìm kiếm "${router.query.qCircaFrom} TCN - ${router.query.qCircaTo} TCN"`,
@@ -90,16 +112,22 @@ const CollectionBreadcrumb: FC<CollectionBreadcrumbProps> = ({}) => {
           onClick: () => goVolume(volume.id),
         });
       }
-      const orison = tree?.orisons.find((c) => c.id == router.query.orisonId);
-      if (orison) {
-        bItems.push({
-          label: orison.name,
-          onClick: () => goOrison(orison.id),
-        });
+      if (router.query.viewOriginalDoc == "true") {
+        bItems.push({ label: "Xem văn bản gốc" });
+      } else {
+        const orison = tree?.orisons.find((c) => c.id == router.query.orisonId);
+        if (orison) {
+          bItems.push({
+            label: orison.name,
+            onClick: () => goOrison(orison.id),
+          });
+        }
       }
     }
     return bItems;
   }, [
+    categories.authors,
+    categories.translators,
     goCollection,
     goOrison,
     goSutra,

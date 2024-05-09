@@ -1,6 +1,6 @@
 import { useFormik } from "formik";
 import { useRouter } from "next/router";
-import { useEffect, type FC, useMemo, useState, useCallback } from "react";
+import { useEffect, type FC, useMemo, useCallback } from "react";
 import { Button } from "src/components/shadcn/ui/button";
 import CollectionBreadcrumb from "../../../CollectionBreadcrumb";
 import { CustomTable } from "src/components/custom-table";
@@ -71,7 +71,7 @@ const AuthorSearchResultPage: FC<AuthorSearchFormProps> = ({
     return getAuthorSearchResultTableConfig({
       onClickEdit: (data) => {},
     });
-  }, [categories, tree]);
+  }, []);
 
   const handleClickRow = useCallback(
     (row: SutraDetail) => {
@@ -86,10 +86,8 @@ const AuthorSearchResultPage: FC<AuthorSearchFormProps> = ({
         query: { orisonId: orisonsId },
       });
     },
-    [router]
+    [router, tree.orisons, tree.volumes]
   );
-
-  // const select = useSelection<Sutra>(sutras);
 
   return (
     <div className="px-4">

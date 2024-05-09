@@ -28,7 +28,8 @@ const Pagination: FC<PaginationProps> = ({
     for (let i = 0; i < indexes.length; i++) {
       indexes[i] = Math.min(Math.max(0, indexes[i]), totalPages - 1);
     }
-    indexes = _.sortedUniq(indexes.sort());
+    indexes = indexes.sort((a, b) => a - b);
+    indexes = _.sortedUniq(indexes);
     const results: number[] = [];
     for (let i = 0; i < indexes.length; i++) {
       results.push(indexes[i]);
@@ -36,7 +37,7 @@ const Pagination: FC<PaginationProps> = ({
         if (indexes[i + 1] == indexes[i] + 2) {
           results.push(indexes[i] + 1);
         } else if (indexes[i + 1] > indexes[i] + 2) {
-          results.push(-1);
+          results.push(Math.random() * -1);
         }
       }
     }

@@ -16,12 +16,15 @@ import CollectionBreadcrumb from "../../../CollectionBreadcrumb";
 import VolumeEditSheet from "./VolumeEditSheet";
 import { volumeTableConfigs } from "./volumeTableConfigs";
 import { useAuth } from "src/hooks/use-auth";
+import { useCollectionCategoriesContext } from "src/contexts/collections/collection-categories-context";
 
 interface VolumeExplorePageProps {}
 
 const VolumeExplorePage: FC<VolumeExplorePageProps> = ({}) => {
   const router = useRouter();
   const { user } = useAuth();
+  const { goVolume } = useCollectionCategoriesContext();
+
   const { getVolumesApi, deleteVolume, sutra } = useVolumesContext();
   const editDrawer = useDrawer<VolumeDetail>();
 
@@ -44,12 +47,9 @@ const VolumeExplorePage: FC<VolumeExplorePageProps> = ({}) => {
 
   const handleClickRow = useCallback(
     (row: VolumeDetail) => {
-      router.replace({
-        pathname: router.pathname,
-        query: { ...router.query, volumeId: row.id },
-      });
+      goVolume(row.id);
     },
-    [router]
+    [goVolume]
   );
 
   const handleDeleteHelper = useFunction(handleDelete, {

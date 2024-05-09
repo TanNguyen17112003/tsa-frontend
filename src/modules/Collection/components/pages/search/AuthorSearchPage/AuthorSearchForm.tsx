@@ -23,16 +23,15 @@ const AuthorSearchForm = () => {
   }, []);
 
   const sutras = useMemo(() => {
+    const result = (getSutrasApi.data || []).map((s) =>
+      enrichSutra(s, tree, categories)
+    );
     if (searchData.length != 0) {
-      return (getSutrasApi.data || [])
-        .map((s) => enrichSutra(s, tree, categories))
-        .filter((item) =>
-          item.author.author.toLowerCase().includes(searchData.toLowerCase())
-        );
-    } else {
-      return (getSutrasApi.data || []).map((s) =>
-        enrichSutra(s, tree, categories)
+      return result.filter((item) =>
+        item.author.author.toLowerCase().includes(searchData.toLowerCase())
       );
+    } else {
+      return result;
     }
   }, [categories, getSutrasApi.data, tree, searchData]);
 

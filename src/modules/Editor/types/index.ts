@@ -1,3 +1,4 @@
+import { BaseSelection } from "slate";
 import { Note } from "./note";
 
 export interface EditorHighlight {
@@ -18,4 +19,10 @@ export interface ConvertDocx2EditorResult {
   notes: Note[];
   blocks: any[];
   plainText: string;
+}
+
+export interface SelectionData {
+  selection: BaseSelection;
+  text: string;
+  pageMark: string;
 }

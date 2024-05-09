@@ -13,14 +13,18 @@ interface VolumeItemsProps {
 
 const VolumeItems: FC<VolumeItemsProps> = (props) => {
   const { tree, goVolume } = useCollectionCategoriesContext();
-  const { expandedIds } = useCollectionTreeContext();
+  const { expandedIds, search } = useCollectionTreeContext();
   const router = useRouter();
 
   const items = useMemo(() => {
     return (
-      tree?.volumes.filter((volume) => volume.sutras_id == props.sutraId) || []
+      tree?.volumes.filter(
+        (volume) =>
+          volume.sutras_id == props.sutraId &&
+          volume.name.toLowerCase().includes(search.toLowerCase())
+      ) || []
     );
-  }, [tree?.volumes, props.sutraId]);
+  }, [tree?.volumes, props.sutraId, search]);
 
   const handleClick = useCallback(
     (id: string) => {

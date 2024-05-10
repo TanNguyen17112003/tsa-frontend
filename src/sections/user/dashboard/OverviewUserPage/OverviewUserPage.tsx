@@ -23,11 +23,25 @@ import { paths } from "src/paths";
 import getDashboardSutraTableConfigs from "../getDashboardSutraTableConfigs";
 import OverviewStats from "./OverviewStats";
 import { useDiaryOrisonsContext } from "src/contexts/diary/activity-logs-context";
+import FormInput from "src/components/ui/FormInput";
+import searchTypes from "src/modules/Collection/constants/searchTypes";
+import CustomSelect from "src/components/CustomSelect";
+import useAppSnackbar from "src/hooks/use-app-snackbar";
 
 const OverviewUserPage = () => {
   const router = useRouter();
   const getSutrasApi = useFunction(SutrasApi.getSutras);
   const { orison, goOrison } = useDiaryOrisonsContext();
+
+  const { showSnackbarError } = useAppSnackbar();
+
+  const acceptSearchTypes = useMemo(
+    () =>
+      searchTypes.filter((searchType) =>
+        ["basic", "advance", "adjacent"].includes(searchType.value)
+      ),
+    []
+  );
 
   const dashboardSutraTableConfigs = useMemo(
     () =>
@@ -67,6 +81,33 @@ const OverviewUserPage = () => {
     return orison.find((item) => item.id == id)?.name;
   };
 
+  const handleSearchTypeChange = useCallback(
+    (value: string) => {
+      router.replace({
+        pathname: paths.dashboard.collections,
+        query: { ...router.query, searchType: value },
+      });
+    },
+    [router]
+  );
+
+  const handleSubmit = (event: any) => {
+    event.preventDefault();
+    const searchInput: HTMLInputElement = document.getElementById(
+      "search"
+    ) as HTMLInputElement;
+    const wordLength = searchInput.value.replace(/\s+/g, " ").split(" ").length;
+    if (wordLength > 15) {
+      showSnackbarError("Không thể tìm kiếm quá 15 từ!");
+      return;
+    }
+    const searchValue = searchInput?.value;
+    router.replace({
+      pathname: paths.dashboard.collections,
+      query: { ...router.query, textSearch: searchValue, searchType: "basic" },
+    });
+  };
+
   return (
     <div
       className="flex bg-cover bg-center w-full min-h-screen"
@@ -101,7 +142,10 @@ const OverviewUserPage = () => {
               <div className="text-4xl font-semibold text-white">
                 HỆ THỐNG <br /> ĐẠI TẠNG KINH <br /> VIỆT NAM
               </div>
-              <Button className="flex bg-cyan-500 hover:bg-cyan-800 space-x-2">
+              <Button
+                className="flex bg-cyan-500 hover:bg-cyan-800 space-x-2"
+                onClick={handleSeeAll}
+              >
                 <div className="text-sm font-semibold">Khám phá</div>
                 <FaLongArrowAltRight
                   style={{ fontSize: "1rem", marginTop: "2px" }}
@@ -110,33 +154,27 @@ const OverviewUserPage = () => {
             </div>
           </div>
         </div>
-        <div className="flex bg-white h-15 my-5 ">
-          <div className="flex p-2 items-center border border-gray-300 rounded-md h-12 w-full divide-x-2">
-            <div className="flex w-full items-center">
-              <HiMagnifyingGlass style={{ fontSize: "1.5rem" }} />
-              <Input
-                type="text"
-                placeholder="Nhập từ khóa tìm kiếm..."
-                className="border-none outline-none w-full text-sm/normal"
+        <form className="flex bg-white h-15 my-5" onSubmit={handleSubmit}>
+          <div className="flex gap-4 flex-1">
+            <div className="flex items-center border border-gray-300 rounded-md w-full divide-x">
+              <div className="flex w-full items-center">
+                <FormInput
+                  type="text"
+                  placeholder="Nhập từ khóa tìm kiếm..."
+                  className="border-none"
+                  id="search"
+                />
+              </div>
+              <CustomSelect
+                options={acceptSearchTypes}
+                value="basic"
+                onValueChange={handleSearchTypeChange}
+                className="border-none"
               />
             </div>
-            <div className="items-center">
-              <Select>
-                <SelectTrigger className="w-[180px] f-full border-none">
-                  <SelectValue placeholder="Tìm kiếm cơ bản" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="basic">Tìm kiếm cơ bản</SelectItem>
-                  <SelectItem value="advanced">Tìm kiếm nâng cao</SelectItem>
-                  <SelectItem value="adjacent">Tìm kiếm từ liền kề</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <Button type="submit"> Tìm kiếm</Button>
           </div>
-          <Button className="ml-2 bg-orange-500 text-white px-4 my-1 rounded-lg whitespace-nowrap hover:bg-orange-800">
-            <div>Tìm kiếm</div>
-          </Button>
-        </div>
+        </form>
         <div className="overflow-hidden">
           <OverviewStats />
         </div>

@@ -51,7 +51,10 @@ const BasicSearchForm: FC<BasicSearchFormProps> = ({ className }) => {
       return;
     }
     const searchValue = searchInput?.value;
-    handleClickSearch(searchValue);
+    router.replace({
+      pathname: router.pathname,
+      query: { ...router.query, textSearch: searchValue },
+    });
   };
 
   const acceptSearchTypes = useMemo(

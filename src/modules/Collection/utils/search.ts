@@ -7,7 +7,7 @@ export const getOrisonAdvanceSearch = (
     typeSearchAdvance: string[];
     textSearch: string;
   }
-) => {
+): TextDeco[][] => {
   const { textSearchAdvance, typeSearchAdvance, textSearch } = searchData;
   const result: { text: string; deco: boolean }[][] = [];
 
@@ -24,7 +24,7 @@ export const getOrisonAdvanceSearch = (
     result[count] = [];
     result[count].push({
       deco: false,
-      text: savedString.substring(0, currentIndex),
+      text: hideString(savedString.substring(0, currentIndex), "prev", 30),
     });
     result[count].push({
       deco: true,
@@ -42,7 +42,11 @@ export const getOrisonAdvanceSearch = (
         if (currentIndex != -1) {
           result[count].push({
             deco: false,
-            text: savedString.substring(fromIndex, currentIndex),
+            text: hideString(
+              savedString.substring(fromIndex, currentIndex),
+              "mid",
+              30
+            ),
           });
           result[count].push({
             deco: true,
@@ -57,7 +61,11 @@ export const getOrisonAdvanceSearch = (
     });
     result[count].push({
       deco: false,
-      text: savedString.substring(fromIndex, savedString.length - 8),
+      text: hideString(
+        savedString.substring(fromIndex, savedString.length - 8),
+        "suf",
+        30
+      ),
     });
 
     count++;
@@ -133,51 +141,60 @@ export const getOrisonAdjacentSearch = (
     }
     currentIndex = nextIndex + nextText.length;
 
-    if (savedString.startsWith("[0247l01]")) {
-      console.log("prevIndex", prevIndex);
-      console.log("midIndex", midIndex);
-      console.log("nextIndex", nextIndex);
+    // if (savedString.startsWith("[0247l01]")) {
+    //   console.log("prevIndex", prevIndex);
+    //   console.log("midIndex", midIndex);
+    //   console.log("nextIndex", nextIndex);
 
-      console.log("beforeResultString", beforeResultString);
-      console.log("leftMidString", leftMidString);
-      console.log("rightMidString", rightMidString);
-      console.log("afterResultString", afterResultString);
-    }
+    //   console.log("beforeResultString", beforeResultString);
+    //   console.log("leftMidString", leftMidString);
+    //   console.log("rightMidString", rightMidString);
+    //   console.log("afterResultString", afterResultString);
+    // }
 
     result.push([
       {
-        text:
-          (currentIndex != 0 || beforeResultString.length > 30 ? "..." : "") +
-          beforeResultString.substring(beforeResultString.length - 30),
+        text: hideString(beforeResultString, "prev", 30),
         deco: false,
       },
       { text: prevText, deco: true },
       {
-        text:
-          leftMidString.length < 35
-            ? leftMidString
-            : `${leftMidString.substring(0, 15)}...${leftMidString.substring(
-                leftMidString.length - 15
-              )}`,
+        text: hideString(leftMidString, "mid", 30),
         deco: false,
       },
       { text: midText, deco: true },
       {
-        text:
-          rightMidString.length < 35
-            ? rightMidString
-            : `${rightMidString.substring(0, 15)}...${rightMidString.substring(
-                rightMidString.length - 15
-              )}`,
+        text: hideString(rightMidString, "mid", 30),
         deco: false,
       },
       { text: nextText, deco: true },
       {
-        text: afterResultString + "...",
+        text: hideString(afterResultString, "suf", 30),
         deco: false,
       },
     ]);
     count++;
   }
   return result;
+};
+
+export const hideString = (
+  str: string,
+  type: "mid" | "prev" | "suf",
+  maxLength?: number
+) => {
+  const length = maxLength || 30;
+  if (type == "mid") {
+    return str.length < length
+      ? str
+      : `${str.substring(0, Math.floor((length - 5) / 2))}...${str.substring(
+          str.length - Math.floor((length - 5) / 2)
+        )}`;
+  }
+  if (type == "suf") {
+    return str.length < length ? str : str.substring(0, length - 3) + "...";
+  }
+  return str.length < length
+    ? str
+    : "..." + str.substring(str.length - (length - 3));
 };

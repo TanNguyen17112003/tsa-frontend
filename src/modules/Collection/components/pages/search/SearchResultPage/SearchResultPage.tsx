@@ -8,6 +8,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Loading from "src/components/Loading";
 import { useCollectionCategoriesContext } from "src/contexts/collections/collection-categories-context";
 import { cn } from "src/utils/shadcn";
+import {
+  getOrisonAdjacentSearch,
+  getOrisonAdvanceSearch,
+} from "src/modules/Collection/utils/search";
+import clsx from "clsx";
 
 const SearchResultPage = () => {
   const router = useRouter();
@@ -25,162 +30,57 @@ const SearchResultPage = () => {
     return getOrisonByIdApi.data;
   }, [getOrisonByIdApi.data]);
 
+  const textSearchAdvance: string[] = useMemo(() => {
+    if (typeof router.query.textSearch == "string") {
+      return [router.query.textSearch];
+    }
+    return router.query.textSearch?.slice(1) || [];
+  }, [router.query.textSearch]);
+
+  const typeSearchAdvance: string[] = useMemo(() => {
+    if (typeof router.query.optionSearch == "string") {
+      return [router.query.optionSearch];
+    }
+    return router.query.optionSearch || [];
+  }, [router.query.optionSearch]);
+
   const textSearch = useMemo(() => {
-    const temp = router.query.textSearch?.toString()?.split("_");
-    return temp
-      ? router.query.searchType != "adjacent"
-        ? temp[0]
-        : temp[2]
-      : "";
-  }, [router.query.searchType, router.query.textSearch]);
+    if (typeof router.query.textSearch == "string") {
+      return "";
+    }
+    return router.query.textSearch?.[0] || "";
+  }, [router.query.textSearch]);
+
+  const adjacentTextSearch = useMemo(() => {
+    return router.query.textSearch?.toString();
+  }, [router]);
 
   const dataSearch = useMemo(() => {
-    const tempText = router.query.textSearch?.toString()?.split("_") || [];
-    const temp: any[] = [];
+    if (!orison) {
+      return [[]];
+    }
+
     if (textSearch != "") {
-      let savedString: string = orison?.plain_text || "";
-
-      let currentIndex: number = 0;
-      let count: number = 0;
-      const maxCount: number = 3;
       if (router.query.searchType != "adjacent") {
-        while (
-          (currentIndex = savedString
-            .toLowerCase()
-            .indexOf(textSearch?.toLowerCase(), currentIndex)) !== -1 &&
-          count < maxCount
-        ) {
-          if (currentIndex < 15) {
-            temp.push({
-              beforeTextSearch: savedString.substring(0, currentIndex),
-              textSearch: savedString.substring(
-                currentIndex,
-                currentIndex + textSearch.length
-              ),
-              afterTextSearch: savedString.substring(
-                currentIndex + textSearch.length,
-                textSearch.length + 15
-              ),
-            });
-            count++;
-          } else if (currentIndex > savedString.length - 14) {
-            temp.push({
-              beforeTextSearch: savedString.substring(
-                currentIndex - 15,
-                currentIndex
-              ),
-              textSearch: savedString.substring(
-                currentIndex,
-                currentIndex + textSearch.length
-              ),
-              afterTextSearch: savedString.substring(
-                currentIndex + textSearch.length,
-                savedString.length
-              ),
-            });
-            count++;
-          } else {
-            temp.push({
-              beforeTextSearch: savedString.substring(
-                currentIndex - 15,
-                currentIndex
-              ),
-              textSearch: savedString.substring(
-                currentIndex,
-                currentIndex + textSearch.length
-              ),
-              afterTextSearch: savedString.substring(
-                currentIndex + textSearch.length,
-                currentIndex + textSearch.length + 15
-              ),
-            });
-            count++;
-          }
-          currentIndex += textSearch.length;
-        }
+        return getOrisonAdvanceSearch(orison.plain_text, {
+          textSearch,
+          textSearchAdvance,
+          typeSearchAdvance,
+        });
       } else {
-        while (
-          (currentIndex = savedString
-            .toLowerCase()
-            .indexOf(tempText[2]?.toLowerCase(), currentIndex)) !== -1 &&
-          count < maxCount
-        ) {
-          const beforeIndex = savedString
-            .toLowerCase()
-            .substring(
-              currentIndex - parseInt(tempText[1]) > 0
-                ? currentIndex - parseInt(tempText[1])
-                : 0,
-              currentIndex
-            )
-            .indexOf(tempText[0].toLowerCase());
-
-          const afterIndex = savedString
-            .toLowerCase()
-            .substring(
-              currentIndex + tempText[2].length,
-              parseInt(tempText[4]) + currentIndex + tempText[2].length <
-                savedString.length
-                ? parseInt(tempText[4]) + currentIndex + tempText[2].length
-                : savedString.length
-            )
-            .indexOf(tempText[3].toLowerCase());
-
-          if (beforeIndex != -1 && afterIndex != -1) {
-            temp.push({
-              text1: savedString.substring(
-                currentIndex - 30 - parseInt(tempText[1]),
-                currentIndex - parseInt(tempText[1]) + beforeIndex
-              ),
-              beforeTextSearch: savedString.substring(
-                currentIndex - parseInt(tempText[1]) + beforeIndex,
-                currentIndex -
-                  parseInt(tempText[1]) +
-                  beforeIndex +
-                  tempText[0].length
-              ),
-              text2: savedString.substring(
-                currentIndex -
-                  parseInt(tempText[1]) +
-                  beforeIndex +
-                  tempText[0].length,
-                currentIndex
-              ),
-              textSearch: savedString.substring(
-                currentIndex,
-                currentIndex + tempText[2].length
-              ),
-              text3: savedString.substring(
-                currentIndex + tempText[2].length,
-                currentIndex + tempText[2].length + afterIndex
-              ),
-              afterTextSearch: savedString.substring(
-                currentIndex + tempText[2].length + afterIndex,
-                currentIndex +
-                  tempText[2].length +
-                  afterIndex +
-                  tempText[3].length
-              ),
-              text4: savedString.substring(
-                currentIndex +
-                  tempText[2].length +
-                  afterIndex +
-                  tempText[3].length,
-                currentIndex + tempText[2].length + 30 + parseInt(tempText[4])
-              ),
-            });
-            count++;
-          }
-          currentIndex += tempText[2].length;
-        }
+        return getOrisonAdjacentSearch(
+          orison.plain_text,
+          adjacentTextSearch || ""
+        );
       }
     }
-    return temp;
   }, [
-    orison?.plain_text,
+    adjacentTextSearch,
+    orison,
     router.query.searchType,
-    router.query.textSearch,
     textSearch,
+    textSearchAdvance,
+    typeSearchAdvance,
   ]);
 
   const handleBack = useCallback(() => {
@@ -227,10 +127,10 @@ const SearchResultPage = () => {
             <hr />
           </div>
           <div className="flex flex-col gap-1">
-            {dataSearch.map((item, index) => (
+            {dataSearch?.map((orisonTextDecos, index) => (
               <div
                 className={cn(
-                  "flex space-x-4 border-b px-2 min-h-14 items-center cursor-pointer hover:bg-cyan-50",
+                  "border-b px-2 min-h-14 items-center cursor-pointer hover:bg-cyan-50",
                   searchNum == index ? "bg-cyan-50" : ""
                 )}
                 onClick={() => {
@@ -239,25 +139,14 @@ const SearchResultPage = () => {
                 key={index}
               >
                 <div>{index + 1}</div>
-                {router.query.searchType == "adjacent" ? (
-                  <div className="space-x-0.5">
-                    <span>{item?.text1}</span>
-                    <span className="bg-blue-200">
-                      {item?.beforeTextSearch}
-                    </span>
-                    <span>{item?.text2}</span>
-                    <span className="bg-blue-200">{item?.textSearch}</span>
-                    <span>{item?.text3}</span>
-                    <span className="bg-blue-200">{item?.afterTextSearch}</span>
-                    <span>{item?.text4}</span>
-                  </div>
-                ) : (
-                  <div>
-                    {item?.beforeTextSearch}
-                    {item?.textSearch}
-                    {item?.afterTextSearch}
-                  </div>
-                )}
+                {orisonTextDecos.map((orisonTextDeco, index) => (
+                  <span
+                    key={index}
+                    className={clsx(orisonTextDeco.deco && "bg-blue-200")}
+                  >
+                    {orisonTextDeco.text}
+                  </span>
+                ))}
               </div>
             ))}
           </div>
@@ -270,20 +159,20 @@ const SearchResultPage = () => {
               readOnly={true}
               initialValue={orison?.content}
               notes={orison?.notes}
-              searchText={
-                router.query.searchType != "adjacent"
-                  ? textSearch?.toLowerCase()
-                  : dataSearch[searchNum]?.beforeTextSearch?.toLowerCase() +
-                    (dataSearch[searchNum]?.beforeTextSearch?.toLowerCase() ==
-                    ""
-                      ? ""
-                      : dataSearch[searchNum]?.text2?.toLowerCase()) +
-                    dataSearch[searchNum]?.textSearch?.toLowerCase() +
-                    (dataSearch[searchNum]?.afterTextSearch?.toLowerCase() == ""
-                      ? ""
-                      : dataSearch[searchNum]?.text3?.toLowerCase()) +
-                    dataSearch[searchNum]?.afterTextSearch?.toLowerCase()
-              }
+              // searchText={
+              //   router.query.searchType != "adjacent"
+              //     ? textSearch?.toLowerCase()
+              //     : dataSearch[searchNum]?.beforeTextSearch?.toLowerCase() +
+              //       (dataSearch[searchNum]?.beforeTextSearch?.toLowerCase() ==
+              //       ""
+              //         ? ""
+              //         : dataSearch[searchNum]?.text2?.toLowerCase()) +
+              //       dataSearch[searchNum]?.textSearch?.toLowerCase() +
+              //       (dataSearch[searchNum]?.afterTextSearch?.toLowerCase() == ""
+              //         ? ""
+              //         : dataSearch[searchNum]?.text3?.toLowerCase()) +
+              //       dataSearch[searchNum]?.afterTextSearch?.toLowerCase()
+              // }
               numElement={searchNum}
             />
           )}

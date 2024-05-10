@@ -11,6 +11,7 @@ import Pagination from "src/components/ui/Pagination";
 import { useCollectionCategoriesContext } from "src/contexts/collections/collection-categories-context";
 import useFunction from "src/hooks/use-function";
 import usePagination from "src/hooks/use-pagination";
+import { getOrisonAdvanceSearch } from "src/modules/Collection/utils/search";
 import getPaginationText from "src/utils/get-pagination-text";
 
 interface AdvanceSearchResultProps {}
@@ -46,65 +47,15 @@ const AdvanceSearchResult: FC<AdvanceSearchResultProps> = ({}) => {
   }, [router.query.textSearch]);
 
   const dataSearch = useMemo(() => {
-    const result: { text: string; deco: boolean }[][][] = [];
-    orisons?.rows.map((item, index) => {
-      result[index] = [];
-      if (textSearch != "") {
-        let savedString: string = item.plain_text;
-        let currentIndex: number = 0;
-        let fromIndex: number = 0;
-        let count: number = 0;
-        const maxCount: number = 3;
-        while (
-          (currentIndex = savedString
-            .toLowerCase()
-            .indexOf(textSearch?.toLowerCase(), currentIndex)) !== -1 &&
-          count < maxCount
-        ) {
-          result[index][count] = [];
-          result[index][count].push({
-            deco: false,
-            text: savedString.substring(0, currentIndex),
-          });
-          result[index][count].push({
-            deco: true,
-            text: savedString.substring(
-              currentIndex,
-              currentIndex + textSearch.length
-            ),
-          });
-          fromIndex = currentIndex + textSearch.length;
-          typeSearchAdvance.map((type, i) => {
-            if (type != "not") {
-              currentIndex = savedString
-                .toLowerCase()
-                .indexOf(textSearchAdvance[i]?.toLowerCase(), currentIndex);
-              if (currentIndex != -1) {
-                result[index][count].push({
-                  deco: false,
-                  text: savedString.substring(fromIndex, currentIndex),
-                });
-                result[index][count].push({
-                  deco: true,
-                  text: savedString.substring(
-                    currentIndex,
-                    currentIndex + textSearchAdvance[i].length
-                  ),
-                });
-                fromIndex = currentIndex + textSearchAdvance[i].length;
-              }
-            }
-          });
-          result[index][count].push({
-            deco: false,
-            text: savedString.substring(fromIndex, savedString.length - 8),
-          });
-
-          count++;
-          currentIndex += textSearch.length;
-        }
-      }
-    });
+    const result: { text: string; deco: boolean }[][][] = (
+      orisons?.rows || []
+    ).map((orison, index) =>
+      getOrisonAdvanceSearch(orison.plain_text, {
+        textSearch,
+        textSearchAdvance,
+        typeSearchAdvance,
+      })
+    );
     return result;
   }, [orisons?.rows, textSearch, textSearchAdvance, typeSearchAdvance]);
 
@@ -201,6 +152,8 @@ const AdvanceSearchResult: FC<AdvanceSearchResultProps> = ({}) => {
     [router]
   );
 
+  console.log("dataSearch", dataSearch);
+
   return (
     <div>
       <div className="pt-8 space-y-6 mb-10 px-6">
@@ -235,7 +188,7 @@ const AdvanceSearchResult: FC<AdvanceSearchResultProps> = ({}) => {
                             handleClick(item.id);
                           }}
                         >
-                          <div>{index2 + 1}</div>
+                          <div className="mr-2">{index2 + 1}</div>
                           {dataEl.map((d, index3) => (
                             <span className="flex" key={index3}>
                               {d.deco == true ? (

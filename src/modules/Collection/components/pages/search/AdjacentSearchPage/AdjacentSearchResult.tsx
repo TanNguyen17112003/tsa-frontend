@@ -12,125 +12,10 @@ import Pagination from "src/components/ui/Pagination";
 import { useCollectionCategoriesContext } from "src/contexts/collections/collection-categories-context";
 import useFunction from "src/hooks/use-function";
 import usePagination from "src/hooks/use-pagination";
+import { getOrisonAdjacentSearch } from "src/modules/Collection/utils/search";
 import getPaginationText from "src/utils/get-pagination-text";
 
 interface AdjacentSearchResultProps {}
-
-interface TextDeco {
-  text: string;
-  deco: boolean;
-}
-
-const getOrisonAdjacentSearch = (
-  savedString: string,
-  textSearch: string
-): TextDeco[][] => {
-  const tempText = textSearch?.split("_");
-  const [prevText, _prevRange, midText, nextText, _nextRange] = tempText || [];
-  const prevRange = parseInt(_prevRange);
-  const nextRange = parseInt(_nextRange);
-  console.log("tempText", tempText);
-  if (!tempText || !textSearch) {
-    return [];
-  }
-  const result: TextDeco[][] = [];
-  let currentIndex: number = 0;
-  let count: number = 0;
-  const maxCount: number = 3;
-
-  while (count < maxCount) {
-    console.log("currentIndex", currentIndex);
-    const prevIndex = savedString.toLowerCase().indexOf(midText, currentIndex);
-    if (prevIndex < 0) {
-      break;
-    }
-    const midIndex = savedString
-      .toLowerCase()
-      .indexOf(midText, prevIndex + prevText.length);
-    if (midIndex < 0) {
-      break;
-    }
-    const nextIndex = savedString
-      .toLowerCase()
-      .indexOf(midText, midIndex + midText.length);
-    if (nextIndex < 0) {
-      break;
-    }
-
-    console.log("prevIndex", prevIndex);
-    console.log("midIndex", midIndex);
-    console.log("nextIndex", nextIndex);
-
-    currentIndex = nextIndex + nextText.length;
-
-    // if (
-    //   savedString
-    //     .substring(prevIndex + prevText.length, midIndex)
-    //     .replace(/\s\s+/g, " ")
-    //     .split(" ").length > nextRange
-    // ) {
-    //   continue;
-    // }
-
-    // if (
-    //   savedString
-    //     .substring(midIndex + midText.length, nextIndex)
-    //     .replace(/\s\s+/g, " ")
-    //     .split(" ").length > prevRange
-    // ) {
-    //   continue;
-    // }
-
-    const beforeResultString = savedString.substring(currentIndex, prevIndex);
-    const leftMidString = savedString.substring(
-      prevIndex + prevText.length,
-      midIndex
-    );
-    const rightMidString = savedString.substring(
-      midIndex + midText.length,
-      nextIndex
-    );
-
-    result.push([
-      {
-        text:
-          (currentIndex != 0 || beforeResultString.length > 30 ? "..." : "") +
-          beforeResultString.substring(beforeResultString.length - 30),
-        deco: false,
-      },
-      { text: prevText, deco: true },
-      {
-        text:
-          leftMidString.length < 35
-            ? leftMidString
-            : `${leftMidString.substring(0, 15)}...${leftMidString.substring(
-                leftMidString.length - 15
-              )}`,
-        deco: false,
-      },
-      { text: midText, deco: true },
-      {
-        text:
-          rightMidString.length < 35
-            ? rightMidString
-            : `${rightMidString.substring(0, 15)}...${rightMidString.substring(
-                rightMidString.length - 15
-              )}`,
-        deco: false,
-      },
-      { text: nextText, deco: true },
-      {
-        text: savedString.substring(
-          nextIndex + nextText.length,
-          nextIndex + nextText.length + 30
-        ),
-        deco: false,
-      },
-    ]);
-    count++;
-  }
-  return result;
-};
 
 const AdjacentSearchResult: FC<AdjacentSearchResultProps> = ({}) => {
   const router = useRouter();
@@ -139,7 +24,6 @@ const AdjacentSearchResult: FC<AdjacentSearchResultProps> = ({}) => {
   const orisons = useMemo(() => {
     return searchOrisonsApi.data;
   }, [searchOrisonsApi]);
-  console.log("orisons", orisons);
 
   const textSearch = useMemo(() => {
     return router.query.textSearch?.toString();
@@ -162,12 +46,12 @@ const AdjacentSearchResult: FC<AdjacentSearchResultProps> = ({}) => {
           JSON.stringify({
             op: "and",
             text: [result[0]],
-            range: parseInt(result[1]),
+            range: 0,
           }),
           JSON.stringify({
             op: "and",
             text: [result[2]],
-            range: 0,
+            range: parseInt(result[1]),
           }),
           JSON.stringify({
             op: "and",
@@ -261,18 +145,16 @@ const AdjacentSearchResult: FC<AdjacentSearchResultProps> = ({}) => {
                           <span className="mr-2" key={index}>
                             {index + 1}.
                           </span>
-                          <div className="space-x-0.5">
-                            {orisonTextDecos.map((orisonTextDeco, index) => (
-                              <span
-                                key={index}
-                                className={clsx(
-                                  orisonTextDeco.deco && "bg-blue-200"
-                                )}
-                              >
-                                {orisonTextDeco.text}
-                              </span>
-                            ))}
-                          </div>
+                          {orisonTextDecos.map((orisonTextDeco, index) => (
+                            <span
+                              key={index}
+                              className={clsx(
+                                orisonTextDeco.deco && "bg-blue-200"
+                              )}
+                            >
+                              {orisonTextDeco.text}
+                            </span>
+                          ))}
                         </div>
                       </AccordionContent>
                     ))}

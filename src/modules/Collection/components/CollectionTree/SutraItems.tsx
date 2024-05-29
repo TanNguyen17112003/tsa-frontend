@@ -17,7 +17,7 @@ interface SutraItemsProps {
 
 const SutraItems: FC<SutraItemsProps> = (props) => {
   const { tree, goSutra } = useCollectionCategoriesContext();
-  const { expandedIds, setExpandedIds } = useCollectionTreeContext();
+  const { expandedIds, setExpandedIds, search } = useCollectionTreeContext();
   const router = useRouter();
 
   const viewType = (router.query.viewType || "all").toString();
@@ -25,10 +25,12 @@ const SutraItems: FC<SutraItemsProps> = (props) => {
   const items = useMemo(() => {
     return (
       tree?.sutras.filter(
-        (sutra) => sutra.collection_id == props.collectionId
+        (sutra) =>
+          sutra.collection_id == props.collectionId &&
+          sutra.name.toLowerCase().includes(search.toLowerCase())
       ) || []
     );
-  }, [tree?.sutras, props.collectionId]);
+  }, [tree?.sutras, props.collectionId, search]);
 
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: string) => {

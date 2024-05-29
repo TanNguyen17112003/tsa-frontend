@@ -1,5 +1,7 @@
 import { useRouter } from "next/router";
 import type { FC } from "react";
+import clsx from "clsx";
+import CollectionTree from "./components/CollectionTree";
 import SearchNavigator from "./components/SearchNavigator";
 import ViewNavigator from "./components/ViewNavigator";
 import AuthorSearchPage from "./components/pages/search/AuthorSearchPage/AuthorSearchPage";
@@ -10,8 +12,6 @@ import BasicSearchPage from "./components/pages/search/BasicSearchPage";
 import AdvanceSearchPage from "./components/pages/search/AdvanceSearchPage";
 import AdjacentSearchPage from "./components/pages/search/AdjacentSearchPage";
 import CollectionExplorePage from "./components/pages/explore/CollectionExplorePage";
-import clsx from "clsx";
-import CollectionTree from "./components/CollectionTree";
 import OrisonPage from "./components/pages/explore/OrisonPage";
 import VolumnExplorePage from "./components/pages/explore/VolumeExplorePage";
 import SutraExplorePage from "./components/pages/explore/SutraExplorePage";
@@ -19,6 +19,8 @@ import OrisonExplorePage from "./components/pages/explore/OrisonExplorePage";
 import AuthorSearchResultPage from "./components/pages/search/AuthorTranslatorSearchResultPage/AuthorSearchResultPage";
 import CircaSearchResultPage from "./components/pages/search/CircaSearchResultPage/CircaSearchResultPage";
 import TranslatorSearchResultPage from "./components/pages/search/AuthorTranslatorSearchResultPage/TranslatorSearchResultPage";
+import SearchResultPage from "./components/pages/search/SearchResultPage/SearchResultPage";
+import VolumeOriginalPage from "./components/pages/explore/VolumeOriginalPage";
 
 interface CollectionContentProps {}
 
@@ -67,14 +69,22 @@ const CollectionContent: FC<CollectionContentProps> = ({}) => {
           <AuthorSearchPage />
         ) : query.searchType == "circa" ? (
           <CircaSearchPage />
+        ) : query.searchType == "basic" && query.orisonId ? (
+          <SearchResultPage />
         ) : query.searchType == "basic" ? (
           <BasicSearchPage />
+        ) : query.searchType == "advance" && query.orisonId ? (
+          <SearchResultPage />
         ) : query.searchType == "advance" ? (
           <AdvanceSearchPage />
+        ) : query.searchType == "adjacent" && query.orisonId ? (
+          <SearchResultPage />
         ) : query.searchType == "adjacent" ? (
           <AdjacentSearchPage />
-        ) : query.orisonId ? (
+        ) : query.orisonId && query.viewOriginalDoc !== "true" ? (
           <OrisonPage />
+        ) : query.volumeId && query.viewOriginalDoc == "true" ? (
+          <VolumeOriginalPage />
         ) : query.volumeId ? (
           <OrisonExplorePage />
         ) : query.sutraId ? (

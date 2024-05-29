@@ -63,6 +63,7 @@ const VolumeEditSheet: FC<VolumeEditSheetProps> = ({
       if (volume) {
         await updateVolume({
           ...values,
+          id: volume.id,
           file_id: fileData?.id,
         });
       } else if (sutra.id) {

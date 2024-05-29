@@ -37,7 +37,7 @@ const NotesProvider = ({
   children: ReactNode;
   notes: Note[];
   onChangeActiveNoteId: (noteId: string) => void;
-  onUpdateNotes: (notes: Note[]) => void;
+  onUpdateNotes?: (notes: Note[]) => void;
 }) => {
   const [activeNoteId, setActiveNoteId] = useState("");
   const editor = useEditorRef();
@@ -53,25 +53,26 @@ const NotesProvider = ({
 
   const addNote = useCallback(
     (noteId: string, note: string) => {
-      onUpdateNotes([...notes, { id: noteId, note }]);
+      onUpdateNotes?.([...notes, { id: noteId, note }]);
+      const newNote = notes.find((note) => note.id == noteId);
+      alert(newNote?.note)
     },
     [notes, onUpdateNotes]
   );
 
   const updateNote = useCallback(
     (noteId: string, value: string) => {
-      onUpdateNotes(
-        notes.map((note) =>
-          note.id == noteId ? { ...note, note: value } : note
-        )
-      );
+      alert(value)
+      const updateNote = notes.find((note) => note.id == noteId);
+      if (!updateNote) return;
+      updateNote.note = value;
     },
     [notes, onUpdateNotes]
   );
 
   const deleteNote = useCallback(
     (noteId: string) => {
-      onUpdateNotes(notes.filter((note) => note.id != noteId));
+      onUpdateNotes?.(notes.filter((note) => note.id != noteId));
     },
     [notes, onUpdateNotes]
   );

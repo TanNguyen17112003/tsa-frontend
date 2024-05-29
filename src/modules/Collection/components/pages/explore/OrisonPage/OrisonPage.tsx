@@ -1,6 +1,7 @@
 import clsx from "clsx";
+import { formatDate } from "date-fns";
 import { useRouter } from "next/router";
-import { FormEvent, useCallback, useState, type FC, useEffect } from "react";
+import { FormEvent, useCallback, useEffect, useState, type FC } from "react";
 import { BiSearch } from "react-icons/bi";
 import { BsArrowsAngleContract, BsArrowsAngleExpand } from "react-icons/bs";
 import {
@@ -11,30 +12,30 @@ import {
 import Loading from "src/components/Loading";
 import { Button } from "src/components/shadcn/ui/button";
 import FormInput from "src/components/ui/FormInput";
+import { useCollectionCategoriesContext } from "src/contexts/collections/collection-categories-context";
 import { useOrisonsContext } from "src/contexts/orisons/orisons-context";
-import PlateEditor from "src/modules/Editor";
-import AudioPlayer from "../../../AudioPlayer";
-import CollectionBreadcrumb from "../../../CollectionBreadcrumb";
-import OrisonList from "./OrisonList";
-import OrisonPagination from "./OrisonPagination";
 import { useAuth } from "src/hooks/use-auth";
+import useFunction from "src/hooks/use-function";
+import PlateEditor from "src/modules/Editor";
 import exportDocx from "src/modules/Editor/utils/docx";
 import { downloadFile } from "src/utils/url-handler";
-import useFunction from "src/hooks/use-function";
+import AudioPlayer from "../../../AudioPlayer";
+import CollectionBreadcrumb from "../../../CollectionBreadcrumb";
 import OrisonComplainDialog from "./OrisonCompainDialog";
-import { BaseSelection } from "slate";
-import { formatDate } from "date-fns";
+import OrisonList from "./OrisonList";
+import OrisonPagination from "./OrisonPagination";
+import { SelectionData } from "src/modules/Editor/types";
 
 interface OrisonPageProps {}
 
 const OrisonPage: FC<OrisonPageProps> = ({}) => {
-  const { user } = useAuth();
-  const { getOrisonDetailApi, updateOrison } = useOrisonsContext();
-  const [searchText, setSearchText] = useState("");
   const router = useRouter();
+  const { user } = useAuth();
+  const { goVolume } = useCollectionCategoriesContext();
+  const { getOrisonDetailApi, updateOrison, volume } = useOrisonsContext();
+  const [searchText, setSearchText] = useState("");
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [data, setData] = useState<string>("");
-  const [selection, setSelection] = useState<BaseSelection>();
+  const [selectionData, setSelectionData] = useState<SelectionData>();
 
   const isEditting = router.query.isEditting == "true";
   const isFullScreen = router.query.isFullScreen == "true";
@@ -94,6 +95,14 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
     });
   }, [router]);
 
+  const handleViewOriginal = useCallback(() => {
+    const pageString = selectionData?.pageMark.substring(1, 5) || "0000";
+    const pageNum = Number(pageString.replace(/^[0-9]/g, ""));
+    if (volume?.id) {
+      goVolume(volume?.id, { page: isNaN(pageNum) ? 0 : pageNum });
+    }
+  }, [goVolume, selectionData, volume?.id]);
+
   useEffect(() => {
     if (currentOrison?.name) {
       const activityLog = localStorage.getItem("activityLogs");
@@ -136,8 +145,10 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
                   id="search"
                   className="border-none"
                 />
-                <BiSearch className="w-5 h-5 mx-2" />
-              </form>
+                <button>
+                  <BiSearch className="w-5 h-5 mx-2" />
+                </button>
+              </form>x
               {!isEditting && (
                 <>
                   <Button
@@ -154,8 +165,8 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
                   <OrisonComplainDialog
                     isOpen={isOpen}
                     onClose={() => setIsOpen(false)}
-                    data={data}
-                    selection={selection}
+                    data={selectionData?.text || ""}
+                    selection={selectionData?.selection}
                     orisonId={currentOrison?.id}
                   />
                   <Button
@@ -164,8 +175,8 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
                     className="gap-2 px-4"
                     onClick={handleDownload}
                   >
-                    <PiDownloadSimpleBold className="w-5 h-5" /> Tải văn bản
-                    dịch
+                    <PiDownloadSimpleBold className="w-5 h-5" />
+                    Tải văn bản dịch
                   </Button>
                   {user?.role == "admin" && (
                     <Button
@@ -177,9 +188,17 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
                       <PiNotePencilBold className="w-5 h-5" /> Chỉnh sửa
                     </Button>
                   )}
-                  <Button size="lg" className="px-4">
-                    Xem văn bản gốc
-                  </Button>
+
+                  {volume?.file_id && (
+                    <Button
+                      size="lg"
+                      className="px-4"
+                      disabled={!volume?.file_id}
+                      onClick={handleViewOriginal}
+                    >
+                      Xem văn bản gốc
+                    </Button>
+                  )}
                 </>
               )}
             </div>
@@ -212,24 +231,27 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
 
         <div className="flex-1 min-h-0 bg-white flex gap-4 pl-4">
           <OrisonList className="w-[228px] h-full" />
-          <div className="border rounded-xl h-full overflow-y-auto flex-1">
+          <div
+            className="border rounded-xl h-full overflow-y-auto flex-1"
+            id="editor-container"
+          >
             {getOrisonDetailApi.loading ? (
               <div className="flex h-[100px] items-center justify-center mt-4">
                 <Loading />
               </div>
             ) : currentOrison ? (
-              <PlateEditor
-                readOnly={!isEditting}
-                initialValue={currentOrison.content}
-                notes={currentOrison.notes}
-                onUpdateNotes={() => {}}
-                onChange={() => {}}
-                onSave={handleSave.call}
-                onCancel={handleCancel}
-                searchText={searchText.toLowerCase()}
-                setDataReport={setData}
-                setSelectionReport={setSelection}
-              />
+                <PlateEditor
+                  readOnly={!isEditting}
+                  initialValue={currentOrison.content}
+                  notes={currentOrison.notes}
+                  onUpdateNotes={() => {}}
+                  onChange={() => {}}
+                  onSave={handleSave.call}
+                  onCancel={handleCancel}
+                  searchText={searchText.toLowerCase()}
+                  onChangeSelection={setSelectionData}
+                  scrollOffset={-300}
+                />
             ) : null}
           </div>
         </div>

@@ -1,4 +1,9 @@
-import { Orison, OrisonDetail, OrisonEditor } from "src/types/orison";
+import {
+  Orison,
+  OrisonDetail,
+  OrisonEditor,
+  initialOrison,
+} from "src/types/orison";
 import {
   apiGet,
   apiPost,
@@ -28,8 +33,26 @@ export class OrisonsApi {
   static async deleteOrison(ids: Orison["id"][]) {
     return await apiDelete(`/orisons`, { ids });
   }
+
+  static async searchOrisons(
+    request: SearchOrisonPayload
+  ): Promise<SearchOrison> {
+    const response = await apiGet("/orisons/search", getFormData(request));
+    return response;
+  }
 }
 
 export interface GetOrisonPayload {
   volume_id?: string;
+}
+
+export interface SearchOrisonPayload {
+  q: string[];
+  limit: number;
+  offset: number;
+}
+
+export interface SearchOrison {
+  count: number;
+  rows: Orison[];
 }

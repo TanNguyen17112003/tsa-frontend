@@ -5,7 +5,7 @@ import {
   TText,
   Value,
 } from "@udecode/plate-common";
-import { BaseSelection, Range as SlateRange, Text as SlateText } from "slate";
+import { Range as SlateRange, Text as SlateText } from "slate";
 import { Editor } from "./components/plate-ui/editor";
 import { FixedToolbar } from "./components/plate-ui/fixed-toolbar";
 import { FixedToolbarButtons } from "./components/plate-ui/fixed-toolbar-buttons";
@@ -13,59 +13,45 @@ import { FloatingToolbar } from "./components/plate-ui/floating-toolbar";
 import plugins from "./plugins";
 
 import clsx from "clsx";
-import { useCallback, type FC, useState, useRef, useEffect } from "react";
+import { useCallback, useEffect, useRef, useState, type FC } from "react";
+import Menu from "./components/Menu";
 import NoteCard from "./components/NoteCard";
 import NotesProvider from "./components/NoteProvider/NoteProvider";
-import { EditorFormat, EditorHighlight } from "./types";
-import { Note } from "./types/note";
 import { DetectDataSelected } from "./components/plate-ui/detect-data-selected";
-import {
-  ContextMenu,
-  ContextMenuCheckboxItem,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuLabel,
-  ContextMenuRadioGroup,
-  ContextMenuRadioItem,
-  ContextMenuSeparator,
-  ContextMenuShortcut,
-  ContextMenuSub,
-  ContextMenuSubContent,
-  ContextMenuSubTrigger,
-  ContextMenuTrigger,
-} from "src/components/shadcn/ui/context-menu";
-import OrisonEditorPopup from "src/sections/admin/orisons/OrisonEditorPopup";
-import Menu from "./components/Menu";
+import { EditorFormat, EditorHighlight, SelectionData } from "./types";
+import { Note } from "./types/note";
 
 interface PlateEditorProps {
   initialValue: any;
   searchText?: string;
+  numElement?: number;
   notes?: Note[];
   readOnly?: boolean;
-  onUpdateNotes: (notes: Note[]) => void;
+  scrollOffset?: number;
+  onUpdateNotes?: (notes: Note[]) => void;
   onCancel?: () => void;
   onSave?: (value: any) => void;
-  onChange: (value: any) => void;
-  setDataReport?: (value: string) => void;
-  setSelectionReport?: (value: BaseSelection) => void;
+  onChange?: (value: any) => void;
+  onChangeSelection?: (selectionData: SelectionData) => void;
 }
 
 const PlateEditor: FC<PlateEditorProps> = ({
   initialValue,
   searchText,
+  numElement,
   readOnly,
   notes,
+  scrollOffset,
   onUpdateNotes,
   onChange,
   onCancel,
   onSave,
-  setDataReport,
-  setSelectionReport,
+  onChangeSelection,
 }) => {
   const [activeNoteId, setActiveNoteId] = useState("");
+  const [selectionData, setSelectionData] = useState<SelectionData>();
   const valueRef = useRef<any | null>();
-  const [data, setData] = useState<string>("");
-  const [selection, setSelection] = useState<BaseSelection>();
+
   const decorate = useCallback(
     ([node, path]: TNodeEntry): (SlateRange &
       EditorHighlight &
@@ -105,22 +91,36 @@ const PlateEditor: FC<PlateEditorProps> = ({
     [activeNoteId, searchText]
   );
 
+  const handleChangeSelection = useCallback(
+    (selectionData: SelectionData) => {
+      onChangeSelection?.(selectionData);
+      setSelectionData(selectionData);
+    },
+    [onChangeSelection]
+  );
+
   const handleChange = useCallback(
     (value: any) => {
-      onChange(value);
+      onChange?.(value);
       valueRef.current = value;
     },
     [onChange]
   );
 
   useEffect(() => {
-    if (setDataReport) setDataReport(data);
-    if (selection && setSelectionReport) setSelectionReport(selection);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selection, data]);
+    setTimeout(() => {
+      const container = document.getElementById("editor-container");
+      const el = document?.querySelectorAll(".search-node")?.[numElement || 0];
+      if (el) {
+        const y =
+          el.getBoundingClientRect().top + window.scrollY + (scrollOffset || 0);
+        container?.scrollTo({ top: y, behavior: "smooth" });
+      }
+    }, 500);
+  }, [searchText, numElement, scrollOffset]);
 
   return (
+    <>
     <Plate
       plugins={plugins}
       initialValue={initialValue}
@@ -132,7 +132,7 @@ const PlateEditor: FC<PlateEditorProps> = ({
         onChangeActiveNoteId={setActiveNoteId}
         onUpdateNotes={onUpdateNotes}
       >
-        <DetectDataSelected setData={setData} setSelection={setSelection} />
+        <DetectDataSelected onSelectionChange={handleChangeSelection} />
         {!readOnly && (
           <FixedToolbar>
             <FixedToolbarButtons
@@ -148,13 +148,16 @@ const PlateEditor: FC<PlateEditorProps> = ({
           }}
           renderLeaf={(props) => <Leaf {...props} />}
           decorate={decorate}
+          itemRef={searchText}
         />
         <FloatingToolbar>
           <NoteCard noteIndex={1} />
-          <Menu data={data} />
+          <Menu text={selectionData?.text as string}/>
         </FloatingToolbar>
       </NotesProvider>
     </Plate>
+    </>
+    
   );
 };
 
@@ -172,7 +175,7 @@ const Leaf = ({
       }}
       className={clsx(
         leaf.highlightNote && "bg-orange-200",
-        leaf.highlightSearch && "bg-cyan-200"
+        leaf.highlightSearch && "bg-cyan-200 search-node"
         // leaf.color && `text-[${leaf.color}]`,
         // leaf.fontSize && `text-[${leaf.fontSize}]`
         // leaf.bold && "font-bold",

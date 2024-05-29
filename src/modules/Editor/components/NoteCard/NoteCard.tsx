@@ -1,5 +1,5 @@
 import { useEditorReadOnly, useEditorRef } from "@udecode/plate-common";
-import { useCallback, useEffect, useRef, type FC, useMemo } from "react";
+import { useCallback, useEffect, useRef, type FC, useMemo, useState } from "react";
 import { updateNoteIndexes } from "../../utils";
 import { useNotesContext } from "../NoteProvider/NoteProvider";
 import { Button } from "src/components/shadcn/ui/button";
@@ -11,6 +11,7 @@ interface NoteCardProps {
 const NoteCard: FC<NoteCardProps> = ({ noteIndex }) => {
   const { activeNoteId, setActiveNoteId, notes, deleteNote, updateNote } =
     useNotesContext();
+
   const ref = useRef<HTMLTextAreaElement | null>(null);
   const editor = useEditorRef();
   const readOnly = useEditorReadOnly();
@@ -18,7 +19,7 @@ const NoteCard: FC<NoteCardProps> = ({ noteIndex }) => {
   const note = useMemo(() => {
     return notes.find((note) => note.id == activeNoteId);
   }, [activeNoteId, notes]);
-
+  const [textAreaValue, setTextAreaValue] = useState<string>(note?.note || "");
   const handleDelete = useCallback(() => {
     editor.removeMark("superscript");
     editor.deleteFragment();
@@ -34,16 +35,13 @@ const NoteCard: FC<NoteCardProps> = ({ noteIndex }) => {
   }, [editor, setActiveNoteId]);
 
   const handleSave = useCallback(() => {
-    updateNote(activeNoteId, ref.current?.value || "");
+    updateNote(activeNoteId, textAreaValue);
     editor.deselect();
-    setActiveNoteId("");
-  }, [activeNoteId, editor, setActiveNoteId, updateNote]);
+  }, [activeNoteId, textAreaValue]);
 
   useEffect(() => {
-    if (ref.current) {
-      ref.current.value = note?.note || "";
-      // setTimeout(() => ref.current?.focus(), 200); // setTimeout to prevent unexpected scroll
-    }
+    const currentAreaValue = textAreaValue;
+    setTextAreaValue(currentAreaValue || note?.note || "");
   }, [note]);
 
   return (
@@ -72,7 +70,8 @@ const NoteCard: FC<NoteCardProps> = ({ noteIndex }) => {
             </div>
           ) : (
             <textarea
-              ref={ref}
+              value={textAreaValue}
+              onChange={(e) => setTextAreaValue(e.target.value)}
               className="w-full border min-w-[320px] rounded-lg p-2"
               rows={4}
             />

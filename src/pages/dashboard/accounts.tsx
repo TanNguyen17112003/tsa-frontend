@@ -36,7 +36,6 @@ const Page: PageType = () => {
       },
     });
   }, [editDrawer]);
-
   useEffect(() => {
     // if (!editDrawer.open) setData(undefined);
     if (!isOpen) setId(undefined);

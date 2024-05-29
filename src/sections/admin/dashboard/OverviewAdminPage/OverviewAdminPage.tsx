@@ -1,11 +1,18 @@
 import { useRouter } from "next/router";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { HiMagnifyingGlass, HiMiniArrowSmallRight } from "react-icons/hi2";
 import { LuClock } from "react-icons/lu";
 import { PiBookOpen } from "react-icons/pi";
+import { ReportsApi } from "src/api/reports";
 import CommonCard from "src/components/CommonCard";
+import { CustomTable } from "src/components/custom-table";
 import { Button } from "src/components/shadcn/ui/button";
 import { Input } from "src/components/shadcn/ui/input";
+import BasicSearchForm from "src/modules/Collection/components/pages/search/BasicSearchPage/BasicSearchForm";
+import AdvanceSearchForm from "src/modules/Collection/components/pages/search/AdvanceSearchPage/AdvanceSearchForm";
+import AdjacentSearchForm from "src/modules/Collection/components/pages/search/AdjacentSearchPage/AdjacentSearchForm";
+
+
 import {
   Select,
   SelectContent,
@@ -13,7 +20,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "src/components/shadcn/ui/select";
+import useFunction from "src/hooks/use-function";
 import { paths } from "src/paths";
+import reportTableConfig from "./ReportTableConfig";
+import { initialReport } from "src/types/report";
+import ReportDialog from "../../reports/ReportDialog";
 
 const children = [
   { title: "Bài dịch số 23", time: "15:30 - 01/12/2023" },
@@ -36,17 +47,37 @@ const history = [
 
 const OverviewAdminPage = () => {
   const router = useRouter();
-  const [searchMode, setSearchMode] = useState("basic");
-  const handleModeChange = (newMode: string) => {
-    setSearchMode(newMode);
-  };
+  const searchType = router.query.searchType;
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [data, setData] = useState(initialReport);
+
+  const getReportsApi = useFunction(ReportsApi.getReports);
+
+  useEffect(() => {
+    getReportsApi.call({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSeeAll = useCallback(() => {
     router.push({
-      pathname: paths.dashboard.collections,
+      pathname: paths.dashboard.reports,
     });
   }, [router]);
 
+  const report = useMemo(() => {
+    return getReportsApi.data || [];
+  }, [getReportsApi.data]);
+
+  const getReportTableConfig = useMemo(() => {
+    return reportTableConfig({
+      setData: (data) => {
+        setData(data);
+      },
+      setIsOpen: (đata) => {
+        setIsOpen(true);
+      },
+    });
+  }, []);
   return (
     <div
       className="flex bg-cover bg-center min-h-screen"
@@ -59,32 +90,12 @@ const OverviewAdminPage = () => {
         <div className="text-2xl font-semibold leading-relaxed">
           Tổng quan hệ thống
         </div>
-        <div className="flex bg-white h-15 my-5 ">
-          <div className="flex p-2 items-center border border-gray-300 rounded-md h-12 w-full divide-x-2">
-            <div className="flex w-full items-center">
-              <HiMagnifyingGlass style={{ fontSize: "1.5rem" }} />
-              <Input
-                type="text"
-                placeholder="Nhập từ khóa tìm kiếm..."
-                className="border-none outline-none w-full text-sm/normal"
-              />
-            </div>
-            <div className="items-center">
-              <Select>
-                <SelectTrigger className="w-[180px] f-full border-none">
-                  <SelectValue placeholder="Tìm kiếm cơ bản" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="basic">Tìm kiếm cơ bản</SelectItem>
-                  <SelectItem value="advanced">Tìm kiếm nâng cao</SelectItem>
-                  <SelectItem value="adjacent">Tìm kiếm từ liền kề</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <Button className="ml-2 bg-orange-500 text-white px-4 my-1 rounded-lg whitespace-nowrap hover:bg-orange-800">
-            <div>Tìm kiếm</div>
-          </Button>
+        <div className="bg-white h-15 my-5">
+            {(searchType === "basic" || searchType === undefined) ? (
+              <BasicSearchForm className={"py-4 px-6"}/>
+            ) : searchType === "advance" ? (
+              <AdvanceSearchForm className={"py-4 px-6"}/>    
+            ) : <AdjacentSearchForm className={"py-4 px-6"} />}
         </div>
         <div className="relative w-full h-80">
           <div
@@ -137,10 +148,10 @@ const OverviewAdminPage = () => {
           </div> */}
         </div>
         <div className="flex mt-4">
-          <div className="flex bg-white border border-gray-300 rounded-2xl mr-4 p-5 overflow-auto h-full w-full">
+          <div className="bg-white border border-gray-300 rounded-2xl mr-4 p-5 overflow-auto h-full w-full">
             <div className="flex space-x-64 w-full">
               <p className="text-lg font-semibold w-full text-nowrap p-3">
-                Khiếu nại chưa giải quyết (3)
+                Khiếu nại chưa giải quyết ({report.length})
               </p>
               <Button
                 variant="ghost"
@@ -150,7 +161,18 @@ const OverviewAdminPage = () => {
                 Xem tất cả <HiMiniArrowSmallRight className="h-6 w-6" />
               </Button>
             </div>
-            {/* <CustomTable /> */}
+            <CustomTable
+              rows={report}
+              configs={getReportTableConfig}
+              tableClassName="rounded-xl border-2"
+              indexColumn
+            ></CustomTable>
+
+            <ReportDialog
+              state={isOpen}
+              onClose={() => setIsOpen(false)}
+              data={data}
+            />
           </div>
           <CommonCard
             link="/dashboard"

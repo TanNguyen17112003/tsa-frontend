@@ -9,6 +9,7 @@ export interface Orison {
   volume_id: string;
   created_at?: Date;
   updated_at?: Date;
+  startLabel?: string;
 }
 
 export interface OrisonDetail extends Orison {

@@ -2,6 +2,7 @@ import type { FC } from "react";
 import CollectionBreadcrumb from "../../../CollectionBreadcrumb";
 import BasicSearchForm from "./BasicSearchForm";
 
+
 interface BasicSearchPageProps {}
 
 const BasicSearchPage: FC<BasicSearchPageProps> = ({}) => {

@@ -15,7 +15,6 @@ import {
 } from "src/api/collections";
 import Loading from "src/components/Loading";
 import useFunction from "src/hooks/use-function";
-import { CollectionDetail } from "src/types/collection";
 
 interface ContextValue {
   tree: CollectionTreeResponse;
@@ -25,7 +24,12 @@ interface ContextValue {
   ) => void;
   goCollection: (id: string) => void;
   goSutra: (id: string) => void;
-  goVolume: (id: string) => void;
+  goVolume: (
+    id: string,
+    viewOriginalDoc?: {
+      page: number;
+    }
+  ) => void;
   goOrison: (id: string) => void;
 }
 
@@ -98,7 +102,12 @@ const CollectionCategoriesProvider = ({
   );
 
   const goVolume = useCallback(
-    (id: string) => {
+    (
+      id: string,
+      viewOriginalDoc?: {
+        page: number;
+      }
+    ) => {
       const tree = getCollectionTreeApi.data;
       const volume = tree?.volumes.find((volume) => volume.id == id);
       const sutra = tree?.sutras?.find(
@@ -115,7 +124,10 @@ const CollectionCategoriesProvider = ({
           collectionId: collection?.id || "",
           sutraId: sutra?.id || "",
           volumeId: volume?.id || "",
-          orisonId: "",
+
+          ...(viewOriginalDoc
+            ? { viewOriginalDoc: "true", docPage: viewOriginalDoc.page }
+            : { viewOriginalDoc: "", orisonId: "", docPage: "" }),
         },
       });
     },
@@ -144,6 +156,8 @@ const CollectionCategoriesProvider = ({
           sutraId: sutra?.id || "",
           volumeId: volume?.id || "",
           orisonId: orison?.id || "",
+          viewOriginalDoc: "",
+          docPage: "",
         },
       });
     },

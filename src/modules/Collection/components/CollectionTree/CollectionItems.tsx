@@ -22,7 +22,7 @@ const CollectionItems: FC<CollectionItemsProps> = (props) => {
 
   const items = useMemo(() => {
     return (tree?.collections || []).filter((item) =>
-      item.name.toLowerCase().includes(search)
+      item.name.toLowerCase().includes(search.toLowerCase())
     );
   }, [search, tree?.collections]);
 

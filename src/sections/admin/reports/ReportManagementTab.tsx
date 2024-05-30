@@ -24,7 +24,7 @@ import getReportManagementTableConfig from "./report-management-table-config";
 import Pagination from "src/components/ui/Pagination";
 import usePagination from "src/hooks/use-pagination";
 import { Button } from "src/components/shadcn/ui/button";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { SIDE_NAV_WIDTH } from "src/config";
 import ReportDialog from "./ReportDialog";
 import useFunction from "src/hooks/use-function";
@@ -35,15 +35,19 @@ import getPaginationText from "src/utils/get-pagination-text";
 
 const ReportManagement = () => {
   const { getReportsApi } = useReportsContext();
-
+  const [filterReportMode, setFilterReportMode] = useState<string>("");
   useEffect(() => {
     getReportsApi.call;
   }, [getReportsApi.call]);
 
   const report = useMemo(() => {
-    return getReportsApi.data || [];
-  }, [getReportsApi.data]);
+    const reportList = getReportsApi.data || [];
+    return reportList.filter((item) => item.report_status === filterReportMode);
+}, [getReportsApi.data, filterReportMode]);
 
+  const handleChangeReportMode = useCallback((e: string) => {
+    e === "1" ? setFilterReportMode("Chưa xử lý") : setFilterReportMode("Đã xử lý");
+  }, []);
   const pagination = usePagination({ count: report.length });
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [data, setData] = useState(initialReport);
@@ -62,7 +66,7 @@ const ReportManagement = () => {
             <div className="text-xs font-semibold text-nowrap pl-3 pt-2">
               Tình trạng
             </div>
-            <Select>
+            <Select onValueChange={e => handleChangeReportMode(e)}>
               <SelectTrigger className="w-[200px] border-none">
                 <SelectValue placeholder="Tất cả" />
               </SelectTrigger>

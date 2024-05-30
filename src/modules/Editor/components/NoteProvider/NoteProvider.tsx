@@ -54,15 +54,12 @@ const NotesProvider = ({
   const addNote = useCallback(
     (noteId: string, note: string) => {
       onUpdateNotes?.([...notes, { id: noteId, note }]);
-      const newNote = notes.find((note) => note.id == noteId);
-      alert(newNote?.note)
     },
     [notes, onUpdateNotes]
   );
 
   const updateNote = useCallback(
     (noteId: string, value: string) => {
-      alert(value)
       const updateNote = notes.find((note) => note.id == noteId);
       if (!updateNote) return;
       updateNote.note = value;

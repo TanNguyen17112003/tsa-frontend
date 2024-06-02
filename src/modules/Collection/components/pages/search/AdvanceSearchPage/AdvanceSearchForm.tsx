@@ -5,6 +5,7 @@ import { Button } from "src/components/shadcn/ui/button";
 import FormInput from "src/components/ui/FormInput";
 import searchTypes from "src/modules/Collection/constants/searchTypes";
 import AdvanceSearchResult from "./AdvanceSearchResult";
+import { paths } from "src/paths";
 
 interface AdvanceSearchFormProps {
   className: string;
@@ -63,21 +64,8 @@ const AdvanceSearchForm: FC<AdvanceSearchFormProps> = ({ className }) => {
 
   const handleSubmit = useCallback(
     (event: any) => {
-      const isCollection = router.pathname.includes("collections");
-      if (!isCollection) {
-        router.push({
-          pathname: router.pathname + "/collections",
-          query: {
-            ...router.query,
-            textSearch: [textSearch, ...curentSearchAdvance].filter(
-              (text) => text
-            ),
-            optionSearch: curentSearchOption,
-          },
-        });
-      }
-      router.replace({
-        pathname: router.pathname,
+      router.replace({  
+        pathname: router.pathname.includes("collections") ? router.pathname : paths.dashboard.collections,
         query: {
           ...router.query,
           textSearch: [textSearch, ...curentSearchAdvance].filter(

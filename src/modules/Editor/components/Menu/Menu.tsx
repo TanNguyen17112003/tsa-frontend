@@ -15,6 +15,7 @@ import { getPageMark } from "../../utils";
 import { useSutrasContext } from "src/contexts/sutras/sutras-context";
 import { useVolumesContext } from "src/contexts/volumes/volumes-context";
 import { useOrisonsContext } from "src/contexts/orisons/orisons-context";
+import { useAuth } from "src/hooks/use-auth";
 
 interface MenuProps {
   text: string;
@@ -23,6 +24,7 @@ interface MenuProps {
 const Menu: FC<MenuProps> = ({text}) => {
   const { collection } = useSutrasContext();
   const { sutra } = useVolumesContext();
+  const { user } = useAuth();
   const { volume, getOrisonDetailApi } = useOrisonsContext();
   const { activeNoteId, notes } = useNotesContext();
   const ref = useRef<HTMLTextAreaElement | null>(null);
@@ -89,13 +91,17 @@ const Menu: FC<MenuProps> = ({text}) => {
             >
               Trích dẫn nguồn
             </Button>
-            <Button
+            {
+              (user?.role == "user" || user?.role == "translator") && (
+                <Button
               variant={"ghost"}
               className="text-primary text-lg font-normal"
               onClick={handleClickComplain}
             >
               Khiếu nại
             </Button>
+              )
+            }
           </div>
           <OrisonEditorPopup
             state={isOpen}

@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { formatDate } from "date-fns";
 import { useRouter } from "next/router";
-import { FormEvent, useCallback, useEffect, useState, type FC } from "react";
+import { FormEvent, useCallback, useEffect, useState, useMemo, type FC } from "react";
 import { BiSearch } from "react-icons/bi";
 import { BsArrowsAngleContract, BsArrowsAngleExpand } from "react-icons/bs";
 import {
@@ -25,14 +25,22 @@ import OrisonComplainDialog from "./OrisonCompainDialog";
 import OrisonList from "./OrisonList";
 import OrisonPagination from "./OrisonPagination";
 import { SelectionData } from "src/modules/Editor/types";
-
+import { useReportsContext } from "src/contexts/reports/reports-context";
+import ReportOfOrison from "src/components/ReportOfOrison";
+import { useOrisonPath } from "../OrisonExplorePage/orisonPath";
+import { useSutrasContext } from "src/contexts/sutras/sutras-context";
+import { useCollectionsContext } from "src/contexts/collections/collections-context";
+import { useVolumesContext } from "src/contexts/volumes/volumes-context";
 interface OrisonPageProps {}
 
 const OrisonPage: FC<OrisonPageProps> = ({}) => {
   const router = useRouter();
   const { user } = useAuth();
+  const { getReportsApi } = useReportsContext();
   const { goVolume } = useCollectionCategoriesContext();
-  const { getOrisonDetailApi, updateOrison, volume } = useOrisonsContext();
+  const { getOrisonDetailApi, updateOrison, volume, getOrisonsApi } = useOrisonsContext();
+  const {getSutrasApi} = useSutrasContext();
+  const {getVolumesApi} = useVolumesContext();
   const [searchText, setSearchText] = useState("");
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectionData, setSelectionData] = useState<SelectionData>();
@@ -40,6 +48,10 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
   const isEditting = router.query.isEditting == "true";
   const isFullScreen = router.query.isFullScreen == "true";
   const currentOrison = getOrisonDetailApi.data;
+
+  const detailReport = useMemo(() => {
+    return (getReportsApi.data || []).find((item) => item.id === router.query.reportId);
+  }, [getReportsApi.data, router])
 
   const handleSearch = useCallback((e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -121,6 +133,22 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentOrison]);
+  useEffect(() => {
+    const handleQuery = () => {
+      if (!router.query.volumeId) {
+        const volumeId = getOrisonsApi.data?.find((orison) => orison.id === router.query.orisonId)?.volume_id;
+        const sutraId = getVolumesApi.data?.find((volume) => volume.id === volumeId)?.sutras_id;
+        const collectionId = getSutrasApi.data?.find((sutra) => sutra.id === sutraId)?.collection_id;
+        if(volumeId && sutraId && collectionId) {
+          router.replace({
+            pathname: router.pathname,
+            query: { ...router.query, volumeId: volumeId, sutraId: sutraId, collectionId: collectionId },
+          })
+        }
+      }
+    }
+    handleQuery();
+  }, [router.query.orisonId])
 
   return (
     <div className="h-full flex flex-col">
@@ -134,6 +162,7 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
           <>
             <CollectionBreadcrumb />
             <div className="flex gap-3 items-center">
+              <div></div>
               <form
                 className="flex items-center border rounded-md w-full"
                 onSubmit={handleSearch}
@@ -254,8 +283,10 @@ const OrisonPage: FC<OrisonPageProps> = ({}) => {
                 />
             ) : null}
           </div>
+
+          {router.query.reportId && <ReportOfOrison status={detailReport?.report_status === "pending" ? "Chưa xử lý" : (detailReport?.report_status === "processed" ? "Đã xử lý" : "")} email={detailReport?.email || ""} created_at={detailReport?.created_at.toString() || ""} title={detailReport?.title || ""} content={detailReport?.content || ""}/>}
         </div>
-      </div>
+      </div>  
     </div>
   );
 };

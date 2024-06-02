@@ -49,6 +49,7 @@ export interface CustomTableProps<P, T extends { id: P; [key: string]: any }> {
   onClickEdit?: (item: T, index: number) => void;
   onClickDelete?: (item: T, index: number) => void;
   onClickDetail?: (item: T, index: number) => void;
+  onClickRevert?: (item: T, index: number) => void;
   onUpdate?: (key: keyof T, value: any, item: T, index: number) => Promise<any>;
   indexColumn?: boolean;
   select?: Selection<T>;

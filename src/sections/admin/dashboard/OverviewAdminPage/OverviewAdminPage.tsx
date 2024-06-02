@@ -11,6 +11,8 @@ import { Input } from "src/components/shadcn/ui/input";
 import BasicSearchForm from "src/modules/Collection/components/pages/search/BasicSearchPage/BasicSearchForm";
 import AdvanceSearchForm from "src/modules/Collection/components/pages/search/AdvanceSearchPage/AdvanceSearchForm";
 import AdjacentSearchForm from "src/modules/Collection/components/pages/search/AdjacentSearchPage/AdjacentSearchForm";
+import { ReportDetail } from "src/types/report";
+
 
 
 import {
@@ -63,7 +65,7 @@ const OverviewAdminPage = () => {
       pathname: paths.dashboard.reports,
     });
   }, [router]);
-
+  
   const report = useMemo(() => {
     return getReportsApi.data || [];
   }, [getReportsApi.data]);
@@ -78,6 +80,7 @@ const OverviewAdminPage = () => {
       },
     });
   }, []);
+
   return (
     <div
       className="flex bg-cover bg-center min-h-screen"

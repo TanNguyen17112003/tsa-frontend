@@ -6,6 +6,7 @@ import { Button } from "src/components/shadcn/ui/button";
 import { Input } from "src/components/shadcn/ui/input";
 import FormInput from "src/components/ui/FormInput";
 import searchTypes from "src/modules/Collection/constants/searchTypes";
+import { paths } from "src/paths";
 
 interface AdjacentSearchFormProps {
   className: string;
@@ -49,15 +50,8 @@ const AdjacentSearchForm: FC<AdjacentSearchFormProps> = ({ className }) => {
         value.next_adjacent_word +
         "_" +
         value.next_range;
-      const isCollection = router.pathname.includes("collections");
-      if (!isCollection) {
-        router.push({
-          pathname: router.pathname + "/collections",
-          query: { ...router.query, textSearch: textSearch },
-        });
-      }
       router.replace({
-        pathname: router.pathname,
+        pathname: router.pathname.includes("collections") ? router.pathname : paths.dashboard.collections,
         query: { ...router.query, textSearch: textSearch },
       });
     },

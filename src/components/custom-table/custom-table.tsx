@@ -5,7 +5,7 @@ import { CustomTableCell } from "./custom-table-cell";
 import { CustomTableHeader } from "./custom-table-header";
 import { CustomTableProps, CustomTableSortModel } from "./custom-table.types";
 import SimpleBar from "simplebar-react";
-import { BsPencilSquare, BsTrash2Fill } from "react-icons/bs";
+import { BsPencilSquare, BsTrash2Fill, BsArrowRepeat } from "react-icons/bs";
 import clsx from "clsx";
 import { IoWarning } from "react-icons/io5";
 import Pagination from "../ui/Pagination";
@@ -34,6 +34,7 @@ export function CustomTable<P, T extends { id: P; [key: string]: any }>(
     onClickEdit,
     onClickDelete,
     onClickDetail,
+    onClickRevert,
     onUpdate,
     indexColumn,
     select,
@@ -178,6 +179,7 @@ export function CustomTable<P, T extends { id: P; [key: string]: any }>(
                 {(onClickDelete ||
                   onClickDetail ||
                   onClickEdit ||
+                  onClickRevert ||
                   renderRowActions) && (
                   <td align="right" onClick={(e) => e.stopPropagation()}>
                     <div className="flex justify-end -my-1">
@@ -208,6 +210,17 @@ export function CustomTable<P, T extends { id: P; [key: string]: any }>(
                         >
                           Chi tiết
                         </Button>
+                      )}
+                      {onClickRevert && (
+                         <Button
+                         onClick={() => onClickRevert(row, index)}
+                         variant="ghost"
+                         className="hover:bg-destructive/15"
+                       >
+                         <BsArrowRepeat
+                    style={{ fontSize: "1.5rem", color: "#06B6D4" }}
+                />
+                       </Button>
                       )}
                     </div>
                   </td>

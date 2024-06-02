@@ -4,6 +4,7 @@ import clsx from "clsx";
 import CollectionTree from "./components/CollectionTree";
 import SearchNavigator from "./components/SearchNavigator";
 import ViewNavigator from "./components/ViewNavigator";
+import ButtonNavigate from "./components/ButtonNavigte/ButtonNavigate";
 import AuthorSearchPage from "./components/pages/search/AuthorSearchPage/AuthorSearchPage";
 import CircaSearchPage from "./components/pages/search/CircaSearchPage/CircaSearchPage";
 import SutraSearchPage from "./components/pages/search/SutraSearchPage/SutraSearchPage";
@@ -50,6 +51,9 @@ const CollectionContent: FC<CollectionContentProps> = ({}) => {
           isFullScreen ? "w-full left-0" : "w-[calc(100%_-_300px)]"
         )}
       >
+        <div>
+          <ButtonNavigate isHidden={true} />
+        </div>
         {query.qCircaFrom && query.qCircaTo ? (
           <CircaSearchResultPage
             qCircaFrom={query.qCircaFrom.toString()}
@@ -97,6 +101,7 @@ const CollectionContent: FC<CollectionContentProps> = ({}) => {
           <> not found</>
         )}
       </div>
+      
     </>
   );
 };

@@ -60,12 +60,15 @@ const NotesProvider = ({
 
   const updateNote = useCallback(
     (noteId: string, value: string) => {
-      const updateNote = notes.find((note) => note.id == noteId);
-      if (!updateNote) return;
-      updateNote.note = value;
+      onUpdateNotes?.(
+        notes.map((note) =>
+          note.id == noteId ? { ...note, note: value } : note
+        )
+      );
     },
     [notes, onUpdateNotes]
   );
+
 
   const deleteNote = useCallback(
     (noteId: string) => {

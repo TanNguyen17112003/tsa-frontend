@@ -27,29 +27,28 @@ import { Button } from "src/components/shadcn/ui/button";
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { SIDE_NAV_WIDTH } from "src/config";
 import ReportDialog from "./ReportDialog";
+import DeleteDialog from "./DeleteDialog";
 import useFunction from "src/hooks/use-function";
 import { ReportsApi } from "src/api/reports";
 import { getFormData } from "src/utils/api-request";
 import { useReportsContext } from "src/contexts/reports/reports-context";
 import getPaginationText from "src/utils/get-pagination-text";
 
+
 const ReportManagement = () => {
   const { getReportsApi } = useReportsContext();
   const [filterReportMode, setFilterReportMode] = useState<string>("");
-  useEffect(() => {
-    getReportsApi.call;
-  }, [getReportsApi.call]);
 
   const report = useMemo(() => {
-    const reportList = getReportsApi.data || [];
-    return reportList.filter((item) => item.report_status === filterReportMode);
+    return filterReportMode ? (getReportsApi.data || []).filter((item) => (item.report_status === filterReportMode && item.report_status !== "deleted")) : (getReportsApi.data || []).filter((item) => item.report_status !== "deleted");
 }, [getReportsApi.data, filterReportMode]);
 
   const handleChangeReportMode = useCallback((e: string) => {
-    e === "1" ? setFilterReportMode("Chưa xử lý") : setFilterReportMode("Đã xử lý");
+    e === "1" ? setFilterReportMode("pending") : setFilterReportMode("processed");
   }, []);
   const pagination = usePagination({ count: report.length });
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isOpenDelete, setIsOpenDelete] = useState<boolean>(false);
   const [data, setData] = useState(initialReport);
 
   return (
@@ -90,6 +89,10 @@ const ReportManagement = () => {
               setIsOpen(true);
               setData(item);
             }}
+            onClickDelete={(item, index) => {
+              setIsOpenDelete(true);
+              setData(item);
+            }}
           ></CustomTable>
         </div>
       </div>
@@ -97,6 +100,12 @@ const ReportManagement = () => {
       <ReportDialog
         state={isOpen}
         onClose={() => setIsOpen(false)}
+        data={data}
+      />
+
+      <DeleteDialog
+        state={isOpenDelete}
+        onClose={() => setIsOpenDelete(false)}
         data={data}
       />
 

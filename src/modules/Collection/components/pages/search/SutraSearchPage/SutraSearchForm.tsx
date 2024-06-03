@@ -1,9 +1,11 @@
 import { useFormik } from "formik";
 import { useRouter } from "next/router";
-import { useEffect, type FC } from "react";
+import { useEffect, type FC, useMemo } from "react";
 import CustomSelect from "src/components/CustomSelect/CustomSelect";
 import { Button } from "src/components/shadcn/ui/button";
 import FormInput from "src/components/ui/FormInput";
+import { useCollectionsContext } from "src/contexts/collections/collections-context";
+
 
 interface SutraSearchFormProps {
   className?: string;
@@ -29,7 +31,10 @@ const initialSutraSearchQuery: SutraSearchQuery = {
 
 const SutraSearchForm: FC<SutraSearchFormProps> = ({ className }) => {
   const router = useRouter();
-
+  const { getCollectionsApi } = useCollectionsContext();
+  const collections = useMemo(() => {
+    return getCollectionsApi.data || [];
+  }, [getCollectionsApi.data]) 
   const formik = useFormik({
     initialValues: initialSutraSearchQuery,
     onSubmit: (values) => {
@@ -52,7 +57,11 @@ const SutraSearchForm: FC<SutraSearchFormProps> = ({ className }) => {
       <div className="grid grid-cols-2 gap-4">
         <div>
           <CustomSelect
-            options={[]}
+            options={collections.map((c) => ({
+              value: c.id,
+              label: c.name,
+            }))
+            }
             label="Tuyển tập"
             onValueChange={(value) =>
               formik.setFieldValue("qCollectionId", value)

@@ -69,6 +69,7 @@ const NotesProvider = ({
     [notes, onUpdateNotes]
   );
 
+
   const deleteNote = useCallback(
     (noteId: string) => {
       onUpdateNotes?.(notes.filter((note) => note.id != noteId));

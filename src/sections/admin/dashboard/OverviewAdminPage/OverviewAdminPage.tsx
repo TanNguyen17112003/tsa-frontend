@@ -8,6 +8,13 @@ import CommonCard from "src/components/CommonCard";
 import { CustomTable } from "src/components/custom-table";
 import { Button } from "src/components/shadcn/ui/button";
 import { Input } from "src/components/shadcn/ui/input";
+import BasicSearchForm from "src/modules/Collection/components/pages/search/BasicSearchPage/BasicSearchForm";
+import AdvanceSearchForm from "src/modules/Collection/components/pages/search/AdvanceSearchPage/AdvanceSearchForm";
+import AdjacentSearchForm from "src/modules/Collection/components/pages/search/AdjacentSearchPage/AdjacentSearchForm";
+import { ReportDetail } from "src/types/report";
+
+
+
 import {
   Select,
   SelectContent,
@@ -42,10 +49,7 @@ const history = [
 
 const OverviewAdminPage = () => {
   const router = useRouter();
-  const [searchMode, setSearchMode] = useState("basic");
-  const handleModeChange = (newMode: string) => {
-    setSearchMode(newMode);
-  };
+  const searchType = router.query.searchType;
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [data, setData] = useState(initialReport);
 
@@ -61,7 +65,7 @@ const OverviewAdminPage = () => {
       pathname: paths.dashboard.reports,
     });
   }, [router]);
-
+  
   const report = useMemo(() => {
     return getReportsApi.data || [];
   }, [getReportsApi.data]);
@@ -89,32 +93,12 @@ const OverviewAdminPage = () => {
         <div className="text-2xl font-semibold leading-relaxed">
           Tổng quan hệ thống
         </div>
-        <div className="flex bg-white h-15 my-5 ">
-          <div className="flex p-2 items-center border border-gray-300 rounded-md h-12 w-full divide-x-2">
-            <div className="flex w-full items-center">
-              <HiMagnifyingGlass style={{ fontSize: "1.5rem" }} />
-              <Input
-                type="text"
-                placeholder="Nhập từ khóa tìm kiếm..."
-                className="border-none outline-none w-full text-sm/normal"
-              />
-            </div>
-            <div className="items-center">
-              <Select>
-                <SelectTrigger className="w-[180px] f-full border-none">
-                  <SelectValue placeholder="Tìm kiếm cơ bản" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="basic">Tìm kiếm cơ bản</SelectItem>
-                  <SelectItem value="advanced">Tìm kiếm nâng cao</SelectItem>
-                  <SelectItem value="adjacent">Tìm kiếm từ liền kề</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <Button className="ml-2 bg-orange-500 text-white px-4 my-1 rounded-lg whitespace-nowrap hover:bg-orange-800">
-            <div>Tìm kiếm</div>
-          </Button>
+        <div className="bg-white h-15 my-5">
+            {(searchType === "basic" || searchType === undefined) ? (
+              <BasicSearchForm className={"py-4 px-6"}/>
+            ) : searchType === "advance" ? (
+              <AdvanceSearchForm className={"py-4 px-6"}/>    
+            ) : <AdjacentSearchForm className={"py-4 px-6"} />}
         </div>
         <div className="relative w-full h-80">
           <div

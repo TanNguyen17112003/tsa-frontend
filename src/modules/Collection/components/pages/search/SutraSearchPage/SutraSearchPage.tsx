@@ -13,6 +13,7 @@ const SutraSearchPage: FC<SutraSearchPageProps> = ({}) => {
       </div>
       <hr />
       <SutraSearchForm className={"py-4 px-6"} />
+      
     </>
   );
 };

@@ -11,7 +11,7 @@ export interface Report {
   created_at: string;
   orison_id: string;
   user_id: string;
-  updated_s: string;
+  updated_at: string;
 }
 
 export interface ReportDetail extends Report {}
@@ -39,5 +39,5 @@ export const initialReport: ReportDetail = {
   created_at: "",
   orison_id: "",
   user_id: "",
-  updated_s: "",
+  updated_at: "",
 };

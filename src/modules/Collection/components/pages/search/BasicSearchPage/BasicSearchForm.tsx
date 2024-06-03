@@ -5,9 +5,10 @@ import { Button } from "src/components/shadcn/ui/button";
 import FormInput from "src/components/ui/FormInput";
 import searchTypes from "src/modules/Collection/constants/searchTypes";
 import useAppSnackbar from "src/hooks/use-app-snackbar";
+import { paths } from "src/paths";
 
 interface BasicSearchFormProps {
-  className: string;
+    className: string;
 }
 
 const BasicSearchForm: FC<BasicSearchFormProps> = ({ className }) => {
@@ -32,9 +33,10 @@ const BasicSearchForm: FC<BasicSearchFormProps> = ({ className }) => {
 
   const handleClickSearch = useCallback(
     (value: string) => {
+      const searchType = router.query.searchType;
       router.replace({
-        pathname: router.pathname,
-        query: { ...router.query, textSearch: value },
+        pathname: router.pathname.includes("collections") ? router.pathname : paths.dashboard.collections,
+        query: { ...router.query, textSearch: value, searchType: searchType ?  searchType : "basic" },
       });
     },
     [router]

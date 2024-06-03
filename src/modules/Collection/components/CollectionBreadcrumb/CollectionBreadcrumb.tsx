@@ -148,6 +148,7 @@ const CollectionBreadcrumb: FC<CollectionBreadcrumbProps> = ({}) => {
           {index < items.length - 1 ? (
             <Button variant="ghost" size="sm" onClick={item.onClick}>
               <div className="text-sm font-medium">{item.label}</div>
+
             </Button>
           ) : (
             <div className="text-sm text-primary px-2">{item.label}</div>

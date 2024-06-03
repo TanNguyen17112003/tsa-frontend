@@ -10,6 +10,7 @@ export interface Orison {
   plain_text: string;
   created_at?: Date;
   updated_at?: Date;
+  startLabel?: string;
 }
 
 export interface OrisonDetail extends Orison {

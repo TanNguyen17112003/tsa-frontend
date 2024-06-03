@@ -120,6 +120,7 @@ const PlateEditor: FC<PlateEditorProps> = ({
   }, [searchText, numElement, scrollOffset]);
 
   return (
+    <>
     <Plate
       plugins={plugins}
       initialValue={initialValue}
@@ -151,10 +152,12 @@ const PlateEditor: FC<PlateEditorProps> = ({
         />
         <FloatingToolbar>
           <NoteCard noteIndex={1} />
-          <Menu />
+          <Menu text={selectionData?.text as string}/>
         </FloatingToolbar>
       </NotesProvider>
     </Plate>
+    </>
+    
   );
 };
 

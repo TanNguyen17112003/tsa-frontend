@@ -4,6 +4,7 @@ import BasicSearchForm from "./BasicSearchForm";
 import { useRouter } from "next/router";
 import BasicSearchResult from "./BasicSearchResult";
 
+
 interface BasicSearchPageProps {}
 
 const BasicSearchPage: FC<BasicSearchPageProps> = ({}) => {

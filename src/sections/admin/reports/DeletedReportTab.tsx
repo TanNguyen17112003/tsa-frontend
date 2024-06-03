@@ -25,29 +25,37 @@ import {
 } from "src/components/shadcn/ui/dialog";
 import { Button } from "src/components/shadcn/ui/button";
 import { Label } from "src/components/shadcn/ui/label";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { Report } from "src/types/report";
 import { SIDE_NAV_WIDTH } from "src/config";
 import ReportDialog from "./ReportDialog";
+import RevertDialog from "./RevertDialog";
 import useFunction from "src/hooks/use-function";
 import { ReportsApi } from "src/api/reports";
 import { getFormData } from "src/utils/api-request";
 import { useReportsContext } from "src/contexts/reports/reports-context";
 import getPaginationText from "src/utils/get-pagination-text";
 
+
 const DeletedReport = () => {
   const { getReportsApi } = useReportsContext();
+	const [filterReportMode, setFilterReportMode] = useState<string>("");
 
-  useEffect(() => {
-    getReportsApi.call;
-  }, [getReportsApi.call]);
+	const report = useMemo(() => {
+		return (getReportsApi.data || []).filter(
+				(item) => item.report_status === "deleted"
+		);
+}, [getReportsApi.data]);
 
-  const report = useMemo(() => {
-    return getReportsApi.data || [];
-  }, [getReportsApi.data]);
+	const handleChangeReportMode = useCallback((e: string) => {
+		e === "1"
+		  ? setFilterReportMode("pending")
+		  : setFilterReportMode("processed");
+	}, []);
 
   const pagination = usePagination({ count: report.length });
   const [isOpen, setIsOpen] = useState<boolean>(false);
+	const [isOpenRevert, setIsOpenRevert] = useState<boolean>(false);
   const [data, setData] = useState(initialReport);
 
   return (
@@ -64,13 +72,17 @@ const DeletedReport = () => {
             <div className="text-xs font-semibold text-nowrap pl-3 pt-2">
               Tình trạng
             </div>
-            <Select>
+            <Select
+							onValueChange={(e) => handleChangeReportMode(e)}
+						>
               <SelectTrigger className="w-[200px] border-none">
                 <SelectValue placeholder="Tất cả" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem value="1">Chưa xử lý</SelectItem>
+                  <SelectItem value="1">
+										Chưa xử lý
+									</SelectItem>
                   <SelectItem value="2">Đã xử lý</SelectItem>
                 </SelectGroup>
               </SelectContent>
@@ -88,6 +100,10 @@ const DeletedReport = () => {
               setIsOpen(true);
               setData(item);
             }}
+						onClickRevert={(item, index) => {
+							setIsOpenRevert(true);
+							setData(item);
+						}}
           ></CustomTable>
         </div>
       </div>
@@ -97,17 +113,24 @@ const DeletedReport = () => {
         onClose={() => setIsOpen(false)}
         data={data}
       />
-
+			<RevertDialog
+        state={isOpenRevert}
+        onClose={() => setIsOpenRevert(false)}
+        data={data}
+      />
       <div
         className={`fixed bg-white flex bottom-0 px-7 justify-between py-2 w-[calc(100vw-${SIDE_NAV_WIDTH}px)]`}
       >
         <div className="flex text-sm text-gray-500 font-normal items-center overflow-hidden text-nowrap">
           {getPaginationText(pagination)}
         </div>
-        <Pagination {...pagination} onChange={pagination.onPageChange} />
+        <Pagination 
+					{...pagination} 
+					onChange={pagination.onPageChange} />
       </div>
     </div>
   );
 };
 
 export default DeletedReport;
+

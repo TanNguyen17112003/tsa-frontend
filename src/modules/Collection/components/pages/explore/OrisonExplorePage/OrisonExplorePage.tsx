@@ -34,7 +34,7 @@ const OrisonExplorePage: FC<OrisonExplorePageProps> = ({}) => {
       sutra: sutra || initialSutra,
     }));
   }, [getOrisonsApi.data, sutra]);
-
+  const firstOrison = useMemo(() => orisons[0], [orisons]);
   const pagination = usePagination({ count: orisons.length });
   const select = useSelection<OrisonDetail>(orisons);
 

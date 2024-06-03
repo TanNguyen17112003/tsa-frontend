@@ -1,9 +1,10 @@
 import { useFormik } from "formik";
 import { useRouter } from "next/router";
-import { useEffect, type FC } from "react";
+import { useEffect, type FC, useMemo } from "react";
 import CustomSelect from "src/components/CustomSelect/CustomSelect";
 import { Button } from "src/components/shadcn/ui/button";
 import FormInput from "src/components/ui/FormInput";
+import { useCollectionsContext } from "src/contexts/collections/collections-context";
 
 interface TextSearchFormProps {
   className?: string;
@@ -29,7 +30,10 @@ const initialTextSearchQuery: TextSearchQuery = {
 
 const TextSearchForm: FC<TextSearchFormProps> = ({ className }) => {
   const router = useRouter();
-
+  const {getCollectionsApi} = useCollectionsContext();
+  const collections = useMemo(() => {
+    return getCollectionsApi.data || [];
+  }, [getCollectionsApi.data]);
   const formik = useFormik({
     initialValues: initialTextSearchQuery,
     onSubmit: (values) => {
@@ -52,7 +56,10 @@ const TextSearchForm: FC<TextSearchFormProps> = ({ className }) => {
       <div className="grid grid-cols-2 gap-4">
         <div>
           <CustomSelect
-            options={[]}
+            options={collections.map((c) => ({
+              label: c.name,
+              value: c.id,
+            }))}
             label="Tuyển tập"
             onValueChange={(value) =>
               formik.setFieldValue("qCollectionId", value)

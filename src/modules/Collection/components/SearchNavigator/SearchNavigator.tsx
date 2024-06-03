@@ -39,7 +39,6 @@ const SearchNavigator: FC<SearchNavigatorProps> = ({}) => {
       ),
     []
   );
-
   useEffect(() => {
     if (router.query.searchType) {
       setOpen("item");
@@ -53,7 +52,7 @@ const SearchNavigator: FC<SearchNavigatorProps> = ({}) => {
       // collapsible={router.query.searchType ? false : true}
       className="w-full"
       value={open}
-      // onValueChange={() => setOpen(open ? "" : "item")}
+      onValueChange={() => setOpen(open ? "" : "item")}
     >
       <AccordionItem value="item" className="border-b-0">
         <AccordionTrigger

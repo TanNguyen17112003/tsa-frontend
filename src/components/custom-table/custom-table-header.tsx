@@ -20,6 +20,7 @@ export function CustomTableHeader<P, T extends { id: P; [key: string]: any }>(
     onClickEdit,
     onClickDelete,
     onClickDetail,
+    onClickRevert,
     indexColumn,
     select,
     stickyHeader,
@@ -80,13 +81,14 @@ export function CustomTableHeader<P, T extends { id: P; [key: string]: any }>(
           onClickDelete ||
           onClickDetail ||
           onClickEdit ||
+          onClickRevert ||
           renderRowActions) && (
           <th
             className="w-[120px] py-3 px-2"
             align="center"
             rowSpan={hasGroupedHeaderLabel ? 2 : 1}
           >
-            {actions}
+            {actions || onClickRevert ? "Hoàn tác" : ""}
           </th>
         )}
       </tr>

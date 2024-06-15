@@ -10,7 +10,8 @@
     "format": "prettier '**/*.{tsx,ts,js,json,md,yml,yaml}' --write",
     "lint": "eslint '**/*.{tsx,ts,js}' --fix",
     "start": "next start -p 8081",
-    "start:dev": "next start -p 3001"
+    "start:dev": "next start -p 3001",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@emotion/css": "^11.11.2",

@@ -15,6 +15,9 @@ export const paths = {
     'add-report': '/dashboard/add-report',
     logout: '/dang-xuat'
   },
+  landing: {
+    index: '/landing'
+  },
   401: '/401',
   404: '/404',
   500: '/500'

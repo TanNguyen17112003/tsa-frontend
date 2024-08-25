@@ -16,11 +16,9 @@ function descendingComparator(a: Document, b: Document, sortBy: string): number 
 }
 
 function getComparator(sortDir: string, sortBy: string) {
-  return (
-    sortDir === 'desc'
-      ? (a: Document, b: Document) => descendingComparator(a, b, sortBy)
-      : (a: Document, b: Document) => -descendingComparator(a, b, sortBy)
-  );
+  return sortDir === 'desc'
+    ? (a: Document, b: Document) => descendingComparator(a, b, sortBy)
+    : (a: Document, b: Document) => -descendingComparator(a, b, sortBy);
 }
 
 export function applySort<T = Document>(
@@ -32,17 +30,17 @@ export function applySort<T = Document>(
   const stabilizedThis = documents.map((el, index) => [el, index]);
 
   stabilizedThis.sort((a, b) => {
-    // @ts-ignore
+    // @ts-expect-error: compare function is not returning a number
     const newOrder = comparator(a[0], b[0]);
 
     if (newOrder !== 0) {
       return newOrder;
     }
 
-    // @ts-ignore
+    // @ts-expect-error: compare function is not returning a number
     return a[1] - b[1];
   });
 
-  // @ts-ignore
+  // @ts-expect-error: map is returning an array of arrays
   return stabilizedThis.map((el) => el[0]);
 }

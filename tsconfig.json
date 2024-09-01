@@ -14,7 +14,18 @@
     "jsx": "preserve",
     "incremental": true,
     "paths": {
-      "@/*": ["src/*"]
+      "@hooks": ["src/hooks"],
+      "@components": ["src/components"],
+      "@guards": ["src/guards"],
+      "@hocs": ["src/hocs"],
+      "@sections": ["src/sections"],
+      "@utils": ["src/utils"],
+      "@interfaces": ["src/interfaces"],
+      "@api": ["src/api"],
+      "@contexts": ["src/contexts"],
+      "@pages/auth": ["src/pages/auth"],
+      "@pages/dashboard": ["src/pages/dashboard"],
+      "@pages/landing": ["src/pages/landing"]
     }
   },
   "include": ["next-env.d.ts", "src", "**/*.ts", "**/*.tsx", "*.cjs", "*.mjs"],

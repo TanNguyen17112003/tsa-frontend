@@ -1,3 +1,3 @@
-import CustomSheet from "./CustomSheet";
+import CustomSheet from './CustomSheet';
 
-export default CustomSheet;
+export { CustomSheet };

@@ -1,5 +1,5 @@
 export const paths = {
-  index: '/',
+  index: '/landing',
   auth: {
     login: '/auth',
     register: '/auth/register',

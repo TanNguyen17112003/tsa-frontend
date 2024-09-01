@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
-import { Button } from '@/components/shadcn/ui/button';
-import { paths } from '@/paths';
+import { Button } from '@components';
+import { paths } from 'src/paths';
 const AuthButton = () => {
   return (
     <Link href={paths.auth.login}>

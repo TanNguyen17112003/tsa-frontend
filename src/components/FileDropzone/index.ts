@@ -1,3 +1,3 @@
-import FileDropzone from "./FileDropzone";
+import FileDropzone from './FileDropzone';
 
-export default FileDropzone;
+export { FileDropzone };

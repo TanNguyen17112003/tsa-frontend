@@ -12,6 +12,7 @@ export * from './landing/LandingAboutUs';
 export * from './landing/LandingContact';
 export * from './landing/LandingFeatures';
 export * from './landing/LandingFlow';
+export * from './landing/LandingFooter';
 export * from './landing/LandingIntroduction';
 export * from './user/dashboard/OverviewUserPage/index';
 export * from './user/dashboard/OverviewUserPage/OverviewStats';

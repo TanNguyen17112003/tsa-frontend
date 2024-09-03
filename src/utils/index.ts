@@ -9,6 +9,7 @@ export * from './apply-sort';
 export * from './auth';
 export * from './bytes-to-size';
 export * from './cookie-helper';
+export * from './create-emotion-cache';
 export * from './create-resource-id';
 export * from './date-locale';
 export * from './deep-copy';

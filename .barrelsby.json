@@ -7,9 +7,7 @@
     "./src/hocs",
     "./src/layouts",
     "./src/sections",
-    "./src/utils",
-    "./src/pages/auth",
-    "./src/pages/dashboard"
+    "./src/utils"
   ],
   "delete": true
 }

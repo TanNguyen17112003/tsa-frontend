@@ -24,8 +24,7 @@
       "@api": ["src/api"],
       "@contexts": ["src/contexts"],
       "@pages/auth": ["src/pages/auth"],
-      "@pages/dashboard": ["src/pages/dashboard"],
-      "@pages/landing": ["src/pages/landing"]
+      "@pages/dashboard": ["src/pages/dashboard"]
     }
   },
   "include": ["next-env.d.ts", "src", "**/*.ts", "**/*.tsx", "*.cjs", "*.mjs"],

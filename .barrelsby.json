@@ -9,8 +9,7 @@
     "./src/sections",
     "./src/utils",
     "./src/pages/auth",
-    "./src/pages/dashboard",
-    "./src/pages/landing"
+    "./src/pages/dashboard"
   ],
   "delete": true
 }

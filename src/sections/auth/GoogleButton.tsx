@@ -13,7 +13,7 @@ function GoogleButton() {
         borderStyle: 'solid',
         borderRadius: 'full'
       }}
-      className='flex gap-3'
+      className='flex gap-3 w-full hover:bg-gray-100'
     >
       <Box height={'100%'}>
         <Image src={googleIcon} height='20' objectFit='cover' alt='Google' />

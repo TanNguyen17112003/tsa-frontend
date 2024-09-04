@@ -1,22 +1,25 @@
 import { useFormik } from 'formik';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Button } from 'src/components/shadcn/ui/button';
 import FormInput from 'src/components/ui/FormInput';
-import HeaderTitle from 'src/components/ui/HeaderTitle';
 import { AuthContextType } from 'src/contexts/auth/jwt-context';
 import { useAuth } from 'src/hooks/use-auth';
 import { paths } from 'src/paths';
 import PasswordInput from 'src/sections/auth/PasswordInput';
 import type { Page as PageType } from 'src/types/page';
 import * as Yup from 'yup';
-import backgroundImage from '../../../public/ui/landing-logo-1.png';
+import backgroundImage from 'public/ui/background-auth.png';
 import Link from 'next/link';
 import { useSearchParams } from 'src/hooks/use-search-params';
+import React from 'react';
+import { Box, Typography, Divider, Stack } from '@mui/material';
+import GoogleButton from 'src/sections/auth/GoogleButton';
+import { HomeIcon } from '@heroicons/react/24/solid';
 
 export const loginSchema = Yup.object({
-  username: Yup.string().required('Tên đăng nhập không được để trống'),
+  username: Yup.string().required('Email không được để trống'),
   password: Yup.string().required('Mật khẩu không được để trống')
 });
 
@@ -45,6 +48,10 @@ const Page: PageType = () => {
     }
   });
 
+  const handleBack = useCallback(() => {
+    router.push(paths.landing.index);
+  }, []);
+
   useEffect(() => {
     if (formik.values.username || formik.values.password) {
       formik.setFieldError('general', '');
@@ -53,75 +60,95 @@ const Page: PageType = () => {
   }, [formik.values.username, formik.values.password]);
 
   return (
-    <div className='h-screen flex '>
-      <Image
-        src={backgroundImage}
-        className='flex-1 min-w-0 object-cover'
-        alt='Background images'
-      />
-
-      <div className='flex flex-col max-w-max max-h-max justify-center items-center px-[106px]'>
-        <HeaderTitle />
-        <form onSubmit={formik.handleSubmit} className='flex flex-col gap-3 w-full'>
-          <div className='flex flex-col gap-1'>
-            <span className='label color-label-input-caret label-text text-xs  font-semibold '>
-              Tên đăng nhập
-            </span>
-            <FormInput
-              type='text'
-              placeholder='Nhập tên đăng nhập tại đây ...'
-              className='w-full px-3'
-              {...formik.getFieldProps('username')}
-              error={formik.touched.username && !!formik.errors.username}
-              helperText={formik.touched.username && formik.errors.username}
-            />
-          </div>
-          <div className='flex flex-col gap-1'>
-            <span className='label color-label-input-caret label-text text-xs  font-semibold'>
-              Mật khẩu
-            </span>
-            <PasswordInput
-              {...formik.getFieldProps('password')}
-              showPassword={showPassword}
-              togglePasswordVisibility={() => setShowPassword(!showPassword)}
-              error={formik.touched.password && !!formik.errors.password}
-              helperText={formik.touched.password && formik.errors.password}
-            />
-          </div>
-          {formik.errors.general && (
-            <div>
-              <p className='text-sm font-semibold text-center flex items-center justify-center  text-red-500 gap-6'>
-                {formik.errors.general}
-              </p>
-              <div className='mt-5'> </div>
-            </div>
-          )}
-          <Button
-            className='w-full mt-2'
-            type='submit' // Specify the button type as "submit"
+    <Box className='h-screen flex bg-[#F6FDF5] items-center gap-10 px-6 text-black'>
+      <Box width={'40%'}>
+        <Image src={backgroundImage} className='w-[100%] object-contain' alt='Background images' />
+      </Box>
+      <Box width='60%' className='flex justify-center'>
+        <Box width={'70%'} className='flex flex-col gap-5'>
+          <Stack
+            direction={'row'}
+            spacing={1}
+            alignItems={'center'}
+            className='cursor-pointer'
+            onClick={handleBack}
           >
-            Đăng nhập
-          </Button>
-        </form>
-        <div className='flex items-center gap-0'>
-          <Button
-            asChild
-            variant='ghost'
-            className='px-4 pt-1 pb-1 max-w-max h-[24px] text-xs text-primary hover:text-primary'
-          >
-            <Link href={paths.auth.register}>Đăng ký tài khoản</Link>
-          </Button>
-          <span>/</span>
-          <Button
-            color='primary'
-            variant='ghost'
-            className='px-4 pt-1 pb-1 max-w-max h-[24px] text-xs text-primary hover:text-primary'
-          >
-            Quên mật khẩu
-          </Button>
-        </div>
-      </div>
-    </div>
+            <HomeIcon width={20} />
+            <Typography>Trang chủ</Typography>
+          </Stack>
+          <Typography variant='h3'>Đăng nhập</Typography>
+          <GoogleButton />
+          <Divider>Hoặc</Divider>
+          <form onSubmit={formik.handleSubmit} className='flex flex-col gap-3 w-full'>
+            <Box className='flex flex-col gap-1'>
+              <Typography
+                fontWeight={'bold'}
+                className='label color-label-input-caret label-text text-xs'
+              >
+                Email
+              </Typography>
+              <FormInput
+                type='text'
+                className='w-full px-3 rounded-lg bg-white'
+                {...formik.getFieldProps('username')}
+                error={formik.touched.username && !!formik.errors.username}
+                helperText={formik.touched.username && formik.errors.username}
+              />
+              <Typography variant='body2'>Nhập địa chỉ email của bạn</Typography>
+            </Box>
+            <Box className='flex flex-col gap-1'>
+              <Typography
+                fontWeight='bold'
+                className='label color-label-input-caret label-text text-xs font-semibold'
+              >
+                Mật khẩu
+              </Typography>
+              <PasswordInput
+                {...formik.getFieldProps('password')}
+                showPassword={showPassword}
+                togglePasswordVisibility={() => setShowPassword(!showPassword)}
+                error={formik.touched.password && !!formik.errors.password}
+                helperText={formik.touched.password && formik.errors.password}
+                className='bg-white'
+              />
+              <Stack direction={'row'} justifyContent={'space-between'}>
+                <Typography variant='body2'>Nhật mật khẩu</Typography>
+                <Button
+                  color='primary'
+                  variant='ghost'
+                  className='px-4 pt-1 pb-1 max-w-max h-[24px] text-xs text-primary hover:text-primary underline'
+                >
+                  Quên mật khẩu
+                </Button>
+              </Stack>
+            </Box>
+            {formik.errors.general && (
+              <Box>
+                <Typography className='text-sm font-semibold text-center flex items-center justify-center text-red-500 gap-6'>
+                  {formik.errors.general}
+                </Typography>
+                <Box className='mt-5'></Box>
+              </Box>
+            )}
+            <Button className='mt-2' type='submit'>
+              Đăng nhập
+            </Button>
+          </form>
+          <Box className='flex items-center'>
+            <Typography>Chưa có tài khoản?</Typography>
+            <Button
+              asChild
+              variant='ghost'
+              className='px-4 pt-1 pb-1 max-w-max h-[24px] text-primary hover:text-primary'
+            >
+              <Link href={paths.auth.register} className='underline italic'>
+                Đăng ký
+              </Link>
+            </Button>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 

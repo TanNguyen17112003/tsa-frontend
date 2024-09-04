@@ -22,9 +22,7 @@
       "@utils": ["src/utils"],
       "@interfaces": ["src/interfaces"],
       "@api": ["src/api"],
-      "@contexts": ["src/contexts"],
-      "@pages/auth": ["src/pages/auth"],
-      "@pages/dashboard": ["src/pages/dashboard"]
+      "@contexts": ["src/contexts"]
     }
   },
   "include": ["next-env.d.ts", "src", "**/*.ts", "**/*.tsx", "*.cjs", "*.mjs"],

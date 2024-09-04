@@ -1,5 +1,5 @@
 import { Box, Stack, Typography, Stepper, Step, StepLabel } from '@mui/material';
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { Box1, Edit } from 'iconsax-react';
 import { BikeIcon } from 'lucide-react';
 
@@ -10,6 +10,7 @@ interface LandingFlowProps {
 }
 
 export const LandingFlow = () => {
+  const [activeStep, setActiveStep] = useState(0);
   const flowList: LandingFlowProps[] = [
     {
       image: <Box1 size={'70%'} />,
@@ -27,14 +28,18 @@ export const LandingFlow = () => {
       description: 'Quản trị hệ thống tiến hành chỉ định nhân viên giao hàng'
     }
   ];
+
+  const handleStepClick = useCallback((index: number) => {
+    setActiveStep(index);
+  }, []);
   return (
     <Box paddingX={6} paddingY={5} sx={{ backgroundColor: '#f6fdf5' }}>
       <Typography textAlign={'center'} variant='h4' marginBottom={5} color='black'>
         Luồng hoạt động của hệ thống
       </Typography>
-      <Stepper alternativeLabel>
+      <Stepper alternativeLabel activeStep={activeStep}>
         {flowList.map((flow, index) => (
-          <Step key={index}>
+          <Step key={index} onClick={() => handleStepClick(index)} className='cursor-pointer'>
             <StepLabel>
               <Stack spacing={1} alignItems='center' width={'100%'}>
                 <Box

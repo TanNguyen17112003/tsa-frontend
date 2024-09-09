@@ -42,7 +42,8 @@ export const LandingFeatures = () => {
       gap={5}
       paddingY={5}
       sx={{
-        background: 'linear-gradient(to left, #ffffff 30%, #9FD596 70%)'
+        background: 'linear-gradient(to left, #ffffff 30%, #9FD596 70%)',
+        height: '100vh'
       }}
     >
       <Box width={'30%'} color={'black'}>

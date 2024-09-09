@@ -1,19 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
-import logo from '../../../public/logo.png';
-import {
-  TextField,
-  AppBar,
-  Toolbar,
-  Typography,
-  Button,
-  Box,
-  Card,
-  InputAdornment,
-  Link
-} from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
-import AuthButton from 'src/pages/landing/authButton';
+import { Typography, Button, Box, Card } from '@mui/material';
+
 import landingLogo1 from '../../../public/ui/landing-logo-1.png';
 import food from '../../../public/ui/food.png';
 import technology from '../../../public/ui/technology.png';
@@ -34,61 +22,15 @@ const introductionList = [
   }
 ];
 
-const navigationList = [
-  {
-    title: 'FAQs',
-    link: '#'
-  },
-  {
-    title: 'Liên hệ',
-    link: '#'
-  },
-  {
-    title: 'Về chúng tôi',
-    link: '#'
-  }
-];
-
 export const LandingIntroduction = () => {
   return (
     <Box
       sx={{
         backgroundColor: 'background.default',
         height: '100vh',
-        width: '100vw',
         color: 'text.primary'
       }}
     >
-      <AppBar position='static' sx={{ backgroundColor: 'background.paper', color: 'text.primary' }}>
-        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', paddingY: 2 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Image src={logo} alt='logo' width={50} />
-            <Typography variant='h5' component='span' sx={{ fontWeight: 'bold', color: '#5BE23D' }}>
-              TSA
-            </Typography>
-          </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            {navigationList.map((item, index) => (
-              <Link key={index} href={item.link} underline='none' color='inherit'>
-                <Typography variant='body1'>{item.title}</Typography>
-              </Link>
-            ))}
-            <TextField
-              variant='outlined'
-              placeholder='Tìm kiếm đơn hàng'
-              sx={{ maxWidth: 200, borderRadius: 5, px: 2 }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position='end'>
-                    <SearchIcon />
-                  </InputAdornment>
-                )
-              }}
-            />
-            <AuthButton />
-          </Box>
-        </Toolbar>
-      </AppBar>
       <Box
         component='main'
         sx={{ display: 'flex', alignItems: 'center', p: 8, gap: 4, backgroundColor: '#f6fdf5' }}

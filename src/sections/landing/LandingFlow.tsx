@@ -33,7 +33,17 @@ export const LandingFlow = () => {
     setActiveStep(index);
   }, []);
   return (
-    <Box paddingX={6} paddingY={5} sx={{ backgroundColor: '#f6fdf5' }}>
+    <Box
+      paddingX={6}
+      paddingY={5}
+      sx={{
+        backgroundColor: '#f6fdf5',
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center'
+      }}
+    >
       <Typography textAlign={'center'} variant='h4' marginBottom={5} color='black'>
         Luồng hoạt động của hệ thống
       </Typography>

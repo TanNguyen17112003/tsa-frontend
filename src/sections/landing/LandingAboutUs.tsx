@@ -10,7 +10,7 @@ export const LandingAboutUs = () => {
     <Box
       display={'flex'}
       justifyContent={'center'}
-      sx={{ bgcolor: '#ffffff', position: 'relative' }}
+      sx={{ bgcolor: '#ffffff', position: 'relative', height: '100vh' }}
       paddingY={10}
     >
       <Image
@@ -38,7 +38,7 @@ export const LandingAboutUs = () => {
             bạn yên tâm hơn với sự đảm bảo về chất lượng và sự an toàn của hàng hóa.
           </Typography>
           <Button variant='contained' color='success' sx={{ alignSelf: 'flex-start' }}>
-            Liên hệ ngay
+            Xem thêm
           </Button>
         </Stack>
       </Box>

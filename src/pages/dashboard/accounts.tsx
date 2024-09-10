@@ -1,7 +1,6 @@
 import { useRouter } from 'next/router';
 import { useEffect, useMemo, useState } from 'react';
 import { HiMagnifyingGlass } from 'react-icons/hi2';
-import PageHeader from 'src/components/PageHeader';
 import { CustomTable } from 'src/components/custom-table';
 import { Input } from 'src/components/shadcn/ui/input';
 import Pagination from 'src/components/ui/Pagination';
@@ -11,7 +10,6 @@ import { useAuth } from 'src/hooks/use-auth';
 import { useDrawer } from 'src/hooks/use-drawer';
 import usePagination from 'src/hooks/use-pagination';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard';
-import AccountEditSheet from 'src/sections/admin/accounts/AccountEditSheet';
 import AccountsDeleteDialog from 'src/sections/admin/accounts/AccountsDeleteDialog';
 import getAccountTableConfig from 'src/sections/admin/accounts/account-table-config';
 import type { Page as PageType } from 'src/types/page';
@@ -68,21 +66,6 @@ const Page: PageType = () => {
     <div className='flex flex-col space-y-4 min-h-screen'>
       {user?.role == 'admin' && (
         <>
-          <PageHeader
-            title='Quản lý tài khoản'
-            button={
-              <div className='ml-auto'>
-                <AccountEditSheet
-                  open={editDrawer.open}
-                  onOpenChange={(open) =>
-                    open ? editDrawer.handleOpen() : editDrawer.handleClose()
-                  }
-                  account={editDrawer.data}
-                />
-              </div>
-            }
-            variant='full-divide'
-          />
           <div className='flex-grow space-y-7 mb-4 px-7 pt-7 pb-2 '>
             <div className='flex p-2  border border-gray-300 rounded-md h-12 w-full'>
               <div className='flex w-full items-center'>

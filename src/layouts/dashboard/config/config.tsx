@@ -1,9 +1,9 @@
-import { useRouter } from "next/router";
-import type { ReactNode } from "react";
-import { useMemo } from "react";
-import { useAuth } from "src/hooks/use-auth";
-import { getDashboardAdminConfigs } from "./dashboard-admin-configs";
-import { getDashboardUserConfigs } from "./dashboard-user-configs";
+import { useRouter } from 'next/router';
+import type { ReactNode } from 'react';
+import { useMemo } from 'react';
+import { useAuth } from 'src/hooks/use-auth';
+import { getDashboardAdminConfigs } from './dashboard-admin-configs';
+import { dashboardStudentConfigs } from './dashboard-student-configs';
 
 export interface DashboardItem {
   disabled?: boolean;
@@ -24,10 +24,10 @@ export const useSections = () => {
   const { user } = useAuth();
 
   return useMemo(() => {
-    if (user?.role == "admin") {
+    if (user?.role == 'admin') {
       return getDashboardAdminConfigs();
     } else {
-      return getDashboardUserConfigs();
+      return dashboardStudentConfigs;
     }
   }, [user?.role]);
 };

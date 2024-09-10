@@ -13,7 +13,16 @@ export const paths = {
     categories: '/dashboard/categories',
     reports: '/dashboard/reports',
     'add-report': '/dashboard/add-report',
-    logout: '/dang-xuat'
+    logout: '/logout'
+  },
+  student: {
+    index: '/student',
+    order: {
+      index: '/student/order',
+      add: '/student/order/add'
+    },
+    account: { index: '/student/account' },
+    report: { index: '/student/report' }
   },
   landing: {
     index: '/landing'

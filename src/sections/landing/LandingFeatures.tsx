@@ -9,12 +9,13 @@ import {
 } from '@mui/lab';
 import Image from 'next/image';
 import deliveryMan2 from '../../../public/ui/delivery-man-2.png';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface FeatureProps {
   title: string;
   description: string;
 }
+
 export const LandingFeatures = () => {
   const featureList: FeatureProps[] = [
     {
@@ -33,6 +34,16 @@ export const LandingFeatures = () => {
         'Hệ thống thường xuyên gửi tặng các ưu đãi đạc biệt cho người dùng thường xuyên sử dụng hệ thống.'
     }
   ];
+
+  const [visibleFeatures, setVisibleFeatures] = useState<number>(0);
+
+  useEffect(() => {
+    featureList.forEach((_, index) => {
+      setTimeout(() => {
+        setVisibleFeatures((prev) => prev + 1);
+      }, index * 1000);
+    });
+  }, [featureList.length]);
 
   return (
     <Box
@@ -58,7 +69,10 @@ export const LandingFeatures = () => {
                 {index < featureList.length - 1 && <TimelineConnector />}
               </TimelineSeparator>
               <TimelineContent>
-                <Stack spacing={1}>
+                <Stack
+                  spacing={1}
+                  sx={{ opacity: visibleFeatures > index ? 1 : 0, transition: 'opacity 0.5s' }}
+                >
                   <Typography variant='h6'>{feature.title}</Typography>
                   <Typography variant='body2'>{feature.description}</Typography>
                 </Stack>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import AuthButton from 'src/pages/landing/authButton';
 import { AppBar, Toolbar, Box, Typography, Link, InputAdornment, TextField } from '@mui/material';
@@ -9,17 +9,29 @@ export const LandingHeader = () => {
   const navigationList = [
     {
       title: 'FAQs',
-      link: '#'
+      link: '#faqs'
     },
     {
       title: 'Liên hệ',
-      link: '#'
+      link: '#contact'
     },
     {
       title: 'Về chúng tôi',
-      link: '#'
+      link: '#about-us'
     }
   ];
+
+  const handleLinkClick = useCallback(
+    (event: React.MouseEvent<HTMLAnchorElement>, link: string) => {
+      event.preventDefault();
+      const targetElement = document.querySelector(link);
+      if (targetElement) {
+        targetElement.scrollIntoView({ behavior: 'smooth' });
+      }
+    },
+    []
+  );
+
   return (
     <AppBar position='fixed' sx={{ backgroundColor: 'background.paper', color: 'text.primary' }}>
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', paddingY: 2 }}>
@@ -31,7 +43,13 @@ export const LandingHeader = () => {
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           {navigationList.map((item, index) => (
-            <Link key={index} href={item.link} underline='none' color='inherit'>
+            <Link
+              key={index}
+              href={item.link}
+              underline='none'
+              color='inherit'
+              onClick={(event) => handleLinkClick(event, item.link)}
+            >
               <Typography variant='body1'>{item.title}</Typography>
             </Link>
           ))}

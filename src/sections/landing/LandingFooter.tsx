@@ -25,7 +25,7 @@ export const LandingFooter = () => {
   const SupportLinks: FooterLinkProps[] = [
     {
       title: 'Liên hệ',
-      link: '#'
+      link: '#contact'
     },
     {
       title: 'Chính sách hoàn trả',
@@ -33,7 +33,7 @@ export const LandingFooter = () => {
     },
     {
       title: 'FAQs',
-      link: '#'
+      link: '#faqs'
     }
   ];
 
@@ -69,7 +69,13 @@ export const LandingFooter = () => {
               </Typography>
               <Stack spacing={1}>
                 {aboutUsLinks.map((link, index) => (
-                  <Link key={index} href={link.link} underline='none' color='inherit'>
+                  <Link
+                    key={index}
+                    href={link.link}
+                    underline='none'
+                    color='inherit'
+                    className='hover:text-blue-500'
+                  >
                     <Typography variant='body1'>{link.title}</Typography>
                   </Link>
                 ))}
@@ -81,7 +87,13 @@ export const LandingFooter = () => {
               </Typography>
               <Stack spacing={1}>
                 {SupportLinks.map((link, index) => (
-                  <Link key={index} href={link.link} underline='none' color='inherit'>
+                  <Link
+                    key={index}
+                    href={link.link}
+                    underline='none'
+                    color='inherit'
+                    className='hover:text-blue-500'
+                  >
                     <Typography variant='body1'>{link.title}</Typography>
                   </Link>
                 ))}
@@ -93,7 +105,12 @@ export const LandingFooter = () => {
               </Typography>
               <Stack spacing={1}>
                 {SocialLinks.map((link, index) => (
-                  <Box display={'flex'} gap={1} key={index}>
+                  <Box
+                    display={'flex'}
+                    gap={1}
+                    key={index}
+                    className='hover:text-blue-500 cursor-pointer'
+                  >
                     {link.icon}
                     <Link href={link.link} underline='none' color='inherit'>
                       <Typography variant='body1'>{link.title}</Typography>

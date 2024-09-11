@@ -48,6 +48,10 @@ const Page: PageType = () => {
     }
   });
 
+  const handleLogin = useCallback(() => {
+    router.replace(paths.student.index);
+  }, []);
+
   const handleBack = useCallback(() => {
     router.push(paths.landing.index);
   }, []);
@@ -130,7 +134,7 @@ const Page: PageType = () => {
                 <Box className='mt-5'></Box>
               </Box>
             )}
-            <Button className='mt-2' type='submit'>
+            <Button className='mt-2' type='submit' onClick={handleLogin}>
               Đăng nhập
             </Button>
           </form>

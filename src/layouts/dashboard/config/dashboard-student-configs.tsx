@@ -1,4 +1,4 @@
-import { Edit, Personalcard, LogoutCurve, Chart, NotificationStatus } from 'iconsax-react';
+import { Edit, Personalcard, LogoutCurve, Box1, NotificationStatus } from 'iconsax-react';
 import { paths } from 'src/paths';
 import { Section } from './config';
 
@@ -9,7 +9,7 @@ export const dashboardStudentConfigs: Section[] = [
       {
         title: 'Thông tin đơn hàng',
         path: paths.student.index,
-        icon: <Chart size='20px' variant='Bold' />
+        icon: <Box1 size='20px' variant='Bold' />
       },
       {
         title: 'Lịch sử khiếu nại',

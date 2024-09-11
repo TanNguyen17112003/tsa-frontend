@@ -1,7 +1,8 @@
-import { useMemo, type FC } from "react";
-import { Button } from "../../shadcn/ui/button";
-import _ from "lodash";
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
+import { useMemo, type FC } from 'react';
+import { Button } from '../../shadcn/ui/button';
+import _ from 'lodash';
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
+import { Typography } from '@mui/material';
 
 interface PaginationProps {
   page: number;
@@ -11,13 +12,7 @@ interface PaginationProps {
   length?: number;
 }
 
-const Pagination: FC<PaginationProps> = ({
-  page,
-  count,
-  onChange,
-  rowsPerPage,
-  length = 1,
-}) => {
+const Pagination: FC<PaginationProps> = ({ page, count, onChange, rowsPerPage, length = 1 }) => {
   const totalPages = Math.ceil(count / rowsPerPage) || 1;
 
   const buttonIndexes = useMemo(() => {
@@ -45,36 +40,45 @@ const Pagination: FC<PaginationProps> = ({
   }, [length, page, totalPages]);
 
   return (
-    <div className="flex">
-      <Button
+    <div className='flex items-center gap-2'>
+      {/* <Button
         className="rounded-none rounded-tl-md rounded-bl-md"
         variant="outline"
         size="icon"
         disabled={page == 0}
+       
+      > */}
+      <Typography
+        className='text-xs opacity-60 hover:opacity-100 cursor-pointer'
         onClick={(e) => onChange(e, page > 0 ? page - 1 : page)}
       >
-        <ChevronLeftIcon className="w-5 h-5" />
-      </Button>
+        Previous
+      </Typography>
+      {/* </Button> */}
       {buttonIndexes.map((index) => (
         <Button
-          className="rounded-none"
-          variant={page == index ? undefined : "outline"}
+          className='rounded-lg bg-[#624DE3]'
+          variant={page == index ? undefined : 'outline'}
           key={index}
           onClick={index >= 0 ? (e) => onChange(e, index) : undefined}
           disabled={index == -1}
         >
-          {index >= 0 ? index + 1 : "..."}
+          {index >= 0 ? index + 1 : '...'}
         </Button>
       ))}
-      <Button
+      {/* <Button
         className="rounded-none rounded-tr-md rounded-br-md"
         variant="outline"
         size="icon"
         disabled={page == totalPages - 1}
+      > */}
+      <Typography
+        className='text-xs opacity-60 hover:opacity-100 cursor-pointer'
         onClick={(e) => onChange(e, page < totalPages - 1 ? page + 1 : page)}
       >
-        <ChevronRightIcon className="w-5 h-5" />
-      </Button>
+        Next
+      </Typography>
+      {/* </Button> */}
     </div>
   );
 };

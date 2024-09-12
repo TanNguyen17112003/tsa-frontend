@@ -7,7 +7,7 @@ import { paths } from 'src/paths';
 import Link from 'next/link';
 import { Stack } from '@mui/system';
 import { useRouter } from 'next/router';
-import ContentHeader from 'src/sections/student/order/ContentHeader';
+import ContentHeader from 'src/components/ContentHeader';
 import OrderNotPaid from 'src/sections/student/order/order-not-paid';
 import OrderPaid from 'src/sections/student/order/order-paid';
 

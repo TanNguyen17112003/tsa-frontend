@@ -1,5 +1,5 @@
 import React from 'react';
-import StudentOrderHeader from './StudentOrderHeader';
+import OrderFilter from './order-filter';
 import { Box, Stack, Typography } from '@mui/material';
 import { OrderDetail, initialOrderList } from 'src/types/order';
 import getOrderTableConfigs from './order-table-config';
@@ -20,7 +20,7 @@ function OrderNotPaid() {
   });
   return (
     <Box className='flex flex-col min-h-screen bg-white px-6 py-4 text-black'>
-      <StudentOrderHeader />
+      <OrderFilter />
       <Box sx={{ flex: 1 }}>
         <CustomTable
           rows={initialOrderList}

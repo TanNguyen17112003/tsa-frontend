@@ -43,7 +43,7 @@ export const initialReportList: ReportDetail[] = [
     reportContent: 'Đơn hàng không đúng',
     proof: 'https://via.placeholder.com/150',
     reply: 'Chúng tôi sẽ xem xét và giải quyết sớm nhất',
-    reportStatus: 'SOLVED'
+    reportStatus: 'PENDING'
   },
   {
     id: '1',
@@ -52,7 +52,7 @@ export const initialReportList: ReportDetail[] = [
     reportContent: 'Đơn hàng không đúng',
     proof: 'https://via.placeholder.com/150',
     reply: 'Chúng tôi sẽ xem xét và giải quyết sớm nhất',
-    reportStatus: 'SOLVED'
+    reportStatus: 'PENDING'
   },
   {
     id: '1',
@@ -61,7 +61,7 @@ export const initialReportList: ReportDetail[] = [
     reportContent: 'Đơn hàng không đúng',
     proof: 'https://via.placeholder.com/150',
     reply: 'Chúng tôi sẽ xem xét và giải quyết sớm nhất',
-    reportStatus: 'SOLVED'
+    reportStatus: 'DECLINED'
   },
   {
     id: '1',
@@ -70,6 +70,12 @@ export const initialReportList: ReportDetail[] = [
     reportContent: 'Đơn hàng không đúng',
     proof: 'https://via.placeholder.com/150',
     reply: 'Chúng tôi sẽ xem xét và giải quyết sớm nhất',
-    reportStatus: 'SOLVED'
+    reportStatus: 'DECLINED'
   }
 ];
+
+export const reportStatusMap = {
+  PENDING: 'Đang chờ xử lý',
+  SOLVED: 'Đã giải quyết',
+  DECLINED: 'Đã từ chối'
+};

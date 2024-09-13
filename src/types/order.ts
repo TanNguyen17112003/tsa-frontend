@@ -1,5 +1,5 @@
 type PaymentMethod = 'AT_DELIVERY' | 'MOMO' | 'BANK';
-type OrderStatus = 'CANCELLED' | 'DELIVERED' | 'PENDING';
+type OrderStatus = 'CANCELLED' | 'DELIVERED' | 'PENDING' | 'REJECTED' | 'IN_TRANSPORT' | 'REJECTED';
 
 export interface Order {
   id: string; // uuid
@@ -10,6 +10,7 @@ export interface Order {
   amount: number;
   paymentMethod: PaymentMethod;
   status: OrderStatus;
+  isPaid: boolean;
 }
 
 export interface OrderDetail extends Order {
@@ -38,7 +39,8 @@ export const initialOrderList: OrderDetail[] = [
     deliveryDate: '2024-09-05',
     amount: 5000,
     paymentMethod: 'BANK',
-    status: 'DELIVERED'
+    status: 'DELIVERED',
+    isPaid: true
   },
   {
     id: '20462',
@@ -48,7 +50,8 @@ export const initialOrderList: OrderDetail[] = [
     deliveryDate: '2024-09-05',
     amount: 5000,
     paymentMethod: 'BANK',
-    status: 'DELIVERED'
+    status: 'DELIVERED',
+    isPaid: true
   },
   {
     id: '20462',
@@ -58,6 +61,70 @@ export const initialOrderList: OrderDetail[] = [
     deliveryDate: '2024-09-05',
     amount: 5000,
     paymentMethod: 'BANK',
-    status: 'DELIVERED'
+    status: 'DELIVERED',
+    isPaid: false
+  },
+  {
+    id: '20462',
+    code: '20462',
+    product: ['Mũ'],
+    address: 'R.312, D.A20',
+    deliveryDate: '2024-09-05',
+    amount: 5000,
+    paymentMethod: 'BANK',
+    status: 'DELIVERED',
+    isPaid: false
+  },
+  {
+    id: '20462',
+    code: '20462',
+    product: ['Mũ'],
+    address: 'R.312, D.A20',
+    deliveryDate: '2024-09-05',
+    amount: 5000,
+    paymentMethod: 'BANK',
+    status: 'CANCELLED',
+    isPaid: true
+  },
+  {
+    id: '20462',
+    code: '20462',
+    product: ['Mũ'],
+    address: 'R.312, D.A20',
+    deliveryDate: '2024-09-05',
+    amount: 5000,
+    paymentMethod: 'BANK',
+    status: 'CANCELLED',
+    isPaid: false
+  },
+  {
+    id: '20462',
+    code: '20462',
+    product: ['Mũ'],
+    address: 'R.312, D.A20',
+    deliveryDate: '2024-09-05',
+    amount: 5000,
+    paymentMethod: 'BANK',
+    status: 'PENDING',
+    isPaid: true
+  },
+  {
+    id: '20462',
+    code: '20462',
+    product: ['Mũ'],
+    address: 'R.312, D.A20',
+    deliveryDate: '2024-09-05',
+    amount: 5000,
+    paymentMethod: 'BANK',
+    status: 'PENDING',
+    isPaid: false
   }
 ];
+
+export const orderStatusMap = {
+  'Đã giao': 'DELIVERED',
+  'Đang giao': 'IN_TRANSPORT',
+  'Đang chờ xử lý': 'PENDING',
+  'Đã hủy': 'CANCELLED',
+  'Đã từ chối': 'REJECTED'
+};

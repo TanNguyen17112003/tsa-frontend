@@ -2,9 +2,16 @@ import { Box, Typography, Stack, Select, MenuItem, TextField, InputAdornment } f
 import React from 'react';
 import DateRangePickerTextField from 'src/components/date-range-picker-textfield';
 import { SearchIcon } from 'lucide-react';
+import { useRouter } from 'next/router';
+import { orderStatusMap } from 'src/types/order';
 
-function OrderFilter() {
-  const orderStatusList = ['Đã giao', 'Đang giao', 'Đã hủy'];
+interface OrderFilterProps {
+  numberOfOrders: number;
+}
+
+const OrderFilter: React.FC<OrderFilterProps> = (props) => {
+  const router = useRouter();
+  const orderStatusList = ['Tất cả', ...Object.keys(orderStatusMap)];
   const [dateRange, setDateRange] = React.useState({
     startDate: new Date('2024-01-01'),
     endDate: new Date('2024-01-31')
@@ -12,11 +19,24 @@ function OrderFilter() {
   const handleDateChange = React.useCallback((range: any) => {
     setDateRange(range);
   }, []);
+  const handleReportStatusChange = React.useCallback(
+    (status: string) => {
+      const queryStatus =
+        status === 'Tất cả'
+          ? 'all'
+          : orderStatusMap[status as keyof typeof orderStatusMap].toLowerCase();
+      router.push({
+        pathname: router.pathname,
+        query: { ...router.query, status: queryStatus }
+      });
+    },
+    [router, orderStatusMap]
+  );
   return (
     <Box className='flex gap-2 items-center w-full'>
-      <Stack direction='row' spacing={1} width={'15%'}>
-        <Typography className='font-bold'>Số lượng đơn hàng:</Typography>
-        <Typography className='font-bold'>15</Typography>
+      <Stack direction='row' spacing={0.5} width={'15%'}>
+        <Typography fontWeight={'bold'}>Số lượng đơn hàng:</Typography>
+        <Typography fontWeight={'bold'}>{props.numberOfOrders}</Typography>
       </Stack>
       <TextField
         variant='outlined'
@@ -31,9 +51,12 @@ function OrderFilter() {
         }}
       />
       <Stack direction={'row'} spacing={2} alignItems={'center'} width={'65%'}>
-        <Box className='flex flex-col gap-2 w-[50%]'>
-          <Typography className='font-bold'>Trạng thái</Typography>
-          <Select defaultValue={orderStatusList[0]}>
+        <Box className='flex flex-col gap-1 w-[50%]'>
+          <Typography fontWeight={'bold'}>Trạng thái</Typography>
+          <Select
+            defaultValue={orderStatusList[0]}
+            onChange={(e) => handleReportStatusChange(e.target.value as string)}
+          >
             {orderStatusList.map((status, index) => (
               <MenuItem key={index} value={status}>
                 {status}
@@ -41,13 +64,13 @@ function OrderFilter() {
             ))}
           </Select>
         </Box>
-        <Box className='flex flex-col gap-2'>
-          <Typography className='font-bold'>Thời gian</Typography>
+        <Box className='flex flex-col gap-1'>
+          <Typography fontWeight={'bold'}>Thời gian</Typography>
           <DateRangePickerTextField initialDateRange={dateRange} onChange={handleDateChange} />
         </Box>
       </Stack>
     </Box>
   );
-}
+};
 
 export default OrderFilter;

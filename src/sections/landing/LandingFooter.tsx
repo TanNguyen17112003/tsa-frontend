@@ -54,6 +54,17 @@ export const LandingFooter = () => {
       icon: <Facebook />
     }
   ];
+
+  const handleLinkClick = React.useCallback(
+    (event: React.MouseEvent<HTMLAnchorElement>, link: string) => {
+      event.preventDefault();
+      const targetElement = document.querySelector(link);
+      if (targetElement) {
+        targetElement.scrollIntoView({ behavior: 'smooth' });
+      }
+    },
+    []
+  );
   return (
     <Box bgcolor={'#636e7b'} paddingY={2} color={'white'} paddingX={5}>
       <Box display={'flex'} paddingBottom={2} justifyContent={'space-around'}>
@@ -75,6 +86,7 @@ export const LandingFooter = () => {
                     underline='none'
                     color='inherit'
                     className='hover:text-blue-500'
+                    onClick={(event) => handleLinkClick(event, link.link)}
                   >
                     <Typography variant='body1'>{link.title}</Typography>
                   </Link>
@@ -93,6 +105,7 @@ export const LandingFooter = () => {
                     underline='none'
                     color='inherit'
                     className='hover:text-blue-500'
+                    onClick={(event) => handleLinkClick(event, link.link)}
                   >
                     <Typography variant='body1'>{link.title}</Typography>
                   </Link>

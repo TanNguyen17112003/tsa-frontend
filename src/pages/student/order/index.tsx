@@ -2,11 +2,10 @@ import { Box, Button, Tab, Tabs } from '@mui/material';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard';
 import type { Page as PageType } from 'src/types/page';
 import { Add } from '@mui/icons-material';
-import { useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 import { paths } from 'src/paths';
 import Link from 'next/link';
 import { Stack } from '@mui/system';
-import { useRouter } from 'next/router';
 import ContentHeader from 'src/components/ContentHeader';
 import OrderNotPaid from 'src/sections/student/order/order-not-paid';
 import OrderPaid from 'src/sections/student/order/order-paid';
@@ -23,8 +22,6 @@ const tabs = [
 ];
 
 const Page: PageType = () => {
-  const router = useRouter();
-
   const [tab, setTab] = useState(tabs[0].key);
   return (
     <Stack

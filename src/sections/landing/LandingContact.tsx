@@ -74,43 +74,49 @@ export const LandingContact = () => {
         >
           <Grid container spacing={3}>
             <Grid item xs={6}>
-              <TextField
-                fullWidth
-                id='name'
-                name='name'
-                label='Họ và tên'
-                value={formik.values.name}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                variant='outlined'
-              />
+              <Stack gap={1}>
+                <Typography fontWeight={'bold'}>Họ và tên</Typography>
+                <TextField
+                  fullWidth
+                  id='name'
+                  name='name'
+                  value={formik.values.name}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  variant='outlined'
+                />
+              </Stack>
             </Grid>
             <Grid item xs={6}>
-              <TextField
-                fullWidth
-                id='email'
-                name='email'
-                label='Email'
-                type='email'
-                value={formik.values.email}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                variant='outlined'
-              />
+              <Stack gap={1}>
+                <Typography fontWeight={'bold'}>Email</Typography>
+                <TextField
+                  fullWidth
+                  id='email'
+                  name='email'
+                  type='email'
+                  value={formik.values.email}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  variant='outlined'
+                />
+              </Stack>
             </Grid>
             <Grid item xs={12}>
-              <TextField
-                fullWidth
-                id='message'
-                name='message'
-                label='Phản hồi của bạn'
-                multiline
-                rows={4}
-                value={formik.values.message}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                variant='outlined'
-              />
+              <Stack gap={1}>
+                <Typography fontWeight={'bold'}>Phản hồi của bạn</Typography>
+                <TextField
+                  fullWidth
+                  id='message'
+                  name='message'
+                  multiline
+                  rows={4}
+                  value={formik.values.message}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  variant='outlined'
+                />
+              </Stack>
             </Grid>
           </Grid>
           <Button color='primary' variant='contained' type='submit'>

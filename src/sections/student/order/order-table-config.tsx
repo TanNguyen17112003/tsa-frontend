@@ -71,9 +71,13 @@ const getOrderTableConfigs = ({
         <Typography>
           {data.status === 'DELIVERED'
             ? 'Đã giao'
-            : data.status === 'PENDING'
+            : data.status === 'IN_TRANSPORT'
               ? 'Đang giao'
-              : 'Đã hủy'}
+              : data.status === 'PENDING'
+                ? 'Đang chờ xử lý'
+                : data.status === 'CANCELLED'
+                  ? 'Đã hủy'
+                  : 'Đã từ chối'}
         </Typography>
       </Button>
     )

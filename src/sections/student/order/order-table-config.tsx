@@ -1,4 +1,4 @@
-import { IconButton, Typography, Stack, Button } from '@mui/material';
+import { IconButton, Typography, Stack, Chip } from '@mui/material';
 import { CustomTableConfig } from 'src/components/custom-table';
 import { RouterLink } from 'src/components/router-link';
 import { paths } from 'src/paths';
@@ -6,9 +6,9 @@ import { OrderDetail } from 'src/types/order';
 import { Edit } from 'iconsax-react';
 
 const getOrderTableConfigs = ({
-  onClick
+  onClickEdit
 }: {
-  onClick: (data: OrderDetail) => void;
+  onClickEdit: (data: OrderDetail) => void;
 }): CustomTableConfig<OrderDetail['id'], OrderDetail>[] => [
   {
     key: 'code',
@@ -23,7 +23,10 @@ const getOrderTableConfigs = ({
     renderCell: (data) => (
       <Stack direction={'row'}>
         {data.product.map((product, index) => (
-          <Typography key={index}>{`${product}, `}</Typography>
+          <Typography key={index}>
+            {product}
+            {index < data.product.length - 1 && ', '}
+          </Typography>
         ))}
       </Stack>
     )
@@ -62,31 +65,28 @@ const getOrderTableConfigs = ({
     headerLabel: 'Trạng thái',
     type: 'string',
     renderCell: (data) => (
-      <Button
-        variant='outlined'
+      <Chip
+        variant='filled'
+        label={
+          data.status === 'DELIVERED'
+            ? 'Đã giao'
+            : data.status === 'PENDING'
+              ? 'Chờ xử lý'
+              : 'Đã hủy'
+        }
         color={
           data.status === 'DELIVERED' ? 'success' : data.status === 'PENDING' ? 'warning' : 'error'
         }
-      >
-        <Typography>
-          {data.status === 'DELIVERED'
-            ? 'Đã giao'
-            : data.status === 'IN_TRANSPORT'
-              ? 'Đang giao'
-              : data.status === 'PENDING'
-                ? 'Đang chờ xử lý'
-                : data.status === 'CANCELLED'
-                  ? 'Đã hủy'
-                  : 'Đã từ chối'}
-        </Typography>
-      </Button>
+      />
     )
   },
   {
     key: 'action',
     headerLabel: 'Khiếu nại',
     type: 'string',
-    renderCell: (data) => <Edit color='blue' size={24} className='cursor-pointer' />
+    renderCell: (data) => (
+      <Edit color='blue' size={24} className='cursor-pointer' onClick={() => onClickEdit(data)} />
+    )
   }
 ];
 

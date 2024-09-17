@@ -6,15 +6,17 @@ import { Edit, Trash } from 'iconsax-react';
 import { ReportDetail } from 'src/types/report';
 
 const getReportTableConfigs = ({
-  onClick
+  onClickEdit,
+  onClickRemove
 }: {
-  onClick: (data: ReportDetail) => void;
+  onClickEdit: (data: ReportDetail) => void;
+  onClickRemove: (data: ReportDetail) => void;
 }): CustomTableConfig<ReportDetail['id'], ReportDetail>[] => [
   {
-    key: 'code',
+    key: 'orderCode',
     headerLabel: 'Mã đơn hàng',
     type: 'string',
-    renderCell: (data) => <Typography>#{data.id}</Typography>
+    renderCell: (data) => <Typography>#{data.orderCode}</Typography>
   },
   {
     key: 'reportDate',
@@ -67,8 +69,13 @@ const getReportTableConfigs = ({
     type: 'string',
     renderCell: (data) => (
       <Stack direction={'row'} spacing={1}>
-        <Edit color='blue' size={24} className='cursor-pointer' />
-        <Trash color='red' size={24} className='cursor-pointer' />
+        <Edit color='blue' size={24} className='cursor-pointer' onClick={() => onClickEdit(data)} />
+        <Trash
+          color='red'
+          size={24}
+          className='cursor-pointer'
+          onClick={() => onClickRemove(data)}
+        />
       </Stack>
     )
   }

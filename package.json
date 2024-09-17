@@ -81,6 +81,7 @@
     "cmdk": "^0.2.1",
     "cookies-next": "^4.1.1",
     "date-fns": "3.3.1",
+    "dayjs": "^1.11.13",
     "docx": "^8.5.0",
     "docx-preview": "^0.3.0",
     "formik": "^2.4.5",

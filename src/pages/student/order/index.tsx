@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { paths } from 'src/paths';
 import Link from 'next/link';
 import { Stack } from '@mui/system';
-import ContentHeader from 'src/components/ContentHeader';
+import ContentHeader from 'src/components/content-header';
 import OrderNotPaid from 'src/sections/student/order/order-not-paid';
 import OrderPaid from 'src/sections/student/order/order-paid';
 

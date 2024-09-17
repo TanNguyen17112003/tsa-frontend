@@ -6,12 +6,13 @@ import getOrderTableConfigs from './order-table-config';
 import { CustomTable } from '@components';
 import usePagination from 'src/hooks/use-pagination';
 import { useRouter } from 'next/router';
+import OrderDetailReportDrawer from './order-detail-report-drawer';
 
 function OrderNotPaid() {
   const router = useRouter();
   const orderTableConfig = React.useMemo(() => {
     return getOrderTableConfigs({
-      onClick: (data: OrderDetail) => {
+      onClickEdit: (data: OrderDetail) => {
         console.log(data);
       }
     });

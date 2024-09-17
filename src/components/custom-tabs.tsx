@@ -1,6 +1,6 @@
-import type { FC } from "react";
-import { Tabs, TabsList, TabsTrigger } from "../shadcn/ui/tabs";
-import { TabsProps } from "@radix-ui/react-tabs";
+import type { FC } from 'react';
+import { Tabs, TabsList, TabsTrigger } from './shadcn/ui/tabs';
+import { TabsProps } from '@radix-ui/react-tabs';
 
 export interface TabOption {
   value: string;

@@ -6,13 +6,16 @@ import getOrderTableConfigs from './order-table-config';
 import { CustomTable } from '@components';
 import usePagination from 'src/hooks/use-pagination';
 import { useRouter } from 'next/router';
+import OrderDetailReportDrawer from './order-detail-report-drawer';
+import { useDrawer } from '@hooks';
 
 function OrderNotPaid() {
   const router = useRouter();
+  const orderDetailReportDrawer = useDrawer<OrderDetail>();
   const orderTableConfig = React.useMemo(() => {
     return getOrderTableConfigs({
-      onClick: (data: OrderDetail) => {
-        console.log(data);
+      onClickEdit: (data: OrderDetail) => {
+        orderDetailReportDrawer.handleOpen(data);
       }
     });
   }, []);
@@ -40,6 +43,11 @@ function OrderNotPaid() {
           className='my-5 -mx-6'
         />
       </Box>
+      <OrderDetailReportDrawer
+        open={orderDetailReportDrawer.open}
+        onClose={orderDetailReportDrawer.handleClose}
+        order={orderDetailReportDrawer.data}
+      />
     </Box>
   );
 }

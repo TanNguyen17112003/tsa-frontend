@@ -6,9 +6,15 @@ import getReportTableConfigs from './report-table-config';
 import { ReportDetail } from 'src/types/report';
 import ReportFilter from './report-filter';
 import usePagination from 'src/hooks/use-pagination';
+import { useDrawer } from '@hooks';
+import { useDialog } from '@hooks';
+import ReportDetailEditDrawer from './report-detail-edit-drawer';
+import ReportDetailDeleteDialog from './report-detail-delete-dialog';
 
 function ReportList() {
   const reportStatusList = ['Tất cả', 'Đã giải quyết', 'Đang chờ xử lý', 'Đã từ chối'];
+  const editDetailReportDrawer = useDrawer<ReportDetail>();
+  const removeDetailReportDialog = useDialog<ReportDetail>();
   const [status, setStatus] = React.useState(reportStatusList[0]);
   const [dateRange, setDateRange] = React.useState({
     startDate: new Date('2024-01-01'),
@@ -16,8 +22,11 @@ function ReportList() {
   });
   const reportTableConfig = React.useMemo(() => {
     return getReportTableConfigs({
-      onClick: (data: ReportDetail) => {
-        console.log(data);
+      onClickEdit: (data: ReportDetail) => {
+        editDetailReportDrawer.handleOpen(data);
+      },
+      onClickRemove: (data: ReportDetail) => {
+        removeDetailReportDialog.handleOpen(data);
       }
     });
   }, []);
@@ -55,6 +64,16 @@ function ReportList() {
           className='my-5 -mx-6'
         />
       </Box>
+      <ReportDetailEditDrawer
+        report={editDetailReportDrawer.data}
+        open={editDetailReportDrawer.open}
+        onClose={editDetailReportDrawer.handleClose}
+      />
+      <ReportDetailDeleteDialog
+        report={removeDetailReportDialog.data!}
+        open={removeDetailReportDialog.open}
+        onClose={removeDetailReportDialog.handleClose}
+      />
     </Box>
   );
 }

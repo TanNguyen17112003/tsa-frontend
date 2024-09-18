@@ -11,7 +11,7 @@ export * from './use-drag';
 export * from './use-drawer';
 export * from './use-function';
 export * from './use-mounted';
-// export * from './use-multiple-function';
+export * from './use-multiple-function';
 export * from './use-nprogress';
 export * from './use-page-view';
 export * from './use-pagination';

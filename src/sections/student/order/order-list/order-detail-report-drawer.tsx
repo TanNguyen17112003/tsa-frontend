@@ -12,8 +12,9 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from 'dayjs';
 import 'dayjs/locale/en-gb';
-import ReportProofComponent from '../report/report-proof-component';
+import ReportProofComponent from '../../report/report-proof-component';
 import { OrderDetail } from 'src/types/order';
+import { ReportFormProps, initialReportForm } from 'src/types/report';
 
 function OrderDetailReportDrawer({
   open,
@@ -25,7 +26,26 @@ function OrderDetailReportDrawer({
   order?: OrderDetail;
 }) {
   const { user } = useAuth();
-
+  const handleSubmitReport = useCallback(async (values: ReportFormProps) => {
+    try {
+      console.log(values);
+    } catch (error) {
+      throw error;
+    }
+  }, []);
+  const handleSubmitReportHelper = useFunction(handleSubmitReport, {
+    successMessage: 'Cập nhật khiếu nại thành công'
+  });
+  const formik = useFormik<ReportFormProps>({
+    initialValues: initialReportForm,
+    onSubmit: async (values) => {
+      const { error } = await handleSubmitReportHelper.call(values);
+      if (error) {
+        formik.setValues(initialReportForm);
+        onClose();
+      }
+    }
+  });
   return (
     <>
       <Drawer
@@ -84,7 +104,11 @@ function OrderDetailReportDrawer({
               <FormInput type='text' className='w-full px-3 rounded-lg ' />
             </Box>
             <Box display={'flex'} flexDirection={'column'} gap={1}>
-              <ReportProofComponent label='Minh chứng' />
+              <ReportProofComponent
+                label='Minh chứng'
+                value={formik.values.proof!}
+                onChange={formik.handleChange}
+              />
             </Box>
           </Stack>
         </form>

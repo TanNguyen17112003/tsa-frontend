@@ -66,7 +66,11 @@ const OrderFilter: React.FC<OrderFilterProps> = (props) => {
         </Box>
         <Box className='flex flex-col gap-1'>
           <Typography fontWeight={'bold'}>Thời gian</Typography>
-          <DateRangePickerTextField initialDateRange={dateRange} onChange={handleDateChange} />
+          <DateRangePickerTextField
+            initialDateRange={dateRange}
+            onChange={handleDateChange}
+            labelHolder='Nhập thời gian đơn hàng'
+          />
         </Box>
       </Stack>
     </Box>

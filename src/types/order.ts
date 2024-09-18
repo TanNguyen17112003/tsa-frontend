@@ -32,8 +32,8 @@ export const initialAddingOrder: OrderImport = {
 
 export const initialOrderList: OrderDetail[] = [
   {
-    id: '20462',
-    code: '20462',
+    id: '1',
+    code: '1',
     product: ['Mũ'],
     address: 'R.312, D.A20',
     deliveryDate: '2024-09-05',
@@ -43,8 +43,8 @@ export const initialOrderList: OrderDetail[] = [
     isPaid: true
   },
   {
-    id: '20462',
-    code: '20462',
+    id: '2',
+    code: '2',
     product: ['Mũ'],
     address: 'R.312, D.A20',
     deliveryDate: '2024-09-05',
@@ -54,8 +54,8 @@ export const initialOrderList: OrderDetail[] = [
     isPaid: true
   },
   {
-    id: '20462',
-    code: '20462',
+    id: '3',
+    code: '3',
     product: ['Mũ'],
     address: 'R.312, D.A20',
     deliveryDate: '2024-09-05',
@@ -65,8 +65,8 @@ export const initialOrderList: OrderDetail[] = [
     isPaid: false
   },
   {
-    id: '20462',
-    code: '20462',
+    id: '4',
+    code: '4',
     product: ['Mũ'],
     address: 'R.312, D.A20',
     deliveryDate: '2024-09-05',
@@ -76,8 +76,8 @@ export const initialOrderList: OrderDetail[] = [
     isPaid: false
   },
   {
-    id: '20462',
-    code: '20462',
+    id: '5',
+    code: '5',
     product: ['Mũ'],
     address: 'R.312, D.A20',
     deliveryDate: '2024-09-05',
@@ -87,8 +87,8 @@ export const initialOrderList: OrderDetail[] = [
     isPaid: true
   },
   {
-    id: '20462',
-    code: '20462',
+    id: '6',
+    code: '6',
     product: ['Mũ'],
     address: 'R.312, D.A20',
     deliveryDate: '2024-09-05',
@@ -98,8 +98,8 @@ export const initialOrderList: OrderDetail[] = [
     isPaid: false
   },
   {
-    id: '20462',
-    code: '20462',
+    id: '7',
+    code: '7',
     product: ['Mũ'],
     address: 'R.312, D.A20',
     deliveryDate: '2024-09-05',
@@ -109,8 +109,8 @@ export const initialOrderList: OrderDetail[] = [
     isPaid: true
   },
   {
-    id: '20462',
-    code: '20462',
+    id: '8',
+    code: '8',
     product: ['Mũ'],
     address: 'R.312, D.A20',
     deliveryDate: '2024-09-05',

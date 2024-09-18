@@ -12,7 +12,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from 'dayjs';
 import 'dayjs/locale/en-gb';
-import { ReportDetail } from 'src/types/report';
+import { ReportDetail, ReportFormProps, initialReportForm } from 'src/types/report';
 import ReportProofComponent from './report-proof-component';
 
 function ReportDetailEditDrawer({
@@ -26,7 +26,26 @@ function ReportDetailEditDrawer({
 }) {
   const { user } = useAuth();
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs(report?.reportDate));
-
+  const handleSubmitReport = useCallback(async (values: ReportFormProps) => {
+    try {
+      console.log(values);
+    } catch (error) {
+      throw error;
+    }
+  }, []);
+  const handleSubmitReportHelper = useFunction(handleSubmitReport, {
+    successMessage: 'Cập nhật khiếu nại thành công'
+  });
+  const formik = useFormik<ReportFormProps>({
+    initialValues: initialReportForm,
+    onSubmit: async (values) => {
+      const { error } = await handleSubmitReportHelper.call(values);
+      if (error) {
+        formik.setValues(initialReportForm);
+        onClose();
+      }
+    }
+  });
   return (
     <>
       <Drawer
@@ -39,7 +58,7 @@ function ReportDetailEditDrawer({
         }}
         onClose={onClose}
       >
-        <form onSubmit={() => {}}>
+        <form onSubmit={formik.handleSubmit}>
           <Paper elevation={5} sx={{ p: 3, borderRadius: 0 }}>
             <Box
               sx={{
@@ -125,10 +144,19 @@ function ReportDetailEditDrawer({
             </Box>
             <Box display={'flex'} flexDirection={'column'} gap={1}>
               <Typography variant='h6'>Nội dung khiếu nại</Typography>
-              <FormInput type='text' className='w-full px-3 rounded-lg ' />
+              <FormInput
+                type='text'
+                className='w-full px-3 rounded-lg '
+                value={formik.values.reportContent}
+                onChange={formik.handleChange}
+              />
             </Box>
             <Box display={'flex'} flexDirection={'column'} gap={1}>
-              <ReportProofComponent label='Minh chứng' />
+              <ReportProofComponent
+                label='Minh chứng'
+                value={formik.values.proof!}
+                onChange={formik.handleChange}
+              />
             </Box>
           </Stack>
         </form>

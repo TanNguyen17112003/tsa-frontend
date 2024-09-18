@@ -1,4 +1,4 @@
-interface ProofImage {
+export interface ProofImage {
   url: string;
   altText: string;
 }
@@ -16,6 +16,8 @@ export interface Report {
 }
 
 export interface ReportDetail extends Report {}
+
+export interface ReportFormProps extends Partial<Report> {}
 
 export const initialReportList: ReportDetail[] = [
   {
@@ -73,6 +75,11 @@ export const initialReportList: ReportDetail[] = [
     reportStatus: 'DECLINED'
   }
 ];
+
+export const initialReportForm: ReportFormProps = {
+  reply: '',
+  proof: ''
+};
 
 export const reportStatusMap = {
   PENDING: 'Đang chờ xử lý',

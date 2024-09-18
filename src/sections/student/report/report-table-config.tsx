@@ -1,4 +1,4 @@
-import { IconButton, Typography, Stack, Button } from '@mui/material';
+import { IconButton, Typography, Stack, Button, Chip } from '@mui/material';
 import { CustomTableConfig } from 'src/components/custom-table';
 import { RouterLink } from 'src/components/router-link';
 import { paths } from 'src/paths';
@@ -39,12 +39,19 @@ const getReportTableConfigs = ({
     type: 'string'
   },
   {
-    key: 'status',
+    key: 'reportStatus',
     headerLabel: 'Trạng thái',
     type: 'string',
     renderCell: (data) => (
-      <Button
-        variant='outlined'
+      <Chip
+        variant='filled'
+        label={
+          data.reportStatus === 'SOLVED'
+            ? 'Đã giải quyết'
+            : data.reportStatus === 'PENDING'
+              ? 'Đang chờ xử lý'
+              : 'Đã từ chối'
+        }
         color={
           data.reportStatus === 'SOLVED'
             ? 'success'
@@ -52,15 +59,7 @@ const getReportTableConfigs = ({
               ? 'warning'
               : 'error'
         }
-      >
-        <Typography>
-          {data.reportStatus === 'SOLVED'
-            ? 'Đã giải quyết'
-            : data.reportStatus === 'PENDING'
-              ? 'Đang chờ xử lý'
-              : 'Đã từ chối'}
-        </Typography>
-      </Button>
+      />
     )
   },
   {

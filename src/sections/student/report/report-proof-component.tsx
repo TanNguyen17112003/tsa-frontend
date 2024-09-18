@@ -1,14 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Typography, TextField, IconButton, InputAdornment } from '@mui/material';
 import { DocumentUpload } from 'iconsax-react';
+import { ProofImage } from 'src/types/report';
 
-const ReportProofComponent = ({ label }: { label: string }) => {
-  const [inputValue, setInputValue] = useState<string>('');
+interface ReportProofComponentProps {
+  label: string;
+  value: string | ProofImage;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+const ReportProofComponent = ({ label, value, onChange }: ReportProofComponentProps) => {
+  const [inputValue, setInputValue] = useState<string | ProofImage>(value);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  useEffect(() => {
+    setInputValue(value);
+  }, [value]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
     setImagePreview(null);
+    onChange(event);
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -18,6 +30,12 @@ const ReportProofComponent = ({ label }: { label: string }) => {
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
         setInputValue('');
+        onChange({
+          target: {
+            name: 'proof',
+            value: reader.result as string
+          }
+        } as React.ChangeEvent<HTMLInputElement>);
       };
       reader.readAsDataURL(file);
     }

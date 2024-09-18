@@ -6,9 +6,11 @@ import { OrderDetail } from 'src/types/order';
 import { Edit } from 'iconsax-react';
 
 const getOrderTableConfigs = ({
-  onClickEdit
+  onClickEdit,
+  onClickRow
 }: {
   onClickEdit: (data: OrderDetail) => void;
+  onClickRow: (data: OrderDetail) => void;
 }): CustomTableConfig<OrderDetail['id'], OrderDetail>[] => [
   {
     key: 'code',
@@ -85,7 +87,15 @@ const getOrderTableConfigs = ({
     headerLabel: 'Khiếu nại',
     type: 'string',
     renderCell: (data) => (
-      <Edit color='blue' size={24} className='cursor-pointer' onClick={() => onClickEdit(data)} />
+      <Edit
+        color='blue'
+        size={24}
+        className='cursor-pointer'
+        onClick={(event) => {
+          event.stopPropagation();
+          onClickEdit(data);
+        }}
+      />
     )
   }
 ];

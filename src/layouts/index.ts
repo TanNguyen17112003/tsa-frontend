@@ -3,7 +3,7 @@
  */
 
 export * from './auth/classic-layout';
-export * from './dashboard/index';
+export { Layout as DashboardLayout } from './dashboard/index';
 export * from './dashboard/config/config';
 export * from './dashboard/config/dashboard-admin-configs';
 export * from './dashboard/config/dashboard-student-configs';

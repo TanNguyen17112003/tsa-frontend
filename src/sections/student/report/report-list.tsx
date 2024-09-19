@@ -35,6 +35,9 @@ function ReportList() {
   });
   const result = React.useMemo(() => {
     return initialReportList.filter((report) => {
+      const reportDate = new Date(report.reportDate);
+      const isWithinDateRange =
+        reportDate >= dateRange.startDate && reportDate <= dateRange.endDate;
       const isStatusMatch =
         status === 'Tất cả'
           ? true
@@ -43,7 +46,7 @@ function ReportList() {
             : status === 'Đang chờ xử lý'
               ? report.reportStatus === 'PENDING'
               : report.reportStatus === 'DECLINED';
-      return isStatusMatch;
+      return isStatusMatch && isWithinDateRange;
     });
   }, [status, dateRange, initialReportList]);
   return (

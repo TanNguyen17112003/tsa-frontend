@@ -17,51 +17,54 @@ import React from 'react';
 import { Box, Typography, Divider, Stack } from '@mui/material';
 import GoogleButton from 'src/sections/auth/GoogleButton';
 import { HomeIcon } from '@heroicons/react/24/solid';
+import { useMounted } from '@hooks';
 
 export const loginSchema = Yup.object({
-  username: Yup.string().required('Email không được để trống'),
+  email: Yup.string().required('Email không được để trống'),
   password: Yup.string().required('Mật khẩu không được để trống')
 });
 
 const Page: PageType = () => {
+  const isMounted = useMounted();
   const [showPassword, setShowPassword] = useState(false);
-
   const router = useRouter();
   const { signIn } = useAuth<AuthContextType>();
   const searchParams = useSearchParams();
   const returnTo = searchParams.get('returnTo');
-  // Use useFormik hook to manage form state and actions
   const formik = useFormik({
     initialValues: {
-      username: '',
+      email: '',
       password: '',
       general: ''
     },
-    validationSchema: loginSchema, // Replace with your actual loginSchema
-    onSubmit: async (values) => {
+    validationSchema: loginSchema,
+    onSubmit: async (values, { setSubmitting, setFieldError }) => {
       try {
-        await signIn(values.username, values.password);
-        router.replace(returnTo || paths.dashboard.index);
-      } catch {
-        formik.setFieldError('general', 'Vui lòng kiểm tra lại Tên đăng nhập/Mật khẩu');
+        const user = await signIn(values.email, values.password);
+        console.log('user', user);
+        if (isMounted() && user) {
+          if (user.role === 'STUDENT') {
+            router.replace(paths.student.index);
+          }
+        }
+      } catch (error) {
+        setFieldError('general', 'Vui lòng kiểm tra lại Tên đăng nhập/Mật khẩu');
+      } finally {
+        setSubmitting(false);
       }
     }
   });
 
-  const handleLogin = useCallback(() => {
-    router.replace(paths.student.index);
-  }, []);
-
   const handleBack = useCallback(() => {
     router.push(paths.landing.index);
-  }, []);
+  }, [router]);
 
   useEffect(() => {
-    if (formik.values.username || formik.values.password) {
+    if (formik.values.email || formik.values.password) {
       formik.setFieldError('general', '');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formik.values.username, formik.values.password]);
+  }, [formik.values.email, formik.values.password]);
 
   return (
     <Box className='h-screen flex bg-[#F6FDF5] items-center gap-10 px-6 text-black'>
@@ -94,9 +97,11 @@ const Page: PageType = () => {
               <FormInput
                 type='text'
                 className='w-full px-3 rounded-lg bg-white'
-                {...formik.getFieldProps('username')}
-                error={formik.touched.username && !!formik.errors.username}
-                helperText={formik.touched.username && formik.errors.username}
+                {...formik.getFieldProps('email')}
+                value={formik.values.email}
+                onChange={formik.handleChange}
+                error={formik.touched.email && !!formik.errors.email}
+                helperText={formik.touched.email && formik.errors.email}
               />
               <Typography variant='body2'>Nhập địa chỉ email của bạn</Typography>
             </Box>
@@ -111,6 +116,8 @@ const Page: PageType = () => {
                 {...formik.getFieldProps('password')}
                 showPassword={showPassword}
                 togglePasswordVisibility={() => setShowPassword(!showPassword)}
+                value={formik.values.password}
+                onChange={formik.handleChange}
                 error={formik.touched.password && !!formik.errors.password}
                 helperText={formik.touched.password && formik.errors.password}
                 className='bg-white'
@@ -134,7 +141,7 @@ const Page: PageType = () => {
                 <Box className='mt-5'></Box>
               </Box>
             )}
-            <Button className='mt-2' type='submit' onClick={handleLogin}>
+            <Button className='mt-2' type='submit' disabled={formik.isSubmitting}>
               Đăng nhập
             </Button>
           </form>

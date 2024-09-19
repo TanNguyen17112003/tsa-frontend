@@ -4,7 +4,6 @@ import { TextField } from '@mui/material';
 import AutocompleteTextFieldMultiple from 'src/components/autocomplete-textfield-multiple';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 interface OrderFormFieldTextProps {
@@ -65,9 +64,7 @@ export const OrderFormTextField: FC<OrderFormFieldTextProps & PropsWithChildren>
         ></AutocompleteTextFieldMultiple>
       ) : (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DemoContainer components={['DateTimePicker']}>
-            <DateTimePicker label={placeholder} />
-          </DemoContainer>
+          <DateTimePicker label={placeholder} />
         </LocalizationProvider>
       )}
     </OrderFormField>

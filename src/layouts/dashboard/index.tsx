@@ -9,10 +9,10 @@ interface LayoutProps {
   pagePermission?: string;
 }
 
-export const Layout: FC<LayoutProps> = (props) => {
+export const Layout: FC<LayoutProps> = withAuthGuard((props) => {
   const sections = useSections();
   return <VerticalLayout sections={sections} {...props} />;
-};
+});
 
 Layout.propTypes = {
   children: PropTypes.any

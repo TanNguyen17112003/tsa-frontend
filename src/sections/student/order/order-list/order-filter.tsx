@@ -16,9 +16,21 @@ const OrderFilter: React.FC<OrderFilterProps> = (props) => {
     startDate: new Date('2024-01-01'),
     endDate: new Date('2024-01-31')
   });
-  const handleDateChange = React.useCallback((range: any) => {
-    setDateRange(range);
-  }, []);
+
+  const handleDateChange = React.useCallback(
+    (range: any) => {
+      setDateRange(range);
+      router.push({
+        pathname: router.pathname,
+        query: {
+          ...router.query,
+          dateRange: `${range.startDate.toISOString()},${range.endDate.toISOString()}`
+        }
+      });
+    },
+    [router]
+  );
+
   const handleReportStatusChange = React.useCallback(
     (status: string) => {
       const queryStatus =
@@ -32,6 +44,7 @@ const OrderFilter: React.FC<OrderFilterProps> = (props) => {
     },
     [router, orderStatusMap]
   );
+
   return (
     <Box className='flex gap-2 items-center w-full'>
       <Stack direction='row' spacing={0.5} width={'15%'}>

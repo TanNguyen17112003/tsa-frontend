@@ -1,4 +1,4 @@
-import { FC, useCallback } from 'react';
+import { FC, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { useAuth } from 'src/hooks/use-auth';
 import { usePathname } from 'src/hooks/use-pathname';
@@ -66,8 +66,16 @@ export const SideNav: FC<SideNavProps> = (props) => {
             <Box className='flex gap-2 items-center'>
               <Avatar src='' />
               <Stack>
-                <Typography>Tan Nguyen</Typography>
-                <Typography className='text-xs opacity-60'>Sinh viên</Typography>
+                <Typography>
+                  {user?.lastName} {user?.firstName}
+                </Typography>
+                <Typography className='text-xs opacity-60'>
+                  {user?.role === 'STUDENT'
+                    ? 'Sinh viên'
+                    : user?.role === 'STAFF'
+                      ? 'Nhân viên'
+                      : 'Quản trị viên'}
+                </Typography>
               </Stack>
             </Box>
           </nav>

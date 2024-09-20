@@ -25,7 +25,7 @@ function ReportDetailEditDrawer({
   report?: ReportDetail;
 }) {
   const { user } = useAuth();
-  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs(report?.reportDate));
+  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs(report?.reportAt));
   const handleSubmitReport = useCallback(async (values: ReportFormProps) => {
     try {
       console.log(values);
@@ -115,9 +115,9 @@ function ReportDetailEditDrawer({
                 className='w-full px-3 rounded-lg'
                 disabled
                 value={
-                  report?.reportStatus === 'SOLVED'
+                  report?.status === 'SOLVED'
                     ? 'Đã giải quyết'
-                    : report?.reportStatus === 'PENDING'
+                    : report?.status === 'PENDING'
                       ? 'Đang chờ xử lý'
                       : 'Đã từ chối'
                 }
@@ -147,7 +147,7 @@ function ReportDetailEditDrawer({
               <FormInput
                 type='text'
                 className='w-full px-3 rounded-lg '
-                value={formik.values.reportContent}
+                value={formik.values.content}
                 onChange={formik.handleChange}
               />
             </Box>

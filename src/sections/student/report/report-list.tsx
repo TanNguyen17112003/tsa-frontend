@@ -12,10 +12,10 @@ import ReportDetailEditDrawer from './report-detail-edit-drawer';
 import ReportDetailDeleteDialog from './report-detail-delete-dialog';
 
 function ReportList() {
-  const reportStatusList = ['Tất cả', 'Đã giải quyết', 'Đang chờ xử lý', 'Đã từ chối'];
+  const statusList = ['Tất cả', 'Đã giải quyết', 'Đang chờ xử lý', 'Đã từ chối'];
   const editDetailReportDrawer = useDrawer<ReportDetail>();
   const removeDetailReportDialog = useDialog<ReportDetail>();
-  const [status, setStatus] = React.useState(reportStatusList[0]);
+  const [status, setStatus] = React.useState(statusList[0]);
   const [dateRange, setDateRange] = React.useState({
     startDate: new Date('2024-01-01'),
     endDate: new Date('2024-01-31')
@@ -35,24 +35,23 @@ function ReportList() {
   });
   const result = React.useMemo(() => {
     return initialReportList.filter((report) => {
-      const reportDate = new Date(report.reportDate);
-      const isWithinDateRange =
-        reportDate >= dateRange.startDate && reportDate <= dateRange.endDate;
+      const reportAt = new Date(report.reportAt);
+      const isWithinDateRange = reportAt >= dateRange.startDate && reportAt <= dateRange.endDate;
       const isStatusMatch =
         status === 'Tất cả'
           ? true
           : status === 'Đã giải quyết'
-            ? report.reportStatus === 'SOLVED'
+            ? report.status === 'SOLVED'
             : status === 'Đang chờ xử lý'
-              ? report.reportStatus === 'PENDING'
-              : report.reportStatus === 'DECLINED';
+              ? report.status === 'PENDING'
+              : report.status === 'DECLINED';
       return isStatusMatch && isWithinDateRange;
     });
   }, [status, dateRange, initialReportList]);
   return (
     <Box className='flex flex-col min-h-screen bg-white px-6 py-4 text-black'>
       <ReportFilter
-        reportStatusList={reportStatusList}
+        statusList={statusList}
         numberOfReports={result.length}
         status={status}
         setStatus={setStatus}

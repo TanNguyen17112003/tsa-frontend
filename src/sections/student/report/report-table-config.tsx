@@ -19,12 +19,12 @@ const getReportTableConfigs = ({
     renderCell: (data) => <Typography>#{data.orderCode}</Typography>
   },
   {
-    key: 'reportDate',
+    key: 'reportAt',
     headerLabel: 'Ngày khiếu nại',
     type: 'string'
   },
   {
-    key: 'reportContent',
+    key: 'content',
     headerLabel: 'Nội dung khiếu nại',
     type: 'string'
   },
@@ -39,25 +39,21 @@ const getReportTableConfigs = ({
     type: 'string'
   },
   {
-    key: 'reportStatus',
+    key: 'status',
     headerLabel: 'Trạng thái',
     type: 'string',
     renderCell: (data) => (
       <Chip
         variant='filled'
         label={
-          data.reportStatus === 'SOLVED'
+          data.status === 'SOLVED'
             ? 'Đã giải quyết'
-            : data.reportStatus === 'PENDING'
+            : data.status === 'PENDING'
               ? 'Đang chờ xử lý'
               : 'Đã từ chối'
         }
         color={
-          data.reportStatus === 'SOLVED'
-            ? 'success'
-            : data.reportStatus === 'PENDING'
-              ? 'warning'
-              : 'error'
+          data.status === 'SOLVED' ? 'success' : data.status === 'PENDING' ? 'warning' : 'error'
         }
       />
     )

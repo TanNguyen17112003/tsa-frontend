@@ -3,14 +3,29 @@ type OrderStatus = 'CANCELLED' | 'DELIVERED' | 'PENDING' | 'REJECTED' | 'IN_TRAN
 
 export interface Order {
   id: string; // uuid
-  code: string;
+  checkCode: string;
   product: string[];
   address: string;
   deliveryDate: string;
-  amount: number;
+  shippingFee: number;
   paymentMethod: PaymentMethod;
   status: OrderStatus;
   isPaid: boolean;
+  studentId?: string;
+  adminId?: string;
+  shipperId?: string;
+  createdAt?: string;
+  deliveredAt?: string;
+  cancelledAt?: string;
+  rejectedAt?: string;
+  acceptedAt?: string;
+  deliveryId?: string;
+  ordinalNumber?: string;
+  weight?: number;
+  rejectReason?: string;
+  cancelReason?: string;
+  building?: string;
+  room?: string;
 }
 
 export interface OrderDetail extends Order {
@@ -20,10 +35,10 @@ export interface OrderDetail extends Order {
 export interface StudentOrderImport extends Order {}
 
 export interface OrderImport
-  extends Pick<Order, 'code' | 'product' | 'address' | 'deliveryDate' | 'paymentMethod'> {}
+  extends Pick<Order, 'checkCode' | 'product' | 'address' | 'deliveryDate' | 'paymentMethod'> {}
 
 export const initialAddingOrder: OrderImport = {
-  code: '',
+  checkCode: '',
   product: [],
   address: '',
   deliveryDate: '',
@@ -33,88 +48,88 @@ export const initialAddingOrder: OrderImport = {
 export const initialOrderList: OrderDetail[] = [
   {
     id: '1',
-    code: '1',
+    checkCode: '1',
     product: ['Mũ'],
     address: 'R.312, D.A20',
     deliveryDate: '2024-09-05',
-    amount: 5000,
+    shippingFee: 5000,
     paymentMethod: 'BANK',
     status: 'DELIVERED',
     isPaid: true
   },
   {
     id: '2',
-    code: '2',
+    checkCode: '2',
     product: ['Mũ'],
     address: 'R.312, D.A20',
     deliveryDate: '2024-09-05',
-    amount: 5000,
+    shippingFee: 5000,
     paymentMethod: 'BANK',
     status: 'DELIVERED',
     isPaid: true
   },
   {
     id: '3',
-    code: '3',
+    checkCode: '3',
     product: ['Mũ'],
     address: 'R.312, D.A20',
     deliveryDate: '2024-09-05',
-    amount: 5000,
+    shippingFee: 5000,
     paymentMethod: 'BANK',
     status: 'DELIVERED',
     isPaid: false
   },
   {
     id: '4',
-    code: '4',
+    checkCode: '4',
     product: ['Mũ'],
     address: 'R.312, D.A20',
     deliveryDate: '2024-09-05',
-    amount: 5000,
+    shippingFee: 5000,
     paymentMethod: 'BANK',
     status: 'DELIVERED',
     isPaid: false
   },
   {
     id: '5',
-    code: '5',
+    checkCode: '5',
     product: ['Mũ'],
     address: 'R.312, D.A20',
     deliveryDate: '2024-09-05',
-    amount: 5000,
+    shippingFee: 5000,
     paymentMethod: 'BANK',
     status: 'CANCELLED',
     isPaid: true
   },
   {
     id: '6',
-    code: '6',
+    checkCode: '6',
     product: ['Mũ'],
     address: 'R.312, D.A20',
     deliveryDate: '2024-09-05',
-    amount: 5000,
+    shippingFee: 5000,
     paymentMethod: 'BANK',
     status: 'CANCELLED',
     isPaid: false
   },
   {
     id: '7',
-    code: '7',
+    checkCode: '7',
     product: ['Mũ'],
     address: 'R.312, D.A20',
     deliveryDate: '2024-09-05',
-    amount: 5000,
+    shippingFee: 5000,
     paymentMethod: 'BANK',
     status: 'PENDING',
     isPaid: true
   },
   {
     id: '8',
-    code: '8',
+    checkCode: '8',
     product: ['Mũ'],
     address: 'R.312, D.A20',
     deliveryDate: '2024-09-05',
-    amount: 5000,
+    shippingFee: 5000,
     paymentMethod: 'BANK',
     status: 'PENDING',
     isPaid: false

@@ -2,7 +2,7 @@ import { Box, Typography, Stack, Select, MenuItem, TextField, InputAdornment } f
 import React from 'react';
 import DateRangePickerTextField from 'src/components/date-range-picker-textfield';
 interface ReportFilterProps {
-  reportStatusList: string[];
+  statusList: string[];
   numberOfReports: number;
   status: string;
   setStatus: (status: string) => void;
@@ -27,11 +27,11 @@ const ReportFilter: React.FC<ReportFilterProps> = (props) => {
         <Box className='flex flex-col gap-2 w-[50%]'>
           <Typography className='font-bold'>Trạng thái</Typography>
           <Select
-            defaultValue={props.reportStatusList[0]}
+            defaultValue={props.statusList[0]}
             value={props.status}
             onChange={(e) => props.setStatus(e.target.value as string)}
           >
-            {props.reportStatusList.map((status, index) => (
+            {props.statusList.map((status, index) => (
               <MenuItem key={index} value={status}>
                 {status}
               </MenuItem>

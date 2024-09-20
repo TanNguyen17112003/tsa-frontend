@@ -13,10 +13,10 @@ const getOrderTableConfigs = ({
   onClickRow: (data: OrderDetail) => void;
 }): CustomTableConfig<OrderDetail['id'], OrderDetail>[] => [
   {
-    key: 'code',
+    key: 'checkCode',
     headerLabel: 'Mã đơn hàng',
     type: 'string',
-    renderCell: (data) => <Typography>#{data.id}</Typography>
+    renderCell: (data) => <Typography>#{data.checkCode}</Typography>
   },
   {
     key: 'product',
@@ -44,7 +44,7 @@ const getOrderTableConfigs = ({
     type: 'date'
   },
   {
-    key: 'amount',
+    key: 'shippingFee',
     headerLabel: 'Tổng tiền (VNĐ)',
     type: 'string'
   },

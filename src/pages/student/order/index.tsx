@@ -11,6 +11,7 @@ import OrderNotPaid from 'src/sections/student/order/order-list/order-not-paid';
 import OrderPaid from 'src/sections/student/order/order-list/order-paid';
 import { useRouter } from 'next/router';
 import OrderDetailPage from './[orderId]';
+import OrdersProvider from 'src/contexts/orders/orders-context';
 
 const tabs = [
   {
@@ -92,6 +93,10 @@ const Page: PageType = () => {
   );
 };
 
-Page.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
+Page.getLayout = (page) => (
+  <DashboardLayout>
+    <OrdersProvider>{page}</OrdersProvider>
+  </DashboardLayout>
+);
 
 export default Page;

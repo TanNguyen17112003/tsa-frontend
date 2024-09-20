@@ -4,6 +4,7 @@ import { Layout as DashboardLayout } from 'src/layouts/dashboard';
 import ContentHeader from 'src/components/content-header';
 import { Box } from '@mui/material';
 import ReportList from 'src/sections/student/report/report-list';
+import ReportsProvider from 'src/contexts/reports/reports-context';
 
 const Page: PageType = () => {
   return (
@@ -16,6 +17,10 @@ const Page: PageType = () => {
     </Box>
   );
 };
-Page.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
+Page.getLayout = (page) => (
+  <DashboardLayout>
+    <ReportsProvider>{page}</ReportsProvider>
+  </DashboardLayout>
+);
 
 export default Page;

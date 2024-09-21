@@ -2,7 +2,7 @@ import { Box, Button, Tab, Tabs } from '@mui/material';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard';
 import type { Page as PageType } from 'src/types/page';
 import { Add } from '@mui/icons-material';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { paths } from 'src/paths';
 import Link from 'next/link';
 import { Stack } from '@mui/system';
@@ -12,6 +12,8 @@ import OrderPaid from 'src/sections/student/order/order-list/order-paid';
 import { useRouter } from 'next/router';
 import OrderDetailPage from './[orderId]';
 import OrdersProvider from 'src/contexts/orders/orders-context';
+import { useOrdersContext } from 'src/contexts/orders/orders-context';
+import { useAuth } from '@hooks';
 
 const tabs = [
   {
@@ -26,7 +28,19 @@ const tabs = [
 
 const Page: PageType = () => {
   const [tab, setTab] = useState(tabs[0].key);
+  const { user } = useAuth();
   const router = useRouter();
+  const { getOrdersApi } = useOrdersContext();
+  const orders = useMemo(() => {
+    return getOrdersApi.data || [];
+  }, [getOrdersApi.data]);
+
+  const notPaidOrders = useMemo(() => {
+    return orders.filter((order) => !order.isPaid);
+  }, [orders]);
+  const paidOrders = useMemo(() => {
+    return orders.filter((order) => order.isPaid);
+  }, [orders]);
   return (
     <>
       {router.query.orderId ? (
@@ -58,7 +72,7 @@ const Page: PageType = () => {
                   LinkComponent={Link}
                   href={paths.student.order.add}
                 >
-                  Thêm đơn hàng
+                  Thêm
                 </Button>
               </Box>
             }
@@ -84,9 +98,8 @@ const Page: PageType = () => {
               </Tabs>
             }
           />
-
-          {tab === tabs[0].key && <OrderPaid />}
-          {tab === tabs[1].key && <OrderNotPaid />}
+          {tab === tabs[0].key && <OrderPaid orders={paidOrders} />}
+          {tab === tabs[1].key && <OrderNotPaid orders={notPaidOrders} />}
         </Stack>
       )}
     </>

@@ -64,7 +64,7 @@ export const OrderFormTextField: FC<OrderFormFieldTextProps & PropsWithChildren>
         ></AutocompleteTextFieldMultiple>
       ) : (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DateTimePicker label={placeholder} />
+          <DateTimePicker label={placeholder} className='w-full' />
         </LocalizationProvider>
       )}
     </OrderFormField>

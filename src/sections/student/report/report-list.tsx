@@ -1,7 +1,6 @@
 import { Box } from '@mui/material';
 import React from 'react';
 import { CustomTable } from '@components';
-import { initialReportList } from 'src/types/report';
 import getReportTableConfigs from './report-table-config';
 import { ReportDetail } from 'src/types/report';
 import ReportFilter from './report-filter';
@@ -10,16 +9,24 @@ import { useDrawer } from '@hooks';
 import { useDialog } from '@hooks';
 import ReportDetailEditDrawer from './report-detail-edit-drawer';
 import ReportDetailDeleteDialog from './report-detail-delete-dialog';
+import { unixTimestampToDate } from 'src/utils/format-unix-time';
 
-function ReportList() {
-  const statusList = ['Tất cả', 'Đã giải quyết', 'Đang chờ xử lý', 'Đã từ chối'];
+interface ReportListProps {
+  reports: ReportDetail[];
+}
+
+const ReportList: React.FC<ReportListProps> = ({ reports }) => {
+  const statusList = ['Tất cả', 'Đã giải quyết', 'Đang chờ xử lý'];
+
   const editDetailReportDrawer = useDrawer<ReportDetail>();
   const removeDetailReportDialog = useDialog<ReportDetail>();
+
   const [status, setStatus] = React.useState(statusList[0]);
   const [dateRange, setDateRange] = React.useState({
     startDate: new Date('2024-01-01'),
     endDate: new Date('2024-01-31')
   });
+
   const reportTableConfig = React.useMemo(() => {
     return getReportTableConfigs({
       onClickEdit: (data: ReportDetail) => {
@@ -30,24 +37,23 @@ function ReportList() {
       }
     });
   }, []);
+
   const pagination = usePagination({
-    count: initialReportList.length
+    count: reports.length
   });
   const result = React.useMemo(() => {
-    return initialReportList.filter((report) => {
-      const reportAt = new Date(report.reportAt);
-      const isWithinDateRange = reportAt >= dateRange.startDate && reportAt <= dateRange.endDate;
-      const isStatusMatch =
+    return reports.filter((report) => {
+      const filterStatus =
         status === 'Tất cả'
           ? true
           : status === 'Đã giải quyết'
-            ? report.status === 'SOLVED'
-            : status === 'Đang chờ xử lý'
-              ? report.status === 'PENDING'
-              : report.status === 'DECLINED';
-      return isStatusMatch && isWithinDateRange;
+            ? report.status === 'REPLIED'
+            : report.status === 'PENDING';
+      const reportDate = unixTimestampToDate(report.reportedAt!);
+      const filterDate = dateRange.startDate <= reportDate && reportDate <= dateRange.endDate;
+      return filterStatus && filterDate;
     });
-  }, [status, dateRange, initialReportList]);
+  }, [status, dateRange, reports]);
   return (
     <Box className='flex flex-col min-h-screen bg-white px-6 py-4 text-black'>
       <ReportFilter
@@ -78,6 +84,6 @@ function ReportList() {
       />
     </Box>
   );
-}
+};
 
 export default ReportList;

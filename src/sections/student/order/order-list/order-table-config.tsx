@@ -1,9 +1,8 @@
 import { IconButton, Typography, Stack, Chip } from '@mui/material';
 import { CustomTableConfig } from 'src/components/custom-table';
-import { RouterLink } from 'src/components/router-link';
-import { paths } from 'src/paths';
 import { OrderDetail } from 'src/types/order';
 import { Edit } from 'iconsax-react';
+import { formatUnixTimestamp } from 'src/utils/format-unix-time';
 
 const getOrderTableConfigs = ({
   onClickEdit,
@@ -22,16 +21,19 @@ const getOrderTableConfigs = ({
     key: 'product',
     headerLabel: 'Sản phẩm',
     type: 'string',
-    renderCell: (data) => (
-      <Stack direction={'row'}>
-        {data.product.map((product, index) => (
-          <Typography key={index}>
-            {product}
-            {index < data.product.length - 1 && ', '}
-          </Typography>
-        ))}
-      </Stack>
-    )
+    renderCell: (data) =>
+      data.product ? (
+        <Stack direction={'row'}>
+          {data.product.map((product, index) => (
+            <Typography key={index}>
+              {product}
+              {index < data.product.length - 1 && ', '}
+            </Typography>
+          ))}
+        </Stack>
+      ) : (
+        <>Chovy</>
+      )
   },
   {
     key: 'address',
@@ -39,14 +41,23 @@ const getOrderTableConfigs = ({
     type: 'string'
   },
   {
-    key: 'deliveryDate',
-    headerLabel: 'Ngày giao hàng',
-    type: 'date'
+    key: 'createdAt',
+    headerLabel: 'Ngày tạo đơn hàng',
+    type: 'string',
+    renderCell: (data) => <Typography>{formatUnixTimestamp(data.createdAt!)}</Typography>
   },
   {
     key: 'shippingFee',
     headerLabel: 'Tổng tiền (VNĐ)',
-    type: 'string'
+    type: 'string',
+    renderCell: (data) => {
+      const formattedShippingFee = new Intl.NumberFormat('en-US', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      }).format(data.shippingFee);
+
+      return <Typography>{formattedShippingFee}</Typography>;
+    }
   },
   {
     key: 'paymentMethod',

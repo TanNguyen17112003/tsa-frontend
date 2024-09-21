@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import OrderFilter from './order-filter';
 import { Box } from '@mui/material';
 import { OrderDetail, initialOrderList } from 'src/types/order';
@@ -9,7 +9,10 @@ import { useRouter } from 'next/router';
 import OrderDetailReportDrawer from './order-detail-report-drawer';
 import { useDrawer } from '@hooks';
 
-function OrderPaid() {
+interface OrderPaidProps {
+  orders: OrderDetail[];
+}
+const OrderPaid: React.FC<OrderPaidProps> = ({ orders }) => {
   const router = useRouter();
 
   const handleGoReport = useCallback(
@@ -41,7 +44,7 @@ function OrderPaid() {
     const startDate = dateRange ? new Date(dateRange[0]) : null;
     const endDate = dateRange ? new Date(dateRange[1]) : null;
 
-    return initialOrderList.filter((order) => {
+    return orders.filter((order) => {
       const orderDate = new Date(order.deliveryDate);
       const isWithinDateRange =
         startDate && endDate ? orderDate >= startDate && orderDate <= endDate : true;
@@ -52,7 +55,7 @@ function OrderPaid() {
 
       return order.isPaid === true && isWithinDateRange && isStatusMatch;
     });
-  }, [initialOrderList, router.query.status, router.query.dateRange]);
+  }, [orders, router.query.status, router.query.dateRange]);
 
   const pagination = usePagination({
     count: result.length
@@ -77,6 +80,6 @@ function OrderPaid() {
       />
     </Box>
   );
-}
+};
 
 export default OrderPaid;

@@ -8,7 +8,11 @@ import usePagination from 'src/hooks/use-pagination';
 import { useRouter } from 'next/router';
 import OrderDetailReportDrawer from './order-detail-report-drawer';
 
-function OrderNotPaid() {
+interface OrderNotPaidProps {
+  orders: OrderDetail[];
+}
+
+const OrderNotPaid: React.FC<OrderNotPaidProps> = ({ orders }) => {
   const router = useRouter();
 
   const handleGoReport = useCallback(
@@ -38,7 +42,7 @@ function OrderNotPaid() {
     const startDate = dateRange ? new Date(dateRange[0]) : null;
     const endDate = dateRange ? new Date(dateRange[1]) : null;
 
-    return initialOrderList.filter((order) => {
+    return orders.filter((order) => {
       const orderDate = new Date(order.deliveryDate);
       const isWithinDateRange =
         startDate && endDate ? orderDate >= startDate && orderDate <= endDate : true;
@@ -49,7 +53,7 @@ function OrderNotPaid() {
 
       return !order.isPaid && isWithinDateRange && isStatusMatch;
     });
-  }, [initialOrderList, router.query.status, router.query.dateRange]);
+  }, [orders, router.query.status, router.query.dateRange]);
 
   const pagination = usePagination({
     count: result.length
@@ -69,6 +73,6 @@ function OrderNotPaid() {
       </Box>
     </Box>
   );
-}
+};
 
 export default OrderNotPaid;

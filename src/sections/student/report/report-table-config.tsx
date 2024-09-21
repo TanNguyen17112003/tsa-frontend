@@ -1,9 +1,9 @@
 import { IconButton, Typography, Stack, Button, Chip } from '@mui/material';
 import { CustomTableConfig } from 'src/components/custom-table';
-import { RouterLink } from 'src/components/router-link';
 import { paths } from 'src/paths';
 import { Edit, Trash } from 'iconsax-react';
 import { ReportDetail } from 'src/types/report';
+import { formatUnixTimestamp } from 'src/utils/format-unix-time';
 
 const getReportTableConfigs = ({
   onClickEdit,
@@ -16,12 +16,13 @@ const getReportTableConfigs = ({
     key: 'orderCode',
     headerLabel: 'Mã đơn hàng',
     type: 'string',
-    renderCell: (data) => <Typography>#{data.orderCode}</Typography>
+    renderCell: (data) => <Typography>#{data.orderId!}</Typography>
   },
   {
-    key: 'reportAt',
+    key: 'reportedAt',
     headerLabel: 'Ngày khiếu nại',
-    type: 'string'
+    type: 'string',
+    renderCell: (data) => <Typography>{formatUnixTimestamp(data.reportedAt!)}</Typography>
   },
   {
     key: 'content',
@@ -45,16 +46,8 @@ const getReportTableConfigs = ({
     renderCell: (data) => (
       <Chip
         variant='filled'
-        label={
-          data.status === 'SOLVED'
-            ? 'Đã giải quyết'
-            : data.status === 'PENDING'
-              ? 'Đang chờ xử lý'
-              : 'Đã từ chối'
-        }
-        color={
-          data.status === 'SOLVED' ? 'success' : data.status === 'PENDING' ? 'warning' : 'error'
-        }
+        label={data.status === 'REPLIED' ? 'Đã giải quyết' : 'Đang chờ xử lý'}
+        color={data.status === 'REPLIED' ? 'success' : 'warning'}
       />
     )
   },

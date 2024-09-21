@@ -65,8 +65,8 @@ export const OrderForm: FC<OrderFormProps> = ({ formik, title, status }) => {
           <OrderFormTextField
             type='dateTime'
             title={'Thời gian giao hàng'}
-            lg={0}
-            xs={6}
+            lg={6}
+            xs={12}
             name={'devileryDate'}
             placeholder='Chọn thời gian giao hàng'
             onChange={formik.handleChange}

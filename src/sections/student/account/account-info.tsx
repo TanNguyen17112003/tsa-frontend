@@ -3,6 +3,7 @@ import { Stack } from '@mui/system';
 import React, { useState } from 'react';
 import { useAuth } from 'src/hooks/use-auth';
 import AccountInfoEditField from './account-info-edit-field';
+import { formatUnixTimestamp } from 'src/utils/format-time-currency';
 
 function ProfileSection() {
   const [isEditName, setIsEditName] = useState(false);
@@ -28,26 +29,30 @@ function ProfileSection() {
             >
               <AccountInfoEditField
                 label='Tên tài khoản'
-                defaultValue='Tan Nguyen'
+                defaultValue={user?.lastName + ' ' + user?.firstName}
                 isEdit={isEditName}
                 setIsEdit={setIsEditName}
               />
-              <AccountInfoEditField label='Ngày sinh' defaultValue='17/11/2003' disabled />
+              <AccountInfoEditField
+                label='Thời gian tạo tài khoản'
+                defaultValue={formatUnixTimestamp(user?.createdAt as string)}
+                disabled
+              />
               <AccountInfoEditField
                 label='Email'
-                defaultValue='duytan17112003@gmail.com'
+                defaultValue={user?.email as string}
                 isEdit={isEditEmail}
                 setIsEdit={setIsEditEmail}
               />
               <AccountInfoEditField
                 label='Địa chỉ'
-                defaultValue='Phòng 312, Tòa A20, KTX Khu A, ĐHQG TP.HCM'
+                defaultValue={'sad'}
                 isEdit={isEditAddress}
                 setIsEdit={setIsEditAddress}
               />
               <AccountInfoEditField
                 label='Số điện thoại'
-                defaultValue='0862898859'
+                defaultValue={user?.phoneNumber as string}
                 isEdit={isEditPhone}
                 setIsEdit={setIsEditPhone}
               />

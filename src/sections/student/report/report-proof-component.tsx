@@ -5,17 +5,13 @@ import { ProofImage } from 'src/types/report';
 
 interface ReportProofComponentProps {
   label: string;
-  value: string | ProofImage;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  defaultValue?: string | ProofImage;
 }
 
-const ReportProofComponent = ({ label, value, onChange }: ReportProofComponentProps) => {
-  const [inputValue, setInputValue] = useState<string | ProofImage>(value);
+const ReportProofComponent = ({ label, onChange, defaultValue }: ReportProofComponentProps) => {
+  const [inputValue, setInputValue] = useState<string | ProofImage>('');
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-
-  useEffect(() => {
-    setInputValue(value);
-  }, [value]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
@@ -48,6 +44,7 @@ const ReportProofComponent = ({ label, value, onChange }: ReportProofComponentPr
         type='text'
         value={inputValue}
         onChange={handleInputChange}
+        defaultValue={defaultValue}
         className='w-full rounded-lg'
         placeholder='Nhập đường link hoặc tải lên ảnh minh chứng'
         InputProps={{

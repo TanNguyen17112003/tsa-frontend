@@ -6,30 +6,31 @@ import { useDrawer } from 'src/hooks/use-drawer';
 import useFunction from 'src/hooks/use-function';
 import { OrderDetail } from 'src/types/order';
 import OrderDetailReportDrawer from '../order-list/order-detail-report-drawer';
+import { formatUnixTimestamp, unixTimestampToDate } from 'src/utils/format-time-currency';
+import { formatVNDcurrency } from 'src/utils/format-time-currency';
 
 function OrderInfoCard({ order }: { order: OrderDetail }) {
   const orderDetailReportDrawer = useDrawer<OrderDetail>();
-
   const boxFields = [
     {
       name: 'Mã đơn hàng',
-      value: '#' + order.code
+      value: '#' + order.checkCode
     },
     {
       name: 'Sản phẩm',
-      value: order.product.join(', ')
+      value: 'Không có sản phẩm'
     },
     {
       name: 'Địa chỉ giao hàng',
       value: order.address
     },
     {
-      name: 'Ngày giao hàng',
-      value: order.deliveryDate
+      name: 'Ngày tạo đơn hàng',
+      value: formatUnixTimestamp(order.createdAt!)
     },
     {
       name: 'Đơn giá',
-      value: order.amount
+      value: formatVNDcurrency(order.shippingFee)
     },
     {
       name: 'Phương thức thanh toán',
@@ -90,6 +91,7 @@ function OrderInfoCard({ order }: { order: OrderDetail }) {
         </Card>
       )}
       <OrderDetailReportDrawer
+        order={order}
         open={orderDetailReportDrawer.open}
         onClose={orderDetailReportDrawer.handleClose}
       />

@@ -9,7 +9,8 @@ import { useDrawer } from '@hooks';
 import { useDialog } from '@hooks';
 import ReportDetailEditDrawer from './report-detail-edit-drawer';
 import ReportDetailDeleteDialog from './report-detail-delete-dialog';
-import { unixTimestampToDate } from 'src/utils/format-unix-time';
+import { unixTimestampToDate } from 'src/utils/format-time-currency';
+import { useReportsContext } from 'src/contexts/reports/reports-context';
 
 interface ReportListProps {
   reports: ReportDetail[];
@@ -17,6 +18,7 @@ interface ReportListProps {
 
 const ReportList: React.FC<ReportListProps> = ({ reports }) => {
   const statusList = ['Tất cả', 'Đã giải quyết', 'Đang chờ xử lý'];
+  const { deleteReport } = useReportsContext();
 
   const editDetailReportDrawer = useDrawer<ReportDetail>();
   const removeDetailReportDialog = useDialog<ReportDetail>();
@@ -81,6 +83,7 @@ const ReportList: React.FC<ReportListProps> = ({ reports }) => {
         report={removeDetailReportDialog.data!}
         open={removeDetailReportDialog.open}
         onClose={removeDetailReportDialog.handleClose}
+        onConfirm={() => deleteReport(removeDetailReportDialog.data?.id as string)}
       />
     </Box>
   );

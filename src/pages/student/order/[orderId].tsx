@@ -12,6 +12,7 @@ import { getFormData } from 'src/utils/api-request';
 import OrderInfoCard from 'src/sections/student/order/order-detail/order-info-card';
 import OrderDeliveryHistory from 'src/sections/student/order/order-detail/order-delivery-history';
 import { initialOrderList } from 'src/types/order';
+import { useOrdersContext } from 'src/contexts/orders/orders-context';
 
 const tabs = [
   {
@@ -26,13 +27,13 @@ const tabs = [
 
 const Page: PageType = () => {
   const router = useRouter();
+  const { getOrdersApi } = useOrdersContext();
+  const order = useMemo(() => {
+    return (getOrdersApi.data || []).find((order) => order.id === router.query.orderId);
+  }, [getOrdersApi.data]);
   const [tab, setTab] = useState(tabs[0].key);
   const [status, setStatus] = useState<boolean>(true);
   const { user } = useAuth();
-
-  const order = useMemo(() => {
-    return initialOrderList.find((order) => order.id === router.query.orderId);
-  }, [initialOrderList, router.query.orderId]);
 
   return (
     <Box

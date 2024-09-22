@@ -10,7 +10,7 @@ interface ContextValue {
   getReportsApi: UseFunctionReturnType<FormData, ReportDetail[]>;
 
   createReport: (requests: Omit<ReportDetail, 'id'>) => Promise<void>;
-  updateReport: (Report: Partial<ReportDetail>) => Promise<void>;
+  updateReport: (Report: Partial<ReportDetail>, id: string) => Promise<void>;
   deleteReport: (ids: Report['id']) => Promise<void>;
 }
 
@@ -47,9 +47,10 @@ const ReportsProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const updateReport = useCallback(
-    async (Report: Partial<Report>) => {
+    async (Report: Partial<Report>, id: string) => {
       try {
-        await ReportsApi.putReport(Report);
+        console.log(Report, id);
+        await ReportsApi.putReport(Report, id);
         getReportsApi.setData(
           (getReportsApi.data || []).map((c) => (c.id == Report.id ? Object.assign(c, Report) : c))
         );
@@ -63,13 +64,8 @@ const ReportsProvider = ({ children }: { children: ReactNode }) => {
   const deleteReport = useCallback(
     async (id: Report['id']) => {
       try {
-        const result = await ReportsApi.deleteReport(id);
-
-        if (result.status === 'fulfilled') {
-          getReportsApi.setData((getReportsApi.data || []).filter((order) => order.id !== id));
-        } else {
-          throw new Error('Không thể xoá khiếu nại: ' + id + '. ' + result.reason.toString());
-        }
+        await ReportsApi.deleteReport(id);
+        getReportsApi.setData((getReportsApi.data || []).filter((order) => order.id !== id));
       } catch (error) {
         throw error;
       }

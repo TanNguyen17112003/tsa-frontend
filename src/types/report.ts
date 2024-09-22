@@ -21,11 +21,16 @@ export interface Report {
 
 export interface ReportDetail extends Report {}
 
-export interface ReportFormProps extends Partial<Report> {}
+export interface ReportFormProps extends Partial<Omit<ReportDetail, 'id'>> {}
 
 export const initialReportForm: ReportFormProps = {
+  orderId: '',
+  reportedAt: '',
+  content: '',
+  proof: '',
   reply: '',
-  proof: ''
+  repliedAt: '',
+  studentId: ''
 };
 
 export const statusMap = {

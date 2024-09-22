@@ -28,7 +28,7 @@ export const dashboardStudentConfigs: Section[] = [
       },
       {
         title: 'Đăng xuất',
-        path: paths.dashboard.logout,
+        path: paths.auth.logout,
         icon: <LogoutCurve size='20px' variant='Bold' />
       }
     ]

@@ -26,20 +26,23 @@ function AccountPasswordDialog({ ...props }: DialogProps) {
 
   const formik = useFormik({
     initialValues: {
-      old_password: '',
-      new_password: '',
-      new_password_confirm: ''
+      currentPassword: '',
+      newPassword: '',
+      newPasswordConfirm: ''
     },
     onSubmit: async (values) => {
-      if (values.new_password != values.new_password_confirm) {
-        formik.setFieldError('new_password_confirm', 'Mật khẩu không khớp');
+      if (values.newPassword != values.newPasswordConfirm) {
+        formik.setFieldError('newPasswordConfirm', 'Mật khẩu không khớp');
       }
-      const { error } = await updatePasswordApi.call(values);
+      const { error } = await updatePasswordApi.call({
+        currentPassword: values.currentPassword,
+        newPassword: values.newPassword
+      });
       if (!error) {
         formik.setValues({
-          old_password: '',
-          new_password: '',
-          new_password_confirm: ''
+          currentPassword: '',
+          newPassword: '',
+          newPasswordConfirm: ''
         });
         props.onClose?.({}, 'backdropClick');
       }
@@ -66,8 +69,8 @@ function AccountPasswordDialog({ ...props }: DialogProps) {
               label='Mật khẩu cũ'
               type={!viewRawOldPassword ? 'password' : 'text'}
               required
-              value={formik.values.old_password}
-              name='old_password'
+              value={formik.values.currentPassword}
+              name='currentPassword'
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               fullWidth
@@ -93,8 +96,8 @@ function AccountPasswordDialog({ ...props }: DialogProps) {
             <TextField
               label='Mật khẩu mới'
               type={!viewRawNewPassword ? 'password' : 'text'}
-              value={formik.values.new_password}
-              name='new_password'
+              value={formik.values.newPassword}
+              name='newPassword'
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               fullWidth
@@ -121,8 +124,8 @@ function AccountPasswordDialog({ ...props }: DialogProps) {
               label='Nhập lại mật khẩu mới'
               type={!viewRawRetypePassword ? 'password' : 'text'}
               required
-              value={formik.values.new_password_confirm}
-              name='new_password_confirm'
+              value={formik.values.newPasswordConfirm}
+              name='newPasswordConfirm'
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               fullWidth

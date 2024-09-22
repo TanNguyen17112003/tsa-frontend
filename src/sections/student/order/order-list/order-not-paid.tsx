@@ -7,6 +7,7 @@ import { CustomTable } from '@components';
 import usePagination from 'src/hooks/use-pagination';
 import { useRouter } from 'next/router';
 import OrderDetailReportDrawer from './order-detail-report-drawer';
+import { useDrawer } from '@hooks';
 
 interface OrderNotPaidProps {
   orders: OrderDetail[];
@@ -14,6 +15,7 @@ interface OrderNotPaidProps {
 
 const OrderNotPaid: React.FC<OrderNotPaidProps> = ({ orders }) => {
   const router = useRouter();
+  const orderDetailReportDrawer = useDrawer<OrderDetail>();
 
   const handleGoReport = useCallback(
     (data: OrderDetail) => {
@@ -28,13 +30,13 @@ const OrderNotPaid: React.FC<OrderNotPaidProps> = ({ orders }) => {
   const orderTableConfig = React.useMemo(() => {
     return getOrderTableConfigs({
       onClickEdit: (data: OrderDetail) => {
-        console.log(data);
+        orderDetailReportDrawer.handleOpen(data);
       },
       onClickRow: (data: OrderDetail) => {
         handleGoReport(data);
       }
     });
-  }, [handleGoReport]);
+  }, [handleGoReport, orderDetailReportDrawer]);
 
   const result = React.useMemo(() => {
     const dateRange =
@@ -71,6 +73,11 @@ const OrderNotPaid: React.FC<OrderNotPaidProps> = ({ orders }) => {
           onClickRow={(data) => handleGoReport(data)}
         />
       </Box>
+      <OrderDetailReportDrawer
+        open={orderDetailReportDrawer.open}
+        onClose={orderDetailReportDrawer.handleClose}
+        order={orderDetailReportDrawer.data}
+      />
     </Box>
   );
 };

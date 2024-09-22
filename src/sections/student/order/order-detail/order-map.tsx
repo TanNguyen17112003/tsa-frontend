@@ -62,7 +62,7 @@ function OrderMap() {
     //     )}
     //   </Card>
     // </Stack>
-    <>Chovy</>
+    <></>
   );
 }
 

@@ -38,7 +38,7 @@ export const OrderForm: FC<OrderFormProps> = ({ formik, title, status }) => {
             lg={0}
             xs={12}
             onChange={formik.handleChange}
-            value={formik.values.code}
+            value={formik.values.checkCode}
             name={'name'}
           />
           <OrderFormTextField

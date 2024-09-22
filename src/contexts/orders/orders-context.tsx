@@ -8,7 +8,7 @@ import { Order, OrderDetail } from 'src/types/order';
 
 interface ContextValue {
   getOrdersApi: UseFunctionReturnType<FormData, OrderDetail[]>;
-
+  getOrderById: (id: Order['id']) => Promise<OrderDetail>;
   createOrder: (requests: Omit<OrderDetail, 'id'>) => Promise<void>;
   updateOrder: (Order: Partial<OrderDetail>) => Promise<void>;
   deleteOrder: (ids: Order['id']) => Promise<void>;
@@ -16,7 +16,9 @@ interface ContextValue {
 
 export const OrdersContext = createContext<ContextValue>({
   getOrdersApi: DEFAULT_FUNCTION_RETURN,
-
+  getOrderById: async (id: Order['id']) => {
+    return {} as OrderDetail;
+  },
   createOrder: async () => {},
   updateOrder: async () => {},
   deleteOrder: async () => {}
@@ -24,6 +26,17 @@ export const OrdersContext = createContext<ContextValue>({
 
 const OrdersProvider = ({ children }: { children: ReactNode }) => {
   const getOrdersApi = useFunction(OrdersApi.getOrders);
+
+  const getOrderById = useCallback(
+    async (id: Order['id']) => {
+      try {
+        return await OrdersApi.getOrderById(id);
+      } catch (error) {
+        throw error;
+      }
+    },
+    [getOrdersApi]
+  );
 
   const createOrder = useCallback(
     async (request: Omit<OrderDetail, 'id'>) => {
@@ -68,7 +81,7 @@ const OrdersProvider = ({ children }: { children: ReactNode }) => {
         if (result.status === 'fulfilled') {
           getOrdersApi.setData((getOrdersApi.data || []).filter((order) => order.id !== id));
         } else {
-          throw new Error('Không thể xoá đơn hàng: ' + id + '. ' + result.reason.toString());
+          throw new Error('Không thể xoá đơn hàng: ' + id + '. ' + result.reason);
         }
       } catch (error) {
         throw error;
@@ -86,6 +99,7 @@ const OrdersProvider = ({ children }: { children: ReactNode }) => {
     <OrdersContext.Provider
       value={{
         getOrdersApi,
+        getOrderById,
         createOrder,
         updateOrder,
         deleteOrder

@@ -4,7 +4,6 @@ import FormInput from 'src/components/ui/FormInput';
 import { Stack } from '@mui/system';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFormik } from 'formik';
-import { styled } from '@mui/material/styles';
 import useFunction from 'src/hooks/use-function';
 import { useAuth } from 'src/hooks/use-auth';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -14,6 +13,9 @@ import dayjs, { Dayjs } from 'dayjs';
 import 'dayjs/locale/en-gb';
 import { ReportDetail, ReportFormProps, initialReportForm } from 'src/types/report';
 import ReportProofComponent from './report-proof-component';
+import { formatUnixTimestamp } from 'src/utils/format-time-currency';
+import { useReportsContext } from 'src/contexts/reports/reports-context';
+import { getCurentUnixTimestamp } from 'src/utils/format-time-currency';
 
 function ReportDetailEditDrawer({
   open,
@@ -25,10 +27,21 @@ function ReportDetailEditDrawer({
   report?: ReportDetail;
 }) {
   const { user } = useAuth();
-  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs(report?.reportAt));
+  const { updateReport } = useReportsContext();
+  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(
+    dayjs(formatUnixTimestamp(report?.reportedAt as string))
+  );
   const handleSubmitReport = useCallback(async (values: ReportFormProps) => {
     try {
-      console.log(values);
+      const updatedData = {
+        content: values.content,
+        proof: values.proof,
+        reportedAt: getCurentUnixTimestamp(),
+        reply: '',
+        repliedAt: '',
+        studentId: user?.id
+      };
+      await updateReport(updatedData, report?.id as string);
     } catch (error) {
       throw error;
     }
@@ -53,7 +66,7 @@ function ReportDetailEditDrawer({
         open={open}
         PaperProps={{
           sx: {
-            width: 600
+            width: 750
           }
         }}
         onClose={onClose}
@@ -78,8 +91,11 @@ function ReportDetailEditDrawer({
                     />{' '}
                     Quay lại
                   </Typography>
+                  <>{report?.id}</>
                 </Box>
-                <Typography variant='h6'>Khiếu nại đơn hàng #{report?.id}</Typography>
+                <Typography variant='h6'>
+                  Khiếu nại đơn hàng #{report?.orderId as string}
+                </Typography>
               </Box>
 
               <Box
@@ -114,13 +130,7 @@ function ReportDetailEditDrawer({
                 type='text'
                 className='w-full px-3 rounded-lg'
                 disabled
-                value={
-                  report?.status === 'SOLVED'
-                    ? 'Đã giải quyết'
-                    : report?.status === 'PENDING'
-                      ? 'Đang chờ xử lý'
-                      : 'Đã từ chối'
-                }
+                value={report?.status === 'REPLIED' ? 'Đã giải quyết' : 'Đang chờ xử lý'}
               />
             </Box>
             <Box display={'flex'} flexDirection={'column'} gap={1}>
@@ -145,17 +155,17 @@ function ReportDetailEditDrawer({
             <Box display={'flex'} flexDirection={'column'} gap={1}>
               <Typography variant='h6'>Nội dung khiếu nại</Typography>
               <FormInput
+                defaultValue={report?.content}
                 type='text'
                 className='w-full px-3 rounded-lg '
-                value={formik.values.content}
-                onChange={formik.handleChange}
+                onChange={(event) => formik.setFieldValue('content', event.target.value)}
               />
             </Box>
             <Box display={'flex'} flexDirection={'column'} gap={1}>
               <ReportProofComponent
+                defaultValue={report?.proof || undefined}
                 label='Minh chứng'
-                value={formik.values.proof!}
-                onChange={formik.handleChange}
+                onChange={(event) => formik.setFieldValue('proof', event.target.value)}
               />
             </Box>
           </Stack>

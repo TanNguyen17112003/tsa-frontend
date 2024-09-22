@@ -6,7 +6,7 @@ import type { Page as PageType } from 'src/types/page';
 
 const Page: PageType = () => {
   const { user } = useAuth();
-  return <div>{user?.role === 'admin' ? <OverviewAdminPage /> : <OverviewUserPage />}</div>;
+  return <div>{user?.role === 'ADMIN' ? <OverviewAdminPage /> : <OverviewUserPage />}</div>;
 };
 
 Page.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;

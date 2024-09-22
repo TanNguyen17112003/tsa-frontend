@@ -55,9 +55,9 @@ export class UsersApi {
   }
 
   static async updatePassword(payload: {
-    old_password: string;
-    new_password: string;
+    currentPassword: string;
+    newPassword: string;
   }): Promise<User> {
-    return await apiPost('/users/password', payload);
+    return await apiPut('/user/update-password', payload);
   }
 }

@@ -10,7 +10,10 @@ import { useAuth } from 'src/hooks/use-auth';
 import 'dayjs/locale/en-gb';
 import ReportProofComponent from '../../report/report-proof-component';
 import { OrderDetail } from 'src/types/order';
-import { ReportFormProps, initialReportForm } from 'src/types/report';
+import { ReportDetail, ReportFormProps, initialReportForm } from 'src/types/report';
+import { request } from 'http';
+import { getCurentUnixTimestamp } from 'src/utils/format-time-currency';
+import { ReportsApi } from 'src/api/reports';
 
 function OrderDetailReportDrawer({
   open,
@@ -22,13 +25,24 @@ function OrderDetailReportDrawer({
   order?: OrderDetail;
 }) {
   const { user } = useAuth();
-  const handleSubmitReport = useCallback(async (values: ReportFormProps) => {
-    try {
-      console.log(values);
-    } catch (error) {
-      throw error;
-    }
-  }, []);
+  const handleSubmitReport = useCallback(
+    async (values: ReportFormProps) => {
+      try {
+        await ReportsApi.postReports({
+          content: values.content,
+          proof: values.proof,
+          orderId: order?.id,
+          reportedAt: getCurentUnixTimestamp(),
+          reply: '',
+          repliedAt: '',
+          studentId: user?.id
+        });
+      } catch (err) {
+        throw err;
+      }
+    },
+    [order, user]
+  );
   const handleSubmitReportHelper = useFunction(handleSubmitReport, {
     successMessage: 'Cập nhật khiếu nại thành công'
   });
@@ -54,7 +68,7 @@ function OrderDetailReportDrawer({
         }}
         onClose={onClose}
       >
-        <form onSubmit={() => {}}>
+        <form onSubmit={formik.handleSubmit}>
           <Paper elevation={5} sx={{ p: 3, borderRadius: 0 }}>
             <Box
               sx={{
@@ -75,7 +89,7 @@ function OrderDetailReportDrawer({
                     Quay lại
                   </Typography>
                 </Box>
-                <Typography variant='h6'>Khiếu nại đơn hàng #{order?.code}</Typography>
+                <Typography variant='h6'>Khiếu nại đơn hàng #{order?.checkCode}</Typography>
               </Box>
 
               <Box
@@ -97,13 +111,16 @@ function OrderDetailReportDrawer({
           <Stack spacing={3} padding={3}>
             <Box display={'flex'} flexDirection={'column'} gap={1}>
               <Typography variant='h6'>Nội dung khiếu nại</Typography>
-              <FormInput type='text' className='w-full px-3 rounded-lg ' />
+              <FormInput
+                type='text'
+                className='w-full px-3 rounded-lg'
+                onChange={(event) => formik.setFieldValue('content', event.target.value)}
+              />
             </Box>
             <Box display={'flex'} flexDirection={'column'} gap={1}>
               <ReportProofComponent
                 label='Minh chứng'
-                value={formik.values.proof!}
-                onChange={formik.handleChange}
+                onChange={(event) => formik.setFieldValue('proof', event.target.value)}
               />
             </Box>
           </Stack>

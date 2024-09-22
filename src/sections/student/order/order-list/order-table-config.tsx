@@ -2,7 +2,7 @@ import { IconButton, Typography, Stack, Chip } from '@mui/material';
 import { CustomTableConfig } from 'src/components/custom-table';
 import { OrderDetail } from 'src/types/order';
 import { Edit } from 'iconsax-react';
-import { formatUnixTimestamp } from 'src/utils/format-unix-time';
+import { formatUnixTimestamp, formatVNDcurrency } from 'src/utils/format-time-currency';
 
 const getOrderTableConfigs = ({
   onClickEdit,
@@ -51,12 +51,7 @@ const getOrderTableConfigs = ({
     headerLabel: 'Tổng tiền (VNĐ)',
     type: 'string',
     renderCell: (data) => {
-      const formattedShippingFee = new Intl.NumberFormat('en-US', {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      }).format(data.shippingFee);
-
-      return <Typography>{formattedShippingFee}</Typography>;
+      return <Typography>{formatVNDcurrency(data.shippingFee)}</Typography>;
     }
   },
   {

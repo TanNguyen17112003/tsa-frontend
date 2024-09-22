@@ -9,3 +9,14 @@ export function formatUnixTimestamp(unixTimestamp: string): string {
 export function unixTimestampToDate(unixTimestamp: string): Date {
   return new Date(Number(unixTimestamp) * 1000);
 }
+
+export function formatVNDcurrency(value: number): string {
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND'
+  }).format(value);
+}
+
+export function getCurentUnixTimestamp(): string {
+  return String(Math.floor(Date.now() / 1000));
+}

@@ -3,7 +3,7 @@ import { CustomTableConfig } from 'src/components/custom-table';
 import { paths } from 'src/paths';
 import { Edit, Trash } from 'iconsax-react';
 import { ReportDetail } from 'src/types/report';
-import { formatUnixTimestamp } from 'src/utils/format-unix-time';
+import { formatUnixTimestamp } from 'src/utils/format-time-currency';
 
 const getReportTableConfigs = ({
   onClickEdit,

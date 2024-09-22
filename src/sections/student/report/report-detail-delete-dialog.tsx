@@ -22,7 +22,7 @@ function ReportDetailDeleteDialog({
   onConfirm?: () => Promise<void>;
 }) {
   const onConfirmHelper = useFunction(onConfirm!, {
-    successMessage: 'Đã xoá!'
+    successMessage: 'Xóa khiếu nại thành công!'
   });
 
   return (
@@ -55,7 +55,7 @@ function ReportDetailDeleteDialog({
           color='error'
           onClick={async (e) => {
             dialogProps.onClose?.(e, 'escapeKeyDown');
-            await onConfirm!();
+            await onConfirmHelper.call({});
           }}
         >
           Xoá

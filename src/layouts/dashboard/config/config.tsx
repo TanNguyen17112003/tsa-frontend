@@ -24,7 +24,7 @@ export const useSections = () => {
   const { user } = useAuth();
 
   return useMemo(() => {
-    if (user?.role == 'admin') {
+    if (user?.role == 'ADMIN') {
       return getDashboardAdminConfigs();
     } else {
       return dashboardStudentConfigs;

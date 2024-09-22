@@ -4,7 +4,8 @@ export const paths = {
     login: '/auth',
     register: '/auth/register',
     'forgot-password': '/auth/forgot-password',
-    'reset-password': '/auth/reset-password'
+    'reset-password': '/auth/reset-password',
+    logout: '/auth/logout'
   },
   dashboard: {
     index: '/dashboard',
@@ -12,8 +13,7 @@ export const paths = {
     accounts: '/dashboard/accounts',
     categories: '/dashboard/categories',
     reports: '/dashboard/reports',
-    'add-report': '/dashboard/add-report',
-    logout: '/logout'
+    'add-report': '/dashboard/add-report'
   },
   student: {
     index: '/student',

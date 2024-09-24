@@ -47,8 +47,7 @@ const apiFetch = async (input: RequestInfo | URL, init?: RequestInit | undefined
   try {
     const response = await fetch(input, init);
     const result = await response.json();
-    // console.log("result api fetch ", result);
-    if (!response.ok || response.status != 200) {
+    if (!response.ok || (response.status != 200 && response.status != 201)) {
       const message = `Lỗi: ${result.message || response.status}`;
       throw new Error(message);
     }

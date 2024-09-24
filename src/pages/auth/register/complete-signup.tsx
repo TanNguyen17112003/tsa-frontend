@@ -3,13 +3,13 @@ import { useCallback, useState } from 'react';
 import { paths } from 'src/paths';
 import type { Page as PageType } from 'src/types/page';
 import { Box, Typography, Step, Stepper, StepLabel, Stack } from '@mui/material';
-import RegisterStep1 from 'src/sections/auth/RegisterStep1';
-import RegisterStep2 from 'src/sections/auth/RegisterStep2';
 import RegisterStep3 from 'src/sections/auth/RegisterStep3';
 import { ArrowLeftIcon } from 'lucide-react';
+import { useAuth } from '@hooks';
 
 const Page: PageType = () => {
   const [registrationStep, setRegistrationStep] = useState(1);
+  const { completeSignUp } = useAuth();
   const flowList = [
     {
       title: 'Nhập địa chỉ email'
@@ -68,13 +68,7 @@ const Page: PageType = () => {
             </Step>
           ))}
         </Stepper>
-        {registrationStep === 1 ? (
-          <RegisterStep1 />
-        ) : registrationStep === 2 ? (
-          <RegisterStep2 />
-        ) : (
-          <RegisterStep3 />
-        )}
+        <RegisterStep3 />
       </Box>
     </Box>
   );

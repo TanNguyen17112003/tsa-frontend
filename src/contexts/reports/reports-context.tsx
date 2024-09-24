@@ -49,10 +49,9 @@ const ReportsProvider = ({ children }: { children: ReactNode }) => {
   const updateReport = useCallback(
     async (Report: Partial<Report>, id: string) => {
       try {
-        console.log(Report, id);
         await ReportsApi.putReport(Report, id);
         getReportsApi.setData(
-          (getReportsApi.data || []).map((c) => (c.id == Report.id ? Object.assign(c, Report) : c))
+          (getReportsApi.data || []).map((c) => (c.id == id ? Object.assign(c, Report) : c))
         );
       } catch (error) {
         throw error;

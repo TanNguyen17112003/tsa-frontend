@@ -2,7 +2,10 @@ export const paths = {
   index: '/',
   auth: {
     login: '/auth',
-    register: '/auth/register',
+    register: {
+      index: '/auth/register',
+      'complete-signup': '/auth/register/complete-signup'
+    },
     'forgot-password': '/auth/forgot-password',
     'reset-password': '/auth/reset-password',
     logout: '/auth/logout'

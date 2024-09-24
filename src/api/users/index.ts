@@ -11,17 +11,20 @@ type SignInResponse = {
   userInfo: UserDetail;
 };
 
-type SignUpRequest = {
+export type InitialSignUpRequest = {
   email: string;
-  password: string;
+};
+
+export type SignUpRequest = {
   firstName: string;
   lastName: string;
   phoneNumber: string;
+  password: string;
+  dormitory: string;
+  building: string;
+  room: string;
+  token: string;
 };
-
-type SignUpResponse = Promise<{
-  accessToken: string;
-}>;
 
 export class UsersApi {
   static async postUser(request: Omit<User, 'id'>): Promise<User> {
@@ -43,11 +46,16 @@ export class UsersApi {
   }
 
   static async signIn(request: SignInRequest): Promise<SignInResponse> {
-    return await apiPost('/user/signin', request);
+    return await apiPost('/auth/signin', request);
   }
 
-  static async signUp(request: SignUpRequest): Promise<SignUpResponse> {
-    return await apiPost('/user/signup', request);
+  static async initiateSignUp(request: InitialSignUpRequest): Promise<void> {
+    return await apiPost('/auth/signup/initiate', request);
+  }
+
+  static async completeSignUp(request: SignUpRequest): Promise<UserDetail> {
+    const response = await apiPost('/auth/signup/complete', request);
+    return response;
   }
 
   static async me(): Promise<UserDetail> {

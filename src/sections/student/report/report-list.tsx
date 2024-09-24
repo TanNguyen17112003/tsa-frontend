@@ -24,9 +24,16 @@ const ReportList: React.FC<ReportListProps> = ({ reports }) => {
   const removeDetailReportDialog = useDialog<ReportDetail>();
 
   const [status, setStatus] = React.useState(statusList[0]);
-  const [dateRange, setDateRange] = React.useState({
-    startDate: new Date('2024-01-01'),
-    endDate: new Date('2024-01-31')
+  const [dateRange, setDateRange] = React.useState(() => {
+    const now = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(now.getDate() - 1);
+    const oneWeekFromNow = new Date();
+    oneWeekFromNow.setDate(now.getDate() + 7);
+    return {
+      startDate: yesterday,
+      endDate: oneWeekFromNow
+    };
   });
 
   const reportTableConfig = React.useMemo(() => {

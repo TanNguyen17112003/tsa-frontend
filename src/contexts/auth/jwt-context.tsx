@@ -7,6 +7,7 @@ import { Issuer } from 'src/utils/auth';
 import CookieHelper, { CookieKeys } from 'src/utils/cookie-helper';
 import { useRouter } from 'next/router';
 import { paths } from 'src/paths';
+import { SignUpRequest, InitialSignUpRequest } from 'src/api/users';
 
 interface State {
   isInitialized: boolean;
@@ -99,13 +100,8 @@ const reducer = (state: State, action: Action): State =>
 export interface AuthContextType extends State {
   issuer: Issuer.JWT;
   signIn: (email: string, password: string) => Promise<UserDetail | undefined>;
-  signUp: (
-    email: string,
-    username: string,
-    full_name: string,
-    password: string,
-    confirm_password: string
-  ) => Promise<void>;
+  initiateSignUp: (request: InitialSignUpRequest) => Promise<void>;
+  completeSignUp: (request: SignUpRequest) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -113,7 +109,8 @@ export const AuthContext = createContext<AuthContextType>({
   ...initialState,
   issuer: Issuer.JWT,
   signIn: () => Promise.resolve(undefined),
-  signUp: () => Promise.resolve(),
+  initiateSignUp: () => Promise.resolve(),
+  completeSignUp: () => Promise.resolve(),
   signOut: () => Promise.resolve()
 });
 
@@ -211,23 +208,33 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
     [dispatch]
   );
 
-  const signUp = useCallback(
-    async (
-      email: string,
-      password: string,
-      firstName: string,
-      lastName: string,
-      phoneNumber: string
-    ): Promise<void> => {
-      await UsersApi.signUp({
-        email,
-        password,
-        firstName,
-        lastName,
-        phoneNumber
+  const initiateSignUp = useCallback(async (request: InitialSignUpRequest): Promise<void> => {
+    try {
+      await UsersApi.initiateSignUp(request);
+    } catch (error) {
+      throw error;
+    }
+  }, []);
+
+  const completeSignUp = useCallback(
+    async (request: SignUpRequest): Promise<void> => {
+      const response = await UsersApi.completeSignUp(request);
+      dispatch({
+        type: ActionType.SIGN_UP,
+        payload: {
+          user: {
+            id: response.id,
+            firstName: response.firstName,
+            lastName: response.lastName,
+            phoneNumber: response.phoneNumber,
+            role: 'STUDENT',
+            createdAt: response.createdAt,
+            email: response.email
+          }
+        }
       });
     },
-    []
+    [dispatch]
   );
 
   const signOut = useCallback(async (): Promise<void> => {
@@ -242,7 +249,8 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
         ...state,
         issuer: Issuer.JWT,
         signIn,
-        signUp,
+        initiateSignUp,
+        completeSignUp,
         signOut
       }}
     >

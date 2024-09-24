@@ -28,7 +28,7 @@ function OrderDetailReportDrawer({
   const handleSubmitReport = useCallback(
     async (values: ReportFormProps) => {
       try {
-        await ReportsApi.postReports({
+        const report = await ReportsApi.postReports({
           content: values.content,
           proof: values.proof,
           orderId: order?.id,
@@ -44,7 +44,7 @@ function OrderDetailReportDrawer({
     [order, user]
   );
   const handleSubmitReportHelper = useFunction(handleSubmitReport, {
-    successMessage: 'Cập nhật khiếu nại thành công'
+    successMessage: 'Gửi khiếu nại thành công!'
   });
   const formik = useFormik<ReportFormProps>({
     initialValues: initialReportForm,
@@ -52,8 +52,9 @@ function OrderDetailReportDrawer({
       const { error } = await handleSubmitReportHelper.call(values);
       if (error) {
         formik.setValues(initialReportForm);
-        onClose();
+        console.log(error);
       }
+      onClose();
     }
   });
   return (

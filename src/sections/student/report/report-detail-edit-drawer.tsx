@@ -31,23 +31,26 @@ function ReportDetailEditDrawer({
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(
     dayjs(formatUnixTimestamp(report?.reportedAt as string))
   );
-  const handleSubmitReport = useCallback(async (values: ReportFormProps) => {
-    try {
-      const updatedData = {
-        content: values.content,
-        proof: values.proof,
-        reportedAt: getCurentUnixTimestamp(),
-        reply: '',
-        repliedAt: '',
-        studentId: user?.id
-      };
-      await updateReport(updatedData, report?.id as string);
-    } catch (error) {
-      throw error;
-    }
-  }, []);
+  const handleSubmitReport = useCallback(
+    async (values: ReportFormProps) => {
+      try {
+        const updatedData = {
+          content: values.content,
+          proof: values.proof,
+          reportedAt: getCurentUnixTimestamp(),
+          reply: '',
+          repliedAt: '',
+          studentId: user?.id
+        };
+        await updateReport(updatedData, report?.id as string);
+      } catch (error) {
+        throw error;
+      }
+    },
+    [report?.id, user?.id]
+  );
   const handleSubmitReportHelper = useFunction(handleSubmitReport, {
-    successMessage: 'Cập nhật khiếu nại thành công'
+    successMessage: 'Cập nhật khiếu nại thành công!'
   });
   const formik = useFormik<ReportFormProps>({
     initialValues: initialReportForm,
@@ -55,8 +58,8 @@ function ReportDetailEditDrawer({
       const { error } = await handleSubmitReportHelper.call(values);
       if (error) {
         formik.setValues(initialReportForm);
-        onClose();
       }
+      onClose();
     }
   });
   return (
@@ -91,7 +94,6 @@ function ReportDetailEditDrawer({
                     />{' '}
                     Quay lại
                   </Typography>
-                  <>{report?.id}</>
                 </Box>
                 <Typography variant='h6'>
                   Khiếu nại đơn hàng #{report?.orderId as string}

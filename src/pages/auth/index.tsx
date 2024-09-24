@@ -152,7 +152,7 @@ const Page: PageType = () => {
               variant='ghost'
               className='px-4 pt-1 pb-1 max-w-max h-[24px] text-primary hover:text-primary'
             >
-              <Link href={paths.auth.register} className='underline italic'>
+              <Link href={paths.auth.register.index} className='underline italic'>
                 Đăng ký
               </Link>
             </Button>

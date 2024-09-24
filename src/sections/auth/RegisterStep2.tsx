@@ -17,13 +17,6 @@ function RegisterStep2() {
           <Typography className='italic underline opacity-40'>Gửi lại</Typography>
         </Box>
       </Stack>
-      <Button
-        className='mt-2 bg-green-400 hover:shadow-sm hover:bg-green-500 w-full'
-        type='submit'
-        variant='contained'
-      >
-        Tiếp tục
-      </Button>
     </Box>
   );
 }

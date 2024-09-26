@@ -131,7 +131,18 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
       if (accessToken) {
         let user: UserDetail | undefined = undefined;
         try {
-          user = await UsersApi.me();
+          const partialUser = await UsersApi.me();
+          if (
+            partialUser &&
+            partialUser.id &&
+            partialUser.firstName &&
+            partialUser.lastName &&
+            partialUser.role
+          ) {
+            user = partialUser as UserDetail;
+          } else {
+            throw new Error('Incomplete user data');
+          }
         } catch {}
         if (!user) {
           user = await JSON.parse(localStorage.getItem('user_data') || '{}');
@@ -140,7 +151,6 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
           }
         }
         if (user.role === 'STUDENT') {
-          console.log('student login');
           router.replace(paths.student.order.index);
         }
         dispatch({
@@ -183,12 +193,9 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
     async (email: string, password: string): Promise<UserDetail | undefined> => {
       try {
         const response = await UsersApi.signIn({ email, password });
-        console.log(response);
         if (response && response.token && response.userInfo) {
-          console.log('signIn response:', response.token);
           CookieHelper.setItem(CookieKeys.TOKEN, response.token);
           CookieHelper.setItem('user_data', JSON.stringify(response.userInfo));
-
           dispatch({
             type: ActionType.SIGN_IN,
             payload: {

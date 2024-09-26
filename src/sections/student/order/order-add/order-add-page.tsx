@@ -25,6 +25,7 @@ const ActivityAddPage = () => {
     initialValues: initialAddingOrder,
     onSubmit: async (values) => {
       try {
+        console.log(values);
         formik.setValues(values);
       } catch {
         showSnackbarError('Có lỗi xảy ra');

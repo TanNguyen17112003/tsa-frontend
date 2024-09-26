@@ -1,14 +1,21 @@
 import * as yup from 'yup';
 
 type UserRole = 'STUDENT' | 'STAFF' | 'ADMIN';
+type Dormitory = 'A' | 'B';
+type UserStatus = 'AVAILABLE' | 'BUSY' | 'OFFLINE';
 export interface User {
   id: string;
+  studentId?: string;
   firstName: string;
   lastName: string;
   phoneNumber: string;
   role: UserRole;
   createdAt: string;
   verified?: boolean;
+  room?: string;
+  building?: string;
+  dormitory?: Dormitory;
+  status?: UserStatus;
   email: string;
   iat?: number;
   exp?: number;

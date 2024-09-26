@@ -26,6 +26,10 @@ export type SignUpRequest = {
   token: string;
 };
 
+export type UpdateProfileRequest = Partial<
+  Pick<SignUpRequest, 'firstName' | 'lastName' | 'phoneNumber' | 'dormitory' | 'building' | 'room'>
+>;
+
 export class UsersApi {
   static async postUser(request: Omit<User, 'id'>): Promise<User> {
     return await apiPost('/users', request);
@@ -58,14 +62,18 @@ export class UsersApi {
     return response;
   }
 
-  static async me(): Promise<UserDetail> {
-    return await apiGet('/user/profile');
+  static async me(): Promise<Partial<UserDetail>> {
+    return await apiGet('/users/profile');
   }
 
   static async updatePassword(payload: {
     currentPassword: string;
     newPassword: string;
   }): Promise<User> {
-    return await apiPut('/user/update-password', payload);
+    return await apiPut('/users/password', payload);
+  }
+
+  static async updateProfile(payload: UpdateProfileRequest): Promise<User> {
+    return await apiPatch('/users/profile', payload);
   }
 }

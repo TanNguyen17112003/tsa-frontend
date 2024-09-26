@@ -1,4 +1,14 @@
-import { Box, Grid, MenuItem, Typography, ListItemIcon, ListItem } from '@mui/material';
+import {
+  Box,
+  Grid,
+  MenuItem,
+  Typography,
+  ListItemIcon,
+  ListItem,
+  FormControl,
+  InputLabel,
+  Select
+} from '@mui/material';
 import { Stack } from '@mui/system';
 import { FormikProps } from 'formik';
 import React, { useMemo, type FC, useEffect } from 'react';
@@ -8,6 +18,7 @@ import { OrderDetail, OrderImport } from 'src/types/order';
 import { OrderFormTextField } from './order-form-text-field';
 import { paymentMethodOptions } from 'src/utils/payment-method';
 import Image from 'next/image';
+import { AddressData } from '@utils';
 
 interface OrderFormProps {
   formik: FormikProps<OrderImport>;
@@ -22,6 +33,16 @@ export const OrderForm: FC<OrderFormProps> = ({ formik, title, status }) => {
     { value: 'Túi xách', label: 'Túi xách' },
     { value: 'Giá đỡ', label: 'Giá đỡ' }
   ];
+
+  const dormitoryList = useMemo(() => {
+    return AddressData.dormitories;
+  }, [AddressData]);
+  const buildingList = useMemo(() => {
+    return formik.values.dormitory === 'A' ? AddressData.buildings.A : AddressData.buildings.B;
+  }, [formik.values.dormitory]);
+  const roomList = useMemo(() => {
+    return AddressData.rooms;
+  }, [buildingList]);
 
   return (
     <Stack spacing={2}>
@@ -52,16 +73,53 @@ export const OrderForm: FC<OrderFormProps> = ({ formik, title, status }) => {
             name={'product'}
             placeholder='Nhập danh sách sản phẩm'
           />
-          <OrderFormTextField
-            type='text'
-            title={'Địa chỉ'}
-            lg={0}
-            xs={6}
-            value={formik.values.address}
-            onChange={formik.handleChange}
-            name={'address'}
-          />
-
+          <Grid item xs={12} lg={6}>
+            <Box display={'flex'} flexDirection={'column'} gap={1}>
+              <Typography>Địa chỉ nhận hàng</Typography>
+              <Box display={'flex'}>
+                <Stack direction={'row'} spacing={5} className='w-[100%]'>
+                  <FormControl className='w-[33.33%]'>
+                    <InputLabel>Chọn kí túc xá</InputLabel>
+                    <Select
+                      value={formik.values.dormitory}
+                      onChange={formik.handleChange}
+                      name='dormitory'
+                    >
+                      {dormitoryList.map((dormitoryItem, index) => (
+                        <MenuItem key={index} value={dormitoryItem}>
+                          {dormitoryItem}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  <FormControl className='w-[33.33%]'>
+                    <InputLabel>Chọn tòa</InputLabel>
+                    <Select
+                      value={formik.values.building}
+                      onChange={formik.handleChange}
+                      name='building'
+                    >
+                      {buildingList.map((building, index) => (
+                        <MenuItem key={index} value={building}>
+                          {building}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  <FormControl className='w-[33.33%]'>
+                    <InputLabel>Chọn phòng</InputLabel>
+                    <Select value={formik.values.room} onChange={formik.handleChange} name='room'>
+                      {roomList.map((room, index) => (
+                        <MenuItem key={index} value={room}>
+                          {room}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Stack>
+              </Box>
+            </Box>
+          </Grid>
           <OrderFormTextField
             type='dateTime'
             title={'Thời gian giao hàng'}

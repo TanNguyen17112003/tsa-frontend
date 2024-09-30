@@ -3,7 +3,7 @@ import { CustomTableConfig } from 'src/components/custom-table';
 import { paths } from 'src/paths';
 import { Edit, Trash } from 'iconsax-react';
 import { ReportDetail } from 'src/types/report';
-import { formatUnixTimestamp } from 'src/utils/format-time-currency';
+import { formatUnixTimestamp, formatDate } from 'src/utils/format-time-currency';
 
 const getReportTableConfigs = ({
   onClickEdit,
@@ -22,7 +22,9 @@ const getReportTableConfigs = ({
     key: 'reportedAt',
     headerLabel: 'Ngày khiếu nại',
     type: 'string',
-    renderCell: (data) => <Typography>{formatUnixTimestamp(data.reportedAt!)}</Typography>
+    renderCell: (data) => (
+      <Typography>{formatDate(formatUnixTimestamp(data.reportedAt!))}</Typography>
+    )
   },
   {
     key: 'content',

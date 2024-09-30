@@ -9,7 +9,7 @@ import { useDrawer } from '@hooks';
 import { useDialog } from '@hooks';
 import ReportDetailEditDrawer from './report-detail-edit-drawer';
 import ReportDetailDeleteDialog from './report-detail-delete-dialog';
-import { unixTimestampToDate } from 'src/utils/format-time-currency';
+import { formatUnixTimestamp } from 'src/utils/format-time-currency';
 import { useReportsContext } from 'src/contexts/reports/reports-context';
 
 interface ReportListProps {
@@ -58,7 +58,7 @@ const ReportList: React.FC<ReportListProps> = ({ reports }) => {
           : status === 'Đã giải quyết'
             ? report.status === 'REPLIED'
             : report.status === 'PENDING';
-      const reportDate = unixTimestampToDate(report.reportedAt!);
+      const reportDate = formatUnixTimestamp(report.reportedAt!);
       const filterDate = dateRange.startDate <= reportDate && reportDate <= dateRange.endDate;
       return filterStatus && filterDate;
     });

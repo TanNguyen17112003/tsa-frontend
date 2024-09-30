@@ -41,6 +41,7 @@ const ReportFilter: React.FC<ReportFilterProps> = (props) => {
         <Box className='flex flex-col gap-2'>
           <Typography className='font-bold'>Thời gian</Typography>
           <DateRangePickerTextField
+            labelHolder='Chọn thời gian khiếu nại'
             initialDateRange={props.dateRange}
             onChange={handleDateChange}
           />

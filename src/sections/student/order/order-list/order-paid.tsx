@@ -1,19 +1,24 @@
 import React, { useCallback, useMemo } from 'react';
 import OrderFilter from './order-filter';
 import { Box } from '@mui/material';
-import { OrderDetail, initialOrderList } from 'src/types/order';
+import { OrderDetail } from 'src/types/order';
 import getOrderTableConfigs from './order-table-config';
 import { CustomTable } from '@components';
 import usePagination from 'src/hooks/use-pagination';
 import { useRouter } from 'next/router';
 import OrderDetailReportDrawer from './order-detail-report-drawer';
-import { useDrawer } from '@hooks';
+import OrderDetailDeleteDialog from './order-detail-delete-dialog';
+import { useDialog, useDrawer } from '@hooks';
+import { useOrdersContext } from 'src/contexts/orders/orders-context';
+import OrderDetailEditDrawer from './order-detail-edit-drawer';
 
 interface OrderPaidProps {
   orders: OrderDetail[];
 }
 const OrderPaid: React.FC<OrderPaidProps> = ({ orders }) => {
   const router = useRouter();
+
+  const { deleteOrder } = useOrdersContext();
 
   const handleGoReport = useCallback(
     (data: OrderDetail) => {
@@ -26,14 +31,19 @@ const OrderPaid: React.FC<OrderPaidProps> = ({ orders }) => {
   );
 
   const orderDetailReportDrawer = useDrawer<OrderDetail>();
+  const orderDetailDeleteDialog = useDialog<OrderDetail>();
+  const orderDetailEditDrawer = useDrawer<OrderDetail>();
 
   const orderTableConfig = React.useMemo(() => {
     return getOrderTableConfigs({
-      onClickEdit: (data: OrderDetail) => {
+      onClickReport: (data: OrderDetail) => {
         orderDetailReportDrawer.handleOpen(data);
       },
-      onClickRow: (data: OrderDetail) => {
-        handleGoReport(data);
+      onClickEdit: (data: OrderDetail) => {
+        orderDetailEditDrawer.handleOpen(data);
+      },
+      onClickDelete: (data: OrderDetail) => {
+        orderDetailDeleteDialog.handleOpen(data);
       }
     });
   }, [handleGoReport, orderDetailReportDrawer]);
@@ -51,7 +61,7 @@ const OrderPaid: React.FC<OrderPaidProps> = ({ orders }) => {
       const isStatusMatch =
         router.query.status === 'all' || !router.query.status
           ? true
-          : order.status.toLowerCase() === router.query.status;
+          : order.latestStatus.toLowerCase() === router.query.status;
 
       return order.isPaid === true && isWithinDateRange && isStatusMatch;
     });
@@ -77,6 +87,17 @@ const OrderPaid: React.FC<OrderPaidProps> = ({ orders }) => {
         open={orderDetailReportDrawer.open}
         onClose={orderDetailReportDrawer.handleClose}
         order={orderDetailReportDrawer.data}
+      />
+      <OrderDetailDeleteDialog
+        open={orderDetailDeleteDialog.open}
+        onClose={orderDetailDeleteDialog.handleClose}
+        order={orderDetailDeleteDialog.data as OrderDetail}
+        onConfirm={() => deleteOrder(orderDetailDeleteDialog.data?.id as string)}
+      />
+      <OrderDetailEditDrawer
+        open={orderDetailEditDrawer.open}
+        onClose={orderDetailEditDrawer.handleClose}
+        order={orderDetailEditDrawer.data}
       />
     </Box>
   );

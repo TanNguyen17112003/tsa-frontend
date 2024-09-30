@@ -2,13 +2,18 @@ import React from 'react';
 import { Card, Stack, Typography, Avatar, Button } from '@mui/material';
 import { Message } from 'iconsax-react';
 import avatarPerson from 'public/ui/person.jpg';
+import { OrderDetail } from 'src/types/order';
 
 const staffInfo = {
   'Họ và tên': 'Nguyễn Hoàng Duy Tân',
   'Chức vụ': 'Nhân viên giao hàng'
 };
 
-function OrderStaff() {
+interface OrderStaffProps {
+  order: OrderDetail;
+}
+
+const OrderStaff: React.FC<OrderStaffProps> = ({ order }) => {
   return (
     <Stack spacing={2}>
       <Typography variant='h6'>Nhân viên phụ trách</Typography>
@@ -34,6 +39,6 @@ function OrderStaff() {
       </Card>
     </Stack>
   );
-}
+};
 
 export default OrderStaff;

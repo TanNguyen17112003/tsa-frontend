@@ -3,7 +3,7 @@ import { Stack } from '@mui/system';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useAuth } from 'src/hooks/use-auth';
 import AccountInfoEditField from './account-info-edit-field';
-import { formatUnixTimestamp } from 'src/utils/format-time-currency';
+import { formatDate, formatUnixTimestamp } from 'src/utils/format-time-currency';
 import { useUsersContext } from '@contexts';
 import { AddressData } from '@utils';
 
@@ -104,7 +104,7 @@ function ProfileSection() {
               />
               <AccountInfoEditField
                 label='Thời gian tạo tài khoản'
-                value={user?.createdAt ? formatUnixTimestamp(user.createdAt) : ''}
+                value={user?.createdAt ? formatDate(formatUnixTimestamp(user?.createdAt)) : ''}
                 disabled
               />
               <AccountInfoEditField label='Email' type='text' value={user?.email} disabled />

@@ -1,37 +1,65 @@
 import { ArrowBack } from '@mui/icons-material';
 import { Box, Button, Typography } from '@mui/material';
 import { Container, Stack } from '@mui/system';
-import { FormikProps, useFormik } from 'formik';
+import { useFormik } from 'formik';
 import { useRouter } from 'next/router';
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback } from 'react';
 import useAppSnackbar from 'src/hooks/use-app-snackbar';
 import { useAuth } from 'src/hooks/use-auth';
-import { useDialog } from 'src/hooks/use-dialog';
 import useFunction from 'src/hooks/use-function';
 import { paths } from 'src/paths';
-import { CircularProgress } from '@mui/material';
 import { OrderForm } from './order-form';
 import OrderUploadSection from './order-upload-section';
-import { initialAddingOrder, OrderImport } from 'src/types/order';
+import { OrderFormProps } from 'src/api/orders';
+import { useOrdersContext } from 'src/contexts/orders/orders-context';
+import { initialOrderForm } from 'src/types/order';
 
 const ActivityAddPage = () => {
   const [resetUploadSection, setResetUploadSection] = useState('');
   const [isUploaded, setIsUploaded] = useState(false);
+  const [orderList, setOrderList] = useState<OrderFormProps[]>([]);
   const router = useRouter();
   const { showSnackbarError, showSnackbarSuccess } = useAppSnackbar();
+  const { getOrdersApi, createOrder } = useOrdersContext();
   const { user } = useAuth();
 
-  const formik = useFormik<OrderImport>({
-    initialValues: initialAddingOrder,
+  const formik = useFormik<OrderFormProps>({
+    initialValues: initialOrderForm,
     onSubmit: async (values) => {
       try {
-        console.log(values);
-        formik.setValues(values);
+        await handleSubmitOrderHelper.call(values);
       } catch {
         showSnackbarError('Có lỗi xảy ra');
       }
     }
   });
+
+  const handleSubmitOrder = useCallback(
+    async (values: OrderFormProps) => {
+      try {
+        if (orderList && orderList.length > 0) {
+          const createOrderPromises = orderList.map((order) =>
+            createOrder({
+              ...order,
+              studentId: user?.id
+            })
+          );
+          await Promise.all(createOrderPromises);
+        } else {
+          await createOrder({
+            ...values,
+            studentId: user?.id
+          });
+        }
+        showSnackbarSuccess('Tạo đơn hàng thành công!');
+      } catch (error) {
+        showSnackbarError('Có lỗi xảy ra');
+      }
+    },
+    [createOrder, showSnackbarError, showSnackbarSuccess, orderList]
+  );
+
+  const handleSubmitOrderHelper = useFunction(handleSubmitOrder);
 
   return (
     <Box className='text-black bg-white'>
@@ -49,13 +77,14 @@ const ActivityAddPage = () => {
             >
               Quay lại
             </Button>
+            <>{JSON.stringify(orderList)}</>
           </Box>
           <Stack justifyContent='space-between' direction='row' alignItems='center'>
             <Typography variant='h5'>Thêm đơn hàng</Typography>
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <Button
                 variant='contained'
-                onClick={() => {}}
+                onClick={() => formik.handleSubmit()}
                 className='bg-green-500 hover:bg-green-400'
               >
                 Thêm
@@ -71,7 +100,7 @@ const ActivityAddPage = () => {
                 2. Tải lên danh sách đơn hàng
               </Typography>
               <OrderUploadSection
-                onUpload={() => {}}
+                onUpload={setOrderList}
                 direction='row'
                 key={resetUploadSection}
                 handleUpload={setIsUploaded}

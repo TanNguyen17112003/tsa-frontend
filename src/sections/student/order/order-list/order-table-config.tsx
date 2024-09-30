@@ -1,15 +1,17 @@
-import { IconButton, Typography, Stack, Chip } from '@mui/material';
+import { Typography, Stack, Chip } from '@mui/material';
 import { CustomTableConfig } from 'src/components/custom-table';
 import { OrderDetail } from 'src/types/order';
-import { Edit } from 'iconsax-react';
-import { formatUnixTimestamp, formatVNDcurrency } from 'src/utils/format-time-currency';
+import { Edit, DocumentText, Trash } from 'iconsax-react';
+import { formatDate, formatUnixTimestamp, formatVNDcurrency } from 'src/utils/format-time-currency';
 
 const getOrderTableConfigs = ({
-  onClickEdit,
-  onClickRow
+  onClickReport,
+  onClickDelete,
+  onClickEdit
 }: {
+  onClickReport: (data: OrderDetail) => void;
+  onClickDelete: (data: OrderDetail) => void;
   onClickEdit: (data: OrderDetail) => void;
-  onClickRow: (data: OrderDetail) => void;
 }): CustomTableConfig<OrderDetail['id'], OrderDetail>[] => [
   {
     key: 'checkCode',
@@ -23,28 +25,32 @@ const getOrderTableConfigs = ({
     type: 'string',
     renderCell: (data) =>
       data.product ? (
-        <Stack direction={'row'}>
-          {data.product.map((product, index) => (
-            <Typography key={index}>
-              {product}
-              {index < data.product.length - 1 && ', '}
-            </Typography>
-          ))}
-        </Stack>
+        <Typography>
+          {data.product[0] == ',' && data.product[1] == ' '
+            ? data.product.substring(2)
+            : data.product}
+        </Typography>
       ) : (
-        <>Chovy</>
+        <Typography>Không có sản phẩm nào</Typography>
       )
   },
   {
     key: 'address',
     headerLabel: 'Địa chỉ',
-    type: 'string'
+    type: 'string',
+    renderCell: (data) => (
+      <Typography>
+        {'P.' + data.room + '-' + 'T.' + data.building + '-' + 'KTX khu ' + data.dormitory}
+      </Typography>
+    )
   },
   {
-    key: 'createdAt',
-    headerLabel: 'Ngày tạo đơn hàng',
+    key: 'weight',
+    headerLabel: 'Khối lượng',
     type: 'string',
-    renderCell: (data) => <Typography>{formatUnixTimestamp(data.createdAt!)}</Typography>
+    renderCell: (data) => {
+      return <Typography>{data.weight + ' kg'}</Typography>;
+    }
   },
   {
     key: 'shippingFee',
@@ -55,14 +61,22 @@ const getOrderTableConfigs = ({
     }
   },
   {
+    key: 'deliveryDate',
+    headerLabel: 'Ngày đăng ký nhận hàng',
+    type: 'string',
+    renderCell: (data) => {
+      return <Typography>{formatDate(formatUnixTimestamp(data.deliveryDate))}</Typography>;
+    }
+  },
+  {
     key: 'paymentMethod',
     headerLabel: 'Phương thức thanh toán',
     type: 'string',
     renderCell: (data) => (
       <Typography>
-        {data.paymentMethod === 'AT_DELIVERY'
+        {data.paymentMethod === 'CASH'
           ? 'Khi nhận hàng'
-          : data.paymentMethod === 'BANK'
+          : data.paymentMethod === 'CREDIT'
             ? 'Qua ngân hàng'
             : 'Qua Momo'}
       </Typography>
@@ -76,32 +90,63 @@ const getOrderTableConfigs = ({
       <Chip
         variant='filled'
         label={
-          data.status === 'DELIVERED'
+          data.latestStatus === 'DELIVERED'
             ? 'Đã giao'
-            : data.status === 'PENDING'
+            : data.latestStatus === 'PENDING'
               ? 'Chờ xử lý'
               : 'Đã hủy'
         }
         color={
-          data.status === 'DELIVERED' ? 'success' : data.status === 'PENDING' ? 'warning' : 'error'
+          data.latestStatus === 'DELIVERED'
+            ? 'success'
+            : data.latestStatus === 'PENDING'
+              ? 'warning'
+              : 'error'
         }
       />
     )
   },
   {
-    key: 'action',
+    key: 'report',
     headerLabel: 'Khiếu nại',
     type: 'string',
     renderCell: (data) => (
-      <Edit
-        color='blue'
+      <DocumentText
+        color='purple'
         size={24}
         className='cursor-pointer'
         onClick={(event) => {
           event.stopPropagation();
-          onClickEdit(data);
+          onClickReport(data);
         }}
       />
+    )
+  },
+  {
+    key: 'action',
+    headerLabel: 'Hành động',
+    type: 'string',
+    renderCell: (data) => (
+      <Stack direction={'row'} spacing={2}>
+        <Edit
+          color='blue'
+          size={24}
+          className='cursor-pointer'
+          onClick={(event) => {
+            event.stopPropagation();
+            onClickEdit(data);
+          }}
+        />
+        <Trash
+          color='red'
+          size={24}
+          className='cursor-pointer'
+          onClick={(event) => {
+            event.stopPropagation();
+            onClickDelete(data);
+          }}
+        />
+      </Stack>
     )
   }
 ];

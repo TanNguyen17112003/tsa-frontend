@@ -1,17 +1,13 @@
 import { ArrowBack } from '@mui/icons-material';
-import { Box, Button, Divider, Tab, Tabs, Typography } from '@mui/material';
+import { Box, Divider, Tab, Tabs, Typography } from '@mui/material';
 import { Stack } from '@mui/system';
 import { useRouter } from 'next/router';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useAuth } from 'src/hooks/use-auth';
-import useFunction from 'src/hooks/use-function';
+import { useMemo, useState } from 'react';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard';
 import { paths } from 'src/paths';
 import type { Page as PageType } from 'src/types/page';
-import { getFormData } from 'src/utils/api-request';
 import OrderInfoCard from 'src/sections/student/order/order-detail/order-info-card';
 import OrderDeliveryHistory from 'src/sections/student/order/order-detail/order-delivery-history';
-import { initialOrderList } from 'src/types/order';
 import { useOrdersContext } from 'src/contexts/orders/orders-context';
 
 const tabs = [
@@ -32,8 +28,6 @@ const Page: PageType = () => {
     return (getOrdersApi.data || []).find((order) => order.id === router.query.orderId);
   }, [getOrdersApi.data]);
   const [tab, setTab] = useState(tabs[0].key);
-  const [status, setStatus] = useState<boolean>(true);
-  const { user } = useAuth();
 
   return (
     <Box
@@ -107,7 +101,7 @@ const Page: PageType = () => {
 
         <>
           {tab === tabs[0].key && <OrderInfoCard order={order!} />}
-          {tab === tabs[1].key && <OrderDeliveryHistory />}
+          {tab === tabs[1].key && <OrderDeliveryHistory order={order!} />}
         </>
       </Stack>
     </Box>

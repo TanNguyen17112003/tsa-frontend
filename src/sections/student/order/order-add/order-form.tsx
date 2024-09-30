@@ -11,22 +11,20 @@ import {
 } from '@mui/material';
 import { Stack } from '@mui/system';
 import { FormikProps } from 'formik';
-import React, { useMemo, type FC, useEffect } from 'react';
-import useFunction from 'src/hooks/use-function';
-import { getFormData } from 'src/utils/api-request';
-import { OrderDetail, OrderImport } from 'src/types/order';
+import React, { useMemo, type FC } from 'react';
 import { OrderFormTextField } from './order-form-text-field';
 import { paymentMethodOptions } from 'src/utils/payment-method';
 import Image from 'next/image';
 import { AddressData } from '@utils';
+import { OrderFormProps } from 'src/api/orders';
 
-interface OrderFormProps {
-  formik: FormikProps<OrderImport>;
+interface OrderFormAttributes {
+  formik: FormikProps<OrderFormProps>;
   title?: string;
   status: boolean;
 }
 
-export const OrderForm: FC<OrderFormProps> = ({ formik, title, status }) => {
+export const OrderForm: FC<OrderFormAttributes> = ({ formik, title, status }) => {
   const options = [
     { value: 'Mũ', label: 'Mũ' },
     { value: 'Điện thoại', label: 'Điện thoại' },
@@ -36,7 +34,7 @@ export const OrderForm: FC<OrderFormProps> = ({ formik, title, status }) => {
 
   const dormitoryList = useMemo(() => {
     return AddressData.dormitories;
-  }, [AddressData]);
+  }, []);
   const buildingList = useMemo(() => {
     return formik.values.dormitory === 'A' ? AddressData.buildings.A : AddressData.buildings.B;
   }, [formik.values.dormitory]);
@@ -56,11 +54,20 @@ export const OrderForm: FC<OrderFormProps> = ({ formik, title, status }) => {
           <OrderFormTextField
             type='text'
             title={'Mã đơn hàng'}
-            lg={0}
+            lg={6}
             xs={12}
             onChange={formik.handleChange}
-            value={formik.values.checkCode}
-            name={'name'}
+            value={formik.values.checkCode as string}
+            name={'checkCode'}
+          />
+          <OrderFormTextField
+            type='number'
+            title={'Khối lượng đơn hàng (kg)'}
+            lg={6}
+            xs={12}
+            onChange={formik.handleChange}
+            value={formik.values.weight as number}
+            name={'weight'}
           />
           <OrderFormTextField
             type='autoComplete'
@@ -68,8 +75,8 @@ export const OrderForm: FC<OrderFormProps> = ({ formik, title, status }) => {
             lg={6}
             xs={12}
             options={options}
-            onChange={(value) => formik.setFieldValue('product', value)}
-            value={formik.values.product}
+            onChange={(event) => formik.setFieldValue('product', event.target.value)}
+            value={formik.values.product as string}
             name={'product'}
             placeholder='Nhập danh sách sản phẩm'
           />
@@ -125,10 +132,10 @@ export const OrderForm: FC<OrderFormProps> = ({ formik, title, status }) => {
             title={'Thời gian giao hàng'}
             lg={6}
             xs={12}
-            name={'devileryDate'}
+            name={'deliveryDate'}
             placeholder='Chọn thời gian giao hàng'
             onChange={formik.handleChange}
-            value={formik.values.deliveryDate}
+            value={formik.values.deliveryDate as string}
           />
 
           <OrderFormTextField
@@ -137,7 +144,7 @@ export const OrderForm: FC<OrderFormProps> = ({ formik, title, status }) => {
             lg={6}
             xs={12}
             name={'paymentMethod'}
-            value={formik.values.paymentMethod}
+            value={formik.values.paymentMethod as string}
             select
             onChange={formik.handleChange}
           >

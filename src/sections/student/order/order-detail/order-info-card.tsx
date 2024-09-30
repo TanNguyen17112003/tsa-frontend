@@ -18,24 +18,25 @@ function OrderInfoCard({ order }: { order: OrderDetail }) {
     },
     {
       name: 'Sản phẩm',
-      value: 'Không có sản phẩm'
+      value: order.product ? order.product.substring(2) : 'Không có sản phẩm nào'
     },
     {
       name: 'Địa chỉ giao hàng',
-      value: order.address
-    },
-    {
-      name: 'Ngày tạo đơn hàng',
-      value: formatUnixTimestamp(order.createdAt!)
+      value:
+        'Phòng ' + order.room + ', ' + 'Tòa ' + order.building + ', ' + 'KTX khu ' + order.dormitory
     },
     {
       name: 'Đơn giá',
       value: formatVNDcurrency(order.shippingFee)
     },
     {
+      name: 'Khối lượng',
+      value: order.weight + ' kg'
+    },
+    {
       name: 'Phương thức thanh toán',
       value:
-        order.paymentMethod === 'BANK'
+        order.paymentMethod === 'CREDIT'
           ? 'Qua ngân hàng'
           : order.paymentMethod === 'MOMO'
             ? 'Qua MoMo'
@@ -43,18 +44,18 @@ function OrderInfoCard({ order }: { order: OrderDetail }) {
     },
     {
       name: 'Nhân viên phụ trách',
-      value: 'Nguyễn Hoàng Duy Tân'
+      value: order.shipperId ? order.shipperId : 'Chưa được chỉ định'
     },
     {
       name: 'Trạng thái',
       value:
-        order.status === 'DELIVERED'
+        order.latestStatus === 'DELIVERED'
           ? 'Đã giao'
-          : order.status === 'IN_TRANSPORT'
+          : order.latestStatus === 'IN_TRANSPORT'
             ? 'Đang giao'
-            : order.status === 'PENDING'
+            : order.latestStatus === 'PENDING'
               ? 'Đang chờ xử lý'
-              : order.status === 'CANCELLED'
+              : order.latestStatus === 'CANCELLED'
                 ? 'Đã hủy'
                 : 'Đã từ chối'
     }

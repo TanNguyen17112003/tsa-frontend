@@ -1,6 +1,6 @@
 export const AddressData = {
-  campuses: ['Khu A', 'Khu B'],
-  departments: {
+  dormitories: ['A', 'B'],
+  buildings: {
     A: [
       'A1',
       'A2',

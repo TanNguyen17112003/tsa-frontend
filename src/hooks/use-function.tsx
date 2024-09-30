@@ -1,10 +1,6 @@
-/**
- * UPDATE 15/01/2024
- * - update: add MAX_CACHED_ARRAY
- */
-import { useState, useCallback } from "react";
-import useAppSnackbar from "./use-app-snackbar";
-import { get, set, del } from "idb-keyval";
+import { useState, useCallback } from 'react';
+import useAppSnackbar from './use-app-snackbar';
+import { get, set, del } from 'idb-keyval';
 
 const MAX_CACHED_ARRAY = 2000;
 type ApiFunction<P, T> = (payload: P) => Promise<T>;
@@ -13,6 +9,7 @@ export interface UseFunctionOptions {
   getErrorMessage?: (error: unknown) => string;
   hideSnackbarError?: boolean;
   disableSaving?: boolean;
+  disableResetOnCall?: boolean;
   onSuccess?: () => void;
   onError?: () => void;
   fixedPayload?: any;
@@ -25,7 +22,6 @@ export interface UseFunctionReturnType<P, T> {
   error: Error | null;
   data: T | undefined;
   setData: (_: T | undefined) => void;
-  reset: () => void;
 }
 
 export const DEFAULT_FUNCTION_RETURN: UseFunctionReturnType<any, any> = {
@@ -33,8 +29,7 @@ export const DEFAULT_FUNCTION_RETURN: UseFunctionReturnType<any, any> = {
   loading: false,
   error: null,
   data: undefined,
-  setData: () => {},
-  reset: () => {},
+  setData: () => {}
 };
 
 function useFunction<P, T>(
@@ -59,9 +54,7 @@ function useFunction<P, T>(
       if (options?.cacheKey) {
         await set(
           options.cacheKey,
-          JSON.stringify(
-            Array.isArray(result) ? result.slice(0, MAX_CACHED_ARRAY) : result
-          )
+          JSON.stringify(Array.isArray(result) ? result.slice(0, MAX_CACHED_ARRAY) : result)
         );
       }
       return { data: result };
@@ -73,13 +66,15 @@ function useFunction<P, T>(
     async (payload: P) => {
       setLoading(true);
       setError(null);
-      setStateData(undefined);
+      if (!options?.disableResetOnCall) {
+        setStateData(undefined);
+      }
       try {
         const result = await apiFunction(
           options?.fixedPayload
             ? {
                 ...payload,
-                ...options?.fixedPayload,
+                ...options?.fixedPayload
               }
             : payload
         );
@@ -117,9 +112,7 @@ function useFunction<P, T>(
         if (data) {
           set(
             options.cacheKey,
-            JSON.stringify(
-              Array.isArray(data) ? data.slice(0, MAX_CACHED_ARRAY) : data
-            )
+            JSON.stringify(Array.isArray(data) ? data.slice(0, MAX_CACHED_ARRAY) : data)
           );
         } else {
           del(options.cacheKey);
@@ -130,13 +123,7 @@ function useFunction<P, T>(
     [options?.cacheKey]
   );
 
-  const reset = useCallback(() => {
-    setLoading(false);
-    setError(null);
-    setData(undefined);
-  }, [setData]);
-
-  return { call, loading, error, data, setData, reset };
+  return { call, loading, error, data, setData };
 }
 
 export default useFunction;

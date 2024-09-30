@@ -1,5 +1,5 @@
 import { Box, Stack, Typography, Stepper, Step, StepLabel } from '@mui/material';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { Box1, Edit } from 'iconsax-react';
 import { BikeIcon } from 'lucide-react';
 
@@ -29,9 +29,18 @@ export const LandingFlow = () => {
     }
   ];
 
+  useEffect(() => {
+    flowList.forEach((_, index) => {
+      setTimeout(() => {
+        setActiveStep(index + 1);
+      }, index * 1000);
+    });
+  }, [flowList.length]);
+
   const handleStepClick = useCallback((index: number) => {
     setActiveStep(index);
   }, []);
+
   return (
     <Box
       paddingX={6}

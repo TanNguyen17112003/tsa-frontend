@@ -5,7 +5,8 @@ import { File, FileDropzone } from 'src/components/file-dropzone';
 import useAppSnackbar from 'src/hooks/use-app-snackbar';
 import { downloadUrl } from 'src/utils/url-handler';
 import * as XLSX from 'xlsx';
-import { StudentOrderImport } from 'src/types/order';
+import { OrderFormProps } from 'src/api/orders';
+import useFunction from 'src/hooks/use-function';
 
 function OrderUploadSection({
   onUpload,
@@ -13,19 +14,104 @@ function OrderUploadSection({
   addDisable,
   setAddDisable,
   handleUpload,
-  studentErrors,
+  orderErrors,
   ...StackProps
 }: {
-  onUpload: (orders: StudentOrderImport[]) => void;
+  onUpload: (orders: OrderFormProps[]) => void;
   disabled?: boolean;
   addDisable?: boolean;
   setAddDisable?: (value: number) => void;
   handleUpload?: (value: boolean) => void;
-  studentErrors?: string[];
+  orderErrors?: string[];
 } & StackProps) {
   const [files, setFiles] = useState<File[]>([]);
-  const [activitiesErrors, setActivtiesErrors] = useState<string[]>([]);
   const { showSnackbarError } = useAppSnackbar();
+
+  const handleDrop = useCallback(
+    async (newFiles: File[]) => {
+      handleUpload!(true);
+      if (newFiles.length > 0) {
+        setFiles([newFiles[0]]);
+        const file = newFiles[0];
+        const error = await new Promise<string | []>((resolve) => {
+          let json: any[] | undefined;
+          try {
+            const reader = new FileReader();
+            reader.readAsArrayBuffer(file);
+            reader.onload = (e) => {
+              try {
+                const data = e.target?.result;
+                const workbook = XLSX.read(data, { type: 'binary' });
+                console.log('workboook', workbook);
+                const sheet_name_list = workbook.SheetNames;
+                let range = 8;
+                const temp: { [key: string]: any }[] = XLSX.utils.sheet_to_json(
+                  workbook.Sheets[sheet_name_list[0]]
+                );
+                console.log('temp[1]', temp[1]);
+                if (temp[0]['Mã ĐH'] != undefined) {
+                  range = 0;
+                }
+                const raw: { [key: string]: any }[] = XLSX.utils.sheet_to_json(
+                  workbook.Sheets[sheet_name_list[0]],
+                  { range: range }
+                );
+                console.log('raw', raw);
+                for (let j = 0; j < raw.length; j++) {
+                  raw[j] = _.transform(raw[j], (result, val, key) => {
+                    result[
+                      key
+                        .toString()
+                        .toLowerCase()
+                        .replace(/[,"'?\\\/!@#$%^&*]/g, '')
+                        .trim()
+                    ] = val;
+                  });
+                }
+                json = raw;
+                const newOrders = json.map((item) => {
+                  const orderID = String(item['mã đh']).trim();
+
+                  const weight = item['khối lượng (kg)'];
+                  const product = String(item['sản phẩm'] || '').trim();
+                  const dormitory = String(item['kí túc xá'] || '').trim();
+                  const room = String(item['phòng'] || '').trim();
+                  const building = String(item['tòa'] || '').trim();
+                  const deliveryDate = item['thời gian giao hàng (yyyy-mm-ddthh:mm)'];
+                  const paymentMethod = String(
+                    item['phương thức thanh toán (momo cash credit)']
+                  ).trim();
+                  return {
+                    checkCode: orderID,
+                    weight,
+                    product,
+                    dormitory,
+                    room,
+                    building,
+                    deliveryDate,
+                    paymentMethod: paymentMethod as 'MOMO' | 'CASH' | 'CREDIT'
+                  };
+                });
+                if (newOrders.length == 0) {
+                  showSnackbarError('File rỗng hoặc sai cấu trúc');
+                }
+                onUpload(newOrders);
+                resolve('');
+              } catch (error) {
+                resolve(String(error));
+              }
+              // Transform key to lowercase to validate
+            };
+          } catch (error) {
+            resolve(String(error));
+          }
+        });
+      }
+      handleUpload!(false); // Ensure handleUpload is called with false when upload ends
+    },
+    [onUpload, showSnackbarError, setAddDisable, handleUpload]
+  );
+  const handleDropHelper = useFunction(handleDrop);
 
   const handleRemove = useCallback(
     async (file: File): Promise<void> => {
@@ -62,7 +148,7 @@ function OrderUploadSection({
             component='span'
             sx={{ color: 'primary.main', cursor: 'pointer' }}
             onClick={() => {
-              downloadUrl('/docs/import-activities.xlsx', '[Mẫu]Import danh sách hoạt động');
+              downloadUrl('/docs/import-orders.xlsx', '[Mẫu]Import danh sách đơn hàng');
             }}
           >
             Đây 👈
@@ -76,7 +162,7 @@ function OrderUploadSection({
           accept={{ '*/*': [] }}
           caption={'File Excel (.xlsx hoặc .xls)'}
           files={files}
-          onDrop={() => {}}
+          onDrop={handleDropHelper.call}
           onRemove={handleRemove}
           onRemoveAll={handleRemoveAll}
           onUpload={() => {}}
@@ -84,26 +170,12 @@ function OrderUploadSection({
         />
       </Stack>
 
-      {activitiesErrors.length > 0 && (
-        <Stack gap={0.5}>
-          <Typography color='error' fontWeight='bold'>
-            Không tìm thấy thông tin của các hoạt động sau trong hệ thống. Các hoạt động còn lại vẫn
-            sẽ được thêm
-          </Typography>
-          {activitiesErrors.map((ae) => (
-            <Typography color='error' variant='subtitle2' sx={{ ml: 2 }} key={ae}>
-              {ae}
-            </Typography>
-          ))}
-        </Stack>
-      )}
-
-      {studentErrors && studentErrors.length > 0 && (
+      {orderErrors && orderErrors.length > 0 && (
         <Stack gap={0.5}>
           <Typography color='error' fontWeight='bold'>
             *Có lỗi trong file import sinh viên của bạn. Vui lòng kiểm tra lại!
           </Typography>
-          {studentErrors.map((ae) => (
+          {orderErrors.map((ae) => (
             <Typography color='error' variant='subtitle2' key={ae}>
               - {ae}
             </Typography>

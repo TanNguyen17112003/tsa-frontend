@@ -10,17 +10,17 @@ interface PaymentMethodOptionsProps {
 export const paymentMethodOptions = [
   {
     label: 'Thanh toán khi nhận hàng',
-    value: 'AT_DELIVERY',
+    value: 'CASH',
     image: OptionAtDelivery
   },
   {
     label: 'Thanh toán qua ngân hàng',
-    value: 'BANK',
+    value: 'CREDIT',
     image: OptionBank
   },
   {
     label: 'Qua Momo',
-    value: 'Momo',
+    value: 'MOMO',
     image: OptionMomo
   }
 ] as unknown as PaymentMethodOptionsProps[];

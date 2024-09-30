@@ -4,13 +4,15 @@ import useFunction, {
   DEFAULT_FUNCTION_RETURN,
   UseFunctionReturnType
 } from 'src/hooks/use-function';
-import { Order, OrderDetail } from 'src/types/order';
+import { Order, OrderDetail, OrderStatus } from 'src/types/order';
+import { OrderFormProps } from 'src/api/orders';
 
 interface ContextValue {
   getOrdersApi: UseFunctionReturnType<FormData, OrderDetail[]>;
   getOrderById: (id: Order['id']) => Promise<OrderDetail>;
-  createOrder: (requests: Omit<OrderDetail, 'id'>) => Promise<void>;
-  updateOrder: (Order: Partial<OrderDetail>) => Promise<void>;
+  createOrder: (requests: OrderFormProps) => Promise<void>;
+  updateOrder: (Order: Partial<OrderDetail>, orderId: string) => Promise<void>;
+  updateOrderStatus: (status: OrderStatus, id: string) => Promise<void>;
   deleteOrder: (ids: Order['id']) => Promise<void>;
 }
 
@@ -21,6 +23,7 @@ export const OrdersContext = createContext<ContextValue>({
   },
   createOrder: async () => {},
   updateOrder: async () => {},
+  updateOrderStatus: async () => {},
   deleteOrder: async () => {}
 });
 
@@ -39,19 +42,10 @@ const OrdersProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const createOrder = useCallback(
-    async (request: Omit<OrderDetail, 'id'>) => {
+    async (request: OrderFormProps) => {
       try {
-        const user = await OrdersApi.postOrders(request);
-        if (user) {
-          const newOrders: OrderDetail[] = [
-            {
-              ...request,
-              id: user.id
-            },
-            ...(getOrdersApi.data || [])
-          ];
-          getOrdersApi.setData(newOrders);
-        }
+        const newOrder = await OrdersApi.postOrders(request);
+        getOrdersApi.setData([...(getOrdersApi.data || []), newOrder.data]);
       } catch (error) {
         throw error;
       }
@@ -60,11 +54,27 @@ const OrdersProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const updateOrder = useCallback(
-    async (Order: Partial<Order>) => {
+    async (order: Partial<Order>, orderId: string) => {
       try {
-        await OrdersApi.putOrder(Order);
+        const updatedOrder = await OrdersApi.updateOrder(order, orderId);
         getOrdersApi.setData(
-          (getOrdersApi.data || []).map((c) => (c.id == Order.id ? Object.assign(c, Order) : c))
+          (getOrdersApi.data || []).map((c) => (c.id === orderId ? updatedOrder.data : c))
+        );
+      } catch (error) {
+        throw error;
+      }
+    },
+    [getOrdersApi]
+  );
+
+  const updateOrderStatus = useCallback(
+    async (status: OrderStatus, id: string) => {
+      try {
+        await OrdersApi.updateOrderStatus(status, id);
+        getOrdersApi.setData(
+          (getOrdersApi.data || []).map((c) =>
+            c.id == id ? Object.assign(c, { latestStatus: status }) : c
+          )
         );
       } catch (error) {
         throw error;
@@ -76,13 +86,8 @@ const OrdersProvider = ({ children }: { children: ReactNode }) => {
   const deleteOrder = useCallback(
     async (id: Order['id']) => {
       try {
-        const result = await OrdersApi.deleteOrder(id);
-
-        if (result.status === 'fulfilled') {
-          getOrdersApi.setData((getOrdersApi.data || []).filter((order) => order.id !== id));
-        } else {
-          throw new Error('Không thể xoá đơn hàng: ' + id + '. ' + result.reason);
-        }
+        await OrdersApi.deleteOrder(id);
+        getOrdersApi.setData((getOrdersApi.data || []).filter((order) => order.id !== id));
       } catch (error) {
         throw error;
       }
@@ -102,6 +107,7 @@ const OrdersProvider = ({ children }: { children: ReactNode }) => {
         getOrderById,
         createOrder,
         updateOrder,
+        updateOrderStatus,
         deleteOrder
       }}
     >

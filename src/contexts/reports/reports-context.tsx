@@ -28,12 +28,12 @@ const ReportsProvider = ({ children }: { children: ReactNode }) => {
   const createReport = useCallback(
     async (request: Omit<ReportDetail, 'id'>) => {
       try {
-        const user = await ReportsApi.postReports(request);
-        if (user) {
+        const report = await ReportsApi.postReports(request);
+        if (report) {
           const newOrders: ReportDetail[] = [
             {
               ...request,
-              id: user.id
+              id: report.id
             },
             ...(getReportsApi.data || [])
           ];

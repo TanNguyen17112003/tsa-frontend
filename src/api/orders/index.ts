@@ -1,8 +1,32 @@
 import { apiDelete, apiGet, apiPatch, apiPost, apiPut, getFormData } from 'src/utils/api-request';
-import { OrderDetail, Order } from 'src/types/order';
+import { OrderDetail, Order, OrderStatus } from 'src/types/order';
+
+export interface OrderFormProps
+  extends Partial<
+    Pick<
+      OrderDetail,
+      | 'checkCode'
+      | 'weight'
+      | 'building'
+      | 'phone'
+      | 'deliveryDate'
+      | 'dormitory'
+      | 'paymentMethod'
+      | 'product'
+      | 'room'
+    >
+  > {
+  studentId?: string;
+  adminId?: string;
+}
+
+interface OrderCreateResponse {
+  message: string;
+  data: OrderDetail;
+}
 
 export class OrdersApi {
-  static async postOrders(request: Partial<Omit<OrderDetail, 'id'>>): Promise<OrderDetail> {
+  static async postOrders(request: OrderFormProps): Promise<OrderCreateResponse> {
     return await apiPost('/orders', request);
   }
   static async getOrders(request: {}): Promise<OrderDetail[]> {
@@ -13,8 +37,12 @@ export class OrdersApi {
   static async getOrderById(id: Order['id']): Promise<OrderDetail> {
     return await apiGet(`/orders/${id}`);
   }
-  static async putOrder(request: Partial<Order & Pick<Order, 'id'>>): Promise<OrderDetail> {
-    return await apiPatch('/orders/' + request.id, request);
+  static async updateOrder(request: Partial<Order>, orderId: string): Promise<OrderCreateResponse> {
+    return await apiPatch('/orders/' + orderId, request);
+  }
+
+  static async updateOrderStatus(status: OrderStatus, id: string): Promise<OrderDetail> {
+    return await apiPut('/orders/status' + id, status);
   }
 
   static async deleteOrder(id: Order['id']) {

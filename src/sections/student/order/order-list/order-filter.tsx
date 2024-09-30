@@ -89,7 +89,7 @@ const OrderFilter: React.FC<OrderFilterProps> = (props) => {
           <DateRangePickerTextField
             initialDateRange={dateRange}
             onChange={handleDateChange}
-            labelHolder='Nhập thời gian đơn hàng'
+            labelHolder='Nhập thời gian giao đơn hàng'
           />
         </Box>
       </Stack>

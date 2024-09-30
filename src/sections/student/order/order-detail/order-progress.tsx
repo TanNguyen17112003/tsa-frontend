@@ -9,6 +9,7 @@ import {
   TimelineDot
 } from '@mui/lab';
 import { Box1, Truck, Routing2, Star, Warning2 } from 'iconsax-react';
+import { OrderDetail } from 'src/types/order';
 
 interface progressTimeProps {
   title: string;
@@ -16,7 +17,11 @@ interface progressTimeProps {
   time: string;
 }
 
-function OrderProgress() {
+interface OrderProgressProps {
+  order: OrderDetail;
+}
+
+const OrderProgress: React.FC<OrderProgressProps> = ({ order }) => {
   const progressTimeList: progressTimeProps[] = [
     {
       title: 'Nhập kho',
@@ -78,6 +83,6 @@ function OrderProgress() {
       </Card>
     </Stack>
   );
-}
+};
 
 export default OrderProgress;

@@ -1,13 +1,17 @@
 import React, { useCallback } from 'react';
 import OrderFilter from './order-filter';
 import { Box, Stack, Typography } from '@mui/material';
-import { OrderDetail, initialOrderList } from 'src/types/order';
+import { OrderDetail } from 'src/types/order';
 import getOrderTableConfigs from './order-table-config';
 import { CustomTable } from '@components';
 import usePagination from 'src/hooks/use-pagination';
 import { useRouter } from 'next/router';
 import OrderDetailReportDrawer from './order-detail-report-drawer';
-import { useDrawer } from '@hooks';
+import { useDrawer, useDialog } from '@hooks';
+import OrderDetailDeleteDialog from './order-detail-delete-dialog';
+import { useOrdersContext } from 'src/contexts/orders/orders-context';
+import { formatUnixTimestamp } from 'src/utils/format-time-currency';
+import OrderDetailEditDrawer from './order-detail-edit-drawer';
 
 interface OrderNotPaidProps {
   orders: OrderDetail[];
@@ -16,6 +20,10 @@ interface OrderNotPaidProps {
 const OrderNotPaid: React.FC<OrderNotPaidProps> = ({ orders }) => {
   const router = useRouter();
   const orderDetailReportDrawer = useDrawer<OrderDetail>();
+  const orderDetailDeleteDialog = useDialog<OrderDetail>();
+  const orderDetailEditDrawer = useDrawer<OrderDetail>();
+
+  const { deleteOrder } = useOrdersContext();
 
   const handleGoReport = useCallback(
     (data: OrderDetail) => {
@@ -29,14 +37,17 @@ const OrderNotPaid: React.FC<OrderNotPaidProps> = ({ orders }) => {
 
   const orderTableConfig = React.useMemo(() => {
     return getOrderTableConfigs({
-      onClickEdit: (data: OrderDetail) => {
+      onClickReport: (data: OrderDetail) => {
         orderDetailReportDrawer.handleOpen(data);
       },
-      onClickRow: (data: OrderDetail) => {
-        handleGoReport(data);
+      onClickEdit: (data: OrderDetail) => {
+        orderDetailEditDrawer.handleOpen(data);
+      },
+      onClickDelete: (data: OrderDetail) => {
+        orderDetailDeleteDialog.handleOpen(data);
       }
     });
-  }, [handleGoReport, orderDetailReportDrawer]);
+  }, [handleGoReport, orderDetailReportDrawer, orderDetailDeleteDialog, orderDetailEditDrawer]);
 
   const result = React.useMemo(() => {
     const dateRange =
@@ -45,13 +56,13 @@ const OrderNotPaid: React.FC<OrderNotPaidProps> = ({ orders }) => {
     const endDate = dateRange ? new Date(dateRange[1]) : null;
 
     return orders.filter((order) => {
-      const orderDate = new Date(order.deliveryDate);
+      const orderDate = new Date(formatUnixTimestamp(order.deliveryDate));
       const isWithinDateRange =
         startDate && endDate ? orderDate >= startDate && orderDate <= endDate : true;
       const isStatusMatch =
         router.query.status === 'all' || !router.query.status
           ? true
-          : order.status.toLowerCase() === router.query.status;
+          : order.latestStatus.toLowerCase() === router.query.status;
 
       return !order.isPaid && isWithinDateRange && isStatusMatch;
     });
@@ -77,6 +88,17 @@ const OrderNotPaid: React.FC<OrderNotPaidProps> = ({ orders }) => {
         open={orderDetailReportDrawer.open}
         onClose={orderDetailReportDrawer.handleClose}
         order={orderDetailReportDrawer.data}
+      />
+      <OrderDetailDeleteDialog
+        open={orderDetailDeleteDialog.open}
+        onClose={orderDetailDeleteDialog.handleClose}
+        order={orderDetailDeleteDialog.data as OrderDetail}
+        onConfirm={() => deleteOrder(orderDetailDeleteDialog.data?.id as string)}
+      />
+      <OrderDetailEditDrawer
+        open={orderDetailEditDrawer.open}
+        onClose={orderDetailEditDrawer.handleClose}
+        order={orderDetailEditDrawer.data}
       />
     </Box>
   );

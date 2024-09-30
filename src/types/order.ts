@@ -1,10 +1,18 @@
-type PaymentMethod = 'AT_DELIVERY' | 'MOMO' | 'BANK';
-type OrderStatus = 'CANCELLED' | 'DELIVERED' | 'PENDING' | 'REJECTED' | 'IN_TRANSPORT' | 'REJECTED';
+import { OrderFormProps } from 'src/api/orders';
+
+type PaymentMethod = 'CASH' | 'MOMO' | 'CREDIT';
+export type OrderStatus =
+  | 'CANCELLED'
+  | 'DELIVERED'
+  | 'PENDING'
+  | 'REJECTED'
+  | 'IN_TRANSPORT'
+  | 'REJECTED';
 
 export interface Order {
-  id: string; // uuid
+  id: string;
   checkCode: string;
-  product: string[];
+  product: string;
   room: string;
   building: string;
   dormitory: string;
@@ -18,43 +26,24 @@ export interface Order {
   deliveryId?: string;
   ordinalNumber?: string;
   weight?: number;
-  status: OrderStatusHistory[];
   latestStatus: OrderStatus;
-}
-
-interface OrderStatusHistory {
-  id: string;
-  orderId: Order['id'];
-  status: OrderStatus;
-  reason?: string;
+  phone?: string;
+  createdTime?: string;
 }
 
 export interface OrderDetail extends Order {
   brand?: string;
 }
 
-export interface StudentOrderImport extends Order {}
-
-export interface OrderImport extends Omit<Order, 'id'> {}
-
-export const initialAddingOrder: OrderImport = {
+export const initialOrderForm: OrderFormProps = {
   checkCode: '',
-  product: [],
+  product: '',
   room: '',
   building: '',
   dormitory: '',
   deliveryDate: '',
-  paymentMethod: 'AT_DELIVERY',
-  shippingFee: 0,
-  isPaid: false,
-  status: [
-    {
-      id: '',
-      orderId: '',
-      status: 'PENDING'
-    }
-  ],
-  latestStatus: 'PENDING'
+  paymentMethod: 'CASH',
+  weight: 0
 };
 
 export const orderStatusMap = {

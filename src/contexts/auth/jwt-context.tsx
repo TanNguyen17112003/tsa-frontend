@@ -152,6 +152,8 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
         }
         if (user.role === 'STUDENT') {
           router.replace(paths.student.order.index);
+        } else if (user.role === 'ADMIN') {
+          router.replace(paths.dashboard.index);
         }
         dispatch({
           type: ActionType.INITIALIZE,

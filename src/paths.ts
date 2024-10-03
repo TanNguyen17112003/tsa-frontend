@@ -12,11 +12,12 @@ export const paths = {
   },
   dashboard: {
     index: '/dashboard',
-    collections: '/dashboard/collections',
-    accounts: '/dashboard/accounts',
-    categories: '/dashboard/categories',
-    reports: '/dashboard/reports',
-    'add-report': '/dashboard/add-report'
+    delivery: { index: '/dashboard/delivery' },
+    order: { index: '/dashboard/order' },
+    accounts: { index: '/dashboard/accounts' },
+    report: { index: '/dashboard/report' },
+    student: { index: '/dashboard/student' },
+    staff: { index: '/dashboard/staff' }
   },
   student: {
     index: '/student',

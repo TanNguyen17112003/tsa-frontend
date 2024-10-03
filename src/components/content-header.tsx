@@ -19,7 +19,8 @@ function ContentHeader({
         paddingTop: '24px',
         paddingLeft: '24px',
         paddingRight: '24px',
-        borderRadius: 0
+        borderRadius: 0,
+        boxShadow: 'none'
       }}
     >
       <Box

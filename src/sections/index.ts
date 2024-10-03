@@ -3,8 +3,6 @@
  */
 
 export * from './on-development-content';
-export * from './admin/dashboard/OverviewAdminPage/index';
-export * from './admin/dashboard/OverviewAdminPage/OverviewAdminPage';
 export * from './auth/GoogleButton';
 export * from './auth/PasswordInput';
 export * from './auth/RegisterStep1';
@@ -40,6 +38,3 @@ export * from './student/report/report-filter';
 export * from './student/report/report-list';
 export * from './student/report/report-proof-component';
 export * from './student/report/report-table-config';
-export * from './user/dashboard/OverviewUserPage/index';
-export * from './user/dashboard/OverviewUserPage/OverviewStats';
-export * from './user/dashboard/OverviewUserPage/OverviewUserPage';

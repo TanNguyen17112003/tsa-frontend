@@ -77,7 +77,6 @@ const ActivityAddPage = () => {
             >
               Quay lại
             </Button>
-            <>{JSON.stringify(orderList)}</>
           </Box>
           <Stack justifyContent='space-between' direction='row' alignItems='center'>
             <Typography variant='h5'>Thêm đơn hàng</Typography>

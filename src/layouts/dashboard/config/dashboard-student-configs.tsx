@@ -1,4 +1,4 @@
-import { Edit, Personalcard, LogoutCurve, Box1, NotificationStatus } from 'iconsax-react';
+import { Personalcard, LogoutCurve, Box1, NotificationStatus } from 'iconsax-react';
 import { paths } from 'src/paths';
 import { Section } from './config';
 

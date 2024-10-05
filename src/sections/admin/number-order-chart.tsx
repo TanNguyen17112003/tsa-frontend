@@ -1,13 +1,23 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import Chart from 'react-apexcharts';
 import { initialOrderList, OrderStatus } from 'src/types/order';
 import { Box, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import { barChartOptions } from 'src/utils/config-charts';
+import { OrdersApi } from 'src/api/orders';
+import useFunction from 'src/hooks/use-function';
 
 const NumberOrderChart: React.FC = () => {
   const [selectedType, setSelectedType] = useState<'year' | 'month'>('year');
   const [selectedMonth, setSelectedMonth] = useState<number>(new Date().getMonth() + 1);
   const [selectedStatus, setSelectedStatus] = useState<OrderStatus | 'ALL'>('ALL');
+
+  const getOrdersApi = useFunction(OrdersApi.getOrders);
+
+  const currentYear = new Date().getFullYear();
+
+  const orders = useMemo(() => {
+    return getOrdersApi.data || [];
+  }, [getOrdersApi.data]);
 
   const handleTypeChange = useCallback(
     (event: SelectChangeEvent<'year' | 'month'>) => {
@@ -30,8 +40,10 @@ const NumberOrderChart: React.FC = () => {
     [setSelectedStatus]
   );
 
-  const filteredData = initialOrderList.filter(
-    (order) => selectedStatus === 'ALL' || order.latestStatus === selectedStatus
+  const filteredData = useMemo(
+    () =>
+      orders.filter((order) => selectedStatus === 'ALL' || order.latestStatus === selectedStatus),
+    [orders, selectedStatus]
   );
 
   let categories: string[] = [];
@@ -40,7 +52,7 @@ const NumberOrderChart: React.FC = () => {
   if (selectedType === 'year') {
     categories = Array.from(
       { length: 12 },
-      (_, index) => (index + 1).toString().padStart(2, '0') + '/2021'
+      (_, index) => (index + 1).toString().padStart(2, '0') + '/' + currentYear
     );
     ordersCount = Array.from({ length: 12 }, (_, index) => {
       return filteredData.filter((order) => {
@@ -49,14 +61,15 @@ const NumberOrderChart: React.FC = () => {
       }).length;
     });
   } else {
-    const daysInMonth = new Date(2021, selectedMonth, 0).getDate();
+    const daysInMonth = new Date(currentYear, selectedMonth, 0).getDate();
     categories = Array.from(
       { length: daysInMonth },
       (_, index) =>
         (index + 1).toString().padStart(2, '0') +
         '/' +
         selectedMonth.toString().padStart(2, '0') +
-        '/2021'
+        '/' +
+        currentYear
     );
     ordersCount = Array.from({ length: daysInMonth }, (_, index) => {
       return filteredData.filter((order) => {
@@ -72,6 +85,10 @@ const NumberOrderChart: React.FC = () => {
       data: ordersCount
     }
   ];
+
+  React.useEffect(() => {
+    getOrdersApi.call({});
+  }, []);
 
   return (
     <Box>
@@ -99,7 +116,7 @@ const NumberOrderChart: React.FC = () => {
             >
               {Array.from({ length: 12 }, (_, index) => (
                 <MenuItem key={index + 1} value={index + 1}>
-                  {`${(index + 1).toString().padStart(2, '0')}/2021`}
+                  {`${(index + 1).toString().padStart(2, '0')}/${currentYear}`}
                 </MenuItem>
               ))}
             </Select>

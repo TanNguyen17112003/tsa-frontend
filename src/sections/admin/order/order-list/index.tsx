@@ -1,13 +1,19 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { CustomTable } from '@components';
 import OrderFilter from './order-filter';
 import getOrderTableConfigs from './order-table-config';
 import { Box } from '@mui/material';
-import { initialOrderList, Order } from 'src/types/order';
+import { initialOrderList, Order, OrderDetail } from 'src/types/order';
 import usePagination from 'src/hooks/use-pagination';
 import { SelectChangeEvent } from '@mui/material';
+import { useRouter } from 'next/router';
+import { useOrdersContext } from 'src/contexts/orders/orders-context';
+import { useDrawer, useDialog } from '@hooks';
+import OrderDetailDeleteDialog from './order-detail-delete-dialog';
+import OrderDetailEditDrawer from './order-detail-edit-drawer';
 
 function OrderList() {
+  const router = useRouter();
   const [selectedDormitory, setSelectedDormitory] = useState<string>('');
   const [selectedBuilding, setSelectedBuilding] = useState<string>('');
   const [selectedRoom, setSelectedRoom] = useState<string>('');
@@ -16,6 +22,13 @@ function OrderList() {
     startDate: null,
     endDate: null
   });
+  const { getOrdersApi, deleteOrder } = useOrdersContext();
+  const orderDetailDrawer = useDrawer<OrderDetail>();
+  const orderDetailDeleteDialog = useDialog<OrderDetail>();
+
+  const orders = useMemo(() => {
+    return getOrdersApi.data || [];
+  }, [getOrdersApi.data]);
 
   const handleStatusChange = (event: SelectChangeEvent<string>) => {
     setSelectedStatus(event.target.value as string);
@@ -48,8 +61,15 @@ function OrderList() {
     setDateRange({ startDate: null, endDate: null });
   };
 
+  const handleGoOrder = useCallback((data: OrderDetail) => {
+    router.push({
+      pathname: router.pathname,
+      query: { ...router.query, orderId: data.id }
+    });
+  }, []);
+
   const filteredOrders = useMemo(() => {
-    return initialOrderList.filter((order) => {
+    return orders.filter((order) => {
       const matchesDormitory = selectedDormitory ? order.dormitory === selectedDormitory : true;
       const matchesBuilding = selectedBuilding ? order.building === selectedBuilding : true;
       const matchesRoom = selectedRoom ? order.room === selectedRoom : true;
@@ -63,7 +83,7 @@ function OrderList() {
         matchesDormitory && matchesBuilding && matchesRoom && matchesDateRange && matchesStatus
       );
     });
-  }, [selectedDormitory, selectedBuilding, selectedRoom, dateRange, selectedStatus]);
+  }, [selectedDormitory, selectedBuilding, selectedRoom, dateRange, selectedStatus, orders]);
 
   const pagination = usePagination({
     count: filteredOrders.length
@@ -72,10 +92,10 @@ function OrderList() {
   const orderTableConfig = useMemo(() => {
     return getOrderTableConfigs({
       onClickDelete: (data: any) => {
-        console.log('Delete', data);
+        orderDetailDeleteDialog.handleOpen(data);
       },
       onClickEdit: (data: any) => {
-        console.log('Edit', data);
+        orderDetailDrawer.handleOpen(data);
       }
     });
   }, []);
@@ -95,7 +115,23 @@ function OrderList() {
         onDateChange={handleDateChange}
         onResetFilters={handleResetFilters}
       />
-      <CustomTable rows={filteredOrders} configs={orderTableConfig} pagination={pagination} />
+      <CustomTable
+        rows={filteredOrders}
+        configs={orderTableConfig}
+        pagination={pagination}
+        onClickRow={(data: OrderDetail) => handleGoOrder(data)}
+      />
+      <OrderDetailDeleteDialog
+        open={orderDetailDeleteDialog.open}
+        onClose={orderDetailDeleteDialog.handleClose}
+        order={orderDetailDeleteDialog.data as OrderDetail}
+        onConfirm={() => deleteOrder(orderDetailDeleteDialog.data?.id as string)}
+      />
+      <OrderDetailEditDrawer
+        open={orderDetailDrawer.open}
+        onClose={orderDetailDrawer.handleClose}
+        order={orderDetailDrawer.data}
+      />
     </Box>
   );
 }

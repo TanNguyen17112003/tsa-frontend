@@ -13,7 +13,7 @@ export const paths = {
   dashboard: {
     index: '/dashboard',
     delivery: { index: '/dashboard/delivery' },
-    order: { index: '/dashboard/order' },
+    order: { index: '/dashboard/order', add: '/dashboard/order/add' },
     accounts: { index: '/dashboard/accounts' },
     report: { index: '/dashboard/report' },
     student: { index: '/dashboard/student' },

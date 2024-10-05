@@ -11,9 +11,93 @@ import NumberOrderPercentageChart from 'src/sections/admin/number-order-percenta
 import PaymentMethodLineChart from 'src/sections/admin/payment-method-line-chart';
 import { useRouter } from 'next/router';
 import { paths } from 'src/paths';
+import { OrdersApi } from 'src/api/orders';
+import useFunction from 'src/hooks/use-function';
+import { useEffect, useMemo } from 'react';
+import { formatDate, formatUnixTimestamp, formatVNDcurrency } from 'src/utils/format-time-currency';
 
 const Page: PageType = () => {
   const router = useRouter();
+  const getOrdersApi = useFunction(OrdersApi.getOrders);
+  const orders = useMemo(() => {
+    const currentMonth = new Date().getMonth() + 1;
+    const thisMonthOrders = getOrdersApi.data?.filter((order) => {
+      const earliestOrderDate = formatDate(
+        formatUnixTimestamp(order.historyTime[order.historyTime.length - 1].time)
+      );
+      const earliestOrderMonth = new Date(earliestOrderDate).getDate();
+      return earliestOrderMonth === currentMonth;
+    });
+    return thisMonthOrders || [];
+  }, [getOrdersApi.data]);
+
+  const notHandledOrders = useMemo(() => {
+    return orders.filter((order) => order.latestStatus === 'PENDING');
+  }, [orders]);
+
+  const gapOrders = useMemo(() => {
+    const today = new Date();
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(today.getDate() - 7);
+
+    const lastWeekOrders = orders.filter((order) => {
+      const earliestOrderDate = formatDate(
+        formatUnixTimestamp(order.historyTime[order.historyTime.length - 1].time)
+      );
+      const earliestOrderDateObj = new Date(earliestOrderDate);
+      return earliestOrderDateObj >= oneWeekAgo && earliestOrderDateObj <= today;
+    });
+
+    return ((orders.length - (lastWeekOrders.length || 1)) / (lastWeekOrders.length || 1)) * 100;
+  }, [orders]);
+
+  const gapNotHandledOrders = useMemo(() => {
+    const today = new Date();
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(today.getDate() - 7);
+
+    const lastWeekOrders = (getOrdersApi.data || []).filter((order) => {
+      const earliestOrderDate = formatDate(
+        formatUnixTimestamp(order.historyTime[order.historyTime.length - 1].time)
+      );
+      const earliestOrderDateObj = new Date(earliestOrderDate);
+      const filterStatus = order.latestStatus === 'PENDING';
+      return earliestOrderDateObj >= oneWeekAgo && earliestOrderDateObj <= today && filterStatus;
+    });
+
+    return (
+      ((notHandledOrders.length - (lastWeekOrders.length || 1)) / (lastWeekOrders.length || 1)) *
+      100
+    );
+  }, [notHandledOrders, getOrdersApi.data]);
+
+  const orderRevenue = useMemo(() => {
+    const thisMonth = new Date().getMonth() + 1;
+    const totalRevenue = (getOrdersApi.data || []).reduce((total, order) => {
+      const earliestOrderDate = formatDate(
+        formatUnixTimestamp(order.historyTime[order.historyTime.length - 1].time)
+      );
+      const earliestOrderMonth = new Date(earliestOrderDate).getDate();
+      const filterStatus = order.latestStatus === 'DELIVERED';
+      return earliestOrderMonth === thisMonth && filterStatus ? total + order.shippingFee : total;
+    }, 0);
+    return totalRevenue;
+  }, [getOrdersApi.data]);
+
+  const gapOrderRevenue = useMemo(() => {
+    const currentMonth = new Date().getMonth() + 1;
+    const lastMonthOrderRevenue = (getOrdersApi.data || []).reduce((total, order) => {
+      const earliestOrderDate = formatDate(
+        formatUnixTimestamp(order.historyTime[order.historyTime.length - 1].time)
+      );
+      const earliestOrderMonth = new Date(earliestOrderDate).getDate();
+      const filterStatus = order.latestStatus === 'DELIVERED';
+      return earliestOrderMonth === currentMonth - 1 && filterStatus
+        ? total + order.shippingFee
+        : total;
+    }, 0);
+    return ((orderRevenue - lastMonthOrderRevenue) / lastMonthOrderRevenue) * 100;
+  }, [getOrdersApi.data, orderRevenue]);
   const analysticList: AnaLysticCardProps[] = [
     {
       title: 'Số người dùng',
@@ -27,35 +111,39 @@ const Page: PageType = () => {
     },
     {
       title: 'Tổng số đơn hàng',
-      value: 10293,
+      value: orders.length,
       type: 'WEEK',
       icon: <Box1 variant='Bold' />,
-      changeValue: 1.3,
+      changeValue: gapOrders,
       iconColor: '#FEC53D',
       backgroundColor: '#FFF3D6',
       onClick: () => router.push(paths.dashboard.order.index as string)
     },
     {
       title: 'Tổng doanh thu',
-      value: '100.000 đ',
+      value: formatVNDcurrency(orderRevenue),
       type: 'MONTH',
       icon: <Diagram variant='Bold' />,
-      changeValue: -4.3,
+      changeValue: gapOrderRevenue,
       iconColor: '#4AD991',
       backgroundColor: '#D9F7E8',
       onClick: () => router.push(paths.dashboard.delivery.index as string)
     },
     {
       title: 'Số đơn chưa xử lý',
-      value: 2040,
+      value: notHandledOrders.length,
       type: 'WEEK',
       icon: <ArrowRotateLeft variant='Bold' />,
-      changeValue: 1.8,
+      changeValue: gapNotHandledOrders,
       iconColor: '#FF9871',
       backgroundColor: '#FFDED1',
       onClick: () => router.push(paths.dashboard.order.index as string)
     }
   ];
+
+  useEffect(() => {
+    getOrdersApi.call({});
+  }, []);
 
   return (
     <Stack className='min-h-screen bg-white'>

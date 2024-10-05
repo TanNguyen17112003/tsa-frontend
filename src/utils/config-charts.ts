@@ -1,3 +1,5 @@
+const currentYear = new Date().getFullYear();
+
 export const areaChartOptions = {
   chart: {
     id: 'areaChart',
@@ -116,7 +118,7 @@ export const lineChartOptions = {
   xaxis: {
     categories: Array.from(
       { length: 12 },
-      (_, index) => (index + 1).toString().padStart(2, '0') + '/2021'
+      (_, index) => (index + 1).toString().padStart(2, '0') + '/' + currentYear
     ),
     title: {
       text: 'Tháng'

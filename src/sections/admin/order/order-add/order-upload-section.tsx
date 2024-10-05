@@ -74,22 +74,10 @@ function OrderUploadSection({
 
                   const weight = item['khối lượng (kg)'];
                   const product = String(item['sản phẩm'] || '').trim();
-                  const dormitory = String(item['kí túc xá'] || '').trim();
-                  const room = String(item['phòng'] || '').trim();
-                  const building = String(item['tòa'] || '').trim();
-                  const deliveryDate = item['thời gian giao hàng (yyyy-mm-ddthh:mm)'];
-                  const paymentMethod = String(
-                    item['phương thức thanh toán (momo cash credit)']
-                  ).trim();
                   return {
                     checkCode: orderID,
                     weight,
-                    product,
-                    dormitory,
-                    room,
-                    building,
-                    deliveryDate,
-                    paymentMethod: paymentMethod as 'MOMO' | 'CASH' | 'CREDIT'
+                    product
                   };
                 });
                 if (newOrders.length == 0) {
@@ -148,7 +136,7 @@ function OrderUploadSection({
             component='span'
             sx={{ color: 'primary.main', cursor: 'pointer' }}
             onClick={() => {
-              downloadUrl('/docs/import-student-orders.xlsx', '[Mẫu]Import danh sách đơn hàng');
+              downloadUrl('/docs/import-admin-orders.xlsx', '[Mẫu]Import danh sách đơn hàng');
             }}
           >
             Đây 👈

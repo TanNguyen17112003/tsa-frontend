@@ -12,7 +12,7 @@ import { OrderForm } from './order-form';
 import OrderUploadSection from './order-upload-section';
 import { OrderFormProps } from 'src/api/orders';
 import { useOrdersContext } from 'src/contexts/orders/orders-context';
-import { initialOrderForm } from 'src/types/order';
+import { adminInitialOrderForm } from 'src/types/order';
 
 const OrderAddPage = () => {
   const [resetUploadSection, setResetUploadSection] = useState('');
@@ -20,11 +20,11 @@ const OrderAddPage = () => {
   const [orderList, setOrderList] = useState<OrderFormProps[]>([]);
   const router = useRouter();
   const { showSnackbarError, showSnackbarSuccess } = useAppSnackbar();
-  const { getOrdersApi, createOrder } = useOrdersContext();
+  const { createOrder } = useOrdersContext();
   const { user } = useAuth();
 
   const formik = useFormik<OrderFormProps>({
-    initialValues: initialOrderForm,
+    initialValues: adminInitialOrderForm,
     onSubmit: async (values) => {
       try {
         await handleSubmitOrderHelper.call(values);
@@ -41,14 +41,14 @@ const OrderAddPage = () => {
           const createOrderPromises = orderList.map((order) =>
             createOrder({
               ...order,
-              studentId: user?.id
+              adminId: user?.id
             })
           );
           await Promise.all(createOrderPromises);
         } else {
           await createOrder({
             ...values,
-            studentId: user?.id
+            adminId: user?.id
           });
         }
         showSnackbarSuccess('Tạo đơn hàng thành công!');
@@ -72,7 +72,7 @@ const OrderAddPage = () => {
               startIcon={<ArrowBack />}
               color='inherit'
               onClick={() => {
-                router.push(paths.student.order.index);
+                router.push(paths.dashboard.order.index);
               }}
             >
               Quay lại

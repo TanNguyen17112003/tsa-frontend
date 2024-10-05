@@ -42,7 +42,13 @@ const getOrderTableConfigs = ({
     key: 'studentName',
     headerLabel: 'Khách hàng',
     type: 'string',
-    renderCell: (data) => <Typography>{data.studentId}</Typography>
+    renderCell: (data) => {
+      return data.studentId ? (
+        <Typography>{data.studentId}</Typography>
+      ) : (
+        <Typography>Chưa có thông tin</Typography>
+      );
+    }
   },
   {
     key: 'shipperName',
@@ -56,14 +62,24 @@ const getOrderTableConfigs = ({
     key: 'address',
     headerLabel: 'Địa chỉ',
     type: 'string',
-    renderCell: (data) => <Typography>{'P.' + data.room + '-' + 'T.' + data.building}</Typography>
+    renderCell: (data) => {
+      return data.room && data.building && data.dormitory ? (
+        <Typography>{'P.' + data.room + '-' + 'T.' + data.building}</Typography>
+      ) : (
+        <Typography>Chưa có thông tin</Typography>
+      );
+    }
   },
   {
     key: 'deliveryDate',
     headerLabel: 'Ngày giao hàng',
     type: 'string',
     renderCell: (data) => {
-      return <Typography>{formatDate(formatUnixTimestamp(data.deliveryDate))}</Typography>;
+      return data.deliveryDate ? (
+        <Typography>{formatDate(formatUnixTimestamp(data.deliveryDate))}</Typography>
+      ) : (
+        <Typography>Chưa có thông tin</Typography>
+      );
     }
   },
   {
@@ -72,6 +88,29 @@ const getOrderTableConfigs = ({
     type: 'string',
     renderCell: (data) => {
       return <Typography>{formatVNDcurrency(data.shippingFee)}</Typography>;
+    }
+  },
+  {
+    key: 'isPaid',
+    headerLabel: 'Thanh toán',
+    type: 'string',
+    renderCell: (data) => {
+      return data.isPaid ? (
+        <Chip label='Đã thanh toán' color='success' />
+      ) : (
+        <Chip label='Chưa thanh toán' color='warning' />
+      );
+    }
+  },
+  {
+    key: 'paymentMethod',
+    headerLabel: 'Phương thức thanh toán',
+    renderCell: (data) => {
+      return data.isPaid ? (
+        <Typography>{data.paymentMethod}</Typography>
+      ) : (
+        <Typography>Chưa chọn</Typography>
+      );
     }
   },
   {
@@ -84,9 +123,13 @@ const getOrderTableConfigs = ({
         label={
           data.latestStatus === 'DELIVERED'
             ? 'Đã giao'
-            : data.latestStatus === 'PENDING'
-              ? 'Chờ xử lý'
-              : 'Đã hủy'
+            : data.latestStatus === 'IN_TRANSPORT'
+              ? 'Đang giao'
+              : data.latestStatus === 'PENDING'
+                ? 'Đang chờ xử lý'
+                : data.latestStatus === 'CANCELLED'
+                  ? 'Đã hủy'
+                  : 'Đã từ chối'
         }
         color={
           data.latestStatus === 'DELIVERED'

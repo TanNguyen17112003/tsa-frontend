@@ -65,6 +65,7 @@ const generateOrdersForMonth = (year: number, month: number) => {
     const randomShippingFee = Math.floor(Math.random() * 10000) + 1000;
     const date = new Date(`${year}-${month.toString().padStart(2, '0')}-${dayString}T00:00:00Z`);
     const unixTimestamp = Math.floor(date.getTime() / 1000);
+    const randomIsPaid = Math.random() > 0.5 ? true : false;
 
     const dormitory = getRandomElement(AddressData.dormitories);
     const building = getRandomElement(
@@ -83,7 +84,7 @@ const generateOrdersForMonth = (year: number, month: number) => {
       deliveryDate: unixTimestamp.toString(),
       shippingFee: randomShippingFee,
       paymentMethod: getRandomPaymentMethod(),
-      isPaid: false,
+      isPaid: randomIsPaid,
       latestStatus: getRandomOrderStatus(),
       historyTime: [
         {
@@ -98,7 +99,7 @@ const generateOrdersForMonth = (year: number, month: number) => {
 };
 
 for (let month = 1; month <= 12; month++) {
-  generateOrdersForMonth(2021, month);
+  generateOrdersForMonth(2024, month);
 }
 
 export interface OrderDetail extends Order {
@@ -113,6 +114,12 @@ export const initialOrderForm: OrderFormProps = {
   dormitory: '',
   deliveryDate: '',
   paymentMethod: 'CASH',
+  weight: 0
+};
+
+export const adminInitialOrderForm: OrderFormProps = {
+  checkCode: '',
+  product: '',
   weight: 0
 };
 

@@ -10,24 +10,10 @@ import ContentHeader from 'src/components/content-header';
 import { useRouter } from 'next/router';
 import OrderDetailPage from './[orderId]';
 import OrdersProvider from 'src/contexts/orders/orders-context';
-import { useOrdersContext } from 'src/contexts/orders/orders-context';
-import { useAuth } from '@hooks';
 import OrderList from 'src/sections/admin/order/order-list';
 
 const Page: PageType = () => {
-  const { user } = useAuth();
   const router = useRouter();
-  const { getOrdersApi } = useOrdersContext();
-  const orders = useMemo(() => {
-    return getOrdersApi.data || [];
-  }, [getOrdersApi.data]);
-
-  const notPaidOrders = useMemo(() => {
-    return orders.filter((order) => !order.isPaid);
-  }, [orders]);
-  const paidOrders = useMemo(() => {
-    return orders.filter((order) => order.isPaid);
-  }, [orders]);
   return (
     <>
       {router.query.orderId ? (
@@ -56,7 +42,7 @@ const Page: PageType = () => {
                   color='success'
                   startIcon={<Add />}
                   LinkComponent={Link}
-                  href={paths.student.order.add}
+                  href={paths.dashboard.order.add}
                 >
                   Thêm
                 </Button>

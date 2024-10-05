@@ -41,7 +41,7 @@ export const getDashboardAdminConfigs = () => {
           icon: <User className='h-6 w-6' />
         },
         {
-          title: 'Khiếu nại',
+          title: 'Quản lý Khiếu nại',
           path: paths.dashboard.report.index,
           icon: <NotificationStatus className='h-6 w-6' />
         }

@@ -5,7 +5,6 @@ import { useEffect, useMemo } from 'react';
 import { useDrawer } from 'src/hooks/use-drawer';
 import useFunction from 'src/hooks/use-function';
 import { OrderDetail } from 'src/types/order';
-import OrderDetailReportDrawer from '../order-list/order-detail-report-drawer';
 import { formatUnixTimestamp, unixTimestampToDate } from 'src/utils/format-time-currency';
 import { formatVNDcurrency } from 'src/utils/format-time-currency';
 
@@ -67,15 +66,7 @@ function OrderInfoCard({ order }: { order: OrderDetail }) {
         <Card className='pt-4 pb-2 border border-divider' elevation={5}>
           <Box className='flex justify-between gap-4 items-center pb-4 px-6'>
             <Typography variant='h6'>Thông tin chung</Typography>
-            <Button
-              variant='contained'
-              className='bg-[#34a853]'
-              onClick={() => orderDetailReportDrawer.handleOpen()}
-            >
-              Khiếu nại
-            </Button>
           </Box>
-
           {boxFields.map((boxField, index) => {
             return (
               <>
@@ -91,11 +82,6 @@ function OrderInfoCard({ order }: { order: OrderDetail }) {
           })}
         </Card>
       )}
-      <OrderDetailReportDrawer
-        order={order}
-        open={orderDetailReportDrawer.open}
-        onClose={orderDetailReportDrawer.handleClose}
-      />
     </>
   );
 }

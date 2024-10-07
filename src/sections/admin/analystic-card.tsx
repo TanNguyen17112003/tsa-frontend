@@ -10,12 +10,12 @@ export interface AnaLysticCardProps {
   icon: React.ReactNode;
   iconColor: string;
   backgroundColor: string;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 const AnaLysticCard: React.FC<AnaLysticCardProps> = (props) => {
   return (
-    <Card className='px-4 py-3 w-[25%] cursor-pointer' onClick={props.onClick}>
+    <Card className='px-4 py-3 w-full cursor-pointer' onClick={props.onClick}>
       <Stack direction='row' justifyContent='space-between' alignItems={'center'} marginBottom={5}>
         <Stack spacing={1}>
           <Typography variant='subtitle1'>{props.title}</Typography>

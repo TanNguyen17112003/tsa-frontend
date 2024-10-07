@@ -104,6 +104,83 @@ export const pieChartOptions = {
   }
 };
 
+export const heatMapOptions = {
+  chart: {
+    type: 'heatmap' as const,
+    toolbar: {
+      show: false
+    }
+  },
+  plotOptions: {
+    heatmap: {
+      shadeIntensity: 0.5,
+      colorScale: {
+        ranges: [
+          {
+            from: 0,
+            to: 0,
+            color: '#f3f4f6',
+            name: 'Không có'
+          },
+          {
+            from: 1,
+            to: 10,
+            color: '#90ee7e',
+            name: '1-10 đơn hàng'
+          },
+          {
+            from: 11,
+            to: 20,
+            color: '#f9c74f',
+            name: '11-20 đơn hàng'
+          },
+          {
+            from: 21,
+            to: 30,
+            color: '#f9844a',
+            name: '21-30 đơn hàng'
+          },
+          {
+            from: 31,
+            to: 40,
+            color: '#f3722c',
+            name: '31-40 đơn hàng'
+          },
+          {
+            from: 41,
+            to: 50,
+            color: '#f94144',
+            name: '41-50 đơn hàng'
+          }
+        ]
+      }
+    }
+  },
+  dataLabels: {
+    enabled: false
+  },
+  xaxis: {
+    type: 'category' as const
+  }
+};
+
+export const donutChartOptions = {
+  chart: {
+    id: 'pieChart',
+    type: 'donut' as const
+  },
+  labels: [],
+  noData: {
+    text: 'Không có dữ liệu',
+    align: 'center' as const,
+    verticalAlign: 'middle' as const,
+    style: {
+      color: '#000000',
+      fontSize: '14px'
+    }
+  }
+};
+
 export const lineChartOptions = {
   chart: {
     id: 'lineChart',
@@ -136,6 +213,24 @@ export const lineChartOptions = {
     style: {
       color: '#000000',
       fontSize: '14px'
+    }
+  }
+};
+
+export const radialChartOptions = {
+  chart: {
+    type: 'radialBar' as const
+  },
+  plotOptions: {
+    radialBar: {
+      dataLabels: {
+        name: {
+          fontSize: '22px'
+        },
+        value: {
+          fontSize: '16px'
+        }
+      }
     }
   }
 };

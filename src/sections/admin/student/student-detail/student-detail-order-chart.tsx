@@ -1,12 +1,20 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { Chart } from 'src/components/chart';
 import { initialOrderList, OrderStatus } from 'src/types/order';
-import { Box, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from '@mui/material';
+import {
+  Box,
+  Card,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent
+} from '@mui/material';
 import { barChartOptions } from 'src/utils/config-charts';
 import { OrdersApi } from 'src/api/orders';
 import useFunction from 'src/hooks/use-function';
 
-const NumberOrderChart: React.FC = () => {
+const StudentDetailOrderChart: React.FC = () => {
   const [selectedType, setSelectedType] = useState<'year' | 'month'>('year');
   const [selectedMonth, setSelectedMonth] = useState<number>(new Date().getMonth() + 1);
   const [selectedStatus, setSelectedStatus] = useState<OrderStatus | 'ALL'>('ALL');
@@ -91,8 +99,8 @@ const NumberOrderChart: React.FC = () => {
   }, []);
 
   return (
-    <Box>
-      <Box display='flex' justifyContent='flex-end' mb={2} gap={2}>
+    <Card className='h-full'>
+      <Box display='flex' justifyContent='flex-end' mb={2} gap={2} p={2}>
         <FormControl variant='filled' size='small' className='w-1/5'>
           <InputLabel id='type-select-label'>Chọn loại</InputLabel>
           <Select
@@ -145,8 +153,8 @@ const NumberOrderChart: React.FC = () => {
         type='bar'
         height={350}
       />
-    </Box>
+    </Card>
   );
 };
 
-export default NumberOrderChart;
+export default StudentDetailOrderChart;

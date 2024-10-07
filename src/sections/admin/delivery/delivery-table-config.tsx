@@ -24,6 +24,12 @@ const getDeliveryTableConfig = ({
     renderCell: (data) => <Typography>{data.shipperId}</Typography>
   },
   {
+    key: 'numberOfOrders',
+    headerLabel: 'Số lượng đơn hàng',
+    type: 'string',
+    renderCell: (data) => <Typography>{data.orders.length}</Typography>
+  },
+  {
     key: 'deliveryDate',
     headerLabel: 'Thời gian bắt đầu chuyển',
     type: 'string',

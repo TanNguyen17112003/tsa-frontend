@@ -114,6 +114,7 @@ function OrderList() {
         onRoomChange={handleRoomChange}
         onDateChange={handleDateChange}
         onResetFilters={handleResetFilters}
+        numberOfOrders={filteredOrders.length}
       />
       <CustomTable
         rows={filteredOrders}

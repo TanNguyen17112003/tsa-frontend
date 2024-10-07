@@ -10,11 +10,11 @@ import {
   Box
 } from '@mui/material';
 import { Filter, ArrowRotateLeft } from 'iconsax-react';
-import { AddressData } from '@utils';
 import DateRangePickerTextField from 'src/components/date-range-picker-textfield';
-import { orderStatusMap } from 'src/types/order';
+import { userStatusMap } from 'src/types/user';
+import { AddressData } from '@utils';
 
-interface OrderFilterProps {
+interface StudentFilterProps {
   selectedDormitory: string;
   selectedBuilding: string;
   selectedRoom: string;
@@ -26,10 +26,10 @@ interface OrderFilterProps {
   onDateChange: (range: { startDate: Date | null; endDate: Date | null }) => void;
   onStatusChange: (event: SelectChangeEvent<string>) => void;
   onResetFilters: () => void;
-  numberOfOrders: number;
+  numberOfStudent: number;
 }
 
-const OrderFilter: React.FC<OrderFilterProps> = ({
+const StudentFilter: React.FC<StudentFilterProps> = ({
   selectedDormitory,
   selectedBuilding,
   selectedRoom,
@@ -41,9 +41,9 @@ const OrderFilter: React.FC<OrderFilterProps> = ({
   onDateChange,
   onStatusChange,
   onResetFilters,
-  numberOfOrders
+  numberOfStudent
 }) => {
-  const orderStatusList = Object.keys(orderStatusMap);
+  const orderStatusList = Object.keys(userStatusMap);
   return (
     <Box display={'flex'} justifyContent={'space-between'} alignItems={'center'}>
       <Stack direction={'row'} className='w-4/5 my-6'>
@@ -51,6 +51,7 @@ const OrderFilter: React.FC<OrderFilterProps> = ({
           <Filter size={20} variant='Bold' />
           <Typography variant='subtitle2'>Lọc theo</Typography>
         </Stack>
+
         <FormControl variant='filled' className='w-1/5 rounded-none'>
           <InputLabel id='status-select-label'>Trạng thái</InputLabel>
           <Select
@@ -61,7 +62,7 @@ const OrderFilter: React.FC<OrderFilterProps> = ({
           >
             <MenuItem value=''>Tất cả</MenuItem>
             {orderStatusList.map((status) => (
-              <MenuItem key={status} value={orderStatusMap[status as keyof typeof orderStatusMap]}>
+              <MenuItem key={status} value={userStatusMap[status as keyof typeof userStatusMap]}>
                 {status}
               </MenuItem>
             ))}
@@ -130,7 +131,7 @@ const OrderFilter: React.FC<OrderFilterProps> = ({
                 endDate: dateRange.endDate ?? null
               })
             }
-            labelHolder='Nhập thời gian giao đơn hàng'
+            labelHolder='Nhập thời gian tạo tài khoản'
           />
         </Stack>
         <Stack
@@ -147,13 +148,13 @@ const OrderFilter: React.FC<OrderFilterProps> = ({
         </Stack>
       </Stack>
       <Stack className='text-bold' direction={'row'} gap={1}>
-        <Typography fontWeight={'bold'}>Tổng số đơn hàng:</Typography>
+        <Typography fontWeight={'bold'}>Tổng số người dùng:</Typography>
         <Typography fontWeight={'bold'} color='red'>
-          {numberOfOrders}
+          {numberOfStudent}
         </Typography>
       </Stack>
     </Box>
   );
 };
 
-export default OrderFilter;
+export default StudentFilter;

@@ -4,7 +4,7 @@ import type { Page as PageType } from 'src/types/page';
 import ContentHeader from 'src/components/content-header';
 import { Box, Stack, Card } from '@mui/material';
 import AnaLysticCard, { AnaLysticCardProps } from '../../sections/admin/analystic-card';
-import { Profile2User, Box1, Diagram, ArrowRotateLeft } from 'iconsax-react';
+import { Profile2User, DocumentText, Box1, Diagram, ArrowRotateLeft } from 'iconsax-react';
 import RevenueChart from 'src/sections/admin/revenue-chart';
 import NumberOrderChart from 'src/sections/admin/number-order-chart';
 import NumberOrderPercentageChart from 'src/sections/admin/number-order-percentage-chart';
@@ -138,11 +138,22 @@ const Page: PageType = () => {
       iconColor: '#FF9871',
       backgroundColor: '#FFDED1',
       onClick: () => router.push(paths.dashboard.order.index as string)
+    },
+    {
+      title: 'Tổng số khiếu nại',
+      value: 32,
+      type: 'MONTH',
+      icon: <DocumentText variant='Bold' />,
+      changeValue: 1.3,
+      iconColor: '#4AD991',
+      backgroundColor: '#D9F7E8',
+      onClick: () => router.push(paths.dashboard.report.index)
     }
   ];
 
   useEffect(() => {
     getOrdersApi.call({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -151,7 +162,9 @@ const Page: PageType = () => {
       <Box padding={3}>
         <Stack direction={'row'} justifyContent={'space-between'} gap={2}>
           {analysticList.map((analystic, index) => (
-            <AnaLysticCard key={index} {...analystic} />
+            <Box className='w-1/5' key={index}>
+              <AnaLysticCard {...analystic} />
+            </Box>
           ))}
         </Stack>
       </Box>

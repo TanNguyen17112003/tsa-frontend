@@ -43,7 +43,7 @@ const generateDeliveryList = (length: number): Delivery[] => {
       delayTime: getRandomValueInRange(3, 5),
       limitTime: getRandomValueInRange(10, 20),
       status: getRandomDeliveryStatus(),
-      orders: [],
+      orders: initialOrderList,
       shipperId: i.toString()
     };
 

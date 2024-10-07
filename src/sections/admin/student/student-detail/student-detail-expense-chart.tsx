@@ -3,11 +3,19 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Chart } from 'src/components/chart';
 import { initialOrderList } from 'src/types/order';
 import { areaChartOptions } from 'src/utils/config-charts';
-import { Box, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from '@mui/material';
+import {
+  Box,
+  Card,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent
+} from '@mui/material';
 import { OrdersApi } from 'src/api/orders';
 import useFunction from 'src/hooks/use-function';
 
-const RevenueChart: React.FC = () => {
+const StudentDetailExpenseChart: React.FC = () => {
   const [selectedMonth, setSelectedMonth] = useState<number>(new Date().getMonth() + 1);
   const getOrdersApi = useFunction(OrdersApi.getOrders);
   const orders = useMemo(() => {
@@ -49,14 +57,23 @@ const RevenueChart: React.FC = () => {
     }
   ];
 
+  const chartOptions = {
+    ...areaChartOptions,
+    yaxis: {
+      title: {
+        text: 'Chi phí (VNĐ)'
+      }
+    }
+  };
+
   const currentYear = new Date().getFullYear();
   useEffect(() => {
     getOrdersApi.call({});
   }, []);
 
   return (
-    <Box>
-      <Box display='flex' justifyContent='flex-end' mb={2}>
+    <Card className='h-full'>
+      <Box display='flex' justifyContent='flex-end' mb={2} p={2}>
         <FormControl variant='filled' size='small' className='w-[20%]'>
           <InputLabel id='month-select-label'>Chọn tháng</InputLabel>
           <Select
@@ -73,9 +90,9 @@ const RevenueChart: React.FC = () => {
           </Select>
         </FormControl>
       </Box>
-      <Chart options={areaChartOptions} series={series} type='area' height={350} />
-    </Box>
+      <Chart options={chartOptions} series={series} type='area' height={350} />
+    </Card>
   );
 };
 
-export default RevenueChart;
+export default StudentDetailExpenseChart;

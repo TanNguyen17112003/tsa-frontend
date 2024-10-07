@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import Chart from 'react-apexcharts';
+import { Chart } from 'src/components/chart';
 import { initialOrderList } from 'src/types/order';
 import { AddressData } from 'src/utils/address-data';
 import { Box, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from '@mui/material';

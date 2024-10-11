@@ -1,20 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Chart } from 'src/components/chart';
-import { initialOrderList } from 'src/types/order';
 import { Box, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import { lineChartOptions } from 'src/utils/config-charts';
-import { OrdersApi } from 'src/api/orders';
-import useFunction from 'src/hooks/use-function';
+import { OrderDetail } from 'src/types/order';
 
-const PaymentMethodLineChart: React.FC = () => {
+interface PaymentMethodLineChartProps {
+  orders: OrderDetail[];
+}
+
+const PaymentMethodLineChart: React.FC<PaymentMethodLineChartProps> = ({ orders }) => {
   const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
-
-  const getOrdersApi = useFunction(OrdersApi.getOrders);
-
-  const orders = useMemo(() => {
-    return getOrdersApi.data || [];
-  }, [getOrdersApi.data]);
-
   const handleYearChange = (event: SelectChangeEvent<number>) => {
     setSelectedYear(Number(event.target.value));
   };
@@ -44,9 +39,6 @@ const PaymentMethodLineChart: React.FC = () => {
     data: ordersByPaymentMethod[index]
   }));
 
-  useEffect(() => {
-    getOrdersApi.call({});
-  }, []);
   return (
     <Box>
       <Box display='flex' justifyContent='flex-end' mb={2}>

@@ -126,8 +126,6 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
   const initialize = useCallback(async (): Promise<void> => {
     try {
       const accessToken = CookieHelper.getItem(CookieKeys.TOKEN);
-      console.log('accessToken', accessToken);
-
       if (accessToken) {
         let user: UserDetail | undefined = undefined;
         try {
@@ -195,8 +193,8 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
     async (email: string, password: string): Promise<UserDetail | undefined> => {
       try {
         const response = await UsersApi.signIn({ email, password });
-        if (response && response.token && response.userInfo) {
-          CookieHelper.setItem(CookieKeys.TOKEN, response.token);
+        if (response && response.accessToken && response.userInfo) {
+          CookieHelper.setItem(CookieKeys.TOKEN, response.accessToken);
           CookieHelper.setItem('user_data', JSON.stringify(response.userInfo));
           dispatch({
             type: ActionType.SIGN_IN,

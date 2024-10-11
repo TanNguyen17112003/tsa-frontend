@@ -6,6 +6,7 @@ import { Box } from '@mui/material';
 import StudentList from 'src/sections/admin/student/student-list';
 import StudentDetail from './[studentId]';
 import { useRouter } from 'next/router';
+import UsersProvider from 'src/contexts/users/users-context';
 
 const Page: PageType = () => {
   const router = useRouter();
@@ -18,6 +19,10 @@ const Page: PageType = () => {
     </Box>
   );
 };
-Page.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
+Page.getLayout = (page) => (
+  <DashboardLayout>
+    <UsersProvider>{page}</UsersProvider>
+  </DashboardLayout>
+);
 
 export default Page;

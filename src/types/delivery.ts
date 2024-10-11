@@ -1,7 +1,14 @@
 import { OrderDetail } from './order';
 import { initialOrderList } from './order';
 
-type DeliveryStatus = 'PENDING' | 'ACCEPTED' | 'SUCCESS';
+export type DeliveryStatus = 'PENDING' | 'ACCEPTED' | 'FINISHED' | 'CANCELED';
+
+export const deliveryStatusMap = {
+  'Đang chờ xử lý': 'PENDING',
+  'Đã chấp nhận': 'ACCEPTED',
+  'Đã hoàn thành': 'FINISHED',
+  'Đã hủy': 'CANCELED'
+};
 export interface Delivery {
   id: string;
   createdAt: string;
@@ -11,7 +18,7 @@ export interface Delivery {
   delayTime?: number;
   status: DeliveryStatus;
   orders: OrderDetail[];
-  shipperId: string;
+  staffId: string;
 }
 
 export interface DeliveryDetail extends Delivery {}
@@ -44,7 +51,7 @@ const generateDeliveryList = (length: number): Delivery[] => {
       limitTime: getRandomValueInRange(10, 20),
       status: getRandomDeliveryStatus(),
       orders: initialOrderList,
-      shipperId: i.toString()
+      staffId: i.toString()
     };
 
     initialDeliveryList.push(delivery);
@@ -53,9 +60,8 @@ const generateDeliveryList = (length: number): Delivery[] => {
 };
 
 const getRandomDeliveryStatus = (): DeliveryStatus => {
-  const statuses: DeliveryStatus[] = ['SUCCESS', 'ACCEPTED', 'PENDING'];
+  const statuses: DeliveryStatus[] = ['FINISHED', 'ACCEPTED', 'PENDING', 'CANCELED'];
   return statuses[Math.floor(Math.random() * statuses.length)];
 };
 
 generateDeliveryList(20);
-console.log(initialDeliveryList);

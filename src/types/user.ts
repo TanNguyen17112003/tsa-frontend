@@ -2,9 +2,9 @@ import { AddressData } from '@utils';
 import { v4 as uuidv4 } from 'uuid';
 import * as yup from 'yup';
 
-type UserRole = 'STUDENT' | 'STAFF' | 'ADMIN';
+export type UserRole = 'STUDENT' | 'STAFF' | 'ADMIN';
 type Dormitory = 'A' | 'B';
-type UserStatus = 'AVAILABLE' | 'BUSY' | 'OFFLINE';
+export type UserStatus = 'AVAILABLE' | 'BUSY' | 'OFFLINE';
 
 export const userStatusMap = {
   'Đang online': 'AVAILABLE',
@@ -116,6 +116,3 @@ const generateUsers = (role: UserRole, count: number): User[] => {
 
 export const initialStudentList: User[] = generateUsers('STUDENT', 50);
 export const initialStaffList: User[] = generateUsers('STAFF', 20);
-
-console.log(initialStudentList);
-console.log(initialStaffList);

@@ -161,6 +161,15 @@ export const heatMapOptions = {
   },
   xaxis: {
     type: 'category' as const
+  },
+  noData: {
+    text: 'Không có dữ liệu',
+    align: 'center' as const,
+    verticalAlign: 'middle' as const,
+    style: {
+      color: '#000000',
+      fontSize: '14px'
+    }
   }
 };
 
@@ -231,6 +240,15 @@ export const radialChartOptions = {
           fontSize: '16px'
         }
       }
+    }
+  },
+  noData: {
+    text: 'Không có dữ liệu',
+    align: 'center' as const,
+    verticalAlign: 'middle' as const,
+    style: {
+      color: '#000000',
+      fontSize: '14px'
     }
   }
 };

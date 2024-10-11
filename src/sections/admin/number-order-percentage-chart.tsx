@@ -1,24 +1,19 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Chart } from 'src/components/chart';
-import { initialOrderList } from 'src/types/order';
 import { AddressData } from 'src/utils/address-data';
 import { Box, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import { pieChartOptions } from 'src/utils/config-charts';
-import { OrdersApi } from 'src/api/orders';
-import useFunction from 'src/hooks/use-function';
+import { OrderDetail } from 'src/types/order';
 
-const NumberOrderPercentageChart: React.FC = () => {
+interface NumberOrderPercentageChartProps {
+  orders: OrderDetail[];
+}
+
+const NumberOrderPercentageChart: React.FC<NumberOrderPercentageChartProps> = ({ orders }) => {
   const [selectedDormitory, setSelectedDormitory] = useState<string>('A');
-
-  const getOrdersApi = useFunction(OrdersApi.getOrders);
-
-  const orders = useMemo(() => {
-    return getOrdersApi.data || [];
-  }, [getOrdersApi.data]);
   const handleDormitoryChange = (event: SelectChangeEvent<string>) => {
     setSelectedDormitory(event.target.value);
   };
-
   const filteredData = useMemo(
     () => orders.filter((order) => order.dormitory === selectedDormitory),
     [orders, selectedDormitory]
@@ -31,9 +26,6 @@ const NumberOrderPercentageChart: React.FC = () => {
   const series = ordersByBuilding;
   const labels = buildings;
 
-  useEffect(() => {
-    getOrdersApi.call({});
-  }, []);
   return (
     <Box>
       <Box display='flex' justifyContent='flex-end' mb={2}>

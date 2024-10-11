@@ -12,6 +12,8 @@ import PaymentMethodLineChart from 'src/sections/admin/payment-method-line-chart
 import { useRouter } from 'next/router';
 import { paths } from 'src/paths';
 import { OrdersApi } from 'src/api/orders';
+import { UsersApi } from 'src/api/users';
+import { ReportsApi } from 'src/api/reports';
 import useFunction from 'src/hooks/use-function';
 import { useEffect, useMemo } from 'react';
 import { formatDate, formatUnixTimestamp, formatVNDcurrency } from 'src/utils/format-time-currency';
@@ -19,132 +21,190 @@ import { formatDate, formatUnixTimestamp, formatVNDcurrency } from 'src/utils/fo
 const Page: PageType = () => {
   const router = useRouter();
   const getOrdersApi = useFunction(OrdersApi.getOrders);
+  const getListUsersApi = useFunction(UsersApi.getUsers);
+  const getReportsApi = useFunction(ReportsApi.getReports);
+
+  const users = useMemo(() => {
+    return (getListUsersApi.data || []).filter((user) => user.role === 'STUDENT');
+  }, [getListUsersApi.data]);
   const orders = useMemo(() => {
-    const currentMonth = new Date().getMonth() + 1;
-    const thisMonthOrders = getOrdersApi.data?.filter((order) => {
-      const earliestOrderDate = formatDate(
-        formatUnixTimestamp(order.historyTime[order.historyTime.length - 1].time)
-      );
-      const earliestOrderMonth = new Date(earliestOrderDate).getDate();
-      return earliestOrderMonth === currentMonth;
-    });
-    return thisMonthOrders || [];
+    return getOrdersApi.data || [];
   }, [getOrdersApi.data]);
+  const reports = useMemo(() => {
+    return getReportsApi.data || [];
+  }, [getReportsApi.data]);
 
-  const notHandledOrders = useMemo(() => {
-    return orders.filter((order) => order.latestStatus === 'PENDING');
+  const thisWeekUsers = useMemo(() => {
+    const now = new Date();
+    const dayOfWeek = now.getDay();
+    const diffToMonday = (dayOfWeek + 6) % 7;
+    const monday = new Date(now);
+    monday.setDate(now.getDate() - diffToMonday);
+    monday.setHours(0, 0, 0, 0);
+
+    return users.filter((user) => {
+      const createDate = new Date(Number(user.createdAt) * 1000); // Convert Unix timestamp to Date
+      return createDate >= monday && createDate <= now;
+    });
+  }, [users]);
+  const lastWeekUsers = useMemo(() => {
+    const now = new Date();
+    const dayOfWeek = now.getDay();
+    const diffToMonday = (dayOfWeek + 6) % 7;
+    const thisMonday = new Date(now);
+    thisMonday.setDate(now.getDate() - diffToMonday);
+    thisMonday.setHours(0, 0, 0, 0);
+
+    const lastMonday = new Date(thisMonday);
+    lastMonday.setDate(thisMonday.getDate() - 7);
+
+    const lastSunday = new Date(lastMonday);
+    lastSunday.setDate(lastMonday.getDate() + 6);
+
+    return users.filter((user) => {
+      const createDate = new Date(Number(user.createdAt) * 1000); // Convert Unix timestamp to Date
+      return createDate >= lastMonday && createDate <= lastSunday;
+    });
+  }, [users]);
+
+  const thisWeekOrders = useMemo(() => {
+    const now = new Date();
+    const dayOfWeek = now.getDay();
+    const diffToMonday = (dayOfWeek + 6) % 7;
+    const monday = new Date(now);
+    monday.setDate(now.getDate() - diffToMonday);
+    monday.setHours(0, 0, 0, 0);
+
+    return orders.filter((order) => {
+      const orderDate = new Date(order.deliveryDate);
+      return orderDate >= monday && orderDate <= now;
+    });
+  }, [orders]);
+  const lastWeekOrders = useMemo(() => {
+    const now = new Date();
+    const dayOfWeek = now.getDay();
+    const diffToMonday = (dayOfWeek + 6) % 7;
+    const thisMonday = new Date(now);
+    thisMonday.setDate(now.getDate() - diffToMonday);
+    thisMonday.setHours(0, 0, 0, 0);
+
+    const lastMonday = new Date(thisMonday);
+    lastMonday.setDate(thisMonday.getDate() - 7);
+
+    const lastSunday = new Date(lastMonday);
+    lastSunday.setDate(lastMonday.getDate() + 6);
+
+    return orders.filter((order) => {
+      const orderDate = new Date(order.deliveryDate);
+      return orderDate >= lastMonday && orderDate <= lastSunday;
+    });
   }, [orders]);
 
-  const gapOrders = useMemo(() => {
-    const today = new Date();
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(today.getDate() - 7);
+  const thisMonthOrders = useMemo(() => {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
-    const lastWeekOrders = orders.filter((order) => {
-      const earliestOrderDate = formatDate(
-        formatUnixTimestamp(order.historyTime[order.historyTime.length - 1].time)
-      );
-      const earliestOrderDateObj = new Date(earliestOrderDate);
-      return earliestOrderDateObj >= oneWeekAgo && earliestOrderDateObj <= today;
+    return orders.filter((order) => {
+      const deliveredAt = new Date(Number(order.deliveryDate) * 1000);
+      return deliveredAt >= startOfMonth && deliveredAt <= endOfMonth;
     });
+  }, [orders]);
+  const lastMonthOrders = useMemo(() => {
+    const now = new Date();
+    const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
 
-    return ((orders.length - (lastWeekOrders.length || 1)) / (lastWeekOrders.length || 1)) * 100;
+    return orders.filter((order) => {
+      const deliveredAt = new Date(Number(order.deliveryDate) * 1000);
+      return deliveredAt >= startOfLastMonth && deliveredAt <= endOfLastMonth;
+    });
   }, [orders]);
 
-  const gapNotHandledOrders = useMemo(() => {
-    const today = new Date();
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(today.getDate() - 7);
-
-    const lastWeekOrders = (getOrdersApi.data || []).filter((order) => {
-      const earliestOrderDate = formatDate(
-        formatUnixTimestamp(order.historyTime[order.historyTime.length - 1].time)
-      );
-      const earliestOrderDateObj = new Date(earliestOrderDate);
-      const filterStatus = order.latestStatus === 'PENDING';
-      return earliestOrderDateObj >= oneWeekAgo && earliestOrderDateObj <= today && filterStatus;
-    });
-
-    return (
-      ((notHandledOrders.length - (lastWeekOrders.length || 1)) / (lastWeekOrders.length || 1)) *
-      100
-    );
-  }, [notHandledOrders, getOrdersApi.data]);
-
-  const orderRevenue = useMemo(() => {
-    const thisMonth = new Date().getMonth() + 1;
-    const totalRevenue = (getOrdersApi.data || []).reduce((total, order) => {
-      const earliestOrderDate = formatDate(
-        formatUnixTimestamp(order.historyTime[order.historyTime.length - 1].time)
-      );
-      const earliestOrderMonth = new Date(earliestOrderDate).getDate();
-      const filterStatus = order.latestStatus === 'DELIVERED';
-      return earliestOrderMonth === thisMonth && filterStatus ? total + order.shippingFee : total;
+  const thisMonthRevenue = useMemo(() => {
+    const totalRevenue = thisMonthOrders.reduce((total, order) => {
+      return total + order.shippingFee;
     }, 0);
     return totalRevenue;
-  }, [getOrdersApi.data]);
-
-  const gapOrderRevenue = useMemo(() => {
-    const currentMonth = new Date().getMonth() + 1;
-    const lastMonthOrderRevenue = (getOrdersApi.data || []).reduce((total, order) => {
-      const earliestOrderDate = formatDate(
-        formatUnixTimestamp(order.historyTime[order.historyTime.length - 1].time)
-      );
-      const earliestOrderMonth = new Date(earliestOrderDate).getDate();
-      const filterStatus = order.latestStatus === 'DELIVERED';
-      return earliestOrderMonth === currentMonth - 1 && filterStatus
-        ? total + order.shippingFee
-        : total;
+  }, [thisMonthOrders]);
+  const lastMonthRevenue = useMemo(() => {
+    const totalRevenue = thisMonthOrders.reduce((total, order) => {
+      return total + order.shippingFee;
     }, 0);
-    return ((orderRevenue - lastMonthOrderRevenue) / lastMonthOrderRevenue) * 100;
-  }, [getOrdersApi.data, orderRevenue]);
+    return totalRevenue;
+  }, [lastMonthOrders]);
+
+  const thisMonthReports = useMemo(() => {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+    return reports.filter((report) => {
+      const reportedAt = new Date(Number(report.reportedAt) * 1000);
+      return reportedAt >= startOfMonth && reportedAt <= endOfMonth;
+    });
+  }, [reports]);
+  const lastMonthReports = useMemo(() => {
+    const now = new Date();
+    const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+
+    return reports.filter((report) => {
+      const reportedAt = new Date(Number(report.reportedAt) * 1000);
+      return reportedAt >= startOfLastMonth && reportedAt <= endOfLastMonth;
+    });
+  }, [reports]);
+
   const analysticList: AnaLysticCardProps[] = [
     {
       title: 'Số người dùng',
-      value: 40689,
+      value: thisWeekUsers.length,
       type: 'WEEK',
       icon: <Profile2User variant='Bold' />,
-      changeValue: 8.5,
+      changeValue: (thisWeekUsers.length - lastWeekUsers.length) / lastWeekUsers.length,
       iconColor: '#8280FF',
       backgroundColor: '#E5E4FF',
       onClick: () => router.push(paths.dashboard.student.index as string)
     },
     {
       title: 'Tổng số đơn hàng',
-      value: orders.length,
+      value: thisWeekOrders.length,
       type: 'WEEK',
       icon: <Box1 variant='Bold' />,
-      changeValue: gapOrders,
+      changeValue: (thisWeekOrders.length - lastWeekOrders.length) / lastWeekOrders.length,
       iconColor: '#FEC53D',
       backgroundColor: '#FFF3D6',
       onClick: () => router.push(paths.dashboard.order.index as string)
     },
     {
       title: 'Tổng doanh thu',
-      value: formatVNDcurrency(orderRevenue),
+      value: formatVNDcurrency(thisMonthRevenue),
       type: 'MONTH',
       icon: <Diagram variant='Bold' />,
-      changeValue: gapOrderRevenue,
+      changeValue: (thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue,
       iconColor: '#4AD991',
       backgroundColor: '#D9F7E8',
       onClick: () => router.push(paths.dashboard.delivery.index as string)
     },
     {
       title: 'Số đơn chưa xử lý',
-      value: notHandledOrders.length,
+      value: thisWeekOrders.filter((order) => order.latestStatus === 'PENDING').length,
       type: 'WEEK',
       icon: <ArrowRotateLeft variant='Bold' />,
-      changeValue: gapNotHandledOrders,
+      changeValue:
+        (thisWeekOrders.filter((order) => order.latestStatus === 'PENDING').length -
+          lastWeekOrders.filter((order) => order.latestStatus === 'PENDING').length) /
+        lastWeekOrders.filter((order) => order.latestStatus === 'PENDING').length,
       iconColor: '#FF9871',
       backgroundColor: '#FFDED1',
       onClick: () => router.push(paths.dashboard.order.index as string)
     },
     {
       title: 'Tổng số khiếu nại',
-      value: 32,
+      value: thisMonthReports.length,
       type: 'MONTH',
       icon: <DocumentText variant='Bold' />,
-      changeValue: 1.3,
+      changeValue: (thisMonthReports.length - lastMonthReports.length) / lastMonthReports.length,
       iconColor: '#4AD991',
       backgroundColor: '#D9F7E8',
       onClick: () => router.push(paths.dashboard.report.index)
@@ -153,6 +213,8 @@ const Page: PageType = () => {
 
   useEffect(() => {
     getOrdersApi.call({});
+    getListUsersApi.call({});
+    getReportsApi.call({});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -171,18 +233,18 @@ const Page: PageType = () => {
       <Box padding={3} display={'flex'} flexDirection={'column'} gap={3}>
         <Stack direction={'row'} spacing={2}>
           <Card className='p-3 w-1/2'>
-            <RevenueChart />
+            <RevenueChart orders={orders} />
           </Card>
           <Card className='p-3 w-1/2'>
-            <PaymentMethodLineChart />
+            <PaymentMethodLineChart orders={orders} />
           </Card>
         </Stack>
         <Stack direction={'row'} spacing={2}>
           <Card className='p-3 w-1/2'>
-            <NumberOrderChart />
+            <NumberOrderChart orders={orders} />
           </Card>
           <Card className='p-3 w-1/2'>
-            <NumberOrderPercentageChart />
+            <NumberOrderPercentageChart orders={orders} />
           </Card>
         </Stack>
       </Box>

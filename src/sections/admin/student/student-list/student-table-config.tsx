@@ -1,14 +1,14 @@
 import { Typography, Stack, Chip, Tooltip, Avatar } from '@mui/material';
 import { CustomTableConfig } from 'src/components/custom-table';
-import { ArrowForward, CloseCircle } from 'iconsax-react';
+import { ArrowUp, CloseCircle } from 'iconsax-react';
 import { formatDate, formatUnixTimestamp } from 'src/utils/format-time-currency';
 import { UserDetail } from 'src/types/user';
 const getStudentTableConfig = ({
-  onClickDeny,
-  onClickReply
+  onClickDelete,
+  onClickUpgrade
 }: {
-  onClickDeny: (data: UserDetail) => void;
-  onClickReply: (data: UserDetail) => void;
+  onClickDelete: (data: UserDetail) => void;
+  onClickUpgrade: (data: UserDetail) => void;
 }): CustomTableConfig<UserDetail['id'], UserDetail>[] => [
   {
     key: 'information',
@@ -57,25 +57,25 @@ const getStudentTableConfig = ({
     type: 'string',
     renderCell: (data) => (
       <Stack direction={'row'} spacing={2}>
-        <Tooltip title='PHẢN HỒI KHIẾU NẠI'>
-          <ArrowForward
+        <Tooltip title='NÂNG CẤP VAI TRÒ'>
+          <ArrowUp
             color='blue'
             size={24}
             className='cursor-pointer'
             onClick={(event) => {
               event.stopPropagation();
-              onClickReply(data);
+              onClickUpgrade(data);
             }}
           />
         </Tooltip>
-        <Tooltip title='TỪ CHỐI KHIẾU NẠI'>
+        <Tooltip title='XÓA NGƯỜI DÙNG'>
           <CloseCircle
             color='red'
             size={24}
             className='cursor-pointer'
             onClick={(event) => {
               event.stopPropagation();
-              onClickDeny(data);
+              onClickDelete(data);
             }}
           />
         </Tooltip>

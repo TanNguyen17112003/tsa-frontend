@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 // import { Chart } from 'src/components/chart';
 import { Chart } from 'src/components/chart';
-import { initialOrderList } from 'src/types/order';
+import { OrderDetail } from 'src/types/order';
 import { areaChartOptions } from 'src/utils/config-charts';
 import {
   Box,
@@ -12,15 +12,13 @@ import {
   Select,
   SelectChangeEvent
 } from '@mui/material';
-import { OrdersApi } from 'src/api/orders';
-import useFunction from 'src/hooks/use-function';
 
-const StudentDetailExpenseChart: React.FC = () => {
+interface StudentDetailExpenseChartProps {
+  orders: OrderDetail[];
+}
+
+const StudentDetailExpenseChart: React.FC<StudentDetailExpenseChartProps> = ({ orders }) => {
   const [selectedMonth, setSelectedMonth] = useState<number>(new Date().getMonth() + 1);
-  const getOrdersApi = useFunction(OrdersApi.getOrders);
-  const orders = useMemo(() => {
-    return getOrdersApi.data || [];
-  }, [getOrdersApi.data]);
 
   const handleMonthChange = (event: SelectChangeEvent<number>) => {
     setSelectedMonth(Number(event.target.value));
@@ -65,11 +63,7 @@ const StudentDetailExpenseChart: React.FC = () => {
       }
     }
   };
-
   const currentYear = new Date().getFullYear();
-  useEffect(() => {
-    getOrdersApi.call({});
-  }, []);
 
   return (
     <Card className='h-full'>

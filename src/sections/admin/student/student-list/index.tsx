@@ -1,17 +1,19 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { CustomTable } from '@components';
 import { Box } from '@mui/material';
-import { ReportDetail } from 'src/types/report';
 import usePagination from 'src/hooks/use-pagination';
 import { SelectChangeEvent } from '@mui/material';
 import { useDrawer, useDialog } from '@hooks';
-import { initialStudentList, UserDetail } from 'src/types/user';
+import { UserDetail } from 'src/types/user';
 import getStudentTableConfig from './student-table-config';
 import StudentFilter from './student-filter';
 import { useRouter } from 'next/router';
+import { useUsersContext } from '@contexts';
+import DeleteUserDialog from '../../delete-user-dialog';
 
 function StudentList() {
   const router = useRouter();
+  const { getListUsersApi, deleteUser } = useUsersContext();
   const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [selectedDormitory, setSelectedDormitory] = useState<string>('');
   const [selectedBuilding, setSelectedBuilding] = useState<string>('');
@@ -20,6 +22,12 @@ function StudentList() {
     startDate: null,
     endDate: null
   });
+
+  const studentList = useMemo(() => {
+    return (getListUsersApi.data || []).filter((user) => user.role === 'STUDENT');
+  }, [getListUsersApi.data]);
+
+  const deleteStudentDialog = useDialog<UserDetail>();
 
   const handleStatusChange = (event: SelectChangeEvent<string>) => {
     setSelectedStatus(event.target.value as string);
@@ -60,7 +68,7 @@ function StudentList() {
   }, []);
 
   const filteredStudents = useMemo(() => {
-    return initialStudentList.filter((student) => {
+    return studentList.filter((student) => {
       const matchesDormitory = selectedDormitory ? student.dormitory === selectedDormitory : true;
       const matchesBuilding = selectedBuilding ? student.building === selectedBuilding : true;
       const matchesRoom = selectedRoom ? student.room === selectedRoom : true;
@@ -74,14 +82,7 @@ function StudentList() {
         matchesDormitory && matchesBuilding && matchesRoom && matchesDateRange && matchesStatus
       );
     });
-  }, [
-    selectedDormitory,
-    selectedBuilding,
-    selectedRoom,
-    dateRange,
-    selectedStatus,
-    initialStudentList
-  ]);
+  }, [selectedDormitory, selectedBuilding, selectedRoom, dateRange, selectedStatus, studentList]);
 
   const pagination = usePagination({
     count: filteredStudents.length
@@ -89,10 +90,10 @@ function StudentList() {
 
   const studentTableConfig = useMemo(() => {
     return getStudentTableConfig({
-      onClickDeny: (data: UserDetail) => {
-        console.log(data);
+      onClickDelete: (data: UserDetail) => {
+        deleteStudentDialog.handleOpen(data);
       },
-      onClickReply: (data: UserDetail) => {
+      onClickUpgrade: (data: UserDetail) => {
         console.log(data);
       }
     });
@@ -119,6 +120,12 @@ function StudentList() {
         configs={studentTableConfig}
         pagination={pagination}
         onClickRow={(data: UserDetail) => handleGoStudent(data)}
+      />
+      <DeleteUserDialog
+        open={deleteStudentDialog.open}
+        user={deleteStudentDialog.data as UserDetail}
+        onClose={deleteStudentDialog.handleClose}
+        onConfirm={() => deleteUser(deleteStudentDialog.data?.id as string)}
       />
     </Box>
   );

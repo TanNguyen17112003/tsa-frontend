@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { Chart } from 'src/components/chart';
-import { initialOrderList, OrderStatus } from 'src/types/order';
+import { OrderDetail, OrderStatus } from 'src/types/order';
 import {
   Box,
   Card,
@@ -11,21 +11,17 @@ import {
   SelectChangeEvent
 } from '@mui/material';
 import { barChartOptions } from 'src/utils/config-charts';
-import { OrdersApi } from 'src/api/orders';
-import useFunction from 'src/hooks/use-function';
 
-const StaffDetailOrderChart: React.FC = () => {
+interface StaffDetailOrderChartProps {
+  orders: OrderDetail[];
+}
+
+const StaffDetailOrderChart: React.FC<StaffDetailOrderChartProps> = ({ orders }) => {
   const [selectedType, setSelectedType] = useState<'year' | 'month'>('year');
   const [selectedMonth, setSelectedMonth] = useState<number>(new Date().getMonth() + 1);
   const [selectedStatus, setSelectedStatus] = useState<OrderStatus | 'ALL'>('ALL');
 
-  const getOrdersApi = useFunction(OrdersApi.getOrders);
-
   const currentYear = new Date().getFullYear();
-
-  const orders = useMemo(() => {
-    return getOrdersApi.data || [];
-  }, [getOrdersApi.data]);
 
   const handleTypeChange = useCallback(
     (event: SelectChangeEvent<'year' | 'month'>) => {
@@ -93,10 +89,6 @@ const StaffDetailOrderChart: React.FC = () => {
       data: ordersCount
     }
   ];
-
-  React.useEffect(() => {
-    getOrdersApi.call({});
-  }, []);
 
   return (
     <Card className='h-full'>

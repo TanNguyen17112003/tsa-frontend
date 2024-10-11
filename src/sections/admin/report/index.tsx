@@ -6,10 +6,8 @@ import { Box } from '@mui/material';
 import { ReportDetail } from 'src/types/report';
 import usePagination from 'src/hooks/use-pagination';
 import { SelectChangeEvent } from '@mui/material';
-import { useRouter } from 'next/router';
 import { useDrawer, useDialog } from '@hooks';
 import { useReportsContext } from 'src/contexts/reports/reports-context';
-import { initialReportList } from 'src/types/report';
 import ReportDetailDenyDialog from './report-detail-deny-dialog';
 import ReportDetailReplyDrawer from './report-detail-reply-drawer';
 
@@ -42,7 +40,7 @@ function ReportList() {
   };
 
   const filteredReports = useMemo(() => {
-    return initialReportList.filter((report) => {
+    return reports.filter((report) => {
       const matchesDateRange =
         dateRange.startDate && dateRange.endDate
           ? new Date(Number(report.reportedAt) * 1000) >= dateRange.startDate &&

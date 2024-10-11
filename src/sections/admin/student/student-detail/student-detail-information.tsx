@@ -1,10 +1,13 @@
 import React from 'react';
 import { Card, Typography, Avatar, Stack, Box } from '@mui/material';
-import { initialStudentList } from 'src/types/user';
-import { Message, Messages1 } from 'iconsax-react';
+import { UserDetail } from 'src/types/user';
+import { Messages1 } from 'iconsax-react';
 
-function StudentDetailInformation() {
-  const student = initialStudentList[0];
+interface StudentDetailInformationProps {
+  info: UserDetail;
+}
+
+const StudentDetailInformation: React.FC<StudentDetailInformationProps> = ({ info }) => {
   return (
     <Card className='relative overflow-hidden h-full'>
       <Box className='w-full h-32 bg-green-400 rounded-b-full relative'>
@@ -13,7 +16,7 @@ function StudentDetailInformation() {
       <Stack direction='column' spacing={2} className='p-4 mt-5' alignItems={'center'}>
         <Stack>
           <Typography variant='h5' align='center'>
-            {student.lastName + ' ' + student.firstName}
+            {info.lastName + ' ' + info.firstName}
           </Typography>
           <Typography variant='body2' align='center' className='text-green-400' fontWeight={'bold'}>
             Vai trò: Sinh viên
@@ -21,17 +24,13 @@ function StudentDetailInformation() {
         </Stack>
         <Box className='grid grid-cols-2 gap-4 w-[80%]'>
           <Typography variant='subtitle2' className='text-center text-green-400'>
-            Email:
-          </Typography>
-          <Typography variant='subtitle2'>{student.email}</Typography>
-          <Typography variant='subtitle2' className='text-center text-green-400'>
             SĐT:
           </Typography>
-          <Typography variant='subtitle2'>{student.phoneNumber}</Typography>
+          <Typography variant='subtitle2'>{info.phoneNumber}</Typography>
           <Typography variant='subtitle2' className='text-center text-green-400'>
             Địa chỉ:
           </Typography>
-          <Typography variant='subtitle2'>{`Phòng ${student.room}, Tòa ${student.building}, KTX Khu ${student.dormitory}`}</Typography>
+          <Typography variant='subtitle2'>{`Phòng ${info.room}, Tòa ${info.building}, KTX Khu ${info.dormitory}`}</Typography>
         </Box>
         <Stack alignItems={'center'} className='cursor-pointer'>
           <Messages1 size={32} />
@@ -42,6 +41,6 @@ function StudentDetailInformation() {
       </Stack>
     </Card>
   );
-}
+};
 
 export default StudentDetailInformation;

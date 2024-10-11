@@ -1,15 +1,17 @@
 import { Typography, Stack, Chip } from '@mui/material';
 import { CustomTableConfig } from 'src/components/custom-table';
-import { Edit, DocumentText, Trash } from 'iconsax-react';
+import { Edit, Trash } from 'iconsax-react';
 import { DeliveryDetail } from 'src/types/delivery';
-import { formatDate, formatUnixTimestamp, formatVNDcurrency } from 'src/utils/format-time-currency';
+import { formatDate, formatUnixTimestamp } from 'src/utils/format-time-currency';
 
 const getDeliveryTableConfig = ({
   onClickDelete,
-  onClickEdit
+  onClickEdit,
+  staffs
 }: {
   onClickDelete: (data: DeliveryDetail) => void;
   onClickEdit: (data: DeliveryDetail) => void;
+  staffs: { [key: string]: { firstName: string; lastName: string } };
 }): CustomTableConfig<DeliveryDetail['id'], DeliveryDetail>[] => [
   {
     key: 'id',
@@ -21,7 +23,10 @@ const getDeliveryTableConfig = ({
     key: 'shipperName',
     headerLabel: 'Nhân viên phụ trách',
     type: 'string',
-    renderCell: (data) => <Typography>{data.shipperId}</Typography>
+    renderCell: (data) => {
+      const staff = staffs[data.staffId];
+      return <Typography>{staff ? `${staff.lastName} ${staff.firstName}` : 'N/A'}</Typography>;
+    }
   },
   {
     key: 'numberOfOrders',
@@ -31,10 +36,10 @@ const getDeliveryTableConfig = ({
   },
   {
     key: 'deliveryDate',
-    headerLabel: 'Thời gian bắt đầu chuyển',
+    headerLabel: 'Thời gian tạo chuyến đi',
     type: 'string',
     renderCell: (data) => (
-      <Typography>{formatDate(formatUnixTimestamp(data.deliveryAt as string))}</Typography>
+      <Typography>{formatDate(formatUnixTimestamp(data.createdAt as string))}</Typography>
     )
   },
   {
@@ -44,12 +49,6 @@ const getDeliveryTableConfig = ({
     renderCell: (data) => <Typography>{data.limitTime}</Typography>
   },
   {
-    key: 'delayTime',
-    headerLabel: 'Thời gian trễ (phút)',
-    type: 'string',
-    renderCell: (data) => <Typography>{data.delayTime}</Typography>
-  },
-  {
     key: 'status',
     headerLabel: 'Trạng thái',
     type: 'string',
@@ -57,14 +56,22 @@ const getDeliveryTableConfig = ({
       <Chip
         variant='filled'
         label={
-          data.status === 'SUCCESS'
+          data.status === 'FINISHED'
             ? 'Hoàn thành'
-            : data.status === 'PENDING'
-              ? 'Đang chờ xử lý'
-              : 'Đã chấp nhận'
+            : data.status === 'CANCELED'
+              ? 'Đã hủy'
+              : data.status === 'PENDING'
+                ? 'Đang chờ xử lý'
+                : 'Chấp nhận'
         }
         color={
-          data.status === 'SUCCESS' ? 'success' : data.status === 'PENDING' ? 'warning' : 'error'
+          data.status === 'FINISHED'
+            ? 'success'
+            : data.status === 'PENDING'
+              ? 'warning'
+              : data.status === 'ACCEPTED'
+                ? 'primary'
+                : 'error'
         }
       />
     )

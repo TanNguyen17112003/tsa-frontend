@@ -5,14 +5,24 @@ import { ReportDetail } from 'src/types/report';
 import usePagination from 'src/hooks/use-pagination';
 import { SelectChangeEvent } from '@mui/material';
 import { useDrawer, useDialog } from '@hooks';
-import { initialStaffList, UserDetail } from 'src/types/user';
+import { UserDetail } from 'src/types/user';
 import getStaffTableConfig from './staff-table-config';
 import StudentFilter from './staff-filter';
 import { useRouter } from 'next/router';
+import UpdateRoleDialog from '../../update-role-dialog';
+import DeleteUserDialog from '../../delete-user-dialog';
+import { useUsersContext } from '@contexts';
 
 function StaffList() {
   const router = useRouter();
+  const { getListUsersApi, deleteUser } = useUsersContext();
+  const deleteStaffDialog = useDialog<UserDetail>();
+  const updateRoleDialog = useDialog<UserDetail>();
   const [selectedStatus, setSelectedStatus] = useState<string>('');
+
+  const staffList = useMemo(() => {
+    return (getListUsersApi.data || []).filter((user) => user.role === 'STAFF');
+  }, [getListUsersApi.data]);
   const [dateRange, setDateRange] = useState<{ startDate: Date | null; endDate: Date | null }>({
     startDate: null,
     endDate: null
@@ -39,7 +49,7 @@ function StaffList() {
   }, []);
 
   const filteredStaffs = useMemo(() => {
-    return initialStaffList.filter((staff) => {
+    return staffList.filter((staff) => {
       const matchesDateRange =
         dateRange.startDate && dateRange.endDate
           ? new Date(Number(staff.createdAt) * 1000) >= dateRange.startDate &&
@@ -48,7 +58,7 @@ function StaffList() {
       const matchesStatus = selectedStatus === '' ? true : staff.status === selectedStatus;
       return matchesDateRange && matchesStatus;
     });
-  }, [dateRange, selectedStatus, initialStaffList]);
+  }, [dateRange, selectedStatus, staffList]);
 
   const pagination = usePagination({
     count: filteredStaffs.length
@@ -56,11 +66,11 @@ function StaffList() {
 
   const staffTableConfig = useMemo(() => {
     return getStaffTableConfig({
-      onClickDeny: (data: UserDetail) => {
-        console.log(data);
+      onClickUpgrade: (data: UserDetail) => {
+        updateRoleDialog.handleOpen(data);
       },
-      onClickReply: (data: UserDetail) => {
-        console.log(data);
+      onClickDelete: (data: UserDetail) => {
+        deleteStaffDialog.handleOpen(data);
       }
     });
   }, []);
@@ -80,6 +90,17 @@ function StaffList() {
         configs={staffTableConfig}
         pagination={pagination}
         onClickRow={(data: UserDetail) => handleGoStaff(data)}
+      />
+      <DeleteUserDialog
+        open={deleteStaffDialog.open}
+        user={deleteStaffDialog.data as UserDetail}
+        onClose={deleteStaffDialog.handleClose}
+        onConfirm={() => deleteUser(deleteStaffDialog.data?.id as string)}
+      />
+      <UpdateRoleDialog
+        open={updateRoleDialog.open}
+        user={updateRoleDialog.data as UserDetail}
+        onClose={updateRoleDialog.handleClose}
       />
     </Box>
   );

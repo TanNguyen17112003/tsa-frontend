@@ -1,10 +1,13 @@
 import React from 'react';
 import { Card, Typography, Avatar, Stack, Box } from '@mui/material';
-import { initialStaffList } from 'src/types/user';
-import { Message, Messages1 } from 'iconsax-react';
+import { UserDetail } from 'src/types/user';
+import { Messages1 } from 'iconsax-react';
 
-function StaffDetailInformation() {
-  const staff = initialStaffList[0];
+interface StaffDetailInformationProps {
+  info: UserDetail;
+}
+
+const StaffDetailInformation: React.FC<StaffDetailInformationProps> = (props) => {
   return (
     <Card className='relative overflow-hidden h-full'>
       <Box className='w-full h-32 bg-green-400 rounded-b-full relative'>
@@ -13,7 +16,7 @@ function StaffDetailInformation() {
       <Stack direction='column' spacing={2} className='p-4 mt-5' alignItems={'center'}>
         <Stack>
           <Typography variant='h5' align='center'>
-            {staff.lastName + ' ' + staff.firstName}
+            {props.info.lastName + ' ' + props.info.firstName}
           </Typography>
           <Typography variant='body2' align='center' className='text-green-400' fontWeight={'bold'}>
             Vai trò: Nhân viên phụ trách
@@ -21,13 +24,9 @@ function StaffDetailInformation() {
         </Stack>
         <Box className='grid grid-cols-2 gap-4 w-[80%]'>
           <Typography variant='subtitle2' className='text-center text-green-400'>
-            Email:
-          </Typography>
-          <Typography variant='subtitle2'>{staff.email}</Typography>
-          <Typography variant='subtitle2' className='text-center text-green-400'>
             SĐT:
           </Typography>
-          <Typography variant='subtitle2'>{staff.phoneNumber}</Typography>
+          <Typography variant='subtitle2'>{props.info.phoneNumber}</Typography>
         </Box>
         <Stack alignItems={'center'} className='cursor-pointer'>
           <Messages1 size={32} />
@@ -38,6 +37,6 @@ function StaffDetailInformation() {
       </Stack>
     </Card>
   );
-}
+};
 
 export default StaffDetailInformation;

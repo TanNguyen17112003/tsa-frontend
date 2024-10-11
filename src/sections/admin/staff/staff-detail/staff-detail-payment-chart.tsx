@@ -11,17 +11,14 @@ import {
   Typography
 } from '@mui/material';
 import { donutChartOptions } from 'src/utils/config-charts';
-import { OrdersApi } from 'src/api/orders';
-import useFunction from 'src/hooks/use-function';
+import { OrderDetail } from 'src/types/order';
 
-const StaffDetailPaymentChart: React.FC = () => {
+interface StaffDetailPaymentChartProps {
+  orders: OrderDetail[];
+}
+
+const StaffDetailPaymentChart: React.FC<StaffDetailPaymentChartProps> = ({ orders }) => {
   const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
-
-  const getOrdersApi = useFunction(OrdersApi.getOrders);
-
-  const orders = useMemo(() => {
-    return getOrdersApi.data || [];
-  }, [getOrdersApi.data]);
 
   const handleYearChange = (event: SelectChangeEvent<number>) => {
     setSelectedYear(Number(event.target.value));
@@ -51,10 +48,6 @@ const StaffDetailPaymentChart: React.FC = () => {
       labels: paymentMethods
     };
   }, [paymentMethods]);
-
-  useEffect(() => {
-    getOrdersApi.call({});
-  }, []);
 
   return (
     <Card className='h-full'>

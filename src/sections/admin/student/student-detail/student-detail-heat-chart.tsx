@@ -2,7 +2,7 @@ import React from 'react';
 import { Chart } from 'src/components/chart';
 import { Box, Card, Typography } from '@mui/material';
 import { AddressData } from '@utils';
-import { initialOrderList } from 'src/types/order';
+import { OrderDetail } from 'src/types/order';
 import { heatMapOptions } from 'src/utils/config-charts';
 
 interface HeatMapData {
@@ -12,13 +12,17 @@ interface HeatMapData {
   count: number;
 }
 
-const aggregateOrderData = (): HeatMapData[] => {
+interface StudentDetailHeatChartProps {
+  orders: OrderDetail[];
+}
+
+const aggregateOrderData = (orders: OrderDetail[]): HeatMapData[] => {
   const heatMapData: HeatMapData[] = [];
 
   AddressData.dormitories.forEach((dormitory) => {
     AddressData.buildings[dormitory as keyof typeof AddressData.buildings].forEach((building) => {
       AddressData.rooms.forEach((room) => {
-        const count = initialOrderList.filter(
+        const count = orders.filter(
           (order) =>
             order.dormitory === dormitory && order.building === building && order.room === room
         ).length;
@@ -31,8 +35,8 @@ const aggregateOrderData = (): HeatMapData[] => {
   return heatMapData;
 };
 
-const StudentDetailHeatChart: React.FC = () => {
-  const heatMapData = aggregateOrderData();
+const StudentDetailHeatChart: React.FC<StudentDetailHeatChartProps> = ({ orders }) => {
+  const heatMapData = aggregateOrderData(orders);
 
   const series = AddressData.dormitories.map((dormitory) => {
     return {

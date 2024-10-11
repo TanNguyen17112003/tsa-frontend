@@ -104,5 +104,3 @@ const generateReportsForMonth = (year: number, month: number) => {
 for (let month = 1; month <= 12; month++) {
   generateReportsForMonth(2024, month);
 }
-
-console.log(initialReportList);

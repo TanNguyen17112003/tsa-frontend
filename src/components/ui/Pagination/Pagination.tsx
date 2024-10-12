@@ -1,8 +1,8 @@
 import { useMemo, type FC } from 'react';
 import { Button } from '../../shadcn/ui/button';
 import _ from 'lodash';
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 import { Typography } from '@mui/material';
+import clsx from 'clsx';
 
 interface PaginationProps {
   page: number;
@@ -41,23 +41,20 @@ const Pagination: FC<PaginationProps> = ({ page, count, onChange, rowsPerPage, l
 
   return (
     <div className='flex items-center gap-2'>
-      {/* <Button
-        className="rounded-none rounded-tl-md rounded-bl-md"
-        variant="outline"
-        size="icon"
-        disabled={page == 0}
-       
-      > */}
       <Typography
         className='text-xs opacity-60 hover:opacity-100 cursor-pointer'
         onClick={(e) => onChange(e, page > 0 ? page - 1 : page)}
       >
         Previous
       </Typography>
-      {/* </Button> */}
+
       {buttonIndexes.map((index) => (
         <Button
-          className='rounded-lg bg-[#624DE3]'
+          // className='rounded-lg bg-[#624DE3]'
+          className={clsx(
+            'rounded-lg',
+            page == index ? 'bg-[#624DE3] text-white' : 'bg-[#E0E0E0] text-black'
+          )}
           variant={page == index ? undefined : 'outline'}
           key={index}
           onClick={index >= 0 ? (e) => onChange(e, index) : undefined}
@@ -66,19 +63,13 @@ const Pagination: FC<PaginationProps> = ({ page, count, onChange, rowsPerPage, l
           {index >= 0 ? index + 1 : '...'}
         </Button>
       ))}
-      {/* <Button
-        className="rounded-none rounded-tr-md rounded-br-md"
-        variant="outline"
-        size="icon"
-        disabled={page == totalPages - 1}
-      > */}
+
       <Typography
         className='text-xs opacity-60 hover:opacity-100 cursor-pointer'
         onClick={(e) => onChange(e, page < totalPages - 1 ? page + 1 : page)}
       >
         Next
       </Typography>
-      {/* </Button> */}
     </div>
   );
 };

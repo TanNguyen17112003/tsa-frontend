@@ -49,7 +49,9 @@ export const SideNav: FC<SideNavProps> = (props) => {
                   startIcon={<Add />}
                   className='!text-black !bg-white'
                   LinkComponent={Link}
-                  href={paths.student.order.add}
+                  href={
+                    user?.role === 'STUDENT' ? paths.student.order.add : paths.dashboard.order.add
+                  }
                 >
                   Thêm đơn hàng
                 </Button>

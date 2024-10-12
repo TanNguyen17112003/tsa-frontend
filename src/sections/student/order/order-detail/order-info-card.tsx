@@ -14,7 +14,7 @@ function OrderInfoCard({ order }: { order: OrderDetail }) {
   const boxFields = [
     {
       name: 'Mã đơn hàng',
-      value: '#' + order.checkCode
+      value: '#' + (order.checkCode || '123')
     },
     {
       name: 'Sản phẩm',

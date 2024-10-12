@@ -52,7 +52,6 @@ const apiFetch = async (input: RequestInfo | URL, init?: RequestInit | undefined
       throw new Error(message);
     }
     const data = JSON.stringify(result);
-    // console.log("value of tmp " + tmp);
     return JSON.parse(data, reviver);
   } catch (error) {
     throw error;

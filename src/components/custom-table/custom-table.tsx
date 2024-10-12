@@ -227,7 +227,7 @@ export function CustomTable<P, T extends { id: P; [key: string]: any }>(
         <Stack className='w-full justify-center flex items-center py-5'>
           <Pagination
             page={pagination.page}
-            count={pagination.totalPages}
+            count={pagination.count}
             onChange={pagination.onPageChange}
             rowsPerPage={pagination.rowsPerPage}
           />

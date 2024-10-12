@@ -14,7 +14,7 @@ import { OrderFormProps } from 'src/api/orders';
 import { useOrdersContext } from 'src/contexts/orders/orders-context';
 import { initialOrderForm } from 'src/types/order';
 
-const ActivityAddPage = () => {
+const OrderAddPage = () => {
   const [resetUploadSection, setResetUploadSection] = useState('');
   const [isUploaded, setIsUploaded] = useState(false);
   const [orderList, setOrderList] = useState<OrderFormProps[]>([]);
@@ -77,7 +77,6 @@ const ActivityAddPage = () => {
             >
               Quay lại
             </Button>
-            <>{JSON.stringify(orderList)}</>
           </Box>
           <Stack justifyContent='space-between' direction='row' alignItems='center'>
             <Typography variant='h5'>Thêm đơn hàng</Typography>
@@ -113,4 +112,4 @@ const ActivityAddPage = () => {
   );
 };
 
-export default ActivityAddPage;
+export default OrderAddPage;

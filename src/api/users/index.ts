@@ -7,8 +7,9 @@ type SignInRequest = {
 };
 
 type SignInResponse = {
-  token: string;
+  accessToken: string;
   userInfo: UserDetail;
+  refreshToken: string;
 };
 
 export type InitialSignUpRequest = {
@@ -40,15 +41,6 @@ export class UsersApi {
     return response;
   }
 
-  static async putUser(request: Partial<User>) {
-    const response = await apiPatch('/users/' + request.id, request);
-    return response.data;
-  }
-
-  static async deleteUser(id: User['id'][]) {
-    return await apiDelete(`/users/${id}`, { id });
-  }
-
   static async signIn(request: SignInRequest): Promise<SignInResponse> {
     return await apiPost('/auth/signin', request);
   }
@@ -75,5 +67,13 @@ export class UsersApi {
 
   static async updateProfile(payload: UpdateProfileRequest): Promise<User> {
     return await apiPatch('/users/profile', payload);
+  }
+
+  static async updateUserRole(id: User['id'], role: User['role']): Promise<User> {
+    return await apiPut(`/users/role/${id}`, { role });
+  }
+
+  static async deleteUser(id: User['id']) {
+    return await apiDelete(`/users/${id}`, {});
   }
 }

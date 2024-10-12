@@ -45,6 +45,8 @@ const Page: PageType = () => {
         if (isMounted() && user) {
           if (user.role === 'STUDENT') {
             router.replace(paths.student.index);
+          } else if (user.role === 'ADMIN') {
+            router.replace(paths.dashboard.index);
           }
         }
       } catch (error) {

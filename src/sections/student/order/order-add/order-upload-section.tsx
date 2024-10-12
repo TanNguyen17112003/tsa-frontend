@@ -148,7 +148,7 @@ function OrderUploadSection({
             component='span'
             sx={{ color: 'primary.main', cursor: 'pointer' }}
             onClick={() => {
-              downloadUrl('/docs/import-orders.xlsx', '[Mẫu]Import danh sách đơn hàng');
+              downloadUrl('/docs/import-student-orders.xlsx', '[Mẫu]Import danh sách đơn hàng');
             }}
           >
             Đây 👈

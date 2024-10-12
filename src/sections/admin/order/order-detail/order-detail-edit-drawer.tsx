@@ -13,7 +13,6 @@ import {
   Select,
   Typography
 } from '@mui/material';
-import Image from 'next/image';
 import { Stack } from '@mui/system';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFormik } from 'formik';
@@ -24,7 +23,6 @@ import { OrderDetail } from 'src/types/order';
 import { useOrdersContext } from 'src/contexts/orders/orders-context';
 import { OrderFormProps } from 'src/api/orders';
 import { OrderFormTextField } from '../order-add/order-form-text-field';
-import { AddressData, paymentMethodOptions } from '@utils';
 
 function OrderDetailEditDrawer({
   open,

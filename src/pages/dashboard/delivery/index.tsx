@@ -4,7 +4,7 @@ import { Stack } from '@mui/system';
 import ContentHeader from 'src/components/content-header';
 import { useRouter } from 'next/router';
 import { useAuth } from '@hooks';
-import DeliverList from 'src/sections/admin/delivery/deliveryList';
+import DeliverList from 'src/sections/admin/delivery/delivery-list';
 import DeliveriesProvider from 'src/contexts/deliveries/deliveries-context';
 const Page: PageType = () => {
   const { user } = useAuth();

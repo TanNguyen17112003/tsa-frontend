@@ -32,7 +32,7 @@ const getDeliveryTableConfig = ({
     key: 'numberOfOrders',
     headerLabel: 'Số lượng đơn hàng',
     type: 'string',
-    renderCell: (data) => <Typography>{data.orders.length}</Typography>
+    renderCell: (data) => <Typography>{data?.orders?.length}</Typography>
   },
   {
     key: 'deliveryDate',

@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { UsersApi } from 'src/api/users';
 import useFunction from 'src/hooks/use-function';
+import { UserDetail } from 'src/types/user';
 
 const useStaffData = () => {
   const getUsersApi = useFunction(UsersApi.getUsers);
   const [staffs, setStaffs] = useState<{ [key: string]: { firstName: string; lastName: string } }>(
     {}
   );
+  const [users, setUsers] = useState<UserDetail[]>([]);
 
   useEffect(() => {
     const fetchStaffs = async () => {
@@ -18,12 +20,16 @@ const useStaffData = () => {
         return acc;
       }, {});
       setStaffs(staffData);
+      setUsers(users?.data?.filter((user) => user.role === 'STAFF') || []);
     };
 
     fetchStaffs();
-  }, [getUsersApi]);
+  }, []);
 
-  return staffs;
+  return {
+    staffs,
+    users
+  };
 };
 
 export default useStaffData;

@@ -10,7 +10,7 @@ interface ContextValue {
   getDeliveriesApi: UseFunctionReturnType<FormData, DeliveryDetail[]>;
   getDeliveryById: (id: Delivery['id']) => Promise<DeliveryDetail>;
   createDelivery: (requests: DeliveryRequest) => Promise<void>;
-  updateDelivery: (Order: Partial<DeliveryDetail>, deliveryId: string) => Promise<void>;
+  updateDelivery: (Delivery: Partial<DeliveryDetail>, deliveryId: string) => Promise<void>;
   updateDeliveryStatus: (status: DeliveryStatus, id: string) => Promise<void>;
   deleteDelivery: (ids: Delivery['id']) => Promise<void>;
 }

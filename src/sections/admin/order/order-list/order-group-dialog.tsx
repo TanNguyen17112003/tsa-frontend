@@ -31,17 +31,20 @@ function OrderGroupDialog({
 }: DialogProps & {
   orders: OrderDetail[];
 }) {
-  const onConfirm = useCallback(async (values: DeliveryRequest) => {
-    try {
-      await DeliveriesApi.postDeliveries({
-        orderIds: orders.map((order) => order.id),
-        staffId: values.staffId,
-        limitTime: Number(values.limitTime)
-      });
-    } catch (error) {
-      throw error;
-    }
-  }, []);
+  const onConfirm = useCallback(
+    async (values: DeliveryRequest) => {
+      try {
+        await DeliveriesApi.postDeliveries({
+          orderIds: orders.map((order) => order.id),
+          staffId: values.staffId,
+          limitTime: Number(values.limitTime)
+        });
+      } catch (error) {
+        throw error;
+      }
+    },
+    [orders]
+  );
 
   const onConfirmHelper = useFunction(onConfirm!, {
     successMessage: 'Gom nhóm hàng thành công!'

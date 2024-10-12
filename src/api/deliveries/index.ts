@@ -38,6 +38,6 @@ export class DeliveriesApi {
   }
 
   static async deleteDelivery(id: Delivery['id']) {
-    return await apiDelete(`/orders/${id}`, {});
+    return await apiDelete(`/deliveries/${id}`, {});
   }
 }

@@ -7,6 +7,7 @@ import ReportFilter from './report-filter';
 import usePagination from 'src/hooks/use-pagination';
 import { useDrawer } from '@hooks';
 import { useDialog } from '@hooks';
+import useOrdersData from 'src/hooks/use-orders-data';
 import ReportDetailEditDrawer from './report-detail-edit-drawer';
 import ReportDetailDeleteDialog from './report-detail-delete-dialog';
 import { formatUnixTimestamp } from 'src/utils/format-time-currency';
@@ -22,6 +23,7 @@ const ReportList: React.FC<ReportListProps> = ({ reports }) => {
 
   const editDetailReportDrawer = useDrawer<ReportDetail>();
   const removeDetailReportDialog = useDialog<ReportDetail>();
+  const orders = useOrdersData();
 
   const [status, setStatus] = React.useState(statusList[0]);
   const [dateRange, setDateRange] = React.useState(() => {
@@ -43,9 +45,10 @@ const ReportList: React.FC<ReportListProps> = ({ reports }) => {
       },
       onClickRemove: (data: ReportDetail) => {
         removeDetailReportDialog.handleOpen(data);
-      }
+      },
+      orders: orders.orders
     });
-  }, []);
+  }, [orders]);
 
   const pagination = usePagination({
     count: reports.length

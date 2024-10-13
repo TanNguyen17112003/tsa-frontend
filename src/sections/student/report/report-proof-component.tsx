@@ -5,13 +5,20 @@ import { ProofImage } from 'src/types/report';
 
 interface ReportProofComponentProps {
   label: string;
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>, file?: File) => void;
   defaultValue?: string | ProofImage;
 }
 
 const ReportProofComponent = ({ label, onChange, defaultValue }: ReportProofComponentProps) => {
-  const [inputValue, setInputValue] = useState<string | ProofImage>('');
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [inputValue, setInputValue] = useState<string | ProofImage>(defaultValue || '');
+  const [imagePreview, setImagePreview] = useState<string | null>(
+    typeof defaultValue === 'string' ? defaultValue : null
+  );
+
+  useEffect(() => {
+    setInputValue(defaultValue || '');
+    setImagePreview(typeof defaultValue === 'string' ? defaultValue : null);
+  }, [defaultValue]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
@@ -25,13 +32,16 @@ const ReportProofComponent = ({ label, onChange, defaultValue }: ReportProofComp
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
-        setInputValue('');
-        onChange({
-          target: {
-            name: 'proof',
-            value: reader.result as string
-          }
-        } as React.ChangeEvent<HTMLInputElement>);
+        setInputValue(file.name);
+        onChange(
+          {
+            target: {
+              name: 'proof',
+              value: reader.result as string
+            }
+          } as React.ChangeEvent<HTMLInputElement>,
+          file
+        );
       };
       reader.readAsDataURL(file);
     }
@@ -42,11 +52,10 @@ const ReportProofComponent = ({ label, onChange, defaultValue }: ReportProofComp
       <Typography variant='h6'>{label}</Typography>
       <TextField
         type='text'
-        value={inputValue}
+        value={typeof inputValue === 'string' ? inputValue : ''}
         onChange={handleInputChange}
-        defaultValue={defaultValue}
         className='w-full rounded-lg'
-        placeholder='Nhập đường link hoặc tải lên ảnh minh chứng'
+        placeholder='Nhập đường link đến ảnh của bạn hoặc tải lên ảnh minh chứng'
         InputProps={{
           endAdornment: (
             <InputAdornment position='end'>

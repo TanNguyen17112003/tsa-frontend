@@ -1,22 +1,28 @@
-import { IconButton, Typography, Stack, Button, Chip } from '@mui/material';
+import { IconButton, Typography, Stack, Button, Chip, Box } from '@mui/material';
 import { CustomTableConfig } from 'src/components/custom-table';
 import { paths } from 'src/paths';
 import { Edit, Trash } from 'iconsax-react';
 import { ReportDetail } from 'src/types/report';
 import { formatUnixTimestamp, formatDate } from 'src/utils/format-time-currency';
+import { OrderDetail } from 'src/types/order';
 
 const getReportTableConfigs = ({
   onClickEdit,
-  onClickRemove
+  onClickRemove,
+  orders
 }: {
   onClickEdit: (data: ReportDetail) => void;
   onClickRemove: (data: ReportDetail) => void;
+  orders: OrderDetail[];
 }): CustomTableConfig<ReportDetail['id'], ReportDetail>[] => [
   {
     key: 'orderCode',
     headerLabel: 'Mã đơn hàng',
     type: 'string',
-    renderCell: (data) => <Typography>#{data.orderId!}</Typography>
+    renderCell: (data) => {
+      const dataOrder = orders.find((order) => order.id === data.orderId);
+      return <Typography>#{dataOrder?.checkCode}</Typography>;
+    }
   },
   {
     key: 'reportedAt',
@@ -34,7 +40,19 @@ const getReportTableConfigs = ({
   {
     key: 'proof',
     headerLabel: 'Minh chứng',
-    type: 'string'
+    type: 'string',
+    renderCell: (data) => {
+      const handleClick = () => {
+        window.open(data.proof as string, '_blank');
+      };
+      return (data.proof as string).endsWith('.jpg') || (data.proof as string).endsWith('.png') ? (
+        <Box className='cursor-pointer' onClick={handleClick}>
+          <img src={data.proof as string} alt='proof' width={100} />
+        </Box>
+      ) : (
+        <Typography>{data.proof as string}</Typography>
+      );
+    }
   },
   {
     key: 'reply',

@@ -6,16 +6,13 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFormik } from 'formik';
 import useFunction from 'src/hooks/use-function';
 import { useAuth } from 'src/hooks/use-auth';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import dayjs, { Dayjs } from 'dayjs';
+import useOrdersData from 'src/hooks/use-orders-data';
 import 'dayjs/locale/en-gb';
 import { ReportDetail, ReportFormProps, initialReportForm } from 'src/types/report';
 import ReportProofComponent from './report-proof-component';
-import { formatUnixTimestamp } from 'src/utils/format-time-currency';
 import { useReportsContext } from 'src/contexts/reports/reports-context';
 import { getCurentUnixTimestamp } from 'src/utils/format-time-currency';
+import { UploadImagesApi } from 'src/api/upload-images';
 
 function ReportDetailEditDrawer({
   open,
@@ -28,15 +25,25 @@ function ReportDetailEditDrawer({
 }) {
   const { user } = useAuth();
   const { updateReport } = useReportsContext();
-  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(
-    dayjs(formatUnixTimestamp(report?.reportedAt as string))
+  const orders = useOrdersData();
+  const order = useMemo(
+    () => orders.orders.find((order) => order.id === report?.orderId),
+    [orders, report?.orderId]
   );
+
+  const [isFormChanged, setIsFormChanged] = useState(false);
+
   const handleSubmitReport = useCallback(
     async (values: ReportFormProps) => {
       try {
+        let updatedProof = values.proof;
+        if (values.proof instanceof File) {
+          const uploadedImage = await UploadImagesApi.postImage(values.proof as File);
+          updatedProof = uploadedImage.secure_url;
+        }
         const updatedData = {
           content: values.content,
-          proof: values.proof,
+          proof: updatedProof,
           reportedAt: getCurentUnixTimestamp(),
           reply: '',
           repliedAt: '',
@@ -47,13 +54,18 @@ function ReportDetailEditDrawer({
         throw error;
       }
     },
-    [report?.id, user?.id]
+    [report?.id, report?.proof, user?.id]
   );
+
   const handleSubmitReportHelper = useFunction(handleSubmitReport, {
     successMessage: 'Cập nhật khiếu nại thành công!'
   });
+
   const formik = useFormik<ReportFormProps>({
-    initialValues: initialReportForm,
+    initialValues: {
+      content: report?.content || '',
+      proof: report?.proof || ''
+    },
     onSubmit: async (values) => {
       const { error } = await handleSubmitReportHelper.call(values);
       if (error) {
@@ -62,6 +74,21 @@ function ReportDetailEditDrawer({
       onClose();
     }
   });
+
+  const handleProofChange = (event: React.ChangeEvent<HTMLInputElement>, file?: File) => {
+    if (file) {
+      formik.setFieldValue('proof', file);
+    } else {
+      formik.setFieldValue('proof', event.target.value);
+    }
+  };
+
+  useEffect(() => {
+    const hasChanged =
+      formik.values.content !== report?.content || formik.values.proof !== report?.proof;
+    setIsFormChanged(hasChanged);
+  }, [formik.values, report?.content, report?.proof]);
+
   return (
     <>
       <Drawer
@@ -110,7 +137,7 @@ function ReportDetailEditDrawer({
                 <Button color='inherit' variant='contained' onClick={onClose}>
                   Hủy bỏ
                 </Button>
-                <Button variant='contained' color='primary' type='submit'>
+                <Button variant='contained' color='primary' type='submit' disabled={!isFormChanged}>
                   Cập nhật
                 </Button>
               </Box>
@@ -123,7 +150,7 @@ function ReportDetailEditDrawer({
                 type='text'
                 className='w-full px-3 rounded-lg '
                 disabled
-                value={`#${report?.orderCode}`}
+                value={`#${order?.checkCode}`}
               />
             </Box>
             <Box display={'flex'} flexDirection={'column'} gap={1}>
@@ -145,16 +172,6 @@ function ReportDetailEditDrawer({
               />
             </Box>
             <Box display={'flex'} flexDirection={'column'} gap={1}>
-              <Typography variant='h6'>Ngày tạo / Chỉnh sửa khiếu nại</Typography>
-              <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale='en-gb'>
-                <DatePicker
-                  disabled
-                  value={selectedDate}
-                  onChange={(newValue) => setSelectedDate(newValue)}
-                />
-              </LocalizationProvider>
-            </Box>
-            <Box display={'flex'} flexDirection={'column'} gap={1}>
               <Typography variant='h6'>Nội dung khiếu nại</Typography>
               <FormInput
                 defaultValue={report?.content}
@@ -163,11 +180,11 @@ function ReportDetailEditDrawer({
                 onChange={(event) => formik.setFieldValue('content', event.target.value)}
               />
             </Box>
-            <Box display={'flex'} flexDirection={'column'} gap={1}>
+            <Box display={'flex'} flexDirection={'column'} gap={2}>
               <ReportProofComponent
                 defaultValue={report?.proof || undefined}
                 label='Minh chứng'
-                onChange={(event) => formik.setFieldValue('proof', event.target.value)}
+                onChange={handleProofChange}
               />
             </Box>
           </Stack>

@@ -2,6 +2,10 @@ import type { AppProps } from 'next/app';
 import Head from 'next/head';
 
 import { AuthConsumer, AuthProvider } from 'src/contexts/auth/jwt-context';
+import {
+  AuthConsumer as FirebaseAuthConsumer,
+  AuthProvider as FirebaseAuthProvider
+} from 'src/contexts/auth/firebase-context';
 
 import 'simplebar-react/dist/simplebar.min.css';
 import 'src/styles/globals.css';
@@ -35,29 +39,31 @@ const App = (props: AppProps) => {
 
       <SnackbarProvider>
         <AuthProvider>
-          <AuthConsumer>
-            {(auth) => {
-              const theme = createTheme(initialSettings);
-              const showSlashScreen = !auth.isInitialized;
-              if (!auth.isInitialized) {
-                return <SplashScreen />;
-              }
-              return (
-                <ThemeProvider theme={theme}>
-                  <Head>
-                    <meta name='color-scheme' content={initialSettings.paletteMode} />
-                    <meta name='theme-color' content={theme.palette.primary.main} />
-                  </Head>
-                  <CssBaseline />
-                  {showSlashScreen ? (
-                    <SplashScreen />
-                  ) : (
-                    <> {getLayout(<Component {...pageProps} />)}</>
-                  )}
-                </ThemeProvider>
-              );
-            }}
-          </AuthConsumer>
+          <FirebaseAuthProvider>
+            <AuthConsumer>
+              {(auth) => (
+                <FirebaseAuthConsumer>
+                  {(firebaseAuth) => {
+                    const theme = createTheme(initialSettings);
+                    const showSplashScreen = !auth.isInitialized || !firebaseAuth.isInitialized;
+                    if (showSplashScreen) {
+                      return <SplashScreen />;
+                    }
+                    return (
+                      <ThemeProvider theme={theme}>
+                        <Head>
+                          <meta name='color-scheme' content={initialSettings.paletteMode} />
+                          <meta name='theme-color' content={theme.palette.primary.main} />
+                        </Head>
+                        <CssBaseline />
+                        {getLayout(<Component {...pageProps} />)}
+                      </ThemeProvider>
+                    );
+                  }}
+                </FirebaseAuthConsumer>
+              )}
+            </AuthConsumer>
+          </FirebaseAuthProvider>
         </AuthProvider>
       </SnackbarProvider>
     </CacheProvider>

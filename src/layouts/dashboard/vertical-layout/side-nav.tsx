@@ -1,13 +1,13 @@
-import { FC, useCallback, useMemo } from 'react';
+import { FC } from 'react';
 import Link from 'next/link';
 import { useAuth } from 'src/hooks/use-auth';
+import { useFirebaseAuth } from 'src/hooks/use-auth';
 import { usePathname } from 'src/hooks/use-pathname';
 import { Section } from '../config/config';
 import SimpleBar from 'simplebar-react';
 import { SideNavSection } from './side-nav-section';
 import { NavColor } from 'src/types/settings';
 import { SIDE_NAV_WIDTH } from 'src/config';
-// import { Button } from 'src/components/shadcn/ui/button';
 import { useRouter } from 'next/router';
 import { Box, Stack, Typography, Button, Avatar } from '@mui/material';
 import { paths } from 'src/paths';
@@ -20,6 +20,7 @@ interface SideNavProps {
 
 export const SideNav: FC<SideNavProps> = (props) => {
   const { user } = useAuth();
+  const { user: firebaseUser } = useFirebaseAuth();
   const router = useRouter();
   const { sections = [] } = props;
   const pathname = usePathname();
@@ -66,18 +67,37 @@ export const SideNav: FC<SideNavProps> = (props) => {
               ))}
             </Box>
             <Box className='flex gap-2 items-center'>
-              <Avatar src='' />
+              <Avatar src={user?.photoUrl || firebaseUser?.photoUrl || ''} />
               <Stack>
-                <Typography>
-                  {user?.lastName} {user?.firstName}
-                </Typography>
-                <Typography className='text-xs opacity-60'>
-                  {user?.role === 'STUDENT'
-                    ? 'Sinh viên'
-                    : user?.role === 'STAFF'
-                      ? 'Nhân viên'
-                      : 'Quản trị viên'}
-                </Typography>
+                {user && (
+                  <Typography>
+                    {user?.lastName} {user?.firstName}
+                  </Typography>
+                )}
+                {firebaseUser && (
+                  <Typography>
+                    {firebaseUser?.lastName} {firebaseUser?.firstName}
+                  </Typography>
+                )}
+
+                {user && (
+                  <Typography className='text-xs opacity-60'>
+                    {user?.role === 'STUDENT'
+                      ? 'Sinh viên'
+                      : user?.role === 'STAFF'
+                        ? 'Nhân viên'
+                        : 'Quản trị viên'}
+                  </Typography>
+                )}
+                {firebaseUser && (
+                  <Typography className='text-xs opacity-60'>
+                    {firebaseUser?.role === 'STUDENT'
+                      ? 'Sinh viên'
+                      : firebaseUser?.role === 'STAFF'
+                        ? 'Nhân viên'
+                        : 'Quản trị viên'}
+                  </Typography>
+                )}
               </Stack>
             </Box>
           </nav>

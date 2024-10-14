@@ -28,7 +28,7 @@ const Page: PageType = () => {
   const isMounted = useMounted();
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
-  const { signIn } = useAuth<AuthContextType>();
+  const { signIn } = useAuth();
   const searchParams = useSearchParams();
   const returnTo = searchParams.get('returnTo');
   const formik = useFormik({

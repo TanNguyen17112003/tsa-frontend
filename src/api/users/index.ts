@@ -12,6 +12,13 @@ type SignInResponse = {
   refreshToken: string;
 };
 
+type FirebaseSignInResponse = {
+  userInfo: UserDetail;
+  accessToken: string;
+};
+
+type LoginFirebaseRequest = { idToken: string };
+
 export type InitialSignUpRequest = {
   email: string;
 };
@@ -43,6 +50,10 @@ export class UsersApi {
 
   static async signIn(request: SignInRequest): Promise<SignInResponse> {
     return await apiPost('/auth/signin', request);
+  }
+
+  static async loginFirebase(request: LoginFirebaseRequest): Promise<FirebaseSignInResponse> {
+    return await apiPost('/auth/signin/google', request);
   }
 
   static async initiateSignUp(request: InitialSignUpRequest): Promise<void> {

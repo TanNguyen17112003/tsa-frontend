@@ -410,13 +410,21 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
     try {
       await signOut(auth);
       CookieHelper.removeItem(CookieKeys.TOKEN);
+      dispatch({
+        type: ActionType.INITIALIZE,
+        payload: {
+          isAuthenticated: false,
+          user: null
+        }
+      });
+      setFbUser(null); // Reset the Firebase user state
     } catch (error) {
       if (errorMap[(error as any).code]) {
         throw new Error(errorMap[(error as any).code]);
       }
       throw error;
     }
-  }, []);
+  }, [dispatch]);
 
   const _signOutAnonymously = useCallback(async (): Promise<void> => {
     try {

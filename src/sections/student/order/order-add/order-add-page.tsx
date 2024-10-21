@@ -6,6 +6,7 @@ import { useRouter } from 'next/router';
 import { useState, useCallback } from 'react';
 import useAppSnackbar from 'src/hooks/use-app-snackbar';
 import { useAuth } from 'src/hooks/use-auth';
+import { useFirebaseAuth } from 'src/hooks/use-auth';
 import useFunction from 'src/hooks/use-function';
 import { paths } from 'src/paths';
 import { OrderForm } from './order-form';
@@ -22,6 +23,7 @@ const OrderAddPage = () => {
   const { showSnackbarError, showSnackbarSuccess } = useAppSnackbar();
   const { getOrdersApi, createOrder } = useOrdersContext();
   const { user } = useAuth();
+  const { user: firebaseUser } = useFirebaseAuth();
 
   const formik = useFormik<OrderFormProps>({
     initialValues: initialOrderForm,
@@ -38,25 +40,26 @@ const OrderAddPage = () => {
     async (values: OrderFormProps) => {
       try {
         if (orderList && orderList.length > 0) {
-          const createOrderPromises = orderList.map((order) =>
-            createOrder({
+          await createOrder(
+            orderList.map((order) => ({
               ...order,
-              studentId: user?.id
-            })
+              studentId: user?.id || firebaseUser?.id
+            }))
           );
-          await Promise.all(createOrderPromises);
         } else {
-          await createOrder({
-            ...values,
-            studentId: user?.id
-          });
+          await createOrder([
+            {
+              ...values,
+              studentId: user?.id || firebaseUser?.id
+            }
+          ]);
         }
         showSnackbarSuccess('Tạo đơn hàng thành công!');
       } catch (error) {
         showSnackbarError('Có lỗi xảy ra');
       }
     },
-    [createOrder, showSnackbarError, showSnackbarSuccess, orderList]
+    [createOrder, showSnackbarError, showSnackbarSuccess, orderList, user?.id, firebaseUser?.id]
   );
 
   const handleSubmitOrderHelper = useFunction(handleSubmitOrder);

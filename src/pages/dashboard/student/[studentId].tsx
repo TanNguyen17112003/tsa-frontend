@@ -26,7 +26,7 @@ const Page: PageType = () => {
   const { getListUsersApi } = useUsersContext();
 
   const orders = useMemo(() => {
-    return (getOrdersApi.data || []).filter((order) => order.shipperId === router.query.staffId);
+    return (getOrdersApi.data || []).filter((order) => order.studentId === router.query.studentId);
   }, [getOrdersApi.data]);
 
   const reports = useMemo(() => {

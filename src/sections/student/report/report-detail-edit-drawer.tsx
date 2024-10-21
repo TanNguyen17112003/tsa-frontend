@@ -6,6 +6,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFormik } from 'formik';
 import useFunction from 'src/hooks/use-function';
 import { useAuth } from 'src/hooks/use-auth';
+import { useFirebaseAuth } from 'src/hooks/use-auth';
 import useOrdersData from 'src/hooks/use-orders-data';
 import 'dayjs/locale/en-gb';
 import { ReportDetail, ReportFormProps, initialReportForm } from 'src/types/report';
@@ -24,6 +25,7 @@ function ReportDetailEditDrawer({
   report?: ReportDetail;
 }) {
   const { user } = useAuth();
+  const { user: firebaseUser } = useFirebaseAuth();
   const { updateReport } = useReportsContext();
   const orders = useOrdersData();
   const order = useMemo(
@@ -47,14 +49,14 @@ function ReportDetailEditDrawer({
           reportedAt: getCurentUnixTimestamp(),
           reply: '',
           repliedAt: '',
-          studentId: user?.id
+          studentId: user?.id || firebaseUser?.id
         };
         await updateReport(updatedData, report?.id as string);
       } catch (error) {
         throw error;
       }
     },
-    [report?.id, report?.proof, user?.id]
+    [report?.id, report?.proof, user?.id, firebaseUser?.id]
   );
 
   const handleSubmitReportHelper = useFunction(handleSubmitReport, {

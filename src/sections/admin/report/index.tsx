@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { CustomTable } from '@components';
 import ReportFilter from './report-filter';
 import getReportTableConfig from './report-table-config';
@@ -10,6 +10,9 @@ import { useDrawer, useDialog } from '@hooks';
 import { useReportsContext } from 'src/contexts/reports/reports-context';
 import ReportDetailDenyDialog from './report-detail-deny-dialog';
 import ReportDetailReplyDrawer from './report-detail-reply-drawer';
+import useOrdersData from 'src/hooks/use-orders-data';
+import { UsersApi } from 'src/api/users';
+import useFunction from 'src/hooks/use-function';
 
 function ReportList() {
   const [selectedStatus, setSelectedStatus] = useState<string>('');
@@ -19,12 +22,18 @@ function ReportList() {
   });
   const reportDetailReplyDrawer = useDrawer<ReportDetail>();
   const reportDetailDenyDialog = useDialog<ReportDetail>();
+  const orders = useOrdersData();
 
   const { getReportsApi } = useReportsContext();
+  const getListUsersApi = useFunction(UsersApi.getUsers);
 
   const reports = useMemo(() => {
     return getReportsApi.data || [];
   }, [getReportsApi.data]);
+
+  const users = useMemo(() => {
+    return getListUsersApi.data || [];
+  }, [getListUsersApi.data]);
 
   const handleStatusChange = (event: SelectChangeEvent<string>) => {
     setSelectedStatus(event.target.value as string);
@@ -62,8 +71,14 @@ function ReportList() {
       },
       onClickReply: (data: any) => {
         reportDetailReplyDrawer.handleOpen(data);
-      }
+      },
+      orders: orders.orders,
+      users: users
     });
+  }, [orders, users]);
+
+  useEffect(() => {
+    getListUsersApi.call({});
   }, []);
 
   return (

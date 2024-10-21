@@ -51,7 +51,9 @@ export const SideNav: FC<SideNavProps> = (props) => {
                   className='!text-black !bg-white'
                   LinkComponent={Link}
                   href={
-                    user?.role === 'STUDENT' ? paths.student.order.add : paths.dashboard.order.add
+                    user?.role === 'STUDENT' || firebaseUser?.role === 'STUDENT'
+                      ? paths.student.order.add
+                      : paths.dashboard.order.add
                   }
                 >
                   Thêm đơn hàng
@@ -69,7 +71,7 @@ export const SideNav: FC<SideNavProps> = (props) => {
             <Box className='flex gap-2 items-center'>
               <Avatar src={user?.photoUrl || firebaseUser?.photoUrl || ''} />
               <Stack>
-                {user && (
+                {user && !firebaseUser && (
                   <Typography>
                     {user?.lastName} {user?.firstName}
                   </Typography>
@@ -80,7 +82,7 @@ export const SideNav: FC<SideNavProps> = (props) => {
                   </Typography>
                 )}
 
-                {user && (
+                {user && !firebaseUser && (
                   <Typography className='text-xs opacity-60'>
                     {user?.role === 'STUDENT'
                       ? 'Sinh viên'

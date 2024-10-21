@@ -43,10 +43,10 @@ function ReportList() {
     setDateRange(range);
   };
 
-  const handleResetFilters = () => {
+  const handleResetFilters = useCallback(() => {
     setSelectedStatus('');
     setDateRange({ startDate: null, endDate: null });
-  };
+  }, []);
 
   const filteredReports = useMemo(() => {
     return reports.filter((report) => {
@@ -79,6 +79,7 @@ function ReportList() {
 
   useEffect(() => {
     getListUsersApi.call({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

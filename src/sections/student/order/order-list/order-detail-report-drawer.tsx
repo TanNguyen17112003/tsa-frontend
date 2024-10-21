@@ -4,16 +4,16 @@ import FormInput from 'src/components/ui/FormInput';
 import { Stack } from '@mui/system';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFormik } from 'formik';
-import { styled } from '@mui/material/styles';
 import useFunction from 'src/hooks/use-function';
 import { useAuth } from 'src/hooks/use-auth';
+import { useFirebaseAuth } from 'src/hooks/use-auth';
 import 'dayjs/locale/en-gb';
 import ReportProofComponent from '../../report/report-proof-component';
 import { OrderDetail } from 'src/types/order';
 import { ReportDetail, ReportFormProps, initialReportForm } from 'src/types/report';
-import { request } from 'http';
 import { getCurentUnixTimestamp } from 'src/utils/format-time-currency';
 import { ReportsApi } from 'src/api/reports';
+import { UploadImagesApi } from 'src/api/upload-images';
 
 function OrderDetailReportDrawer({
   open,
@@ -25,30 +25,41 @@ function OrderDetailReportDrawer({
   order?: OrderDetail;
 }) {
   const { user } = useAuth();
+  const { user: firebaseUser } = useFirebaseAuth();
+  const [file, setFile] = useState<File | null>(null);
+
   const handleSubmitReport = useCallback(
     async (values: ReportFormProps) => {
       try {
+        let proof = values.proof;
+        if (file) {
+          const uploadedImage = await UploadImagesApi.postImage(file);
+          proof = uploadedImage.secure_url;
+        }
         const report = await ReportsApi.postReports({
           content: values.content,
-          proof: values.proof,
+          proof: proof,
           orderId: order?.id,
           reportedAt: getCurentUnixTimestamp(),
           reply: '',
           repliedAt: '',
-          studentId: user?.id
+          studentId: user?.id || firebaseUser?.id
         });
       } catch (err) {
         throw err;
       }
     },
-    [order, user]
+    [order, user, file]
   );
+
   const handleSubmitReportHelper = useFunction(handleSubmitReport, {
     successMessage: 'Gửi khiếu nại thành công!'
   });
+
   const formik = useFormik<ReportFormProps>({
     initialValues: initialReportForm,
     onSubmit: async (values) => {
+      await console.log(typeof values.proof);
       const { error } = await handleSubmitReportHelper.call(values);
       if (error) {
         formik.setValues(initialReportForm);
@@ -57,6 +68,14 @@ function OrderDetailReportDrawer({
       onClose();
     }
   });
+
+  const handleProofChange = (event: React.ChangeEvent<HTMLInputElement>, file?: File) => {
+    formik.setFieldValue('proof', event.target.value);
+    if (file) {
+      setFile(file);
+    }
+  };
+
   return (
     <>
       <Drawer
@@ -119,10 +138,7 @@ function OrderDetailReportDrawer({
               />
             </Box>
             <Box display={'flex'} flexDirection={'column'} gap={1}>
-              <ReportProofComponent
-                label='Minh chứng'
-                onChange={(event) => formik.setFieldValue('proof', event.target.value)}
-              />
+              <ReportProofComponent label='Minh chứng' onChange={handleProofChange} />
             </Box>
           </Stack>
         </form>

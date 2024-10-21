@@ -87,6 +87,7 @@
     "docx": "^8.5.0",
     "docx-preview": "^0.3.0",
     "faker": "^6.6.6",
+    "firebase": "^10.14.1",
     "formik": "^2.4.5",
     "i18next": "23.8.1",
     "iconsax-react": "^0.0.8",

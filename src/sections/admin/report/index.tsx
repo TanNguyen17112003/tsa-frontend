@@ -43,10 +43,10 @@ function ReportList() {
     setDateRange(range);
   };
 
-  const handleResetFilters = () => {
+  const handleResetFilters = useCallback(() => {
     setSelectedStatus('');
     setDateRange({ startDate: null, endDate: null });
-  };
+  }, []);
 
   const filteredReports = useMemo(() => {
     return reports.filter((report) => {

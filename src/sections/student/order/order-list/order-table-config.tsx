@@ -94,12 +94,20 @@ const getOrderTableConfigs = ({
             ? 'Đã giao'
             : data.latestStatus === 'PENDING'
               ? 'Chờ xử lý'
-              : 'Đã hủy'
+              : data.latestStatus === 'CANCELLED'
+                ? 'Đã hủy'
+                : data.latestStatus === 'REJECTED'
+                  ? 'Đã từ chối'
+                  : data.latestStatus === 'IN_TRANSPORT'
+                    ? 'Đang vận chuyển'
+                    : data.latestStatus === 'ACCEPTED'
+                      ? 'Đã xác nhận'
+                      : 'Không xác định'
         }
         color={
-          data.latestStatus === 'DELIVERED'
+          data.latestStatus === 'DELIVERED' || data.latestStatus === 'ACCEPTED'
             ? 'success'
-            : data.latestStatus === 'PENDING'
+            : data.latestStatus === 'PENDING' || data.latestStatus === 'IN_TRANSPORT'
               ? 'warning'
               : 'error'
         }

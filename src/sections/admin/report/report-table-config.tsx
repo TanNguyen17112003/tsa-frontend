@@ -3,27 +3,38 @@ import { CustomTableConfig } from 'src/components/custom-table';
 import { ArrowForward, CloseCircle } from 'iconsax-react';
 import { formatDate, formatUnixTimestamp } from 'src/utils/format-time-currency';
 import { ReportDetail } from 'src/types/report';
+import { OrderDetail } from 'src/types/order';
+import { UserDetail } from 'src/types/user';
 
 const getReportTableConfig = ({
   onClickDeny,
-  onClickReply
+  onClickReply,
+  orders,
+  users
 }: {
   onClickDeny: (data: ReportDetail) => void;
   onClickReply: (data: ReportDetail) => void;
+  orders: OrderDetail[];
+  users: UserDetail[];
 }): CustomTableConfig<ReportDetail['id'], ReportDetail>[] => [
   {
     key: 'checkCode',
     headerLabel: 'Mã đơn hàng',
     type: 'string',
-    renderCell: (data) => <Typography>#{data.orderCode}</Typography>
+    renderCell: (data) => (
+      <Typography>#{orders?.find((order) => order.id === data.orderId)?.checkCode}</Typography>
+    )
   },
   {
     key: 'studentName',
     headerLabel: 'Người khiếu nại',
     type: 'string',
     renderCell: (data) => {
-      return data.studentId ? (
-        <Typography>{data.studentId}</Typography>
+      const student = users?.find((user) => user.id === data.studentId);
+      return student ? (
+        <Typography>
+          {student?.lastName} {student?.firstName}
+        </Typography>
       ) : (
         <Typography>Chưa có thông tin</Typography>
       );

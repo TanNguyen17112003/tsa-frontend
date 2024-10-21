@@ -75,6 +75,7 @@ const OrderNotPaid: React.FC<OrderNotPaidProps> = ({ orders }) => {
   return (
     <Box className='flex flex-col min-h-screen bg-white px-6 py-4 text-black'>
       <OrderFilter numberOfOrders={result.length} />
+      {/* <>{JSON.stringify(orders[0])}</> */}
       <Box sx={{ flex: 1 }}>
         <CustomTable
           rows={result}

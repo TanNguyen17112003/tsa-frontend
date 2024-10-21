@@ -16,7 +16,7 @@ const StudentDetailInformation: React.FC<StudentDetailInformationProps> = ({ inf
       <Stack direction='column' spacing={2} className='p-4 mt-5' alignItems={'center'}>
         <Stack>
           <Typography variant='h5' align='center'>
-            {info.lastName + ' ' + info.firstName}
+            {info?.lastName + ' ' + info?.firstName}
           </Typography>
           <Typography variant='body2' align='center' className='text-green-400' fontWeight={'bold'}>
             Vai trò: Sinh viên
@@ -26,11 +26,11 @@ const StudentDetailInformation: React.FC<StudentDetailInformationProps> = ({ inf
           <Typography variant='subtitle2' className='text-center text-green-400'>
             SĐT:
           </Typography>
-          <Typography variant='subtitle2'>{info.phoneNumber}</Typography>
+          <Typography variant='subtitle2'>{info?.phoneNumber}</Typography>
           <Typography variant='subtitle2' className='text-center text-green-400'>
             Địa chỉ:
           </Typography>
-          <Typography variant='subtitle2'>{`Phòng ${info.room}, Tòa ${info.building}, KTX Khu ${info.dormitory}`}</Typography>
+          <Typography variant='subtitle2'>{`Phòng ${info?.room}, Tòa ${info?.building}, KTX Khu ${info?.dormitory}`}</Typography>
         </Box>
         <Stack alignItems={'center'} className='cursor-pointer'>
           <Messages1 size={32} />

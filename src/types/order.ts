@@ -8,7 +8,7 @@ export type OrderStatus =
   | 'PENDING'
   | 'REJECTED'
   | 'IN_TRANSPORT'
-  | 'REJECTED';
+  | 'ACCEPTED';
 
 interface OrderStatusHistory {
   id: string;

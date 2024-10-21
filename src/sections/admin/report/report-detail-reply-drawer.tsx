@@ -6,9 +6,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFormik } from 'formik';
 import useFunction from 'src/hooks/use-function';
 import { useAuth } from 'src/hooks/use-auth';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { useFirebaseAuth } from 'src/hooks/use-auth';
 import dayjs, { Dayjs } from 'dayjs';
 import 'dayjs/locale/en-gb';
 import { ReportDetail, ReportFormProps, initialReportForm } from 'src/types/report';
@@ -26,6 +24,7 @@ function ReportDetailReplyDrawer({
   report?: ReportDetail;
 }) {
   const { user } = useAuth();
+  const { user: firebaseUser } = useFirebaseAuth();
   const { updateReport } = useReportsContext();
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(
     dayjs(formatUnixTimestamp(report?.reportedAt as string))
@@ -39,14 +38,14 @@ function ReportDetailReplyDrawer({
           reportedAt: getCurentUnixTimestamp(),
           reply: '',
           repliedAt: '',
-          studentId: user?.id
+          studentId: user?.id || firebaseUser?.id
         };
         await updateReport(updatedData, report?.id as string);
       } catch (error) {
         throw error;
       }
     },
-    [report?.id, user?.id]
+    [report?.id, user?.id, firebaseUser?.id]
   );
   const handleSubmitReportHelper = useFunction(handleSubmitReport, {
     successMessage: 'Cập nhật khiếu nại thành công!'

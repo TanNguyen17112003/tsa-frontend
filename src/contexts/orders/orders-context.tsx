@@ -10,7 +10,7 @@ import { OrderFormProps } from 'src/api/orders';
 interface ContextValue {
   getOrdersApi: UseFunctionReturnType<FormData, OrderDetail[]>;
   getOrderById: (id: Order['id']) => Promise<OrderDetail>;
-  createOrder: (requests: OrderFormProps) => Promise<void>;
+  createOrder: (requests: OrderFormProps[]) => Promise<void>;
   updateOrder: (Order: Partial<OrderDetail>, orderId: string) => Promise<void>;
   updateOrderStatus: (status: OrderStatus, id: string) => Promise<void>;
   deleteOrder: (ids: Order['id']) => Promise<void>;
@@ -42,10 +42,15 @@ const OrdersProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const createOrder = useCallback(
-    async (request: OrderFormProps) => {
+    async (requests: OrderFormProps[]) => {
       try {
-        const newOrder = await OrdersApi.postOrders(request);
-        getOrdersApi.setData([...(getOrdersApi.data || []), newOrder.data]);
+        const newOrders = await Promise.all(
+          requests.map((request) => OrdersApi.postOrders(request))
+        );
+        getOrdersApi.setData([
+          ...(getOrdersApi.data || []),
+          ...newOrders.map((order) => order.data)
+        ]);
       } catch (error) {
         throw error;
       }

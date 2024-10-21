@@ -6,13 +6,14 @@ import { useRouter } from 'next/router';
 import { useState, useCallback } from 'react';
 import useAppSnackbar from 'src/hooks/use-app-snackbar';
 import { useAuth } from 'src/hooks/use-auth';
+import { useFirebaseAuth } from 'src/hooks/use-auth';
 import useFunction from 'src/hooks/use-function';
 import { paths } from 'src/paths';
 import { OrderForm } from './order-form';
 import OrderUploadSection from './order-upload-section';
 import { OrderFormProps } from 'src/api/orders';
 import { useOrdersContext } from 'src/contexts/orders/orders-context';
-import { adminInitialOrderForm } from 'src/types/order';
+import { initialOrderForm } from 'src/types/order';
 
 const OrderAddPage = () => {
   const [resetUploadSection, setResetUploadSection] = useState('');
@@ -20,11 +21,12 @@ const OrderAddPage = () => {
   const [orderList, setOrderList] = useState<OrderFormProps[]>([]);
   const router = useRouter();
   const { showSnackbarError, showSnackbarSuccess } = useAppSnackbar();
-  const { createOrder } = useOrdersContext();
+  const { getOrdersApi, createOrder } = useOrdersContext();
   const { user } = useAuth();
+  const { user: firebaseUser } = useFirebaseAuth();
 
   const formik = useFormik<OrderFormProps>({
-    initialValues: adminInitialOrderForm,
+    initialValues: initialOrderForm,
     onSubmit: async (values) => {
       try {
         await handleSubmitOrderHelper.call(values);
@@ -38,25 +40,35 @@ const OrderAddPage = () => {
     async (values: OrderFormProps) => {
       try {
         if (orderList && orderList.length > 0) {
-          const createOrderPromises = orderList.map((order) =>
-            createOrder({
+          await createOrder(
+            orderList.map((order) => ({
               ...order,
-              adminId: user?.id
-            })
+              studentId: user?.id || firebaseUser?.id
+            }))
           );
-          await Promise.all(createOrderPromises);
         } else {
-          await createOrder({
-            ...values,
-            adminId: user?.id
-          });
+          await createOrder([
+            {
+              ...values,
+              studentId: user?.id || firebaseUser?.id
+            }
+          ]);
         }
         showSnackbarSuccess('Tạo đơn hàng thành công!');
+        router.push(paths.student.order.index); // Navigate to the order list page after successful creation
       } catch (error) {
         showSnackbarError('Có lỗi xảy ra');
       }
     },
-    [createOrder, showSnackbarError, showSnackbarSuccess, orderList]
+    [
+      createOrder,
+      showSnackbarError,
+      showSnackbarSuccess,
+      orderList,
+      user?.id,
+      firebaseUser?.id,
+      router
+    ]
   );
 
   const handleSubmitOrderHelper = useFunction(handleSubmitOrder);
@@ -72,7 +84,7 @@ const OrderAddPage = () => {
               startIcon={<ArrowBack />}
               color='inherit'
               onClick={() => {
-                router.push(paths.dashboard.order.index);
+                router.push(paths.student.order.index);
               }}
             >
               Quay lại

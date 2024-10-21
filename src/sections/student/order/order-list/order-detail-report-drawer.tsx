@@ -6,6 +6,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFormik } from 'formik';
 import useFunction from 'src/hooks/use-function';
 import { useAuth } from 'src/hooks/use-auth';
+import { useFirebaseAuth } from 'src/hooks/use-auth';
 import 'dayjs/locale/en-gb';
 import ReportProofComponent from '../../report/report-proof-component';
 import { OrderDetail } from 'src/types/order';
@@ -24,6 +25,7 @@ function OrderDetailReportDrawer({
   order?: OrderDetail;
 }) {
   const { user } = useAuth();
+  const { user: firebaseUser } = useFirebaseAuth();
   const [file, setFile] = useState<File | null>(null);
 
   const handleSubmitReport = useCallback(
@@ -41,7 +43,7 @@ function OrderDetailReportDrawer({
           reportedAt: getCurentUnixTimestamp(),
           reply: '',
           repliedAt: '',
-          studentId: user?.id
+          studentId: user?.id || firebaseUser?.id
         });
       } catch (err) {
         throw err;

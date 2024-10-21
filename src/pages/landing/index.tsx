@@ -1,71 +1,100 @@
-import Image from 'next/image';
-import logo from '../../../public/ui/logo.png';
-import landingLogo1 from '../../../public/ui/landing-logo-1.png';
-import food from '../../../public/ui/food.png';
-import technology from '../../../public/ui/technology.png';
-import medicine from '../../../public/ui/medicine.png';
-import { Input } from '@/components/shadcn/ui/input';
-import { Button } from '@/components/shadcn/ui/button';
-import CommonCard from '@/components/CommonCard';
-import AuthButton from './authButton';
+import React, { useEffect, useState, Suspense } from 'react';
+import { Box } from '@mui/material';
+import { LandingHeader } from 'src/sections/landing/LandingHeader';
+import { LandingFAQs } from 'src/sections/landing/LandingFAQs';
+import {
+  LandingFooter,
+  LandingAboutUs,
+  LandingContact,
+  LandingFeatures,
+  LandingFlow,
+  LandingIntroduction
+} from '@sections';
+
 const LandingPage = () => {
+  const [visibleSections, setVisibleSections] = useState<string[]>([]);
+
+  useEffect(() => {
+    const handleScroll = (event: WheelEvent) => {
+      event.preventDefault();
+      const sections = document.querySelectorAll('.section');
+      const currentSectionIndex = Array.from(sections).findIndex((section) => {
+        const rect = section.getBoundingClientRect();
+        return rect.top >= 0 && rect.top < window.innerHeight / 2;
+      });
+
+      if (event.deltaY > 0 && currentSectionIndex < sections.length - 1) {
+        sections[currentSectionIndex + 1].scrollIntoView({ behavior: 'smooth' });
+        history.pushState(null, '', `/#${sections[currentSectionIndex + 1].id}`);
+      } else if (event.deltaY < 0 && currentSectionIndex > 0) {
+        sections[currentSectionIndex - 1].scrollIntoView({ behavior: 'smooth' });
+        history.pushState(null, '', `/#${sections[currentSectionIndex - 1].id}`);
+      }
+    };
+
+    window.addEventListener('wheel', handleScroll, { passive: false });
+
+    return () => {
+      window.removeEventListener('wheel', handleScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setVisibleSections((prev) => [...new Set([...prev, entry.target.id])]);
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    const sections = document.querySelectorAll('.section');
+    sections.forEach((section) => observer.observe(section));
+
+    return () => {
+      sections.forEach((section) => observer.unobserve(section));
+    };
+  }, []);
+
   return (
-    <div className='bg-background h-screen w-screen text-black'>
-      <nav className='text-white p-6 flex items-center pb-0 '>
-        <div className='flex items-center gap-x-2 basis-1/3'>
-          <Image src={logo} alt='logo' width={100} />
-          <span className='text-4xl font-bold text-primary'>TSA</span>
-        </div>
-        <div className='flex gap-x-10 items-center text-black basis-2/4 '>
-          <span className='text-2xl font-semibold'>FAQ</span>
-          <span className='text-2xl font-semibold'>Liên hệ</span>
-          <span className='text-2xl font-semibold'>Về chúng tôi</span>
-          <Input
-            className='border-black max-w-[200px] rounded-xl h-[48px] px-4'
-            placeholder='Tìm kiếm đơn hàng'
-          />
-        </div>
-        <div className='text-lg font-semibold text-black ml-8 '>
-          <AuthButton />
-        </div>
-      </nav>
-      <main className='flex items-center p-8 gap-x-4'>
-        <div className='basis-1/2 flex flex-col gap-y-4'>
-          <div className='flex flex-col gap-y-2 text-5xl font-semibold uppercases'>
-            <span className='text-[#63AC5E]'>GIAO HÀNG</span>
-            <span>NHANH CHÓNG</span>
-            <span>ĐẾN TẬN NƠI CỦA BẠN</span>
-          </div>
-          <div className='font-light text-xl '>
-            Dịch vụ chuyển phát chúng tôi đa dạng các mặt hàng từ đò ăn, món hàng công nghệ, đồ gia
-            dụng hay các đồ mỹ phẩm
-          </div>
-          <Button className='h-12' variant={'secondary'}>
-            Đặt hàng ngay
-          </Button>
-          <div className='flex items-center gap-x-6 px-4 select-none'>
-            <CommonCard title='Đồ ăn'>
-              <Image src={food} alt='food' width={60} quality={100} />
-            </CommonCard>
-            <CommonCard title='Công nghệ'>
-              <Image src={technology} alt='technology' width={60} quality={100} />
-            </CommonCard>
-            <CommonCard title='Dược phẩm'>
-              <Image src={medicine} alt='medicine' width={60} quality={100} />
-            </CommonCard>
-          </div>
-        </div>
-        <div className='basis-1/2'>
-          <Image
-            src={landingLogo1}
-            alt='landing-logo-1'
-            className='w-full h-full'
-            quality={100}
-            priority
-          />
-        </div>
-      </main>
-    </div>
+    <Box className='landing'>
+      <LandingHeader />
+      <Box id='introduction' className='section' sx={{ height: '100vh' }}>
+        <Suspense fallback={<div>Loading...</div>}>
+          {visibleSections.includes('introduction') && <LandingIntroduction />}
+        </Suspense>
+      </Box>
+      <Box id='about-us' className='section' sx={{ height: '100vh' }}>
+        <Suspense fallback={<div>Loading...</div>}>
+          {visibleSections.includes('about-us') && <LandingAboutUs />}
+        </Suspense>
+      </Box>
+      <Box id='flow' className='section' sx={{ height: '100vh' }}>
+        <Suspense fallback={<div>Loading...</div>}>
+          {visibleSections.includes('flow') && <LandingFlow />}
+        </Suspense>
+      </Box>
+      <Box id='features' className='section' sx={{ height: '100vh' }}>
+        <Suspense fallback={<div>Loading...</div>}>
+          {visibleSections.includes('features') && <LandingFeatures />}
+        </Suspense>
+      </Box>
+      <Box id='faqs' className='section' sx={{ height: '100vh' }}>
+        <Suspense fallback={<div>Loading...</div>}>
+          {visibleSections.includes('faqs') && <LandingFAQs />}
+        </Suspense>
+      </Box>
+      <Box id='contact' className='section' sx={{ height: '100vh' }}>
+        <Suspense fallback={<div>Loading...</div>}>
+          {visibleSections.includes('contact') && <LandingContact />}
+        </Suspense>
+        <LandingFooter />
+      </Box>
+    </Box>
   );
 };
+
 export default LandingPage;

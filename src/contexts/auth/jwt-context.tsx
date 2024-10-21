@@ -1,12 +1,13 @@
-import type { FC, ReactNode } from "react";
-import { createContext, useCallback, useEffect, useReducer } from "react";
-import PropTypes from "prop-types";
-import { UsersApi } from "src/api/users";
-import type { UserDetail } from "src/types/user";
-import { Issuer } from "src/utils/auth";
-import CookieHelper, { CookieKeys } from "src/utils/cookie-helper";
-import { useRouter } from "next/router";
-import { paths } from "src/paths";
+import type { FC, ReactNode } from 'react';
+import { createContext, useCallback, useEffect, useReducer } from 'react';
+import PropTypes from 'prop-types';
+import { UsersApi } from 'src/api/users';
+import type { UserDetail } from 'src/types/user';
+import { Issuer } from 'src/utils/auth';
+import CookieHelper, { CookieKeys } from 'src/utils/cookie-helper';
+import { useRouter } from 'next/router';
+import { paths } from 'src/paths';
+import { SignUpRequest, InitialSignUpRequest } from 'src/api/users';
 
 interface State {
   isInitialized: boolean;
@@ -15,10 +16,10 @@ interface State {
 }
 
 enum ActionType {
-  INITIALIZE = "INITIALIZE",
-  SIGN_IN = "SIGN_IN",
-  SIGN_UP = "SIGN_UP",
-  SIGN_OUT = "SIGN_OUT",
+  INITIALIZE = 'INITIALIZE',
+  SIGN_IN = 'SIGN_IN',
+  SIGN_UP = 'SIGN_UP',
+  SIGN_OUT = 'SIGN_OUT'
 }
 
 type InitializeAction = {
@@ -54,7 +55,7 @@ type Handler = (state: State, action: any) => State;
 const initialState: State = {
   isAuthenticated: false,
   isInitialized: false,
-  user: null,
+  user: null
 };
 
 const handlers: Record<ActionType, Handler> = {
@@ -65,7 +66,7 @@ const handlers: Record<ActionType, Handler> = {
       ...state,
       isAuthenticated,
       isInitialized: true,
-      user,
+      user
     };
   },
   SIGN_IN: (state: State, action: SignInAction): State => {
@@ -74,7 +75,7 @@ const handlers: Record<ActionType, Handler> = {
     return {
       ...state,
       isAuthenticated: true,
-      user,
+      user
     };
   },
   SIGN_UP: (state: State, action: SignUpAction): State => {
@@ -83,14 +84,14 @@ const handlers: Record<ActionType, Handler> = {
     return {
       ...state,
       isAuthenticated: true,
-      user,
+      user
     };
   },
   SIGN_OUT: (state: State): State => ({
     ...state,
     isAuthenticated: false,
-    user: null,
-  }),
+    user: null
+  })
 };
 
 const reducer = (state: State, action: Action): State =>
@@ -99,13 +100,8 @@ const reducer = (state: State, action: Action): State =>
 export interface AuthContextType extends State {
   issuer: Issuer.JWT;
   signIn: (email: string, password: string) => Promise<UserDetail | undefined>;
-  signUp: (
-    email: string,
-    username: string,
-    full_name: string,
-    password: string,
-    confirm_password: string
-  ) => Promise<void>;
+  initiateSignUp: (request: InitialSignUpRequest) => Promise<void>;
+  completeSignUp: (request: SignUpRequest) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -113,8 +109,9 @@ export const AuthContext = createContext<AuthContextType>({
   ...initialState,
   issuer: Issuer.JWT,
   signIn: () => Promise.resolve(undefined),
-  signUp: () => Promise.resolve(),
-  signOut: () => Promise.resolve(),
+  initiateSignUp: () => Promise.resolve(),
+  completeSignUp: () => Promise.resolve(),
+  signOut: () => Promise.resolve()
 });
 
 interface AuthProviderProps {
@@ -129,33 +126,47 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
   const initialize = useCallback(async (): Promise<void> => {
     try {
       const accessToken = CookieHelper.getItem(CookieKeys.TOKEN);
-      console.log("accessToken", accessToken);
-
       if (accessToken) {
         let user: UserDetail | undefined = undefined;
         try {
-          user = await UsersApi.me();
+          const partialUser = await UsersApi.me();
+          if (
+            partialUser &&
+            partialUser.id &&
+            partialUser.firstName &&
+            partialUser.lastName &&
+            partialUser.role
+          ) {
+            user = partialUser as UserDetail;
+          } else {
+            throw new Error('Incomplete user data');
+          }
         } catch {}
         if (!user) {
-          user = await JSON.parse(localStorage.getItem("user_data") || "{}");
-          if (!user || !user.id || !user.role || !user.full_name) {
-            throw new Error("Ger user failed.");
+          user = await JSON.parse(localStorage.getItem('user_data') || '{}');
+          if (!user || !user.id || !user.role || !user.firstName || !user.lastName) {
+            throw new Error('Get user failed.');
           }
+        }
+        if (user.role === 'STUDENT') {
+          router.replace(paths.student.order.index);
+        } else if (user.role === 'ADMIN') {
+          router.replace(paths.dashboard.index);
         }
         dispatch({
           type: ActionType.INITIALIZE,
           payload: {
             isAuthenticated: true,
-            user: user || null,
-          },
+            user: user || null
+          }
         });
       } else {
         dispatch({
           type: ActionType.INITIALIZE,
           payload: {
             isAuthenticated: false,
-            user: null,
-          },
+            user: null
+          }
         });
       }
     } catch (err) {
@@ -164,8 +175,8 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
         type: ActionType.INITIALIZE,
         payload: {
           isAuthenticated: false,
-          user: null,
-        },
+          user: null
+        }
       });
     }
   }, [dispatch]);
@@ -179,50 +190,58 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
   );
 
   const signIn = useCallback(
-    async (username: string, password: string): Promise<UserDetail> => {
-      const response = await UsersApi.signIn({ username, password });
-
-      CookieHelper.setItem(CookieKeys.TOKEN, response.token);
-      CookieHelper.setItem("user_data", JSON.stringify(response));
-
-      dispatch({
-        type: ActionType.SIGN_IN,
-        payload: {
-          user: response,
-        },
-      });
-      return response;
+    async (email: string, password: string): Promise<UserDetail | undefined> => {
+      try {
+        const response = await UsersApi.signIn({ email, password });
+        if (response && response.accessToken && response.userInfo) {
+          CookieHelper.setItem(CookieKeys.TOKEN, response.accessToken);
+          CookieHelper.setItem('user_data', JSON.stringify(response.userInfo));
+          dispatch({
+            type: ActionType.SIGN_IN,
+            payload: {
+              user: response.userInfo
+            }
+          });
+          return response.userInfo;
+        } else {
+          console.error('Invalid signIn response:', response);
+          return undefined;
+        }
+      } catch (error) {
+        console.error('SignIn error:', error);
+        return undefined;
+      }
     },
     [dispatch]
   );
 
-  const signUp = useCallback(
-    async (
-      email: string,
-      username: string,
-      full_name: string,
-      password: string,
-      confirm_password: string
-    ): Promise<void> => {
-      await UsersApi.signUp({
-        email,
-        username,
-        password,
-        full_name,
-        confirm_password,
+  const initiateSignUp = useCallback(async (request: InitialSignUpRequest): Promise<void> => {
+    try {
+      await UsersApi.initiateSignUp(request);
+    } catch (error) {
+      throw error;
+    }
+  }, []);
+
+  const completeSignUp = useCallback(
+    async (request: SignUpRequest): Promise<void> => {
+      const response = await UsersApi.completeSignUp(request);
+      dispatch({
+        type: ActionType.SIGN_UP,
+        payload: {
+          user: {
+            id: response.id,
+            firstName: response.firstName,
+            lastName: response.lastName,
+            phoneNumber: response.phoneNumber,
+            role: 'STUDENT',
+            createdAt: response.createdAt,
+            email: response.email
+          }
+        }
       });
-      // const user = await UsersApi.me({ accessToken });
-
-      // sessionStorage.setItem(STORAGE_KEY, accessToken);
-
-      // dispatch({
-      //   type: ActionType.SIGN_UP,
-      //   payload: {
-      //     user,
-      //   },
-      // });
     },
-    []
+    [dispatch]
   );
 
   const signOut = useCallback(async (): Promise<void> => {
@@ -237,8 +256,9 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
         ...state,
         issuer: Issuer.JWT,
         signIn,
-        signUp,
-        signOut,
+        initiateSignUp,
+        completeSignUp,
+        signOut
       }}
     >
       {children}
@@ -247,7 +267,7 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
 };
 
 AuthProvider.propTypes = {
-  children: PropTypes.any.isRequired,
+  children: PropTypes.any.isRequired
 };
 
 export const AuthConsumer = AuthContext.Consumer;

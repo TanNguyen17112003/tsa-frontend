@@ -79,6 +79,7 @@ function ReportList() {
 
   useEffect(() => {
     getListUsersApi.call({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

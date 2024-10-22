@@ -44,7 +44,8 @@ const OrderPaid: React.FC<OrderPaidProps> = ({ orders }) => {
       },
       onClickDelete: (data: OrderDetail) => {
         orderDetailDeleteDialog.handleOpen(data);
-      }
+      },
+      isPaid: true
     });
   }, [handleGoReport, orderDetailReportDrawer]);
 

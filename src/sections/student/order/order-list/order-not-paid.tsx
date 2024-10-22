@@ -12,6 +12,7 @@ import OrderDetailDeleteDialog from './order-detail-delete-dialog';
 import { useOrdersContext } from 'src/contexts/orders/orders-context';
 import { formatUnixTimestamp } from 'src/utils/format-time-currency';
 import OrderDetailEditDrawer from './order-detail-edit-drawer';
+import { PaymentsApi } from 'src/api/payment';
 
 interface OrderNotPaidProps {
   orders: OrderDetail[];
@@ -23,7 +24,7 @@ const OrderNotPaid: React.FC<OrderNotPaidProps> = ({ orders }) => {
   const orderDetailDeleteDialog = useDialog<OrderDetail>();
   const orderDetailEditDrawer = useDrawer<OrderDetail>();
 
-  const { deleteOrder } = useOrdersContext();
+  const { deleteOrder, updateOrder } = useOrdersContext();
 
   const handleGoReport = useCallback(
     (data: OrderDetail) => {
@@ -35,6 +36,52 @@ const OrderNotPaid: React.FC<OrderNotPaidProps> = ({ orders }) => {
     [router]
   );
 
+  const handlePayment = useCallback(async (order: OrderDetail) => {
+    try {
+      if (order.paymentMethod === 'MOMO') {
+        const paymentResponse = await PaymentsApi.postMomoPayment({
+          orderId: order.id,
+          amount: order.shippingFee?.toString() || '1000',
+          orderInfo: 'Thanh toán đơn hàng ' + order.checkCode + ' qua MOMO',
+          returnUrl: `${window.location.origin}/student/orders`,
+          notifyUrl: `${window.location.origin}/api/payment/momo/notify`,
+          extraData: order.id
+        });
+        if (paymentResponse && paymentResponse.payUrl) {
+          window.location.href = paymentResponse.payUrl;
+        }
+        updateOrder(
+          {
+            ...order,
+            isPaid: true
+          },
+          order.id
+        );
+      } else if (order.paymentMethod === 'CREDIT') {
+        const paymentResponse = await PaymentsApi.postPayOSPayment({
+          orderId: order.id,
+          amount: order.shippingFee || 2000,
+          description: 'Thanh toán đơn hàng',
+          returnUrl: `${window.location.origin}/student/order`,
+          cancelUrl: `${window.location.origin}/student/order`,
+          extraData: order.id
+        });
+        if (paymentResponse && paymentResponse.checkoutUrl) {
+          window.location.href = paymentResponse.checkoutUrl;
+        }
+        updateOrder(
+          {
+            ...order,
+            isPaid: true
+          },
+          order.id
+        );
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+    }
+  }, []);
+
   const orderTableConfig = React.useMemo(() => {
     return getOrderTableConfigs({
       onClickReport: (data: OrderDetail) => {
@@ -45,7 +92,11 @@ const OrderNotPaid: React.FC<OrderNotPaidProps> = ({ orders }) => {
       },
       onClickDelete: (data: OrderDetail) => {
         orderDetailDeleteDialog.handleOpen(data);
-      }
+      },
+      onClickPayment: (data: OrderDetail) => {
+        handlePayment(data);
+      },
+      isPaid: false
     });
   }, [handleGoReport, orderDetailReportDrawer, orderDetailDeleteDialog, orderDetailEditDrawer]);
 
@@ -75,7 +126,6 @@ const OrderNotPaid: React.FC<OrderNotPaidProps> = ({ orders }) => {
   return (
     <Box className='flex flex-col min-h-screen bg-white px-6 py-4 text-black'>
       <OrderFilter numberOfOrders={result.length} />
-      {/* <>{JSON.stringify(orders[0])}</> */}
       <Box sx={{ flex: 1 }}>
         <CustomTable
           rows={result}

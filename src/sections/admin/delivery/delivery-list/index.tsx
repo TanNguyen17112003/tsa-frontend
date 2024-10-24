@@ -75,6 +75,7 @@ function DeliveryList() {
 
   return (
     <Box className='px-6 text-black my-5'>
+      {/* <>{JSON.stringify(filteredDeliveries)}</> */}
       <DeliveryFilter
         selectedStatus={selectedStatus}
         dateRange={dateRange}

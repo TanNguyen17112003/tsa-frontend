@@ -4,11 +4,6 @@ import { Message } from 'iconsax-react';
 import avatarPerson from 'public/ui/person.jpg';
 import { OrderDetail } from 'src/types/order';
 
-const staffInfo = {
-  'Họ và tên': 'Nguyễn Hoàng Duy Tân',
-  'Chức vụ': 'Nhân viên giao hàng'
-};
-
 interface OrderStaffProps {
   order: OrderDetail;
 }
@@ -19,22 +14,15 @@ const OrderStaff: React.FC<OrderStaffProps> = ({ order }) => {
       <Typography variant='h6'>Nhân viên phụ trách</Typography>
       <Card className='flex items-center gap-5 py-2 px-3'>
         <Stack alignItems={'center'} spacing={1}>
-          <Avatar alt={staffInfo['Họ và tên']} src={avatarPerson.src} className='w-20 h-20' />
+          <Avatar alt={'Ảnh chân dung'} src={avatarPerson.src} className='w-20 h-20' />
           <Button variant='contained' color='success' startIcon={<Message size={24} />}>
             Nhắn tin
           </Button>
         </Stack>
         <Stack spacing={2}>
-          {Object.entries(staffInfo).map(([key, value], index) => (
-            <Stack key={index} direction='row' justifyContent='space-between' gap={2}>
-              <Typography variant='subtitle1' fontWeight={'bold'}>
-                {key}:
-              </Typography>
-              <Typography variant='subtitle1' fontWeight={'regular'}>
-                {value}
-              </Typography>
-            </Stack>
-          ))}
+          <Typography>
+            Họ và tên: {order.lastName} {order.firstName}
+          </Typography>
         </Stack>
       </Card>
     </Stack>

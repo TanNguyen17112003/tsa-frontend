@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Card, Typography, Stack, Grid, Box, Button } from '@mui/material';
 import {
   Timeline,
@@ -10,11 +10,14 @@ import {
 } from '@mui/lab';
 import { Box1, Truck, Routing2, Star, Warning2 } from 'iconsax-react';
 import { OrderDetail } from 'src/types/order';
+import { orderStatusIconList } from 'src/types/order';
+import { formatDate, formatUnixTimestamp } from 'src/utils/format-time-currency';
 
 interface progressTimeProps {
   title: string;
   icon: React.ReactNode;
   time: string;
+  color: string;
 }
 
 interface OrderProgressProps {
@@ -22,23 +25,21 @@ interface OrderProgressProps {
 }
 
 const OrderProgress: React.FC<OrderProgressProps> = ({ order }) => {
-  const progressTimeList: progressTimeProps[] = [
-    {
-      title: 'Nhập kho',
-      icon: <Truck size={24} />,
-      time: '10:00 12/10/2021'
-    },
-    {
-      title: 'Bắt đầu giao',
-      icon: <Routing2 size={24} />,
-      time: '12:00 12/10/2021'
-    },
-    {
-      title: 'Hoàn tất',
-      icon: <Box1 size={24} />,
-      time: '14:00 12/10/2021'
-    }
-  ];
+  const progressTimeList: progressTimeProps[] = useMemo(() => {
+    const progressTimeList: progressTimeProps[] = [];
+    order.historyTime?.forEach((historyTime) => {
+      const status = orderStatusIconList.find((status) => status.status === historyTime.status);
+      if (status) {
+        progressTimeList.push({
+          title: status.title,
+          icon: status.icon,
+          time: historyTime.time,
+          color: status.color
+        });
+      }
+    });
+    return progressTimeList;
+  }, [order.historyTime, orderStatusIconList]);
 
   return (
     <Stack spacing={2}>
@@ -48,12 +49,14 @@ const OrderProgress: React.FC<OrderProgressProps> = ({ order }) => {
           <Grid item xs={8}>
             <Timeline position='left' className='items-start'>
               {progressTimeList.map((progressTime, index) => (
-                <TimelineItem key={index}>
+                <TimelineItem key={index} className='flex items-center'>
                   <TimelineContent className='flex items-center w-full whitespace-nowrap'>
                     <Typography variant='h6'>{progressTime.title}</Typography>
                   </TimelineContent>
                   <TimelineSeparator>
-                    <TimelineDot color='success'>{progressTime.icon}</TimelineDot>
+                    <TimelineDot sx={{ bgcolor: progressTime.color }}>
+                      {progressTime.icon}
+                    </TimelineDot>
                     {index !== progressTimeList.length - 1 && <TimelineConnector />}
                   </TimelineSeparator>
                 </TimelineItem>
@@ -65,7 +68,7 @@ const OrderProgress: React.FC<OrderProgressProps> = ({ order }) => {
               {progressTimeList.map((progressTime, index) => (
                 <Box key={index} className='flex items-center h-full'>
                   <Typography variant='body2' color='error' fontWeight={'bold'}>
-                    {progressTime.time}
+                    {formatDate(formatUnixTimestamp(progressTime.time))}
                   </Typography>
                 </Box>
               ))}

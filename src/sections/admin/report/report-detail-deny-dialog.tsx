@@ -19,10 +19,10 @@ function ReportDetailDenyDialog({
   ...dialogProps
 }: DialogProps & {
   report: ReportDetail;
-  onConfirm?: () => Promise<void>;
+  onConfirm?: () => Promise<any>;
 }) {
   const onConfirmHelper = useFunction(onConfirm!, {
-    successMessage: 'Từ chối khiếu nại thành công!'
+    successMessage: 'Xóa khiếu nại thành công!'
   });
 
   return (
@@ -36,7 +36,7 @@ function ReportDetailDenyDialog({
             gap: 2
           }}
         >
-          <Typography variant='h6'>{'Từ chối khiếu nại #' + report?.id + ' ?'}</Typography>
+          <Typography variant='h6'>{'Xóa khiếu nại #' + report?.id + ' ?'}</Typography>
         </Box>
       </DialogTitle>
 
@@ -58,7 +58,7 @@ function ReportDetailDenyDialog({
             await onConfirmHelper.call({});
           }}
         >
-          Từ chối
+          Xóa
         </Button>
       </DialogActions>
     </Dialog>

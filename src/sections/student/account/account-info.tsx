@@ -78,21 +78,21 @@ function ProfileSection() {
               <AccountInfoEditField
                 label='Kí túc xá'
                 type='select'
-                value={user?.dormitory || 'A'}
+                value={user?.dormitory || ''}
                 onSave={async (value) => await handleSave('dormitory', value)}
                 items={dormitoryList}
               />
               <AccountInfoEditField
                 label='Tòa'
                 type='select'
-                value={user?.building || 'A1'}
+                value={user?.building || ''}
                 onSave={async (value) => await handleSave('building', value)}
                 items={buildingList}
               />
               <AccountInfoEditField
                 label='Phòng'
                 type='select'
-                value={user?.room || '101'}
+                value={user?.room || ''}
                 onSave={async (value) => await handleSave('room', value)}
                 items={roomList}
               />

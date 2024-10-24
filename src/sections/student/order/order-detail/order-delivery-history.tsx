@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import OrderProgress from './order-progress';
 import OrderStaff from './order-staff';
 import OrderMap from './order-map';
@@ -14,7 +14,13 @@ const OrderDeliveryHistory: React.FC<OrderDeliveryHistoryProps> = ({ order }) =>
     <Box display='flex' gap={2} alignItems={'center'}>
       <Stack spacing={3} width='40%'>
         <OrderProgress order={order} />
-        <OrderStaff order={order} />
+        {order.shipperId ? (
+          <OrderStaff order={order} />
+        ) : (
+          <Typography fontWeight={'bold'} color='error'>
+            Đơn hàng chưa được chỉ định!
+          </Typography>
+        )}
       </Stack>
       <Stack width='60%'>
         <OrderMap />

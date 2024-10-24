@@ -6,6 +6,8 @@ import useFunction, {
 } from 'src/hooks/use-function';
 import { User, UserDetail } from 'src/types/user';
 import { UpdateProfileRequest } from 'src/api/users';
+import { useAuth } from '@hooks';
+import { useFirebaseAuth } from '@hooks';
 
 interface ContextValue {
   getUsersApi: UseFunctionReturnType<FormData, Partial<UserDetail>>;
@@ -24,6 +26,9 @@ export const UsersContext = createContext<ContextValue>({
 const UsersProvider = ({ children }: { children: ReactNode }) => {
   const getUsersApi = useFunction(UsersApi.me);
   const getListUsersApi = useFunction(UsersApi.getUsers);
+
+  const { user } = useAuth();
+  const { user: firebaseUser } = useFirebaseAuth();
 
   const updateProfile = useCallback(
     async (request: UpdateProfileRequest) => {
@@ -55,8 +60,10 @@ const UsersProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    getListUsersApi.call(new FormData());
-  }, []);
+    if (user?.role === 'ADMIN' || firebaseUser?.role === 'ADMIN') {
+      getListUsersApi.call(new FormData());
+    }
+  }, [user, firebaseUser]);
 
   return (
     <UsersContext.Provider

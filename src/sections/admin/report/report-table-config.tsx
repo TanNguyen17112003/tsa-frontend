@@ -1,4 +1,4 @@
-import { Typography, Stack, Chip, Tooltip } from '@mui/material';
+import { Typography, Stack, Chip, Tooltip, Box } from '@mui/material';
 import { CustomTableConfig } from 'src/components/custom-table';
 import { ArrowForward, CloseCircle } from 'iconsax-react';
 import { formatDate, formatUnixTimestamp } from 'src/utils/format-time-currency';
@@ -61,16 +61,21 @@ const getReportTableConfig = ({
     )
   },
   {
-    key: 'repliedAt',
-    headerLabel: 'Ngày phản hồi',
+    key: 'proof',
+    headerLabel: 'Minh chứng',
     type: 'string',
-    renderCell: (data) => (
-      <Typography>
-        {data.status === 'REPLIED' && data.repliedAt
-          ? formatDate(formatUnixTimestamp(data.repliedAt))
-          : 'Chưa phản hồi'}
-      </Typography>
-    )
+    renderCell: (data) => {
+      const handleClick = () => {
+        window.open(data.proof as string, '_blank');
+      };
+      return (data.proof as string).endsWith('.jpg') || (data.proof as string).endsWith('.png') ? (
+        <Box className='cursor-pointer' onClick={handleClick}>
+          <img src={data.proof as string} alt='proof' width={100} />
+        </Box>
+      ) : (
+        <Typography>{data.proof as string}</Typography>
+      );
+    }
   },
   {
     key: 'reply',
@@ -113,7 +118,7 @@ const getReportTableConfig = ({
             }}
           />
         </Tooltip>
-        <Tooltip title='TỪ CHỐI KHIẾU NẠI'>
+        <Tooltip title='XÓA KHIẾU NẠI'>
           <CloseCircle
             color='red'
             size={24}

@@ -121,6 +121,7 @@
     "slate-html-serializer": "^0.8.13",
     "slate-hyperscript": "^0.100.0",
     "slate-react": "^0.101.6",
+    "socket.io-client": "^4.8.0",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^9.0.1",

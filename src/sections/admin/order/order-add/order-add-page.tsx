@@ -13,7 +13,7 @@ import { OrderForm } from './order-form';
 import OrderUploadSection from './order-upload-section';
 import { OrderFormProps } from 'src/api/orders';
 import { useOrdersContext } from 'src/contexts/orders/orders-context';
-import { initialOrderForm } from 'src/types/order';
+import { adminInitialOrderForm } from 'src/types/order';
 
 const OrderAddPage = () => {
   const [resetUploadSection, setResetUploadSection] = useState('');
@@ -26,7 +26,7 @@ const OrderAddPage = () => {
   const { user: firebaseUser } = useFirebaseAuth();
 
   const formik = useFormik<OrderFormProps>({
-    initialValues: initialOrderForm,
+    initialValues: adminInitialOrderForm,
     onSubmit: async (values) => {
       try {
         await handleSubmitOrderHelper.call(values);
@@ -43,32 +43,23 @@ const OrderAddPage = () => {
           await createOrder(
             orderList.map((order) => ({
               ...order,
-              studentId: user?.id || firebaseUser?.id
+              adminId: user?.id || firebaseUser?.id
             }))
           );
         } else {
           await createOrder([
             {
               ...values,
-              studentId: user?.id || firebaseUser?.id
+              adminId: user?.id || firebaseUser?.id
             }
           ]);
         }
         showSnackbarSuccess('Tạo đơn hàng thành công!');
-        router.push(paths.student.order.index); // Navigate to the order list page after successful creation
       } catch (error) {
         showSnackbarError('Có lỗi xảy ra');
       }
     },
-    [
-      createOrder,
-      showSnackbarError,
-      showSnackbarSuccess,
-      orderList,
-      user?.id,
-      firebaseUser?.id,
-      router
-    ]
+    [createOrder, showSnackbarError, showSnackbarSuccess, orderList, user?.id, firebaseUser?.id]
   );
 
   const handleSubmitOrderHelper = useFunction(handleSubmitOrder);
@@ -84,7 +75,7 @@ const OrderAddPage = () => {
               startIcon={<ArrowBack />}
               color='inherit'
               onClick={() => {
-                router.push(paths.student.order.index);
+                router.push(paths.dashboard.order.index);
               }}
             >
               Quay lại

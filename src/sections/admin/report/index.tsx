@@ -24,7 +24,7 @@ function ReportList() {
   const reportDetailDenyDialog = useDialog<ReportDetail>();
   const orders = useOrdersData();
 
-  const { getReportsApi } = useReportsContext();
+  const { getReportsApi, deleteReport } = useReportsContext();
   const getListUsersApi = useFunction(UsersApi.getUsers);
 
   const reports = useMemo(() => {
@@ -97,6 +97,7 @@ function ReportList() {
         open={reportDetailDenyDialog.open}
         onClose={reportDetailDenyDialog.handleClose}
         report={reportDetailDenyDialog.data as ReportDetail}
+        onConfirm={() => deleteReport(reportDetailDenyDialog.data?.id as string)}
       />
       <ReportDetailReplyDrawer
         open={reportDetailReplyDrawer.open}

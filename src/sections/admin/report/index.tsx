@@ -24,7 +24,7 @@ function ReportList() {
   const reportDetailDenyDialog = useDialog<ReportDetail>();
   const orders = useOrdersData();
 
-  const { getReportsApi } = useReportsContext();
+  const { getReportsApi, deleteReport } = useReportsContext();
   const getListUsersApi = useFunction(UsersApi.getUsers);
 
   const reports = useMemo(() => {
@@ -43,10 +43,10 @@ function ReportList() {
     setDateRange(range);
   };
 
-  const handleResetFilters = () => {
+  const handleResetFilters = useCallback(() => {
     setSelectedStatus('');
     setDateRange({ startDate: null, endDate: null });
-  };
+  }, []);
 
   const filteredReports = useMemo(() => {
     return reports.filter((report) => {
@@ -79,6 +79,7 @@ function ReportList() {
 
   useEffect(() => {
     getListUsersApi.call({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -96,6 +97,7 @@ function ReportList() {
         open={reportDetailDenyDialog.open}
         onClose={reportDetailDenyDialog.handleClose}
         report={reportDetailDenyDialog.data as ReportDetail}
+        onConfirm={() => deleteReport(reportDetailDenyDialog.data?.id as string)}
       />
       <ReportDetailReplyDrawer
         open={reportDetailReplyDrawer.open}

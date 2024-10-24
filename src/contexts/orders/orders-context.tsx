@@ -13,7 +13,7 @@ interface ContextValue {
   createOrder: (requests: OrderFormProps[]) => Promise<void>;
   updateOrder: (Order: Partial<OrderDetail>, orderId: string) => Promise<void>;
   updateOrderStatus: (status: OrderStatus, id: string) => Promise<void>;
-  deleteOrder: (ids: Order['id']) => Promise<void>;
+  deleteOrder: (ids: Order['id'][]) => Promise<void>;
 }
 
 export const OrdersContext = createContext<ContextValue>({
@@ -88,11 +88,23 @@ const OrdersProvider = ({ children }: { children: ReactNode }) => {
     [getOrdersApi]
   );
 
+  // const deleteOrder = useCallback(
+  //   async (id: Order['id']) => {
+  //     try {
+  //       await OrdersApi.deleteOrder(id);
+  //       getOrdersApi.setData((getOrdersApi.data || []).filter((order) => order.id !== id));
+  //     } catch (error) {
+  //       throw error;
+  //     }
+  //   },
+  //   [getOrdersApi]
+  // );
+
   const deleteOrder = useCallback(
-    async (id: Order['id']) => {
+    async (ids: Order['id'][]) => {
       try {
-        await OrdersApi.deleteOrder(id);
-        getOrdersApi.setData((getOrdersApi.data || []).filter((order) => order.id !== id));
+        await Promise.all(ids.map((id) => OrdersApi.deleteOrder(id)));
+        getOrdersApi.setData((getOrdersApi.data || []).filter((order) => !ids.includes(order.id)));
       } catch (error) {
         throw error;
       }

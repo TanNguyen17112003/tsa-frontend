@@ -1,98 +1,80 @@
-import { Box, Typography, Stack, Select, MenuItem, TextField, InputAdornment } from '@mui/material';
 import React from 'react';
-import DateRangePickerTextField from 'src/components/date-range-picker-textfield';
+import { Box, Typography, Stack, TextField, InputAdornment } from '@mui/material';
 import { SearchIcon } from 'lucide-react';
-import { useRouter } from 'next/router';
-import { orderStatusMap } from 'src/types/order';
+import AdvancedFilter from 'src/components/advanced-filter/advanced-filter';
+import { Filter } from 'src/types/filter';
 
 interface OrderFilterProps {
+  statusList: string[];
   numberOfOrders: number;
+  selectedStatus: string;
+  setSelectedStatus: (status: string) => void;
+  dateRange: {
+    startDate: Date;
+    endDate: Date;
+  };
+  setDateRange: (range: any) => void;
 }
 
 const OrderFilter: React.FC<OrderFilterProps> = (props) => {
-  const router = useRouter();
-  const orderStatusList = ['Tất cả', ...Object.keys(orderStatusMap)];
-  const [dateRange, setDateRange] = React.useState(() => {
-    const now = new Date();
-    const yesterday = new Date();
-    yesterday.setDate(now.getDate() - 1);
-    const oneWeekFromNow = new Date();
-    oneWeekFromNow.setDate(now.getDate() + 7);
-    return {
-      startDate: yesterday,
-      endDate: oneWeekFromNow
-    };
-  });
+  const orderStatusList = [
+    'Tất cả',
+    'Đã giao',
+    'Đã hủy',
+    'Đang giao',
+    'Đã xác nhận',
+    'Đang chờ xử lý',
+    'Đã từ chối'
+  ];
 
-  const handleDateChange = React.useCallback(
-    (range: any) => {
-      setDateRange(range);
-      router.push({
-        pathname: router.pathname,
-        query: {
-          ...router.query,
-          dateRange: `${range.startDate.toISOString()},${range.endDate.toISOString()}`
-        }
-      });
-    },
-    [router]
-  );
+  const handleDateChange = React.useCallback((range: any) => {
+    props.setDateRange(range);
+  }, []);
 
-  const handleReportStatusChange = React.useCallback(
-    (status: string) => {
-      const queryStatus =
-        status === 'Tất cả'
-          ? 'all'
-          : orderStatusMap[status as keyof typeof orderStatusMap].toLowerCase();
-      router.push({
-        pathname: router.pathname,
-        query: { ...router.query, status: queryStatus }
-      });
+  const handleStatusChange = React.useCallback((status: string) => {
+    props.setSelectedStatus(status);
+  }, []);
+
+  const filters: Filter[] = [
+    {
+      type: 'select',
+      title: 'Trạng thái',
+      value: props.selectedStatus,
+      onChange: handleStatusChange,
+      options: orderStatusList.map((status) => ({
+        label: status,
+        value: status
+      }))
     },
-    [router, orderStatusMap]
-  );
+    {
+      type: 'dateRange',
+      title: 'Nhập thời gian giao đơn hàng',
+      value: props.dateRange,
+      onChange: handleDateChange
+    }
+  ];
 
   return (
-    <Box className='flex gap-2 items-center w-full'>
-      <Stack direction='row' spacing={0.5} width={'15%'}>
-        <Typography fontWeight={'bold'}>Số lượng đơn hàng:</Typography>
-        <Typography fontWeight={'bold'}>{props.numberOfOrders}</Typography>
-      </Stack>
-      <TextField
-        variant='outlined'
-        placeholder='Tìm kiếm mã đơn'
-        className='w-[20%]'
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position='end'>
-              <SearchIcon />
-            </InputAdornment>
-          )
-        }}
-      />
-      <Stack direction={'row'} spacing={2} alignItems={'center'} width={'65%'}>
-        <Box className='flex flex-col gap-1 w-[50%]'>
-          <Typography fontWeight={'bold'}>Trạng thái</Typography>
-          <Select
-            defaultValue={orderStatusList[0]}
-            onChange={(e) => handleReportStatusChange(e.target.value as string)}
-          >
-            {orderStatusList.map((status, index) => (
-              <MenuItem key={index} value={status}>
-                {status}
-              </MenuItem>
-            ))}
-          </Select>
-        </Box>
-        <Box className='flex flex-col gap-1'>
-          <Typography fontWeight={'bold'}>Thời gian</Typography>
-          <DateRangePickerTextField
-            initialDateRange={dateRange}
-            onChange={handleDateChange}
-            labelHolder='Nhập thời gian giao đơn hàng'
-          />
-        </Box>
-      </Stack>
+    <Box className='flex justify-between'>
+      <Box className='flex gap-5 items-center w-full'>
+        <Stack direction='row' spacing={0.5}>
+          <Typography fontWeight={'bold'}>Số lượng đơn hàng:</Typography>
+          <Typography fontWeight={'bold'}>{props.numberOfOrders}</Typography>
+        </Stack>
+        <TextField
+          variant='outlined'
+          placeholder='Tìm kiếm mã đơn'
+          className='w-[20%]'
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position='end' className='cursor-pointer'>
+                <SearchIcon />
+              </InputAdornment>
+            )
+          }}
+        />
+      </Box>
+      <AdvancedFilter filters={filters} />
     </Box>
   );
 };

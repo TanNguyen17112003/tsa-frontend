@@ -1,6 +1,6 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState, useMemo, useEffect } from 'react';
 import OrderFilter from './order-filter';
-import { Box, Stack, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { OrderDetail } from 'src/types/order';
 import getOrderTableConfigs from './order-table-config';
 import { CustomTable } from '@components';
@@ -20,11 +20,47 @@ interface OrderNotPaidProps {
 
 const OrderNotPaid: React.FC<OrderNotPaidProps> = ({ orders }) => {
   const router = useRouter();
+  const orderStatusList = [
+    'Tất cả',
+    'Đã giao',
+    'Đã hủy',
+    'Đang giao',
+    'Đã xác nhận',
+    'Đang chờ xử lý',
+    'Đã từ chối'
+  ];
   const orderDetailReportDrawer = useDrawer<OrderDetail>();
   const orderDetailDeleteDialog = useDialog<OrderDetail>();
   const orderDetailEditDrawer = useDrawer<OrderDetail>();
 
   const { deleteOrder, updateOrder } = useOrdersContext();
+
+  const [selectedStatus, setSelectedStatus] = useState<string>('Tất cả');
+  const [dateRange, setDateRange] = React.useState(() => {
+    const now = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(now.getDate() - 1);
+    const oneWeekFromNow = new Date();
+    oneWeekFromNow.setDate(now.getDate() + 7);
+    return {
+      startDate: yesterday,
+      endDate: oneWeekFromNow
+    };
+  });
+
+  useEffect(() => {
+    const queryStatus = router.query.status as string;
+    const queryDateRange = router.query.dateRange as string;
+
+    if (queryStatus) {
+      setSelectedStatus(queryStatus);
+    }
+
+    if (queryDateRange) {
+      const [startDate, endDate] = queryDateRange.split(',').map((date) => new Date(date));
+      setDateRange({ startDate, endDate });
+    }
+  }, [router.query.status, router.query.dateRange]);
 
   const handleGoReport = useCallback(
     (data: OrderDetail) => {
@@ -36,53 +72,56 @@ const OrderNotPaid: React.FC<OrderNotPaidProps> = ({ orders }) => {
     [router]
   );
 
-  const handlePayment = useCallback(async (order: OrderDetail) => {
-    try {
-      if (order.paymentMethod === 'MOMO') {
-        const paymentResponse = await PaymentsApi.postMomoPayment({
-          orderId: order.id,
-          amount: order.shippingFee?.toString() || '1000',
-          orderInfo: 'Thanh toán đơn hàng ' + order.checkCode + ' qua MOMO',
-          returnUrl: `${window.location.origin}/student/orders`,
-          notifyUrl: `${window.location.origin}/api/payment/momo/notify`,
-          extraData: order.id
-        });
-        if (paymentResponse && paymentResponse.payUrl) {
-          window.location.href = paymentResponse.payUrl;
+  const handlePayment = useCallback(
+    async (order: OrderDetail) => {
+      try {
+        if (order.paymentMethod === 'MOMO') {
+          const paymentResponse = await PaymentsApi.postMomoPayment({
+            orderId: order.id,
+            amount: order.shippingFee?.toString() || '1000',
+            orderInfo: 'Thanh toán đơn hàng ' + order.checkCode + ' qua MOMO',
+            returnUrl: `${window.location.origin}/student/orders`,
+            notifyUrl: `${window.location.origin}/api/payment/momo/notify`,
+            extraData: order.id
+          });
+          if (paymentResponse && paymentResponse.payUrl) {
+            window.location.href = paymentResponse.payUrl;
+          }
+          updateOrder(
+            {
+              ...order,
+              isPaid: true
+            },
+            order.id
+          );
+        } else if (order.paymentMethod === 'CREDIT') {
+          const paymentResponse = await PaymentsApi.postPayOSPayment({
+            orderId: order.id,
+            amount: order.shippingFee || 2000,
+            description: 'Thanh toán đơn hàng',
+            returnUrl: `${window.location.origin}/student/order`,
+            cancelUrl: `${window.location.origin}/student/order`,
+            extraData: order.id
+          });
+          if (paymentResponse && paymentResponse.checkoutUrl) {
+            window.location.href = paymentResponse.checkoutUrl;
+          }
+          updateOrder(
+            {
+              ...order,
+              isPaid: true
+            },
+            order.id
+          );
         }
-        updateOrder(
-          {
-            ...order,
-            isPaid: true
-          },
-          order.id
-        );
-      } else if (order.paymentMethod === 'CREDIT') {
-        const paymentResponse = await PaymentsApi.postPayOSPayment({
-          orderId: order.id,
-          amount: order.shippingFee || 2000,
-          description: 'Thanh toán đơn hàng',
-          returnUrl: `${window.location.origin}/student/order`,
-          cancelUrl: `${window.location.origin}/student/order`,
-          extraData: order.id
-        });
-        if (paymentResponse && paymentResponse.checkoutUrl) {
-          window.location.href = paymentResponse.checkoutUrl;
-        }
-        updateOrder(
-          {
-            ...order,
-            isPaid: true
-          },
-          order.id
-        );
+      } catch (error) {
+        console.error('Payment error:', error);
       }
-    } catch (error) {
-      console.error('Payment error:', error);
-    }
-  }, []);
+    },
+    [updateOrder]
+  );
 
-  const orderTableConfig = React.useMemo(() => {
+  const orderTableConfig = useMemo(() => {
     return getOrderTableConfigs({
       onClickReport: (data: OrderDetail) => {
         orderDetailReportDrawer.handleOpen(data);
@@ -98,26 +137,31 @@ const OrderNotPaid: React.FC<OrderNotPaidProps> = ({ orders }) => {
       },
       isPaid: false
     });
-  }, [handleGoReport, orderDetailReportDrawer, orderDetailDeleteDialog, orderDetailEditDrawer]);
+  }, [handlePayment, orderDetailReportDrawer, orderDetailDeleteDialog, orderDetailEditDrawer]);
 
-  const result = React.useMemo(() => {
-    const dateRange =
-      typeof router.query.dateRange === 'string' ? router.query.dateRange.split(',') : null;
-    const startDate = dateRange ? new Date(dateRange[0]) : null;
-    const endDate = dateRange ? new Date(dateRange[1]) : null;
-
+  const result = useMemo(() => {
     return orders.filter((order) => {
-      const orderDate = new Date(formatUnixTimestamp(order.deliveryDate));
-      const isWithinDateRange =
-        startDate && endDate ? orderDate >= startDate && orderDate <= endDate : true;
-      const isStatusMatch =
-        router.query.status === 'all' || !router.query.status
+      const filterStatus =
+        selectedStatus === 'Tất cả'
           ? true
-          : order.latestStatus.toLowerCase() === router.query.status;
-
-      return !order.isPaid && isWithinDateRange && isStatusMatch;
+          : selectedStatus === 'Đã giao'
+            ? order.latestStatus === 'DELIVERED'
+            : selectedStatus === 'Đã hủy'
+              ? order.latestStatus === 'CANCELLED'
+              : selectedStatus === 'Đang giao'
+                ? order.latestStatus === 'IN_TRANSPORT'
+                : selectedStatus === 'Đã xác nhận'
+                  ? order.latestStatus === 'ACCEPTED'
+                  : selectedStatus === 'Đang chờ xử lý'
+                    ? order.latestStatus === 'PENDING'
+                    : selectedStatus === 'Đã từ chối'
+                      ? order.latestStatus === 'REJECTED'
+                      : false;
+      const orderDate = formatUnixTimestamp(order.deliveryDate);
+      const filterDate = dateRange.startDate <= orderDate && orderDate <= dateRange.endDate;
+      return !order.isPaid && filterStatus && filterDate;
     });
-  }, [orders, router.query.status, router.query.dateRange]);
+  }, [orders, dateRange, selectedStatus]);
 
   const pagination = usePagination({
     count: result.length
@@ -125,7 +169,14 @@ const OrderNotPaid: React.FC<OrderNotPaidProps> = ({ orders }) => {
 
   return (
     <Box className='flex flex-col min-h-screen bg-white px-6 py-4 text-black'>
-      <OrderFilter numberOfOrders={result.length} />
+      <OrderFilter
+        statusList={orderStatusList}
+        numberOfOrders={result.length}
+        selectedStatus={selectedStatus}
+        setSelectedStatus={setSelectedStatus}
+        dateRange={dateRange}
+        setDateRange={setDateRange}
+      />
       <Box sx={{ flex: 1 }}>
         <CustomTable
           rows={result}
@@ -144,13 +195,14 @@ const OrderNotPaid: React.FC<OrderNotPaidProps> = ({ orders }) => {
         open={orderDetailDeleteDialog.open}
         onClose={orderDetailDeleteDialog.handleClose}
         order={orderDetailDeleteDialog.data as OrderDetail}
-        onConfirm={() => deleteOrder(orderDetailDeleteDialog.data?.id as string)}
+        onConfirm={() => deleteOrder([orderDetailDeleteDialog.data?.id] as string[])}
       />
       <OrderDetailEditDrawer
         open={orderDetailEditDrawer.open}
         onClose={orderDetailEditDrawer.handleClose}
         order={orderDetailEditDrawer.data}
       />
+      {/* <Chat /> */}
     </Box>
   );
 };

@@ -5,9 +5,9 @@ import { UserDetail } from 'src/types/user';
 
 const useStaffData = () => {
   const getUsersApi = useFunction(UsersApi.getUsers);
-  const [staffs, setStaffs] = useState<{ [key: string]: { firstName: string; lastName: string } }>(
-    {}
-  );
+  const [staffs, setStaffs] = useState<{
+    [key: string]: { firstName: string; lastName: string; id: string };
+  }>({});
   const [users, setUsers] = useState<UserDetail[]>([]);
 
   useEffect(() => {
@@ -15,7 +15,7 @@ const useStaffData = () => {
       const users = await getUsersApi.call({});
       const staffData = (users.data || []).reduce((acc: any, user: any) => {
         if (user.role === 'STAFF') {
-          acc[user.id] = { firstName: user.firstName, lastName: user.lastName };
+          acc[user.id] = { firstName: user.firstName, lastName: user.lastName, id: user.id };
         }
         return acc;
       }, {});

@@ -53,6 +53,7 @@ const ReportList: React.FC<ReportListProps> = ({ reports }) => {
   const pagination = usePagination({
     count: reports.length
   });
+
   const result = React.useMemo(() => {
     return reports.filter((report) => {
       const filterStatus =
@@ -66,6 +67,7 @@ const ReportList: React.FC<ReportListProps> = ({ reports }) => {
       return filterStatus && filterDate;
     });
   }, [status, dateRange, reports]);
+
   return (
     <Box className='flex flex-col min-h-screen bg-white px-6 py-4 text-black'>
       <ReportFilter

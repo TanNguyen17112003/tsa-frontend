@@ -1,5 +1,7 @@
 import { OrderFormProps } from 'src/api/orders';
 import { AddressData } from '@utils';
+import { CloseCircle, TickCircle, Truck, UserTick, MessageQuestion } from 'iconsax-react';
+import React from 'react';
 
 type PaymentMethod = 'CASH' | 'MOMO' | 'CREDIT';
 export type OrderStatus =
@@ -9,6 +11,51 @@ export type OrderStatus =
   | 'REJECTED'
   | 'IN_TRANSPORT'
   | 'ACCEPTED';
+
+export const orderStatusIconList = [
+  {
+    // "CANCELLED": React.createElement(CloseCircle),
+    // "DELIVERED": React.createElement(TickCircle),
+    // "ACCEPETED": React.createElement(UserTick),
+    // "REJECTED": React.createElement(CloseCircle)
+    // "PENDING": React.createElement(MessageQuestion),
+    // "IN_TRANSPORT": React.createElement(Truck),
+    status: 'CANCELLED',
+    icon: React.createElement(CloseCircle),
+    color: 'red',
+    title: 'Bị hủy'
+  },
+  {
+    status: 'DELIVERED',
+    icon: React.createElement(TickCircle),
+    color: 'green',
+    title: 'Đã giao'
+  },
+  {
+    status: 'ACCEPTED',
+    icon: React.createElement(UserTick),
+    color: 'green',
+    title: 'Đã xác nhận'
+  },
+  {
+    status: 'REJECTED',
+    icon: React.createElement(CloseCircle),
+    color: 'red',
+    title: 'Đã từ chối'
+  },
+  {
+    status: 'PENDING',
+    icon: React.createElement(MessageQuestion),
+    color: 'orange',
+    title: 'Đang chờ xử lý'
+  },
+  {
+    status: 'IN_TRANSPORT',
+    icon: React.createElement(Truck),
+    color: 'blue',
+    title: 'Đang giao'
+  }
+];
 
 interface OrderStatusHistory {
   id: string;
@@ -32,6 +79,8 @@ export interface Order {
   studentId?: string;
   adminId?: string;
   shipperId?: string;
+  lastName?: string;
+  firstName?: string;
   deliveryId?: string;
   ordinalNumber?: string;
   weight?: number;

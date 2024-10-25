@@ -12,8 +12,10 @@ import { useDrawer, useDialog } from '@hooks';
 import OrderDetailDeleteDialog from '../order-detail/order-detail-delete-dialog';
 import OrderDetailEditDrawer from '../order-detail/order-detail-edit-drawer';
 import { useSelection } from '@hooks';
-import { Additem } from 'iconsax-react';
+import { Additem, Trash } from 'iconsax-react';
 import OrderGroupDialog from './order-group-dialog';
+import useFunction from 'src/hooks/use-function';
+import useStaffData from 'src/hooks/use-staff-data';
 
 function OrderList() {
   const router = useRouter();
@@ -33,6 +35,8 @@ function OrderList() {
   const orders = useMemo(() => {
     return getOrdersApi.data || [];
   }, [getOrdersApi.data]);
+
+  const users = useStaffData();
 
   const select = useSelection<OrderDetail>(orders);
   const handleStatusChange = (event: SelectChangeEvent<string>) => {
@@ -73,6 +77,14 @@ function OrderList() {
     });
   }, []);
 
+  const handleDeleteOrders = useCallback((ids: string[]) => {
+    return deleteOrder(ids);
+  }, []);
+
+  const handleDeleteOrdersHelper = useFunction(handleDeleteOrders, {
+    successMessage: 'Xóa danh sách đơn hàng thành công'
+  });
+
   const filteredOrders = useMemo(() => {
     return orders.filter((order) => {
       const matchesDormitory = selectedDormitory ? order.dormitory === selectedDormitory : true;
@@ -101,9 +113,10 @@ function OrderList() {
       },
       onClickEdit: (data: any) => {
         orderDetailDrawer.handleOpen(data);
-      }
+      },
+      users: users.users
     });
-  }, []);
+  }, [users]);
 
   return (
     <Box className='px-6 text-black'>
@@ -125,9 +138,19 @@ function OrderList() {
         sx={{
           display: 'flex',
           justifyContent: 'flex-end',
-          mb: 3
+          mb: 3,
+          gap: 2
         }}
       >
+        <Button
+          variant='contained'
+          color='error'
+          startIcon={<Trash color='white' />}
+          onClick={() => handleDeleteOrdersHelper.call(select.selected.map((order) => order.id))}
+          disabled={select.selected.length === 0}
+        >
+          Xóa
+        </Button>
         <Button
           variant='outlined'
           color='primary'
@@ -149,7 +172,7 @@ function OrderList() {
         open={orderDetailDeleteDialog.open}
         onClose={orderDetailDeleteDialog.handleClose}
         order={orderDetailDeleteDialog.data as OrderDetail}
-        onConfirm={() => deleteOrder(orderDetailDeleteDialog.data?.id as string)}
+        onConfirm={() => deleteOrder([orderDetailDeleteDialog.data?.id] as string[])}
       />
       <OrderDetailEditDrawer
         open={orderDetailDrawer.open}

@@ -5,7 +5,7 @@ export interface ProofImage {
   altText: string;
 }
 
-type ReportStatus = 'PENDING' | 'REPLIED';
+export type ReportStatus = 'PENDING' | 'REPLIED';
 
 export interface Report {
   id: string;
@@ -33,6 +33,10 @@ export const initialReportForm: ReportFormProps = {
   reply: '',
   repliedAt: '',
   studentId: ''
+};
+
+export const replyInitialReportForm: ReportFormProps = {
+  reply: ''
 };
 
 export const statusMap = {

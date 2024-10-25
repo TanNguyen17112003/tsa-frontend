@@ -47,6 +47,7 @@ const OrderPaid: React.FC<OrderPaidProps> = ({ orders }) => {
       endDate: oneWeekFromNow
     };
   });
+  const [searchInput, setSearchInput] = useState<string>('');
 
   useEffect(() => {
     const queryStatus = router.query.status as string;
@@ -159,9 +160,12 @@ const OrderPaid: React.FC<OrderPaidProps> = ({ orders }) => {
                       : false;
       const orderDate = formatUnixTimestamp(order.deliveryDate);
       const filterDate = dateRange.startDate <= orderDate && orderDate <= dateRange.endDate;
-      return order.isPaid && filterStatus && filterDate;
+      const filterCheckCode = searchInput
+        ? order.checkCode.toLocaleLowerCase().includes(searchInput.toLocaleLowerCase())
+        : true;
+      return order.isPaid && filterStatus && filterDate && filterCheckCode;
     });
-  }, [orders, dateRange, selectedStatus]);
+  }, [orders, dateRange, selectedStatus, searchInput]);
 
   const pagination = usePagination({
     count: result.length
@@ -176,6 +180,7 @@ const OrderPaid: React.FC<OrderPaidProps> = ({ orders }) => {
         setSelectedStatus={setSelectedStatus}
         dateRange={dateRange}
         setDateRange={setDateRange}
+        onSearch={setSearchInput}
       />
       <Box sx={{ flex: 1 }}>
         <CustomTable

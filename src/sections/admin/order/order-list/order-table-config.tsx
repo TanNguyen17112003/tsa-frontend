@@ -3,13 +3,16 @@ import { CustomTableConfig } from 'src/components/custom-table';
 import { OrderDetail } from 'src/types/order';
 import { Edit, DocumentText, Trash } from 'iconsax-react';
 import { formatDate, formatUnixTimestamp, formatVNDcurrency } from 'src/utils/format-time-currency';
+import { UserDetail } from 'src/types/user';
 
 const getOrderTableConfigs = ({
   onClickDelete,
-  onClickEdit
+  onClickEdit,
+  users
 }: {
   onClickDelete: (data: OrderDetail) => void;
   onClickEdit: (data: OrderDetail) => void;
+  users: UserDetail[];
 }): CustomTableConfig<OrderDetail['id'], OrderDetail>[] => [
   {
     key: 'checkCode',
@@ -43,8 +46,9 @@ const getOrderTableConfigs = ({
     headerLabel: 'Khách hàng',
     type: 'string',
     renderCell: (data) => {
-      return data.studentId ? (
-        <Typography>{data.studentId}</Typography>
+      const foundUser = users.find((user) => user.id === data.studentId);
+      return data.studentId && foundUser ? (
+        <Typography>{foundUser.lastName + foundUser.firstName}</Typography>
       ) : (
         <Typography>Chưa có thông tin</Typography>
       );
@@ -54,9 +58,16 @@ const getOrderTableConfigs = ({
     key: 'shipperName',
     headerLabel: 'Nhân viên phụ trách',
     type: 'string',
-    renderCell: (data) => (
-      <Typography>{data.shipperId ? data.shipperId : 'Nhân viên chưa được chỉ định'}</Typography>
-    )
+    renderCell: (data) => {
+      const foundUser = users.find((user) => user.id === data.studentId);
+      return (
+        <Typography>
+          {data.shipperId && foundUser
+            ? foundUser.lastName + foundUser.firstName
+            : 'Chưa được chỉ định'}
+        </Typography>
+      );
+    }
   },
   {
     key: 'address',
@@ -106,10 +117,14 @@ const getOrderTableConfigs = ({
     key: 'paymentMethod',
     headerLabel: 'Phương thức thanh toán',
     renderCell: (data) => {
-      return data.isPaid ? (
-        <Typography>{data.paymentMethod}</Typography>
-      ) : (
-        <Typography>Chưa chọn</Typography>
+      return (
+        <Typography>
+          {data.paymentMethod === 'MOMO'
+            ? 'Qua Momo'
+            : data.paymentMethod === 'CREDIT'
+              ? 'Qua ngân hàng'
+              : 'Tiền mặt'}
+        </Typography>
       );
     }
   },

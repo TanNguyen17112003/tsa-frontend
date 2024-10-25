@@ -21,7 +21,6 @@ interface SideNavProps {
 export const SideNav: FC<SideNavProps> = (props) => {
   const { user } = useAuth();
   const { user: firebaseUser } = useFirebaseAuth();
-  const router = useRouter();
   const { sections = [] } = props;
   const pathname = usePathname();
 

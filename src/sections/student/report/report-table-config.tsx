@@ -57,7 +57,8 @@ const getReportTableConfigs = ({
   {
     key: 'reply',
     headerLabel: 'Phản hồi',
-    type: 'string'
+    type: 'string',
+    renderCell: (data) => <Typography>{data.reply ? data.reply : 'Chưa có phản hồi'}</Typography>
   },
   {
     key: 'status',

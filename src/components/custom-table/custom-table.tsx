@@ -220,7 +220,13 @@ export function CustomTable<P, T extends { id: P; [key: string]: any }>(
       </SimpleBar>
       {(loading || rows.length == 0) && (
         <div className='-mt-2 h-[100px] w-full flex items-center justify-center sticky left-0'>
-          {loading ? <Loading /> : emptyState ? emptyState : <div className='text-lg'>No data</div>}
+          {loading ? (
+            <Loading />
+          ) : emptyState ? (
+            emptyState
+          ) : (
+            <div className='text-lg'>Không có dữ liệu</div>
+          )}
         </div>
       )}
       {pagination && !hidePagination && (

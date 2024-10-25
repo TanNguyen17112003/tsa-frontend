@@ -20,7 +20,7 @@ const useStaffData = () => {
         return acc;
       }, {});
       setStaffs(staffData);
-      setUsers(users?.data?.filter((user) => user.role === 'STAFF') || []);
+      setUsers(users?.data || []);
     };
 
     fetchStaffs();

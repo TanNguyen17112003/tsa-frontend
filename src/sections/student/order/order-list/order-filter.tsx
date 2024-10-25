@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Typography, Stack, TextField, InputAdornment } from '@mui/material';
 import { SearchIcon } from 'lucide-react';
 import AdvancedFilter from 'src/components/advanced-filter/advanced-filter';
@@ -14,18 +14,11 @@ interface OrderFilterProps {
     endDate: Date;
   };
   setDateRange: (range: any) => void;
+  onSearch: (checkCode: string) => void;
 }
 
 const OrderFilter: React.FC<OrderFilterProps> = (props) => {
-  const orderStatusList = [
-    'Tất cả',
-    'Đã giao',
-    'Đã hủy',
-    'Đang giao',
-    'Đã xác nhận',
-    'Đang chờ xử lý',
-    'Đã từ chối'
-  ];
+  const [searchInput, setSearchInput] = useState('');
 
   const handleDateChange = React.useCallback((range: any) => {
     props.setDateRange(range);
@@ -35,13 +28,17 @@ const OrderFilter: React.FC<OrderFilterProps> = (props) => {
     props.setSelectedStatus(status);
   }, []);
 
+  const handleSearch = () => {
+    props.onSearch(searchInput);
+  };
+
   const filters: Filter[] = [
     {
       type: 'select',
       title: 'Trạng thái',
       value: props.selectedStatus,
       onChange: handleStatusChange,
-      options: orderStatusList.map((status) => ({
+      options: props.statusList.map((status) => ({
         label: status,
         value: status
       }))
@@ -63,11 +60,13 @@ const OrderFilter: React.FC<OrderFilterProps> = (props) => {
         </Stack>
         <TextField
           variant='outlined'
-          placeholder='Tìm kiếm mã đơn'
+          placeholder='Tìm kiếm theo mã đơn'
           className='w-[20%]'
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
           InputProps={{
             endAdornment: (
-              <InputAdornment position='end' className='cursor-pointer'>
+              <InputAdornment position='end' className='cursor-pointer' onClick={handleSearch}>
                 <SearchIcon />
               </InputAdornment>
             )

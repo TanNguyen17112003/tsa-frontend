@@ -14,10 +14,7 @@ const Page: PageType = () => {
   }, [getReportsApi.data]);
   return (
     <Box>
-      <ContentHeader
-        title='Lịch sử khiếu nại'
-        description='Danh sách khiếu nại của bạn đối với hệ thống'
-      />
+      <ContentHeader title='Lịch sử khiếu nại' description='Danh sách khiếu nại của bạn' />
       <ReportList reports={reports} />
     </Box>
   );

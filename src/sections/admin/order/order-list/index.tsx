@@ -15,6 +15,7 @@ import { useSelection } from '@hooks';
 import { Additem, Trash } from 'iconsax-react';
 import OrderGroupDialog from './order-group-dialog';
 import useFunction from 'src/hooks/use-function';
+import useStaffData from 'src/hooks/use-staff-data';
 
 function OrderList() {
   const router = useRouter();
@@ -34,6 +35,8 @@ function OrderList() {
   const orders = useMemo(() => {
     return getOrdersApi.data || [];
   }, [getOrdersApi.data]);
+
+  const users = useStaffData();
 
   const select = useSelection<OrderDetail>(orders);
   const handleStatusChange = (event: SelectChangeEvent<string>) => {
@@ -110,9 +113,10 @@ function OrderList() {
       },
       onClickEdit: (data: any) => {
         orderDetailDrawer.handleOpen(data);
-      }
+      },
+      users: users.users
     });
-  }, []);
+  }, [users]);
 
   return (
     <Box className='px-6 text-black'>

@@ -10,7 +10,7 @@ import OrderDetailReportDrawer from './order-detail-report-drawer';
 import { useDrawer, useDialog } from '@hooks';
 import OrderDetailDeleteDialog from './order-detail-delete-dialog';
 import { useOrdersContext } from 'src/contexts/orders/orders-context';
-import { formatUnixTimestamp } from 'src/utils/format-time-currency';
+import { formatUnixTimestamp, unixTimestampToDate } from 'src/utils/format-time-currency';
 import OrderDetailEditDrawer from './order-detail-edit-drawer';
 import { PaymentsApi } from 'src/api/payment';
 
@@ -81,7 +81,7 @@ const OrderNotPaid: React.FC<OrderNotPaidProps> = ({ orders }) => {
             orderId: order.id,
             amount: order.shippingFee?.toString() || '1000',
             orderInfo: 'Thanh toán đơn hàng ' + order.checkCode + ' qua MOMO',
-            returnUrl: `${window.location.origin}/student/orders`,
+            returnUrl: `${window.location.origin}/student/order`,
             notifyUrl: `${window.location.origin}/api/payment/momo/notify`,
             extraData: order.id
           });
@@ -90,7 +90,7 @@ const OrderNotPaid: React.FC<OrderNotPaidProps> = ({ orders }) => {
           }
           updateOrder(
             {
-              ...order,
+              deliveryDate: unixTimestampToDate(order.deliveryDate).toString(),
               isPaid: true
             },
             order.id
@@ -109,7 +109,7 @@ const OrderNotPaid: React.FC<OrderNotPaidProps> = ({ orders }) => {
           }
           updateOrder(
             {
-              ...order,
+              deliveryDate: unixTimestampToDate(order.deliveryDate).toString(),
               isPaid: true
             },
             order.id

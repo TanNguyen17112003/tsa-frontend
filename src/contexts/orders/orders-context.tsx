@@ -6,6 +6,7 @@ import useFunction, {
 } from 'src/hooks/use-function';
 import { Order, OrderDetail, OrderStatus } from 'src/types/order';
 import { OrderFormProps } from 'src/api/orders';
+import { dateToUnixTimestamp } from 'src/utils/format-time-currency';
 
 interface ContextValue {
   getOrdersApi: UseFunctionReturnType<FormData, OrderDetail[]>;
@@ -63,7 +64,16 @@ const OrdersProvider = ({ children }: { children: ReactNode }) => {
       try {
         const updatedOrder = await OrdersApi.updateOrder(order, orderId);
         getOrdersApi.setData(
-          (getOrdersApi.data || []).map((c) => (c.id === orderId ? updatedOrder.data : c))
+          (getOrdersApi.data || []).map((c) =>
+            c.id === orderId
+              ? Object.assign(c, {
+                  ...order,
+                  deliveryDate: order.deliveryDate
+                    ? dateToUnixTimestamp(new Date(order.deliveryDate))
+                    : undefined
+                })
+              : c
+          )
         );
       } catch (error) {
         throw error;

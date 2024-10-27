@@ -126,6 +126,7 @@ export interface AuthContextType extends State {
   sendEmailVerification: () => Promise<any>;
   signOut: () => Promise<void>;
   signOutAnonymously: () => Promise<void>;
+  refreshToken: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType>({
@@ -142,7 +143,8 @@ export const AuthContext = createContext<AuthContextType>({
   applyActionCode: () => Promise.resolve(),
   sendEmailVerification: () => Promise.resolve(),
   signOut: () => Promise.resolve(),
-  signOutAnonymously: () => Promise.resolve()
+  signOutAnonymously: () => Promise.resolve(),
+  refreshToken: () => Promise.resolve()
 });
 
 interface AuthProviderProps {
@@ -236,6 +238,7 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
         }
 
         CookieHelper.setItem(CookieKeys.TOKEN, response.accessToken);
+        CookieHelper.setItem(CookieKeys.REFRESH_TOKEN, response.refreshToken);
         localStorage.setItem('user_data', JSON.stringify(response.userInfo));
 
         dispatch({
@@ -410,6 +413,7 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
     try {
       await signOut(auth);
       CookieHelper.removeItem(CookieKeys.TOKEN);
+      CookieHelper.removeItem(CookieKeys.REFRESH_TOKEN);
       dispatch({
         type: ActionType.INITIALIZE,
         payload: {
@@ -430,6 +434,7 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
     try {
       await signOut(auth);
       CookieHelper.removeItem(CookieKeys.TOKEN);
+      CookieHelper.removeItem(CookieKeys.REFRESH_TOKEN);
     } catch (error) {
       if (errorMap[(error as any).code]) {
         console.log(errorMap[(error as any).code]);
@@ -437,6 +442,27 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
       console.log(error);
     }
   }, []);
+
+  const refreshToken = useCallback(async (): Promise<void> => {
+    const refreshToken = CookieHelper.getItem(CookieKeys.REFRESH_TOKEN);
+    if (refreshToken) {
+      try {
+        const response = await UsersApi.refreshToken(refreshToken);
+        if (response && response.accessToken && response.refreshToken) {
+          CookieHelper.setItem(CookieKeys.TOKEN, response.accessToken);
+          CookieHelper.setItem(CookieKeys.REFRESH_TOKEN, response.refreshToken);
+        } else {
+          console.error('Invalid refreshToken response:', response);
+          await _signOut();
+        }
+      } catch (error) {
+        console.error('RefreshToken error:', error);
+        await _signOut();
+      }
+    } else {
+      await _signOut();
+    }
+  }, [_signOut]);
 
   useEffect(() => {
     if (state.user?.id && !fbUser) {
@@ -471,9 +497,9 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
         confirmPasswordReset: _confirmPasswordReset,
         applyActionCode: _applyActionCode,
         sendEmailVerification: _sendEmailVerification,
-
         signOut: _signOut,
-        signOutAnonymously: _signOutAnonymously
+        signOutAnonymously: _signOutAnonymously,
+        refreshToken
       }}
     >
       {children}

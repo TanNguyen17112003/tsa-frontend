@@ -7,7 +7,6 @@ import { Issuer } from 'src/utils/auth';
 import CookieHelper, { CookieKeys } from 'src/utils/cookie-helper';
 import { useRouter } from 'next/router';
 import { paths } from 'src/paths';
-import { SignUpRequest, InitialSignUpRequest } from 'src/api/users';
 
 interface State {
   isInitialized: boolean;
@@ -18,7 +17,6 @@ interface State {
 enum ActionType {
   INITIALIZE = 'INITIALIZE',
   SIGN_IN = 'SIGN_IN',
-  SIGN_UP = 'SIGN_UP',
   SIGN_OUT = 'SIGN_OUT'
 }
 
@@ -37,18 +35,11 @@ type SignInAction = {
   };
 };
 
-type SignUpAction = {
-  type: ActionType.SIGN_UP;
-  payload: {
-    user: UserDetail;
-  };
-};
-
 type SignOutAction = {
   type: ActionType.SIGN_OUT;
 };
 
-type Action = InitializeAction | SignInAction | SignUpAction | SignOutAction;
+type Action = InitializeAction | SignInAction | SignOutAction;
 
 type Handler = (state: State, action: any) => State;
 
@@ -78,15 +69,6 @@ const handlers: Record<ActionType, Handler> = {
       user
     };
   },
-  SIGN_UP: (state: State, action: SignUpAction): State => {
-    const { user } = action.payload;
-
-    return {
-      ...state,
-      isAuthenticated: true,
-      user
-    };
-  },
   SIGN_OUT: (state: State): State => ({
     ...state,
     isAuthenticated: false,
@@ -100,18 +82,16 @@ const reducer = (state: State, action: Action): State =>
 export interface AuthContextType extends State {
   issuer: Issuer.JWT;
   signIn: (email: string, password: string) => Promise<UserDetail | undefined>;
-  initiateSignUp: (request: InitialSignUpRequest) => Promise<void>;
-  completeSignUp: (request: SignUpRequest) => Promise<void>;
   signOut: () => Promise<void>;
+  refreshToken: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType>({
   ...initialState,
   issuer: Issuer.JWT,
   signIn: () => Promise.resolve(undefined),
-  initiateSignUp: () => Promise.resolve(),
-  completeSignUp: () => Promise.resolve(),
-  signOut: () => Promise.resolve()
+  signOut: () => Promise.resolve(),
+  refreshToken: () => Promise.resolve()
 });
 
 interface AuthProviderProps {
@@ -195,6 +175,7 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
         const response = await UsersApi.signIn({ email, password });
         if (response && response.accessToken && response.userInfo) {
           CookieHelper.setItem(CookieKeys.TOKEN, response.accessToken);
+          CookieHelper.setItem(CookieKeys.REFRESH_TOKEN, response.refreshToken);
           CookieHelper.setItem('user_data', JSON.stringify(response.userInfo));
           dispatch({
             type: ActionType.SIGN_IN,
@@ -215,40 +196,37 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
     [dispatch]
   );
 
-  const initiateSignUp = useCallback(async (request: InitialSignUpRequest): Promise<void> => {
-    try {
-      await UsersApi.initiateSignUp(request);
-    } catch (error) {
-      throw error;
-    }
-  }, []);
-
-  const completeSignUp = useCallback(
-    async (request: SignUpRequest): Promise<void> => {
-      const response = await UsersApi.completeSignUp(request);
-      dispatch({
-        type: ActionType.SIGN_UP,
-        payload: {
-          user: {
-            id: response.id,
-            firstName: response.firstName,
-            lastName: response.lastName,
-            phoneNumber: response.phoneNumber,
-            role: 'STUDENT',
-            createdAt: response.createdAt,
-            email: response.email
-          }
-        }
-      });
-    },
-    [dispatch]
-  );
-
   const signOut = useCallback(async (): Promise<void> => {
+    const refreshToken = CookieHelper.getItem(CookieKeys.REFRESH_TOKEN);
+    if (refreshToken) {
+      await UsersApi.signOut(refreshToken);
+    }
     CookieHelper.removeItem(CookieKeys.TOKEN);
+    CookieHelper.removeItem(CookieKeys.REFRESH_TOKEN);
     dispatch({ type: ActionType.SIGN_OUT });
     router.push(paths.auth.login);
   }, [router]);
+
+  const refreshToken = useCallback(async (): Promise<void> => {
+    const refreshToken = CookieHelper.getItem(CookieKeys.REFRESH_TOKEN);
+    if (refreshToken) {
+      try {
+        const response = await UsersApi.refreshToken(refreshToken);
+        if (response && response.accessToken && response.refreshToken) {
+          CookieHelper.setItem(CookieKeys.TOKEN, response.accessToken);
+          CookieHelper.setItem(CookieKeys.REFRESH_TOKEN, response.refreshToken);
+        } else {
+          console.error('Invalid refreshToken response:', response);
+          await signOut();
+        }
+      } catch (error) {
+        console.error('RefreshToken error:', error);
+        await signOut();
+      }
+    } else {
+      await signOut();
+    }
+  }, [signOut]);
 
   return (
     <AuthContext.Provider
@@ -256,9 +234,8 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
         ...state,
         issuer: Issuer.JWT,
         signIn,
-        initiateSignUp,
-        completeSignUp,
-        signOut
+        signOut,
+        refreshToken
       }}
     >
       {children}

@@ -5,7 +5,6 @@ import AutocompleteTextFieldMultiple from 'src/components/autocomplete-textfield
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import dayjs from 'dayjs';
 
 interface OrderFormTextFieldProps {
   type: 'text' | 'autoComplete' | 'dateTime' | 'number';
@@ -61,27 +60,14 @@ export const OrderFormTextField: FC<OrderFormTextFieldProps> = ({
     );
   }
 
-  const handleDateTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const dateValue = event.target.value;
-    const unixTimestamp = dayjs(dateValue).unix();
-    onChange({
-      target: { name, value: unixTimestamp.toString() }
-    });
-  };
-
-  const formattedValue =
-    type === 'dateTime' && typeof value === 'string'
-      ? dayjs.unix(parseInt(value)).format('YYYY-MM-DDTHH:mm')
-      : value;
-
   return (
     <OrderFormField title={title} lg={lg} xs={xs}>
       <TextField
         type={type === 'dateTime' ? 'datetime-local' : type === 'text' ? 'text' : 'number'}
         fullWidth
         variant='outlined'
-        onChange={type === 'dateTime' ? handleDateTimeChange : onChange}
-        value={formattedValue}
+        onChange={onChange}
+        value={value}
         name={name}
         placeholder={placeholder}
         select={select}

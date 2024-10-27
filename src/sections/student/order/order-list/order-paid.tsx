@@ -1,6 +1,6 @@
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
 import OrderFilter from './order-filter';
-import { Box, Typography } from '@mui/material';
+import { Box } from '@mui/material';
 import { OrderDetail } from 'src/types/order';
 import getOrderTableConfigs from './order-table-config';
 import { CustomTable } from '@components';
@@ -12,7 +12,6 @@ import OrderDetailDeleteDialog from './order-detail-delete-dialog';
 import { useOrdersContext } from 'src/contexts/orders/orders-context';
 import { formatUnixTimestamp } from 'src/utils/format-time-currency';
 import OrderDetailEditDrawer from './order-detail-edit-drawer';
-import { PaymentsApi } from 'src/api/payment';
 
 interface OrderPaidProps {
   orders: OrderDetail[];
@@ -33,7 +32,7 @@ const OrderPaid: React.FC<OrderPaidProps> = ({ orders }) => {
   const orderDetailDeleteDialog = useDialog<OrderDetail>();
   const orderDetailEditDrawer = useDrawer<OrderDetail>();
 
-  const { deleteOrder, updateOrder } = useOrdersContext();
+  const { deleteOrder } = useOrdersContext();
 
   const [selectedStatus, setSelectedStatus] = useState<string>('Tất cả');
   const [dateRange, setDateRange] = React.useState(() => {
@@ -73,55 +72,6 @@ const OrderPaid: React.FC<OrderPaidProps> = ({ orders }) => {
     [router]
   );
 
-  const handlePayment = useCallback(
-    async (order: OrderDetail) => {
-      try {
-        if (order.paymentMethod === 'MOMO') {
-          const paymentResponse = await PaymentsApi.postMomoPayment({
-            orderId: order.id,
-            amount: order.shippingFee?.toString() || '1000',
-            orderInfo: 'Thanh toán đơn hàng ' + order.checkCode + ' qua MOMO',
-            returnUrl: `${window.location.origin}/student/orders`,
-            notifyUrl: `${window.location.origin}/api/payment/momo/notify`,
-            extraData: order.id
-          });
-          if (paymentResponse && paymentResponse.payUrl) {
-            window.location.href = paymentResponse.payUrl;
-          }
-          updateOrder(
-            {
-              ...order,
-              isPaid: true
-            },
-            order.id
-          );
-        } else if (order.paymentMethod === 'CREDIT') {
-          const paymentResponse = await PaymentsApi.postPayOSPayment({
-            orderId: order.id,
-            amount: order.shippingFee || 2000,
-            description: 'Thanh toán đơn hàng',
-            returnUrl: `${window.location.origin}/student/order`,
-            cancelUrl: `${window.location.origin}/student/order`,
-            extraData: order.id
-          });
-          if (paymentResponse && paymentResponse.checkoutUrl) {
-            window.location.href = paymentResponse.checkoutUrl;
-          }
-          updateOrder(
-            {
-              ...order,
-              isPaid: true
-            },
-            order.id
-          );
-        }
-      } catch (error) {
-        console.error('Payment error:', error);
-      }
-    },
-    [updateOrder]
-  );
-
   const orderTableConfig = useMemo(() => {
     return getOrderTableConfigs({
       onClickReport: (data: OrderDetail) => {
@@ -133,12 +83,9 @@ const OrderPaid: React.FC<OrderPaidProps> = ({ orders }) => {
       onClickDelete: (data: OrderDetail) => {
         orderDetailDeleteDialog.handleOpen(data);
       },
-      onClickPayment: (data: OrderDetail) => {
-        handlePayment(data);
-      },
-      isPaid: false
+      isPaid: true
     });
-  }, [handlePayment, orderDetailReportDrawer, orderDetailDeleteDialog, orderDetailEditDrawer]);
+  }, [orderDetailReportDrawer, orderDetailDeleteDialog, orderDetailEditDrawer]);
 
   const result = useMemo(() => {
     return orders.filter((order) => {

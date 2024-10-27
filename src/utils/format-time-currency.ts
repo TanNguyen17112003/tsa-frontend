@@ -28,6 +28,10 @@ export function unixTimestampToDate(unixTimestamp: string): Date {
   return new Date(Number(unixTimestamp) * 1000);
 }
 
+export function dateToUnixTimestamp(date: Date): string {
+  return String(Math.floor(date.getTime() / 1000));
+}
+
 export function formatVNDcurrency(value: number): string {
   return new Intl.NumberFormat('vi-VN', {
     style: 'currency',

@@ -24,6 +24,7 @@ import { OrderFormProps } from 'src/api/orders';
 import { OrderFormTextField } from '../order-add/order-form-text-field';
 import { AddressData, paymentMethodOptions } from '@utils';
 import Image from 'next/image';
+import dayjs from 'dayjs';
 
 function OrderDetailEditDrawer({
   open,
@@ -55,7 +56,9 @@ function OrderDetailEditDrawer({
       dormitory: order?.dormitory || '',
       building: order?.building || '',
       room: order?.room || '',
-      deliveryDate: order?.deliveryDate ? order.deliveryDate.toString() : '',
+      deliveryDate: order?.deliveryDate
+        ? dayjs.unix(parseInt(order.deliveryDate)).format('YYYY-MM-DDTHH:mm')
+        : '',
       paymentMethod: order?.paymentMethod || 'CREDIT'
     };
   }, [order]);

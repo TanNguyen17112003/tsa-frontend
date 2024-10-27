@@ -9,9 +9,10 @@ import { SideNavSection } from './side-nav-section';
 import { NavColor } from 'src/types/settings';
 import { SIDE_NAV_WIDTH } from 'src/config';
 import { useRouter } from 'next/router';
-import { Box, Stack, Typography, Button, Avatar } from '@mui/material';
+import { Box, Stack, Typography, Button, Avatar, Tooltip } from '@mui/material';
 import { paths } from 'src/paths';
 import { Add } from 'iconsax-react';
+import { Bell } from 'lucide-react';
 
 interface SideNavProps {
   color?: NavColor;
@@ -39,10 +40,15 @@ export const SideNav: FC<SideNavProps> = (props) => {
         <Stack className='flex-1'>
           <nav className='flex flex-col justify-between space-y-5 px-5 py-3 h-full'>
             <Box className='flex flex-col space-y-5'>
-              <Stack>
-                <Typography>TSA</Typography>
-                <Typography className='text-xs opacity-60'>Hệ thống quản lý đơn hàng</Typography>
-              </Stack>
+              <Box className='flex justify-between items-center'>
+                <Stack>
+                  <Typography>TSA</Typography>
+                  <Typography className='text-xs opacity-60'>Hệ thống quản lý đơn hàng</Typography>
+                </Stack>
+                <Tooltip title='Thông báo' className='cursor-pointer'>
+                  <Bell />
+                </Tooltip>
+              </Box>
               <Stack>
                 <Button
                   variant='contained'

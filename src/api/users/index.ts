@@ -1,5 +1,6 @@
 import type { User, UserDetail } from 'src/types/user';
 import { apiDelete, apiGet, apiPatch, apiPost, apiPut, getFormData } from 'src/utils/api-request';
+import CookieHelper, { CookieKeys } from 'src/utils/cookie-helper';
 
 type SignInRequest = {
   email: string;
@@ -13,6 +14,7 @@ type SignInResponse = {
 };
 
 type FirebaseSignInResponse = {
+  refreshToken(REFRESH_TOKEN: CookieKeys, refreshToken: any): unknown;
   userInfo: UserDetail;
   accessToken: string;
 };
@@ -30,12 +32,16 @@ export type SignUpRequest = {
   password: string;
   dormitory: string;
   building: string;
+  photoUrl: string;
   room: string;
   token: string;
 };
 
 export type UpdateProfileRequest = Partial<
-  Pick<SignUpRequest, 'firstName' | 'lastName' | 'phoneNumber' | 'dormitory' | 'building' | 'room'>
+  Pick<
+    SignUpRequest,
+    'firstName' | 'lastName' | 'phoneNumber' | 'dormitory' | 'building' | 'room' | 'photoUrl'
+  >
 >;
 
 export class UsersApi {
@@ -86,5 +92,13 @@ export class UsersApi {
 
   static async deleteUser(id: User['id']) {
     return await apiDelete(`/users/${id}`, {});
+  }
+
+  static async refreshToken(refreshToken: string): Promise<SignInResponse> {
+    return await apiPost('/auth/refresh', { refreshToken });
+  }
+
+  static async signOut(refreshToken: string): Promise<void> {
+    return await apiPost('/auth/signout', { refreshToken });
   }
 }

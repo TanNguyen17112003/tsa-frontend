@@ -1,4 +1,14 @@
-import { Box, Typography, Button, TextField, Grid, Card, CardContent } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Button,
+  TextField,
+  Grid,
+  Card,
+  CardContent,
+  Avatar,
+  IconButton
+} from '@mui/material';
 import { Stack } from '@mui/system';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useAuth } from 'src/hooks/use-auth';
@@ -6,9 +16,13 @@ import AccountInfoEditField from './account-info-edit-field';
 import { formatDate, formatUnixTimestamp } from 'src/utils/format-time-currency';
 import { useUsersContext } from '@contexts';
 import { AddressData } from '@utils';
+import { Camera } from 'iconsax-react';
+import UploadImageDialog from './upload-image-dialog';
+import { UploadImagesApi } from 'src/api/upload-images';
 
 function ProfileSection() {
   const { updateProfile, getUsersApi } = useUsersContext();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const user = useMemo(() => {
     return getUsersApi.data || {};
@@ -48,12 +62,48 @@ function ProfileSection() {
     [updateProfile, user]
   );
 
+  const handleUpload = useCallback(
+    async (file: File) => {
+      try {
+        const uploadedImage = await UploadImagesApi.postImage(file);
+        await updateProfile({ photoUrl: uploadedImage.secure_url });
+      } catch (error) {
+        throw error;
+      }
+    },
+    [updateProfile]
+  );
+
   return (
     <Card className='bg-white border border-1'>
       <CardContent>
         <Grid container spacing={3}>
           <Grid item xs={12} md={4}>
             <Typography variant='h6'>Quản lý thông tin</Typography>
+            <Stack marginTop={5} alignItems='center' spacing={3}>
+              <Box position='relative'>
+                <Avatar
+                  src={user?.photoUrl || ''}
+                  sx={{ width: 200, height: 200 }}
+                  className='border-2 border-black-700'
+                />
+                <IconButton
+                  sx={{
+                    position: 'absolute',
+                    bottom: 0,
+                    right: 0,
+                    backgroundColor: 'white',
+                    borderRadius: '50%'
+                  }}
+                  onClick={() => setIsDialogOpen(true)}
+                >
+                  <Camera />
+                </IconButton>
+              </Box>
+              <Typography fontStyle={'italic'} fontSize={14}>
+                *Cập nhật ảnh đại diện
+              </Typography>
+            </Stack>
           </Grid>
 
           <Grid item xs={12} md={8}>
@@ -113,6 +163,11 @@ function ProfileSection() {
           </Grid>
         </Grid>
       </CardContent>
+      <UploadImageDialog
+        open={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onUpload={handleUpload}
+      />
     </Card>
   );
 }

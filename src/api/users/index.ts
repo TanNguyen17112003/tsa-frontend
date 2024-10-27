@@ -32,7 +32,7 @@ export type SignUpRequest = {
   password: string;
   dormitory: string;
   building: string;
-  photoUrl: string;
+  photoUrl?: string;
   room: string;
   token: string;
 };

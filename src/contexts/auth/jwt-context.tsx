@@ -103,6 +103,7 @@ export interface AuthContextType extends State {
   initiateSignUp: (request: InitialSignUpRequest) => Promise<void>;
   completeSignUp: (request: SignUpRequest) => Promise<void>;
   signOut: () => Promise<void>;
+  refreshToken: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType>({
@@ -111,7 +112,8 @@ export const AuthContext = createContext<AuthContextType>({
   signIn: () => Promise.resolve(undefined),
   initiateSignUp: () => Promise.resolve(),
   completeSignUp: () => Promise.resolve(),
-  signOut: () => Promise.resolve()
+  signOut: () => Promise.resolve(),
+  refreshToken: () => Promise.resolve()
 });
 
 interface AuthProviderProps {
@@ -195,6 +197,7 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
         const response = await UsersApi.signIn({ email, password });
         if (response && response.accessToken && response.userInfo) {
           CookieHelper.setItem(CookieKeys.TOKEN, response.accessToken);
+          CookieHelper.setItem(CookieKeys.REFRESH_TOKEN, response.refreshToken);
           CookieHelper.setItem('user_data', JSON.stringify(response.userInfo));
           dispatch({
             type: ActionType.SIGN_IN,
@@ -245,10 +248,36 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
   );
 
   const signOut = useCallback(async (): Promise<void> => {
+    const refreshToken = CookieHelper.getItem(CookieKeys.REFRESH_TOKEN);
+    if (refreshToken) {
+      await UsersApi.signOut(refreshToken);
+    }
     CookieHelper.removeItem(CookieKeys.TOKEN);
+    CookieHelper.removeItem(CookieKeys.REFRESH_TOKEN);
     dispatch({ type: ActionType.SIGN_OUT });
     router.push(paths.auth.login);
   }, [router]);
+
+  const refreshToken = useCallback(async (): Promise<void> => {
+    const refreshToken = CookieHelper.getItem(CookieKeys.REFRESH_TOKEN);
+    if (refreshToken) {
+      try {
+        const response = await UsersApi.refreshToken(refreshToken);
+        if (response && response.accessToken && response.refreshToken) {
+          CookieHelper.setItem(CookieKeys.TOKEN, response.accessToken);
+          CookieHelper.setItem(CookieKeys.REFRESH_TOKEN, response.refreshToken);
+        } else {
+          console.error('Invalid refreshToken response:', response);
+          await signOut();
+        }
+      } catch (error) {
+        console.error('RefreshToken error:', error);
+        await signOut();
+      }
+    } else {
+      await signOut();
+    }
+  }, [signOut]);
 
   return (
     <AuthContext.Provider
@@ -258,7 +287,8 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
         signIn,
         initiateSignUp,
         completeSignUp,
-        signOut
+        signOut,
+        refreshToken
       }}
     >
       {children}

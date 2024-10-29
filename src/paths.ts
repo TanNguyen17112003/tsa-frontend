@@ -28,6 +28,9 @@ export const paths = {
     account: { index: '/student/account' },
     report: { index: '/student/report' }
   },
+  notifications: {
+    index: '/notifications'
+  },
   landing: {
     index: '/landing'
   },

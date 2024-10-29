@@ -256,7 +256,7 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
     CookieHelper.removeItem(CookieKeys.REFRESH_TOKEN);
     dispatch({ type: ActionType.SIGN_OUT });
     router.push(paths.auth.login);
-  }, [router]);
+  }, []);
 
   const refreshToken = useCallback(async (): Promise<void> => {
     const refreshToken = CookieHelper.getItem(CookieKeys.REFRESH_TOKEN);

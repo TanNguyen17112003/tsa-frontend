@@ -55,7 +55,7 @@ function OrderDetailEditDrawer({
   }, [order]);
 
   const handleSubmitOrderHelper = useFunction(handleSubmitOrder, {
-    successMessage: 'Gửi khiếu nại thành công!'
+    successMessage: 'Cập nhật khiếu nại thành công!'
   });
 
   const formik = useFormik<OrderFormProps>({

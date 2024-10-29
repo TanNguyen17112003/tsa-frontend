@@ -14,6 +14,7 @@ import OrderUploadSection from './order-upload-section';
 import { OrderFormProps } from 'src/api/orders';
 import { useOrdersContext } from 'src/contexts/orders/orders-context';
 import { initialOrderForm } from 'src/types/order';
+import dayjs from 'dayjs';
 
 const OrderAddPage = () => {
   const [resetUploadSection, setResetUploadSection] = useState('');
@@ -47,9 +48,11 @@ const OrderAddPage = () => {
             }))
           );
         } else {
+          console.log(formik.values.deliveryDate);
           await createOrder([
             {
               ...values,
+              deliveryDate: formik.values.deliveryDate,
               studentId: user?.id || firebaseUser?.id
             }
           ]);
@@ -59,7 +62,15 @@ const OrderAddPage = () => {
         showSnackbarError('Có lỗi xảy ra');
       }
     },
-    [createOrder, showSnackbarError, showSnackbarSuccess, orderList, user?.id, firebaseUser?.id]
+    [
+      createOrder,
+      showSnackbarError,
+      showSnackbarSuccess,
+      orderList,
+      user?.id,
+      firebaseUser?.id,
+      formik
+    ]
   );
 
   const handleSubmitOrderHelper = useFunction(handleSubmitOrder);

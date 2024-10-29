@@ -1,6 +1,5 @@
 import { Box, Typography, Stack } from '@mui/material';
 import React from 'react';
-import DateRangePickerTextField from 'src/components/date-range-picker-textfield';
 import AdvancedFilter from 'src/components/advanced-filter/advanced-filter';
 import { Filter } from 'src/types/filter';
 

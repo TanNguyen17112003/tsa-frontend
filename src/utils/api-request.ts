@@ -1,5 +1,7 @@
 import CookieHelper, { CookieKeys } from './cookie-helper';
 import { UsersApi } from 'src/api/users';
+import Router from 'next/router';
+import { paths } from 'src/paths';
 
 export const API_HOST = process.env.NEXT_PUBLIC_API_HOST;
 
@@ -55,6 +57,19 @@ const apiFetch = async (input: RequestInfo | URL, init?: RequestInit | undefined
     const data = JSON.stringify(result);
     return JSON.parse(data, reviver);
   } catch (error) {
+    if (error instanceof Error && error.message.includes('401')) {
+      try {
+        const newAccessToken = await refreshToken();
+        if (newAccessToken) {
+          const headers = new Headers(init?.headers);
+          headers.set('Authorization', 'Bearer ' + newAccessToken);
+          return await apiFetch(input, { ...init, headers });
+        }
+      } catch (refreshError) {
+        Router.push(paths.auth.login);
+        throw refreshError;
+      }
+    }
     throw error;
   }
 };
@@ -81,30 +96,10 @@ const refreshToken = async () => {
   }
 };
 
-const apiFetchWithRetry = async (input: RequestInfo | URL, init?: RequestInit | undefined) => {
-  try {
-    return await apiFetch(input, init);
-  } catch (error) {
-    if (error instanceof Error && error.message.includes('401')) {
-      try {
-        const newAccessToken = await refreshToken();
-        if (newAccessToken) {
-          const headers = new Headers(init?.headers);
-          headers.set('Authorization', 'Bearer ' + newAccessToken);
-          return await apiFetch(input, { ...init, headers });
-        }
-      } catch (refreshError) {
-        throw refreshError;
-      }
-    }
-    throw error;
-  }
-};
-
 export const apiPost = async (query: string, body: any) => {
   const isFormData = body instanceof FormData;
   const headers = await getRequestHeaders('POST', isFormData);
-  return await apiFetchWithRetry(getRequestUrl(query), {
+  return await apiFetch(getRequestUrl(query), {
     method: 'POST',
     headers,
     body: isFormData ? body : JSON.stringify(body)
@@ -114,7 +109,7 @@ export const apiPost = async (query: string, body: any) => {
 export const apiDelete = async (query: string, body: any) => {
   const isFormData = body instanceof FormData;
   const headers = await getRequestHeaders('DELETE', isFormData);
-  return await apiFetchWithRetry(getRequestUrl(query), {
+  return await apiFetch(getRequestUrl(query), {
     method: 'DELETE',
     headers,
     body: isFormData ? body : JSON.stringify(body)
@@ -124,7 +119,7 @@ export const apiDelete = async (query: string, body: any) => {
 export const apiPut = async (query: string, body: any) => {
   const isFormData = body instanceof FormData;
   const headers = await getRequestHeaders('PUT', isFormData);
-  return await apiFetchWithRetry(getRequestUrl(query), {
+  return await apiFetch(getRequestUrl(query), {
     method: 'PUT',
     headers,
     body: isFormData ? body : JSON.stringify(body)
@@ -134,7 +129,7 @@ export const apiPut = async (query: string, body: any) => {
 export const apiPatch = async (query: string, body: any) => {
   const isFormData = body instanceof FormData;
   const headers = await getRequestHeaders('PATCH', isFormData);
-  return await apiFetchWithRetry(getRequestUrl(query), {
+  return await apiFetch(getRequestUrl(query), {
     method: 'PATCH',
     headers,
     body: isFormData ? body : JSON.stringify(body)
@@ -143,7 +138,7 @@ export const apiPatch = async (query: string, body: any) => {
 
 export const apiGet = async (query: string, body?: any) => {
   const headers = await getRequestHeaders('GET');
-  return await apiFetchWithRetry(getRequestUrl(query, body), {
+  return await apiFetch(getRequestUrl(query, body), {
     method: 'GET',
     headers
   });

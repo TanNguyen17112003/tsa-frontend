@@ -59,7 +59,15 @@ const OrderAddPage = () => {
         showSnackbarError('Có lỗi xảy ra');
       }
     },
-    [createOrder, showSnackbarError, showSnackbarSuccess, orderList, user?.id, firebaseUser?.id]
+    [
+      createOrder,
+      showSnackbarError,
+      showSnackbarSuccess,
+      orderList,
+      user?.id,
+      firebaseUser?.id,
+      formik
+    ]
   );
 
   const handleSubmitOrderHelper = useFunction(handleSubmitOrder);

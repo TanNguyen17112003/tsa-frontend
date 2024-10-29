@@ -1,7 +1,7 @@
 import { Box, Stack, Typography, Stepper, Step, StepLabel } from '@mui/material';
 import React, { useCallback, useState, useEffect } from 'react';
 import { Box1, Edit } from 'iconsax-react';
-import { BikeIcon } from 'lucide-react';
+import { PiMotorcycle } from 'react-icons/pi';
 
 interface LandingFlowProps {
   image: React.ReactNode;
@@ -23,7 +23,7 @@ export const LandingFlow = () => {
       description: 'Sinh viên nhập liệu thông tin đơn hàng lên hệ thống'
     },
     {
-      image: <BikeIcon size={'70%'} />,
+      image: <PiMotorcycle size={'70%'} />,
       title: 'Giao hàng',
       description: 'Quản trị hệ thống tiến hành chỉ định nhân viên giao hàng'
     }

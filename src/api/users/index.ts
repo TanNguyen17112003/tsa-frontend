@@ -94,7 +94,7 @@ export class UsersApi {
     return await apiDelete(`/users/${id}`, {});
   }
 
-  static async refreshToken(refreshToken: string): Promise<SignInResponse> {
+  static async refreshToken(refreshToken: string): Promise<Partial<SignInResponse>> {
     return await apiPost('/auth/refresh', { refreshToken });
   }
 

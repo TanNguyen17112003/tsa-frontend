@@ -8,8 +8,7 @@ import {
   NotificationStatus,
   Setting2
 } from 'iconsax-react';
-import { Bike } from 'lucide-react';
-
+import { PiMotorcycle } from 'react-icons/pi';
 export const getDashboardAdminConfigs = () => {
   return [
     {
@@ -28,7 +27,7 @@ export const getDashboardAdminConfigs = () => {
         {
           title: 'Quản lý chuyến đi',
           path: paths.dashboard.delivery.index,
-          icon: <Bike className='h-6 w-6' />
+          icon: <PiMotorcycle className='h-6 w-6' />
         },
         {
           title: 'Quản lý nhân viên',

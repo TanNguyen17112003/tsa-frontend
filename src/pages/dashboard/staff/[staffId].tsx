@@ -12,7 +12,7 @@ import StaffDetailOrderChart from 'src/sections/admin/staff/staff-detail/staff-d
 import StaffDetailPaymentChart from 'src/sections/admin/staff/staff-detail/staff-detail-payment-chart';
 import AnaLysticCard, { AnaLysticCardProps } from 'src/sections/admin/analystic-card';
 import { Box1 } from 'iconsax-react';
-import { Bike } from 'lucide-react';
+import { PiMotorcycle } from 'react-icons/pi';
 import { DeliveriesApi } from 'src/api/deliveries';
 import { OrdersApi } from 'src/api/orders';
 import useFunction from 'src/hooks/use-function';
@@ -126,7 +126,7 @@ const Page: PageType = () => {
         changeValue:
           (thisWeekDeliveries.length - lastWeekDeliveries.length) / lastWeekDeliveries.length,
         type: 'WEEK',
-        icon: <Bike fontVariant={'bold'} />,
+        icon: <PiMotorcycle fontVariant={'bold'} />,
         iconColor: '#4AD991',
         backgroundColor: '#D9F7E8'
       }

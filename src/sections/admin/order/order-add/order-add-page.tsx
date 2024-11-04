@@ -42,15 +42,13 @@ const OrderAddPage = () => {
         if (orderList && orderList.length > 0) {
           await createOrder(
             orderList.map((order) => ({
-              ...order,
-              adminId: user?.id || firebaseUser?.id
+              ...order
             }))
           );
         } else {
           await createOrder([
             {
-              ...values,
-              adminId: user?.id || firebaseUser?.id
+              ...values
             }
           ]);
         }

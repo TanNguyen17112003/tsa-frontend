@@ -1,68 +1,64 @@
-import React, { useEffect, useState } from 'react';
-// import dynamic from 'next/dynamic';
-import { Card, Typography, Stack } from '@mui/material';
-// import 'leaflet/dist/leaflet.css';
-// import L from 'leaflet';
-
-// import markerIcon from 'leaflet/dist/images/marker-icon.png';
-// import markerShadow from 'leaflet/dist/images/marker-shadow.png';
-
-// const MapContainer = dynamic(() => import('react-leaflet').then((mod) => mod.MapContainer), {
-//   ssr: false
-// });
-// const TileLayer = dynamic(() => import('react-leaflet').then((mod) => mod.TileLayer), {
-//   ssr: false
-// });
-// const Marker = dynamic(() => import('react-leaflet').then((mod) => mod.Marker), { ssr: false });
-// const Popup = dynamic(() => import('react-leaflet').then((mod) => mod.Popup), { ssr: false });
-
-// const DefaultIcon = L.icon({
-//   iconUrl: markerIcon.src,
-//   shadowUrl: markerShadow.src,
-//   iconAnchor: [12, 41],
-//   popupAnchor: [1, -34],
-//   shadowSize: [41, 41]
-// });
-
-// L.Marker.prototype.options.icon = DefaultIcon;
+import React, { useState, useEffect } from 'react';
+import {
+  TextField,
+  List,
+  ListItem,
+  ListItemText,
+  CircularProgress,
+  Typography
+} from '@mui/material';
+import { MapboxsApi } from 'src/api/mapboxs';
+import { AddressItem } from 'src/types/mapbox';
 
 function OrderMap() {
-  //   const [position, setPosition] = useState<[number, number] | null>(null);
+  const [searchText, setSearchText] = useState('');
+  const [addresses, setAddresses] = useState<AddressItem[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  //   useEffect(() => {
-  //     if (typeof window !== 'undefined') {
-  //       navigator.geolocation.getCurrentPosition(
-  //         (pos) => {
-  //           const { latitude, longitude } = pos.coords;
-  //           setPosition([latitude, longitude]);
-  //         },
-  //         (err) => {
-  //           console.error(err);
-  //         }
-  //       );
-  //     }
-  //   }, []);
+  useEffect(() => {
+    const fetchAddresses = async () => {
+      if (searchText.trim() === '') {
+        setAddresses([]);
+        return;
+      }
+      setLoading(true);
+      try {
+        const response = await MapboxsApi.getAddresses(searchText);
+        setAddresses(response.suggestions || []);
+      } catch (error) {
+        console.error('Error fetching addresses:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const delayDebounceFn = setTimeout(() => {
+      fetchAddresses();
+    }, 300);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchText]);
 
   return (
-    // <Stack spacing={2}>
-    //   <Typography variant='h6'>Vị trí hiện tại của bạn</Typography>
-    //   <Card className='p-4'>
-    //     {position ? (
-    //       <MapContainer center={position} zoom={13} style={{ height: '400px', width: '100%' }}>
-    //         <TileLayer
-    //           url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-    //           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    //         />
-    //         <Marker position={position}>
-    //           <Popup>Bạn đang ở đây.</Popup>
-    //         </Marker>
-    //       </MapContainer>
-    //     ) : (
-    //       <Typography variant='body2'>Đang xác định vị trí...</Typography>
-    //     )}
-    //   </Card>
-    // </Stack>
-    <></>
+    <div className='p-4'>
+      <TextField
+        label='Search Address'
+        variant='outlined'
+        fullWidth
+        value={searchText}
+        onChange={(e) => setSearchText(e.target.value)}
+        className='mb-4'
+      />
+      {loading && <CircularProgress className='mb-4' />}
+      <List className='bg-white rounded-lg shadow-lg'>
+        {addresses.map((address, index) => (
+          <ListItem key={index} className='hover:bg-gray-100 cursor-pointer'>
+            <ListItemText primary={<Typography>{address.full_address}</Typography>} />
+          </ListItem>
+        ))}
+      </List>
+      <>{JSON.stringify(addresses)}</>
+    </div>
   );
 }
 

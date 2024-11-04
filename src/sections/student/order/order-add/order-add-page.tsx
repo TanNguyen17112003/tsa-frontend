@@ -43,8 +43,7 @@ const OrderAddPage = () => {
         if (orderList && orderList.length > 0) {
           await createOrder(
             orderList.map((order) => ({
-              ...order,
-              studentId: user?.id || firebaseUser?.id
+              ...order
             }))
           );
         } else {
@@ -52,8 +51,7 @@ const OrderAddPage = () => {
           await createOrder([
             {
               ...values,
-              deliveryDate: formik.values.deliveryDate,
-              studentId: user?.id || firebaseUser?.id
+              deliveryDate: formik.values.deliveryDate
             }
           ]);
         }

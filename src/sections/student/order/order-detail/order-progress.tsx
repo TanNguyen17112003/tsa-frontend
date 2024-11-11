@@ -8,7 +8,6 @@ import {
   TimelineContent,
   TimelineDot
 } from '@mui/lab';
-import { Box1, Truck, Routing2, Star, Warning2 } from 'iconsax-react';
 import { OrderDetail } from 'src/types/order';
 import { orderStatusIconList } from 'src/types/order';
 import { formatDate, formatUnixTimestamp } from 'src/utils/format-time-currency';
@@ -75,14 +74,6 @@ const OrderProgress: React.FC<OrderProgressProps> = ({ order }) => {
             </Box>
           </Grid>
         </Grid>
-        <Stack direction='row' justifyContent={'space-between'}>
-          <Button variant='contained' color='success' startIcon={<Star size={24} />}>
-            Đánh giá
-          </Button>
-          <Button variant='contained' color='success' startIcon={<Warning2 size={24} />}>
-            Theo dõi chi tiết
-          </Button>
-        </Stack>
       </Card>
     </Stack>
   );

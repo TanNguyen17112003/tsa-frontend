@@ -8,7 +8,6 @@ import {
   TimelineContent,
   TimelineDot
 } from '@mui/lab';
-import { Box1, Truck, Routing2, Star, Warning2 } from 'iconsax-react';
 import { OrderDetail } from 'src/types/order';
 import { orderStatusIconList } from 'src/types/order';
 import { formatDate, formatUnixTimestamp } from 'src/utils/format-time-currency';

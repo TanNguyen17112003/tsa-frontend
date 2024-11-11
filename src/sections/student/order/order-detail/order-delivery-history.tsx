@@ -2,8 +2,10 @@ import React, { useMemo } from 'react';
 import OrderProgress from './order-progress';
 import OrderStaff from './order-staff';
 import OrderMap from './order-map';
-import { Stack, Box, Typography, Avatar } from '@mui/material';
+import { Stack, Box, Typography, Divider } from '@mui/material';
 import { OrderDetail } from 'src/types/order';
+import noEmployeeImage from 'public/ui/no-employee.jpg';
+import Image from 'next/image';
 
 interface OrderDeliveryHistoryProps {
   order: OrderDetail;
@@ -11,18 +13,29 @@ interface OrderDeliveryHistoryProps {
 
 const OrderDeliveryHistory: React.FC<OrderDeliveryHistoryProps> = ({ order }) => {
   return (
-    <Box display='flex' gap={2} alignItems={'center'}>
+    <Box display='flex' gap={2}>
       <Stack spacing={3} width='40%'>
         <OrderProgress order={order} />
+        <Divider className='border-black' />
         {order.shipperId ? (
           <OrderStaff order={order} />
         ) : (
-          <Typography fontWeight={'bold'} color='error'>
-            Đơn hàng chưa được chỉ định!
-          </Typography>
+          <Stack gap={2}>
+            <Typography variant='h6'>Thông tin nhân viên phụ trách</Typography>
+            <Typography fontWeight={'bold'} color='error'>
+              Đơn hàng chưa được chỉ định!
+            </Typography>
+            <Image
+              src={noEmployeeImage}
+              alt='No employee'
+              width={300}
+              height={300}
+              className='self-center'
+            />
+          </Stack>
         )}
       </Stack>
-      <Stack width='60%'>
+      <Stack width='60%' className='border border-l-gray-500'>
         <OrderMap order={order} />
       </Stack>
     </Box>

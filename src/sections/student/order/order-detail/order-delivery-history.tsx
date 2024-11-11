@@ -23,7 +23,7 @@ const OrderDeliveryHistory: React.FC<OrderDeliveryHistoryProps> = ({ order }) =>
         )}
       </Stack>
       <Stack width='60%'>
-        <OrderMap />
+        <OrderMap order={order} />
       </Stack>
     </Box>
   );

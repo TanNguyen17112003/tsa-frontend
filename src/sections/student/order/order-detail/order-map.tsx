@@ -1,16 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import {
-  TextField,
-  List,
-  ListItem,
-  ListItemText,
-  CircularProgress,
-  Box,
-  Typography,
-  Stack
-} from '@mui/material';
+import { Box, Typography, Stack } from '@mui/material';
 import { MapboxsApi } from 'src/api/mapboxs';
-import { AddressItem } from 'src/types/mapbox';
 import Map, { Marker, Source, Layer } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import shipperImage from 'public/ui/background-auth.png';
@@ -24,6 +14,10 @@ const MAPBOX_ACCESS_TOKEN =
 const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
   const [direction, setDirection] = useState<any>(null);
   const [currentLocation, setCurrentLocation] = useState<[number, number] | null>(null);
+  const [shipperCoordinate, setShipperCoordinate] = useState<[number, number]>([
+    106.78182172317632, 10.881903320810418
+  ]);
+  const [routeCoordinates, setRouteCoordinates] = useState<[number, number][]>([]);
   const [mapLoaded, setMapLoaded] = useState(false);
 
   const exactOrderLocation = useMemo(() => {
@@ -32,7 +26,6 @@ const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
     });
     return foundCoordinate?.value;
   }, [order, coordinateList]);
-  const shipperCoordinate = [106.78182172317632, 10.881903320810418];
 
   useEffect(() => {
     const fetchCurrentLocation = () => {
@@ -63,6 +56,7 @@ const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
             { latitude: exactOrderLocation[0], longitude: exactOrderLocation[1] }
           );
           setDirection(direction);
+          setRouteCoordinates(direction.routes[0].geometry.coordinates);
         }
       } catch (error) {
         console.error('Error fetching direction:', error);
@@ -74,6 +68,20 @@ const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
     }
   }, [shipperCoordinate, exactOrderLocation]);
 
+  useEffect(() => {
+    let index = 0;
+    const interval = setInterval(() => {
+      if (routeCoordinates.length > 0 && index < routeCoordinates.length) {
+        const stepSize = 2;
+        index = Math.min(index + stepSize, routeCoordinates.length - 1);
+        const [lng, lat] = routeCoordinates[index];
+        setShipperCoordinate([lng, lat]);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [routeCoordinates]);
+
   const directionCoordinates = useMemo(
     () => direction?.routes[0]?.geometry?.coordinates,
     [direction]
@@ -82,8 +90,8 @@ const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
   return (
     <Box className='p-4'>
       <Stack direction={'row'} alignItems={'center'} gap={1} marginBottom={1}>
-        <Typography fontWeight={'bold'}>Địa chỉ đơn hàng #{order.checkCode}:</Typography>
-        <Typography>
+        <Typography>Địa chỉ đơn hàng #{order.checkCode}:</Typography>
+        <Typography fontWeight={'bold'}>
           Phòng {order.room}, Tòa {order.building}, Kí túc xá khu {order.dormitory}
         </Typography>
       </Stack>
@@ -148,7 +156,7 @@ const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
               {shipperCoordinate && (
                 <Marker longitude={shipperCoordinate[0]} latitude={shipperCoordinate[1]}>
                   <div className='marker'>
-                    <img src={shipperImage.src} alt='Student' className='w-12 h-12' />
+                    <img src={shipperImage.src} alt='Shipper' className='w-12 h-12' />
                   </div>
                 </Marker>
               )}

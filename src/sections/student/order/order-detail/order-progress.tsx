@@ -75,14 +75,6 @@ const OrderProgress: React.FC<OrderProgressProps> = ({ order }) => {
             </Box>
           </Grid>
         </Grid>
-        <Stack direction='row' justifyContent={'space-between'}>
-          <Button variant='contained' color='success' startIcon={<Star size={24} />}>
-            Đánh giá
-          </Button>
-          <Button variant='contained' color='success' startIcon={<Warning2 size={24} />}>
-            Theo dõi chi tiết
-          </Button>
-        </Stack>
       </Card>
     </Stack>
   );

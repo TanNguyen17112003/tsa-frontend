@@ -2,7 +2,7 @@ import { Box, Button, Tab, Tabs } from '@mui/material';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard';
 import type { Page as PageType } from 'src/types/page';
 import { Add } from '@mui/icons-material';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { paths } from 'src/paths';
 import Link from 'next/link';
 import { Stack } from '@mui/system';
@@ -13,7 +13,9 @@ import { useRouter } from 'next/router';
 import OrderDetailPage from './[orderId]';
 import OrdersProvider from 'src/contexts/orders/orders-context';
 import { useOrdersContext } from 'src/contexts/orders/orders-context';
-import { useAuth } from '@hooks';
+import { useAuth, useDialog, useFirebaseAuth } from '@hooks';
+import useFunction from 'src/hooks/use-function';
+import UpdateInformationDialog, { InformationProps } from '../update-information-dialog';
 
 const tabs = [
   {
@@ -27,6 +29,40 @@ const tabs = [
 ];
 
 const Page: PageType = () => {
+  const updateInformationDialog = useDialog();
+  const { user: firebaseUser, updateProfile } = useFirebaseAuth();
+
+  useEffect(() => {
+    if (
+      firebaseUser &&
+      !firebaseUser.dormitory &&
+      !firebaseUser.room &&
+      !firebaseUser.building &&
+      !firebaseUser.phoneNumber
+    ) {
+      updateInformationDialog.handleOpen();
+    }
+  }, [firebaseUser]);
+
+  const handleUpdateInformation = useCallback(
+    async (data: InformationProps) => {
+      try {
+        await updateProfile?.({
+          dormitory: data.dormitory,
+          building: data.building,
+          room: data.room,
+          phoneNumber: data.phoneNumber
+        });
+      } catch (error) {
+        throw error;
+      }
+    },
+    [firebaseUser, updateProfile]
+  );
+
+  const handleUpdateInformationHelper = useFunction(handleUpdateInformation, {
+    successMessage: 'Cập nhật thông tin thành công!'
+  });
   const [tab, setTab] = useState(tabs[0].key);
   const { user } = useAuth();
   const router = useRouter();
@@ -102,6 +138,11 @@ const Page: PageType = () => {
           {tab === tabs[1].key && <OrderNotPaid orders={notPaidOrders} />}
         </Stack>
       )}
+      <UpdateInformationDialog
+        open={updateInformationDialog.open}
+        onClose={updateInformationDialog.handleClose}
+        onSubmit={handleUpdateInformationHelper.call}
+      />
     </>
   );
 };

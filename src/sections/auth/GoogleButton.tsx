@@ -15,7 +15,7 @@ function GoogleButton() {
   const signInWithGoogleHelper = useFunction(signInWithGoogle, {
     onSuccess: () => {
       if (isMounted()) {
-        router.push(paths.student.index);
+        router.push(paths.student.order.index);
       }
     }
   });

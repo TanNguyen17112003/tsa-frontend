@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import type { Page as PageType } from 'src/types/page';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard';
 import ContentHeader from 'src/components/content-header';

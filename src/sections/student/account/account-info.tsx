@@ -12,29 +12,18 @@ import {
 import { Stack } from '@mui/system';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useAuth } from 'src/hooks/use-auth';
+import { useFirebaseAuth } from 'src/hooks/use-auth';
 import AccountInfoEditField from './account-info-edit-field';
 import { formatDate, formatUnixTimestamp } from 'src/utils/format-time-currency';
-import { useUsersContext } from '@contexts';
 import { AddressData } from '@utils';
 import { Camera } from 'iconsax-react';
 import UploadImageDialog from './upload-image-dialog';
 import { UploadImagesApi } from 'src/api/upload-images';
 
 function ProfileSection() {
-  const { updateProfile, getUsersApi } = useUsersContext();
+  const { updateProfile, user } = useAuth();
+  const { user: firebaseUser, updateProfile: updateFirebaseProfile } = useFirebaseAuth();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-  const user = useMemo(() => {
-    return getUsersApi.data || {};
-  }, [getUsersApi.data]);
-
-  const userRole = useMemo(() => {
-    return user?.role === 'ADMIN'
-      ? 'Quản trị viên'
-      : user?.role === 'STUDENT'
-        ? 'Sinh viên'
-        : 'Nhận viên';
-  }, [user]);
 
   const dormitoryList = useMemo(() => {
     return AddressData.dormitories;
@@ -53,20 +42,27 @@ function ProfileSection() {
     ) => {
       try {
         if (field) {
-          await updateProfile({ [field]: value });
+          if (user && updateProfile) {
+            await updateProfile({ [field]: value });
+          }
+          if (firebaseUser && updateFirebaseProfile) {
+            await updateFirebaseProfile({ [field]: value });
+          }
         }
       } catch (error) {
         throw error;
       }
     },
-    [updateProfile, user]
+    [updateProfile, user, firebaseUser, updateFirebaseProfile]
   );
 
   const handleUpload = useCallback(
     async (file: File) => {
       try {
         const uploadedImage = await UploadImagesApi.postImage(file);
-        await updateProfile({ photoUrl: uploadedImage.secure_url });
+        if (updateProfile) {
+          await updateProfile({ photoUrl: uploadedImage.secure_url });
+        }
       } catch (error) {
         throw error;
       }
@@ -83,7 +79,7 @@ function ProfileSection() {
             <Stack marginTop={5} alignItems='center' spacing={3}>
               <Box position='relative'>
                 <Avatar
-                  src={user?.photoUrl || ''}
+                  src={user?.photoUrl || firebaseUser?.photoUrl || ''}
                   sx={{ width: 200, height: 200 }}
                   className='border-2 border-black-700'
                 />
@@ -116,49 +112,74 @@ function ProfileSection() {
               <AccountInfoEditField
                 label='Họ'
                 type='text'
-                value={user?.lastName}
+                value={user?.lastName || firebaseUser?.lastName}
                 onSave={async (value) => await handleSave('lastName', value)}
               />
               <AccountInfoEditField
                 label='Tên'
                 type='text'
-                value={user?.firstName}
+                value={user?.firstName || firebaseUser?.firstName}
                 onSave={async (value) => await handleSave('firstName', value)}
               />
               <AccountInfoEditField
                 label='Kí túc xá'
                 type='select'
-                value={user?.dormitory || ''}
+                value={user?.dormitory || firebaseUser?.dormitory || ''}
                 onSave={async (value) => await handleSave('dormitory', value)}
                 items={dormitoryList}
               />
               <AccountInfoEditField
                 label='Tòa'
                 type='select'
-                value={user?.building || ''}
+                value={user?.building || firebaseUser?.building || ''}
                 onSave={async (value) => await handleSave('building', value)}
                 items={buildingList}
               />
               <AccountInfoEditField
                 label='Phòng'
                 type='select'
-                value={user?.room || ''}
+                value={user?.room || firebaseUser?.room || ''}
                 onSave={async (value) => await handleSave('room', value)}
                 items={roomList}
               />
               <AccountInfoEditField
                 label='Số điện thoại'
                 type='text'
-                value={user?.phoneNumber}
+                value={user?.phoneNumber || firebaseUser?.phoneNumber || ''}
                 onSave={async (value) => await handleSave('phoneNumber', value)}
               />
               <AccountInfoEditField
                 label='Thời gian tạo tài khoản'
-                value={user?.createdAt ? formatDate(formatUnixTimestamp(user?.createdAt)) : ''}
+                value={
+                  user?.createdAt
+                    ? formatDate(formatUnixTimestamp(user?.createdAt))
+                    : firebaseUser?.createdAt
+                      ? formatDate(formatUnixTimestamp(firebaseUser?.createdAt))
+                      : ''
+                }
                 disabled
               />
-              <AccountInfoEditField label='Email' type='text' value={user?.email} disabled />
-              <AccountInfoEditField label='Chức vụ' value={userRole} disabled />
+              <AccountInfoEditField
+                label='Email'
+                type='text'
+                value={user?.email || firebaseUser?.email}
+                disabled
+              />
+              <AccountInfoEditField
+                label='Chức vụ'
+                value={
+                  user
+                    ? user.role === 'STUDENT'
+                      ? 'Sinh viên'
+                      : 'Quản trị viên'
+                    : firebaseUser
+                      ? firebaseUser.role === 'STUDENT'
+                        ? 'Sinh viên'
+                        : 'Quản trị viên'
+                      : ''
+                }
+                disabled
+              />
             </Stack>
           </Grid>
         </Grid>

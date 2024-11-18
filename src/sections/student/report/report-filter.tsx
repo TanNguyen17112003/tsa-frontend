@@ -46,8 +46,8 @@ const ReportFilter: React.FC<ReportFilterProps> = (props) => {
   return (
     <Box className='flex gap-2 items-center w-full justify-between'>
       <Stack direction='row' spacing={1} width={'15%'}>
-        <Typography className='font-bold'>Số lượng khiếu nại:</Typography>
-        <Typography className='font-bold'>{props.numberOfReports}</Typography>
+        <Typography fontWeight={'bold'}>Số lượng khiếu nại:</Typography>
+        <Typography fontWeight={'bold'}>{props.numberOfReports}</Typography>
       </Stack>
       <AdvancedFilter filters={filters} />
     </Box>

@@ -2,7 +2,6 @@ import type { User as FirebaseUser } from '@firebase/auth';
 import {
   applyActionCode,
   confirmPasswordReset,
-  createUserWithEmailAndPassword,
   getAuth,
   GoogleAuthProvider,
   onAuthStateChanged,
@@ -20,11 +19,10 @@ import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
 import type { FC, ReactNode } from 'react';
 import { createContext, useCallback, useEffect, useReducer, useState } from 'react';
-import { UsersApi } from 'src/api/users';
+import { UpdateProfileRequest, UsersApi } from 'src/api/users';
 import useAppSnackbar from 'src/hooks/use-app-snackbar';
 import { errorMap, firebaseApp } from 'src/libs/firebase';
 import { paths } from 'src/paths';
-import { RegisterValues } from 'src/types/auth/auth-register';
 import type { User, UserDetail } from 'src/types/user';
 import { Issuer } from 'src/utils/auth';
 import CookieHelper, { CookieKeys } from 'src/utils/cookie-helper';
@@ -40,11 +38,11 @@ interface State {
 enum ActionType {
   INITIALIZE = 'INITIALIZE',
   SIGN_IN = 'SIGN_IN',
-  UPDATE = 'UPDATE'
+  UPDATE_PROFILE = 'UPDATE_PROFILE'
 }
 
 type UpdateAction = {
-  type: ActionType.UPDATE;
+  type: ActionType.UPDATE_PROFILE;
   payload: {
     user: Partial<UserDetail>;
   };
@@ -94,7 +92,7 @@ const handlers: Record<ActionType, Handler> = {
       user
     };
   },
-  UPDATE: (state: State, action: UpdateAction): State => {
+  UPDATE_PROFILE: (state: State, action: UpdateAction): State => {
     const { user } = action.payload;
     return {
       ...state,
@@ -108,43 +106,26 @@ const reducer = (state: State, action: Action): State =>
 
 export interface AuthContextType extends State {
   issuer: Issuer.Firebase;
-  register: (value: RegisterValues) => Promise<any>;
   changePassword: (
     currentPassword: string,
     newPassword: string,
     reTypeNewPassword: string
   ) => Promise<any>;
-
-  signInWithEmailAndPassword: (email: string, password: string) => Promise<UserDetail | null>;
   signInWithGoogle: () => Promise<UserDetail | null>;
-  signInAnonymously: () => Promise<UserDetail | null>;
 
-  sendPasswordResetEmail: (email: string) => Promise<any>;
-  verifyPasswordResetCode: (oobCode: string) => Promise<any>;
-  confirmPasswordReset: (oobCode: string, newPassword: string) => Promise<any>;
-  applyActionCode: (oobCode: string) => Promise<any>;
-  sendEmailVerification: () => Promise<any>;
   signOut: () => Promise<void>;
-  signOutAnonymously: () => Promise<void>;
   refreshToken: () => Promise<void>;
+  updateProfile?: (request: UpdateProfileRequest) => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType>({
   ...initialState,
   issuer: Issuer.Firebase,
-  register: () => Promise.resolve(),
   changePassword: () => Promise.resolve(),
-  signInWithEmailAndPassword: () => Promise.resolve(null),
   signInWithGoogle: () => Promise.resolve(null),
-  signInAnonymously: () => Promise.resolve(null),
-  sendPasswordResetEmail: () => Promise.resolve(),
-  verifyPasswordResetCode: () => Promise.resolve(),
-  confirmPasswordReset: () => Promise.resolve(),
-  applyActionCode: () => Promise.resolve(),
-  sendEmailVerification: () => Promise.resolve(),
   signOut: () => Promise.resolve(),
-  signOutAnonymously: () => Promise.resolve(),
-  refreshToken: () => Promise.resolve()
+  refreshToken: () => Promise.resolve(),
+  updateProfile: () => Promise.resolve()
 });
 
 interface AuthProviderProps {
@@ -152,7 +133,6 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: FC<AuthProviderProps> = (props) => {
-  const router = useRouter();
   const { children } = props;
   const [state, dispatch] = useReducer(reducer, initialState);
   const [fbUser, setFbUser] = useState<FirebaseUser | null>(null);
@@ -210,7 +190,7 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
         }
       });
     }
-  }, [router]);
+  }, []);
 
   useEffect(
     () => {
@@ -237,18 +217,19 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
           throw new Error('Get token failed!');
         }
 
+        const userInfo: UserDetail = { ...response.userInfo, authMethod: 'firebase' };
         CookieHelper.setItem(CookieKeys.TOKEN, response.accessToken);
         CookieHelper.setItem(CookieKeys.REFRESH_TOKEN, response.refreshToken);
-        localStorage.setItem('user_data', JSON.stringify(response.userInfo));
+        localStorage.setItem('user_data', JSON.stringify(userInfo));
 
         dispatch({
           type: ActionType.SIGN_IN,
           payload: {
-            user: response.userInfo
+            user: userInfo
           }
         });
         setFbUser(user);
-        return response.userInfo;
+        return userInfo;
       } catch (error) {
         if (errorMap[(error as any).code]) {
           throw new Error(errorMap[(error as any).code]);
@@ -270,21 +251,6 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
       throw error;
     }
   }, [getToken]);
-
-  const _signInWithEmailAndPassword = useCallback(
-    async (email: string, password: string): Promise<UserDetail> => {
-      try {
-        const { user } = await signInWithEmailAndPassword(auth, email, password);
-        return await getToken(user);
-      } catch (error) {
-        if (errorMap[(error as any).code]) {
-          throw new Error(errorMap[(error as any).code]);
-        }
-        throw error;
-      }
-    },
-    [getToken]
-  );
 
   const signInWithGoogle = useCallback(async (): Promise<UserDetail> => {
     try {
@@ -329,86 +295,6 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
     [state.user]
   );
 
-  const register = useCallback(async (value: RegisterValues) => {
-    const { email, password, lastName, firstName } = value;
-    try {
-      // Create a user record without password
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      await updateProfile(user, { displayName: `${lastName} ${firstName}` });
-      await sendEmailVerification(user, {
-        url: window.location.origin + paths.auth.login
-      });
-    } catch (error) {
-      if (errorMap[(error as any).code]) {
-        throw new Error(errorMap[(error as any).code]);
-      }
-      throw error;
-    }
-  }, []);
-
-  const _sendEmailVerification = useCallback(async () => {
-    try {
-      console.log('fbUser', fbUser);
-      if (!fbUser) {
-        throw new Error('Not logged in');
-      }
-      await sendEmailVerification(fbUser, {
-        url: window.location.origin + paths.auth.login
-      });
-      return true;
-    } catch (error) {
-      if (errorMap[(error as any).code]) {
-        throw new Error(errorMap[(error as any).code]);
-      }
-      throw error;
-    }
-  }, [fbUser]);
-
-  const _sendPasswordResetEmail = useCallback(async (email: string) => {
-    try {
-      await sendPasswordResetEmail(auth, email);
-    } catch (error) {
-      if (errorMap[(error as any).code]) {
-        throw new Error(errorMap[(error as any).code]);
-      }
-      throw error;
-    }
-  }, []);
-
-  const _verifyPasswordResetCode = useCallback(async (oobCode: string) => {
-    try {
-      await verifyPasswordResetCode(auth, oobCode);
-    } catch (error) {
-      if (errorMap[(error as any).code]) {
-        throw new Error(errorMap[(error as any).code]);
-      }
-      throw error;
-    }
-  }, []);
-
-  const _confirmPasswordReset = useCallback(async (oobCode: string, newPassword: string) => {
-    try {
-      await confirmPasswordReset(auth, oobCode, newPassword);
-    } catch (error) {
-      if (errorMap[(error as any).code]) {
-        throw new Error(errorMap[(error as any).code]);
-      }
-      throw error;
-    }
-  }, []);
-
-  const _applyActionCode = useCallback(async (oobCode: string) => {
-    try {
-      await applyActionCode(auth, oobCode);
-    } catch (error) {
-      if (errorMap[(error as any).code]) {
-        throw new Error(errorMap[(error as any).code]);
-      }
-      throw error;
-    }
-  }, []);
-
   const _signOut = useCallback(async (): Promise<void> => {
     try {
       await signOut(auth);
@@ -429,19 +315,6 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
       throw error;
     }
   }, [dispatch]);
-
-  const _signOutAnonymously = useCallback(async (): Promise<void> => {
-    try {
-      await signOut(auth);
-      CookieHelper.removeItem(CookieKeys.TOKEN);
-      CookieHelper.removeItem(CookieKeys.REFRESH_TOKEN);
-    } catch (error) {
-      if (errorMap[(error as any).code]) {
-        console.log(errorMap[(error as any).code]);
-      }
-      console.log(error);
-    }
-  }, []);
 
   const refreshToken = useCallback(async (): Promise<void> => {
     const refreshToken = CookieHelper.getItem(CookieKeys.REFRESH_TOKEN);
@@ -464,12 +337,40 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
     }
   }, [_signOut]);
 
+  const updateProfile = useCallback(
+    async (request: UpdateProfileRequest) => {
+      try {
+        await UsersApi.updateProfile(request);
+        const currentUserInfo = JSON.parse(CookieHelper.getItem('user_data') as string);
+        const newUserInfo = {
+          ...currentUserInfo,
+          firstName: request.firstName || currentUserInfo.firstName,
+          lastName: request.lastName || currentUserInfo.lastName,
+          phoneNumber: request.phoneNumber || currentUserInfo.phoneNumber,
+          photoUrl: request.photoUrl || currentUserInfo.photoUrl,
+          dormitory: request.dormitory || currentUserInfo.dormitory || '',
+          building: request.building || currentUserInfo.building || '',
+          room: request.room || currentUserInfo.room || ''
+        };
+        CookieHelper.setItem('user_data', JSON.stringify(newUserInfo));
+        dispatch({
+          type: ActionType.UPDATE_PROFILE,
+          payload: {
+            user: newUserInfo
+          }
+        });
+      } catch (error) {
+        throw error;
+      }
+    },
+    [dispatch]
+  );
+
   useEffect(() => {
-    if (state.user?.id && !fbUser) {
+    if (state.user?.id && state.user.authMethod === 'firebase' && !fbUser) {
       const forceSignOut = async () => {
         setTimeout(async () => {
           await _signOut();
-          await _signInAnonymously();
           window.location.href = paths.auth.login;
         }, 1000);
         showSnackbarError('Thông tin xác thực không hợp lệ. Vui lòng đăng nhập lại');
@@ -487,19 +388,11 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
       value={{
         ...state,
         issuer: Issuer.Firebase,
-        register,
         changePassword,
-        signInWithEmailAndPassword: _signInWithEmailAndPassword,
-        signInAnonymously: _signInAnonymously,
         signInWithGoogle,
-        sendPasswordResetEmail: _sendPasswordResetEmail,
-        verifyPasswordResetCode: _verifyPasswordResetCode,
-        confirmPasswordReset: _confirmPasswordReset,
-        applyActionCode: _applyActionCode,
-        sendEmailVerification: _sendEmailVerification,
         signOut: _signOut,
-        signOutAnonymously: _signOutAnonymously,
-        refreshToken
+        refreshToken,
+        updateProfile
       }}
     >
       {children}

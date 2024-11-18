@@ -29,6 +29,7 @@ export interface User {
   email: string;
   iat?: number;
   exp?: number;
+  authMethod?: 'firebase' | 'jwt';
 }
 
 export interface UserDetail extends User {}

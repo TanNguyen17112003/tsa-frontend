@@ -8,7 +8,7 @@ export const dashboardStudentConfigs: Section[] = [
     items: [
       {
         title: 'Thông tin đơn hàng',
-        path: paths.student.index || paths.student.order.index,
+        path: paths.student.order.index,
         icon: <Box1 size='20px' variant='Bold' />
       },
       {

@@ -1,30 +1,46 @@
 import React from 'react';
-import { Card, Stack, Typography, Avatar, Button } from '@mui/material';
-import { Message } from 'iconsax-react';
-import avatarPerson from 'public/ui/person.jpg';
+import { Button, Stack, Typography } from '@mui/material';
 import { OrderDetail } from 'src/types/order';
+import { Phone } from 'lucide-react';
 
 interface OrderStaffProps {
   order: OrderDetail;
 }
 
 const OrderStaff: React.FC<OrderStaffProps> = ({ order }) => {
+  const handleCallClick = () => {
+    if (order?.staffInfo?.phoneNumber) {
+      window.location.href = `tel:${order.staffInfo.phoneNumber}`;
+    }
+  };
+
   return (
     <Stack spacing={2}>
-      <Typography variant='h6'>Thông tin nhân viên phụ trách</Typography>
-      <Card className='flex items-center gap-5 py-2 px-3'>
-        <Stack alignItems={'center'} spacing={1}>
-          <Avatar alt={'Ảnh chân dung'} src={avatarPerson.src} className='w-20 h-20' />
-          <Button variant='contained' color='success' startIcon={<Message size={24} />}>
-            Nhắn tin
-          </Button>
-        </Stack>
-        <Stack spacing={2}>
+      <Stack direction={'row'} justifyContent={'space-between'} alignContent={'center'}>
+        <Typography variant='h5' color='primary'>
+          Thông tin nhân viên phụ trách
+        </Typography>
+        <Button
+          variant='contained'
+          color='warning'
+          startIcon={<Phone size={20} />}
+          onClick={handleCallClick}
+        >
+          Gọi ngay
+        </Button>
+      </Stack>
+      <Stack spacing={3}>
+        <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'}>
+          <Typography fontWeight={'bold'}>Họ và tên:</Typography>
           <Typography>
-            Họ và tên: {order.lastName} {order.firstName}
+            {order?.staffInfo?.lastName} {order?.staffInfo?.firstName}
           </Typography>
         </Stack>
-      </Card>
+        <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'}>
+          <Typography fontWeight={'bold'}>Số điện thoại:</Typography>
+          <Typography>{order?.staffInfo?.phoneNumber}</Typography>
+        </Stack>
+      </Stack>
     </Stack>
   );
 };

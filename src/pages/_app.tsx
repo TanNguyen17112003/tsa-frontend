@@ -20,6 +20,7 @@ import { createEmotionCache } from 'src/utils/create-emotion-cache';
 import { PagesProgressBar as ProgressBar } from 'next-nprogress-bar';
 import { createTheme } from 'src/theme';
 import { initialSettings } from 'src/contexts/settings-context';
+import SocketProvider from 'src/contexts/socket-client/socket-client-context';
 
 const clientSideEmotionCache = createEmotionCache();
 
@@ -56,7 +57,7 @@ const App = (props: AppProps) => {
                           <meta name='theme-color' content={theme.palette.primary.main} />
                         </Head>
                         <CssBaseline />
-                        {getLayout(<Component {...pageProps} />)}
+                        <SocketProvider>{getLayout(<Component {...pageProps} />)}</SocketProvider>
                       </ThemeProvider>
                     );
                   }}

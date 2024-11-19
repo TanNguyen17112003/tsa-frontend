@@ -7,18 +7,19 @@ import shipperImage from 'public/ui/background-auth.png';
 import studentImage from 'public/ui/student-location.png';
 import { OrderDetail } from 'src/types/order';
 import { coordinateList } from 'src/utils/coordinate-list';
+import { useSocketContext } from 'src/contexts/socket-client/socket-client-context';
 
 const MAPBOX_ACCESS_TOKEN =
   'pk.eyJ1IjoicXVhbmNhbzIzMTAiLCJhIjoiY20yNXMxZ3BlMGRpMjJ3cWR5ZTMyNjh2MCJ9.ILNCWFtulso1GeCR7OBz-w';
 
 const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
   const [direction, setDirection] = useState<any>(null);
-  const [currentLocation, setCurrentLocation] = useState<[number, number] | null>(null);
   const [shipperCoordinate, setShipperCoordinate] = useState<[number, number]>([
-    106.78182172317632, 10.881903320810418
+    106.80712035274313, 10.878177113714147
   ]);
   const [routeCoordinates, setRouteCoordinates] = useState<[number, number][]>([]);
   const [mapLoaded, setMapLoaded] = useState(false);
+  const { socket } = useSocketContext();
 
   const exactOrderLocation = useMemo(() => {
     const foundCoordinate = coordinateList.find((coordinate) => {
@@ -26,26 +27,6 @@ const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
     });
     return foundCoordinate?.value;
   }, [order, coordinateList]);
-
-  useEffect(() => {
-    const fetchCurrentLocation = () => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const { latitude, longitude } = position.coords;
-            setCurrentLocation([longitude, latitude]);
-          },
-          (error) => {
-            console.error('Error fetching current location:', error);
-          }
-        );
-      } else {
-        console.error('Geolocation is not supported by this browser.');
-      }
-    };
-
-    fetchCurrentLocation();
-  }, []);
 
   useEffect(() => {
     const fetchDirection = async () => {
@@ -69,18 +50,19 @@ const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
   }, [shipperCoordinate, exactOrderLocation]);
 
   useEffect(() => {
-    let index = 0;
-    const interval = setInterval(() => {
-      if (routeCoordinates.length > 0 && index < routeCoordinates.length) {
-        const stepSize = 2;
-        index = Math.min(index + stepSize, routeCoordinates.length - 1);
-        const [lng, lat] = routeCoordinates[index];
-        setShipperCoordinate([lng, lat]);
-      }
-    }, 1000);
+    if (socket && order.shipperId) {
+      socket.emit('subscribeToShipper', { shipperId: order.shipperId });
+      console.log(`Subscribed to shipper with ID ${order.shipperId}`);
 
-    return () => clearInterval(interval);
-  }, [routeCoordinates]);
+      socket.on(
+        'locationUpdate',
+        (data: { shipperId: string; latitude: number; longitude: number }) => {
+          setShipperCoordinate([Number(data.latitude), Number(data.longitude)]);
+          console.log(`Received location update: ${JSON.stringify(data)}`);
+        }
+      );
+    }
+  }, [socket, order.shipperId]);
 
   const directionCoordinates = useMemo(
     () => direction?.routes[0]?.geometry?.coordinates,
@@ -99,8 +81,8 @@ const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
         <Map
           mapboxAccessToken={MAPBOX_ACCESS_TOKEN}
           initialViewState={{
-            longitude: currentLocation ? currentLocation[0] : 106.80703872956525,
-            latitude: currentLocation ? currentLocation[1] : 10.878102666077439,
+            longitude: exactOrderLocation ? exactOrderLocation[1] : 106.80703872956525,
+            latitude: exactOrderLocation ? exactOrderLocation[0] : 10.878102666077439,
             zoom: 14,
             pitch: 60,
             bearing: -60

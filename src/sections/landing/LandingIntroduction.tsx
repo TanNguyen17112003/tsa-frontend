@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import Image from 'next/image';
 import { Typography, Button, Box, Card } from '@mui/material';
 
@@ -6,6 +6,8 @@ import landingLogo1 from '../../../public/ui/landing-logo-1.png';
 import food from '../../../public/ui/food.png';
 import technology from '../../../public/ui/technology.png';
 import medicine from '../../../public/ui/medicine.png';
+import { useRouter } from 'next/router';
+import { paths } from 'src/paths';
 
 const introductionList = [
   {
@@ -23,6 +25,10 @@ const introductionList = [
 ];
 
 export const LandingIntroduction = () => {
+  const router = useRouter();
+  const handleGoToLogin = useCallback(() => {
+    router.push(paths.auth.login);
+  }, []);
   return (
     <Box
       sx={{
@@ -56,7 +62,7 @@ export const LandingIntroduction = () => {
             Dịch vụ chuyển phát chúng tôi đa dạng các mặt hàng từ đò ăn, món hàng công nghệ, đồ gia
             dụng hay các đồ mỹ phẩm
           </Typography>
-          <Button variant='contained' color='secondary'>
+          <Button variant='contained' color='secondary' onClick={handleGoToLogin}>
             Đặt hàng ngay
           </Button>
           <Box

@@ -42,7 +42,9 @@ const OrderProgress: React.FC<OrderProgressProps> = ({ order }) => {
 
   return (
     <Stack spacing={2}>
-      <Typography variant='h6'>Tiến độ đơn hàng</Typography>
+      <Typography variant='h5' color='primary'>
+        Tiến độ đơn hàng
+      </Typography>
       <Card className='px-3 py-2'>
         <Grid container spacing={2}>
           <Grid item xs={8}>

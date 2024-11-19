@@ -7,7 +7,6 @@ import StaffList from 'src/sections/admin/staff/staff-list';
 import StaffDetail from './[staffId]';
 import { useRouter } from 'next/router';
 import { Add } from '@mui/icons-material';
-import UsersProvider from 'src/contexts/users/users-context';
 
 const Page: PageType = () => {
   const router = useRouter();
@@ -29,10 +28,6 @@ const Page: PageType = () => {
     </Box>
   );
 };
-Page.getLayout = (page) => (
-  <DashboardLayout>
-    <UsersProvider>{page}</UsersProvider>
-  </DashboardLayout>
-);
+Page.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
 
 export default Page;

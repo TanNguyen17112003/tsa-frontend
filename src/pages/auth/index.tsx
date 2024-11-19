@@ -44,7 +44,7 @@ const Page: PageType = () => {
         console.log('user', user);
         if (isMounted() && user) {
           if (user.role === 'STUDENT') {
-            router.replace(paths.student.index);
+            router.replace(paths.student.order.index);
           } else if (user.role === 'ADMIN') {
             router.replace(paths.dashboard.index);
           }
@@ -125,7 +125,7 @@ const Page: PageType = () => {
                 className='bg-white'
               />
               <Stack direction={'row'} justifyContent={'space-between'}>
-                <Typography variant='body2'>Nhật mật khẩu</Typography>
+                <Typography variant='body2'>Nhập mật khẩu</Typography>
                 <Button
                   color='primary'
                   variant='ghost'

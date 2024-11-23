@@ -35,16 +35,12 @@ const OrderPaid: React.FC<OrderPaidProps> = ({ orders }) => {
   const { deleteOrder } = useOrdersContext();
 
   const [selectedStatus, setSelectedStatus] = useState<string>('Tất cả');
-  const [dateRange, setDateRange] = React.useState(() => {
-    const now = new Date();
-    const yesterday = new Date();
-    yesterday.setDate(now.getDate() - 1);
-    const oneWeekFromNow = new Date();
-    oneWeekFromNow.setDate(now.getDate() + 7);
-    return {
-      startDate: yesterday,
-      endDate: oneWeekFromNow
-    };
+  const [dateRange, setDateRange] = React.useState<{
+    startDate: Date | null;
+    endDate: Date | null;
+  }>({
+    startDate: null,
+    endDate: null
   });
   const [searchInput, setSearchInput] = useState<string>('');
 
@@ -106,7 +102,10 @@ const OrderPaid: React.FC<OrderPaidProps> = ({ orders }) => {
                       ? order.latestStatus === 'REJECTED'
                       : false;
       const orderDate = formatUnixTimestamp(order.deliveryDate);
-      const filterDate = dateRange.startDate <= orderDate && orderDate <= dateRange.endDate;
+      const filterDate =
+        !dateRange.startDate || !dateRange.endDate
+          ? true
+          : dateRange.startDate <= orderDate && orderDate <= dateRange.endDate;
       const filterCheckCode = searchInput
         ? order.checkCode.toLocaleLowerCase().includes(searchInput.toLocaleLowerCase())
         : true;

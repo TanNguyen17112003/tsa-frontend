@@ -15,7 +15,7 @@ const OrderStaff: React.FC<OrderStaffProps> = ({ order }) => {
   };
 
   return (
-    <Stack spacing={2}>
+    <Stack spacing={3}>
       <Stack direction={'row'} justifyContent={'space-between'} alignContent={'center'}>
         <Typography variant='h5' color='primary'>
           Thông tin nhân viên phụ trách
@@ -39,6 +39,12 @@ const OrderStaff: React.FC<OrderStaffProps> = ({ order }) => {
         <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'}>
           <Typography fontWeight={'bold'}>Số điện thoại:</Typography>
           <Typography>{order?.staffInfo?.phoneNumber}</Typography>
+        </Stack>
+        <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'}>
+          <Typography fontWeight={'bold'}>Địa chỉ đơn hàng:</Typography>
+          <Typography>
+            P.{order.room}, T.{order.building}, KTX khu {order.dormitory}
+          </Typography>
         </Stack>
       </Stack>
     </Stack>

@@ -78,7 +78,7 @@ const Page: PageType = () => {
     return orders.filter((order) => order.isPaid);
   }, [orders]);
   return (
-    <>
+    <Box className='bg-white'>
       {router.query.orderId ? (
         <OrderDetailPage />
       ) : (
@@ -143,7 +143,7 @@ const Page: PageType = () => {
         onClose={updateInformationDialog.handleClose}
         onSubmit={handleUpdateInformationHelper.call}
       />
-    </>
+    </Box>
   );
 };
 

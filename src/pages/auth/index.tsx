@@ -4,7 +4,6 @@ import { useRouter } from 'next/router';
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from 'src/components/shadcn/ui/button';
 import FormInput from 'src/components/ui/FormInput';
-import { AuthContextType } from 'src/contexts/auth/jwt-context';
 import { useAuth } from 'src/hooks/use-auth';
 import { paths } from 'src/paths';
 import PasswordInput from 'src/sections/auth/PasswordInput';
@@ -28,9 +27,7 @@ const Page: PageType = () => {
   const isMounted = useMounted();
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
-  const { signIn } = useAuth();
-  const searchParams = useSearchParams();
-  const returnTo = searchParams.get('returnTo');
+  const { signIn, user } = useAuth();
   const formik = useFormik({
     initialValues: {
       email: '',

@@ -5,7 +5,9 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  Stack
+  Stack,
+  useTheme,
+  useMediaQuery
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { MessageQuestion } from 'iconsax-react';
@@ -34,6 +36,9 @@ const faqs: FAQ[] = [
 ];
 
 export const LandingFAQs = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isTablet = useMediaQuery(theme.breakpoints.down('md'));
   return (
     <Box
       paddingX={6}
@@ -58,7 +63,7 @@ export const LandingFAQs = () => {
         border={1}
         marginBottom={1}
         borderRadius={2}
-        width={'20%'}
+        width={isMobile ? '80%' : '40%'}
       >
         <MessageQuestion size={24} variant='Bold' />
         <Typography>Các câu hỏi thường gặp</Typography>
@@ -68,7 +73,7 @@ export const LandingFAQs = () => {
       </Typography>
       <Stack spacing={2} alignItems={'center'}>
         {faqs.map((faq, index) => (
-          <Accordion key={index} sx={{ paddingY: 2, width: '50%' }}>
+          <Accordion key={index} sx={{ paddingY: 2, width: isTablet ? '80%' : '50%' }}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Typography variant='h6'>{faq.question}</Typography>
             </AccordionSummary>

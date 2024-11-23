@@ -240,18 +240,6 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
     [dispatch]
   );
 
-  const _signInAnonymously = useCallback(async (): Promise<UserDetail> => {
-    try {
-      const { user } = await signInAnonymously(auth);
-      return await getToken(user);
-    } catch (error) {
-      if (errorMap[(error as any).code]) {
-        throw new Error(errorMap[(error as any).code]);
-      }
-      throw error;
-    }
-  }, [getToken]);
-
   const signInWithGoogle = useCallback(async (): Promise<UserDetail> => {
     try {
       const provider = new GoogleAuthProvider();

@@ -36,8 +36,8 @@ const OrderDeliveryHistory: React.FC<OrderDeliveryHistoryProps> = ({ order }) =>
           </Stack>
         )}
       </Stack>
-      <Stack width='60%' className='border border-l-gray-500'>
-        {order.latestStatus !== 'DELIVERED' ? (
+      <Stack width='60%' className='h-[100%]'>
+        {order.latestStatus === 'DELIVERED' ? (
           <Stack
             gap={2}
             alignItems={'center'}

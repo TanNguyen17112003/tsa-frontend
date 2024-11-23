@@ -33,7 +33,6 @@ const Page: PageType = () => {
     <Box
       sx={{
         maxWidth: 'xl',
-        minHeight: '100vh',
         width: '100%',
         marginLeft: 'auto',
         marginRight: 'auto',
@@ -80,7 +79,7 @@ const Page: PageType = () => {
                 mt: 3
               }}
             >
-              <Typography variant='h5'>Chi tiết đơn hàng #{router.query.orderId}</Typography>
+              <Typography variant='h5'>Chi tiết đơn hàng #{order?.checkCode}</Typography>
             </Box>
           </Box>
         </Box>

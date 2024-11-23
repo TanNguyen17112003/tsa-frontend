@@ -1,4 +1,14 @@
-import { Box, Card, Stack, Typography, Grid, TextField, Button } from '@mui/material';
+import {
+  useTheme,
+  useMediaQuery,
+  Box,
+  Card,
+  Stack,
+  Typography,
+  Grid,
+  TextField,
+  Button
+} from '@mui/material';
 import React from 'react';
 import { useFormik } from 'formik';
 
@@ -8,6 +18,9 @@ interface InfoProps {
 }
 
 export const LandingContact = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isTablet = useMediaQuery(theme.breakpoints.down('md'));
   const infoList: InfoProps[] = [
     {
       title: 'Địa chỉ',
@@ -45,32 +58,35 @@ export const LandingContact = () => {
         Liên hệ với chúng tôi
       </Typography>
       <Box display={'flex'} gap={2} justifyContent={'center'} alignItems={'center'}>
-        <Card sx={{ bgcolor: '#5BE23D', padding: 4, width: '20%' }}>
-          <Box display={'flex'} flexDirection={'column'} gap={2}>
-            {infoList.map((info, index) => (
-              <Stack key={index}>
-                <Typography color='black' fontWeight={'bold'}>
-                  {info.title}
-                </Typography>
-                {Array.isArray(info.value) ? (
-                  info.value.map((value, index) => (
-                    <Typography key={index} color='white'>
-                      {value}
-                    </Typography>
-                  ))
-                ) : (
-                  <Typography color='white'>{info.value}</Typography>
-                )}
-              </Stack>
-            ))}
-          </Box>
-        </Card>
+        {!isMobile && (
+          <Card sx={{ bgcolor: '#5BE23D', padding: 4, width: isTablet ? '40%' : '20%' }}>
+            <Box display={'flex'} flexDirection={'column'} gap={2}>
+              {infoList.map((info, index) => (
+                <Stack key={index}>
+                  <Typography color='black' fontWeight={'bold'}>
+                    {info.title}
+                  </Typography>
+                  {Array.isArray(info.value) ? (
+                    info.value.map((value, index) => (
+                      <Typography key={index} color='white'>
+                        {value}
+                      </Typography>
+                    ))
+                  ) : (
+                    <Typography color='white'>{info.value}</Typography>
+                  )}
+                </Stack>
+              ))}
+            </Box>
+          </Card>
+        )}
         <Box
           component='form'
           onSubmit={formik.handleSubmit}
           display='flex'
           flexDirection='column'
           gap={2}
+          padding={3}
         >
           <Grid container spacing={3}>
             <Grid item xs={6}>

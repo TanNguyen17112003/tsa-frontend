@@ -51,7 +51,9 @@ function OrderInfoCard({ order }: { order: OrderDetail }) {
     },
     {
       name: 'Nhân viên phụ trách',
-      value: order?.shipperId ? order?.shipperId : 'Chưa được chỉ định'
+      value: order?.shipperId
+        ? order?.staffInfo.lastName + '' + order?.staffInfo.firstName
+        : 'Chưa được chỉ định'
     },
     {
       name: 'Trạng thái',

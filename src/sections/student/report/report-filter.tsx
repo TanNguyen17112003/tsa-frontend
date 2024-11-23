@@ -9,8 +9,8 @@ interface ReportFilterProps {
   status: string;
   setStatus: (status: string) => void;
   dateRange: {
-    startDate: Date;
-    endDate: Date;
+    startDate: Date | null;
+    endDate: Date | null;
   };
   setDateRange: (range: any) => void;
 }

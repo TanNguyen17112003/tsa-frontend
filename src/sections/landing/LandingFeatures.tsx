@@ -1,4 +1,4 @@
-import { Box, Stack, Typography } from '@mui/material';
+import { Box, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
 import {
   Timeline,
   TimelineItem,
@@ -17,6 +17,9 @@ interface FeatureProps {
 }
 
 export const LandingFeatures = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isTablet = useMediaQuery(theme.breakpoints.down('md'));
   const featureList: FeatureProps[] = [
     {
       title: 'Tiết kiệm thời gian nhận hàng',
@@ -57,8 +60,8 @@ export const LandingFeatures = () => {
         height: '100vh'
       }}
     >
-      <Box width={'30%'} color={'black'}>
-        <Typography variant='h4' marginBottom={3}>
+      <Box width={isTablet ? '100%' : '40%'} color={'black'}>
+        <Typography variant='h4' marginBottom={3} textAlign={isTablet ? 'center' : 'left'}>
           Sự lựa chọn hoàn hảo cho sinh viên
         </Typography>
         <Timeline position='alternate-reverse'>
@@ -81,9 +84,11 @@ export const LandingFeatures = () => {
           ))}
         </Timeline>
       </Box>
-      <Box>
-        <Image src={deliveryMan2} alt='delivery2' width={400} />
-      </Box>
+      {!isTablet && (
+        <Box>
+          <Image src={deliveryMan2} alt='delivery2' width={400} />
+        </Box>
+      )}
     </Box>
   );
 };

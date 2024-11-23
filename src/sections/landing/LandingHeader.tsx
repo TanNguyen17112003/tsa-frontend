@@ -22,10 +22,13 @@ import {
 } from '@mui/material';
 import Image from 'next/image';
 import logo from '../../../public/logo.png';
+import { useRouter } from 'next/router';
+import { paths } from 'src/paths';
 
 export const LandingHeader = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const theme = useTheme();
+  const router = useRouter();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const navigationList = [
@@ -109,6 +112,25 @@ export const LandingHeader = () => {
               </Stack>
               <Divider />
               {drawerList}
+              <Divider />
+              <Stack
+                className='px-4 py-3 cursor-pointer hover:bg-green-100'
+                onClick={() => {
+                  router.push(paths.auth.login);
+                }}
+              >
+                <Typography fontWeight={'bold'} color='green'>
+                  Đăng nhập
+                </Typography>
+              </Stack>
+              <Stack
+                className='px-4 py-3 cursor-pointer hover:bg-green-100'
+                onClick={() => {
+                  router.push(paths.auth.register.index);
+                }}
+              >
+                <Typography fontWeight={'bold'}>Đăng ký</Typography>
+              </Stack>
             </Drawer>
           </>
         ) : (

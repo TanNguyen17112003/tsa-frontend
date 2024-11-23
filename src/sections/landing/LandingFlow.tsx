@@ -1,4 +1,13 @@
-import { Box, Stack, Typography, Stepper, Step, StepLabel } from '@mui/material';
+import {
+  Box,
+  Stack,
+  Typography,
+  Stepper,
+  Step,
+  StepLabel,
+  useTheme,
+  useMediaQuery
+} from '@mui/material';
 import React, { useCallback, useState, useEffect } from 'react';
 import { Box1, Edit } from 'iconsax-react';
 import { PiMotorcycle } from 'react-icons/pi';
@@ -11,6 +20,9 @@ interface LandingFlowProps {
 
 export const LandingFlow = () => {
   const [activeStep, setActiveStep] = useState(0);
+  const theme = useTheme();
+  const isTablet = useMediaQuery(theme.breakpoints.down('md'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const flowList: LandingFlowProps[] = [
     {
       image: <Box1 size={'70%'} />,
@@ -56,14 +68,24 @@ export const LandingFlow = () => {
       <Typography textAlign={'center'} variant='h4' marginBottom={5} color='black'>
         Luồng hoạt động của hệ thống
       </Typography>
-      <Stepper alternativeLabel activeStep={activeStep}>
+      <Stepper
+        alternativeLabel={!isMobile}
+        activeStep={activeStep}
+        orientation={isMobile ? 'vertical' : 'horizontal'}
+      >
         {flowList.map((flow, index) => (
           <Step key={index} onClick={() => handleStepClick(index)} className='cursor-pointer'>
             <StepLabel>
-              <Stack spacing={1} alignItems='center' width={'100%'}>
+              <Stack
+                flexDirection={isMobile ? 'row' : 'column'}
+                gap={isMobile ? 1 : 0}
+                spacing={1}
+                alignItems={'center'}
+                width={'100%'}
+              >
                 <Box
-                  width={80}
-                  height={80}
+                  width={isMobile ? 50 : isTablet ? 70 : 80}
+                  height={isMobile ? 50 : isTablet ? 70 : 80}
                   borderRadius={'50%'}
                   bgcolor={'#5BE23D'}
                   display={'flex'}
@@ -73,10 +95,21 @@ export const LandingFlow = () => {
                 >
                   {flow.image}
                 </Box>
-                <Typography variant='h5'>{flow.title}</Typography>
-                <Typography textAlign={'center'} fontWeight={'light'} variant='body2'>
-                  {flow.description}
-                </Typography>
+                <Stack>
+                  <Typography
+                    fontWeight='bold'
+                    variant={isMobile ? 'body1' : isTablet ? 'h6' : 'h5'}
+                  >
+                    {flow.title}
+                  </Typography>
+                  <Typography
+                    textAlign={isMobile ? 'left' : 'center'}
+                    fontWeight={'light'}
+                    variant='body2'
+                  >
+                    {flow.description}
+                  </Typography>
+                </Stack>
               </Stack>
             </StepLabel>
           </Step>

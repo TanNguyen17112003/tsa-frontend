@@ -13,6 +13,7 @@ import { useOrdersContext } from 'src/contexts/orders/orders-context';
 import { formatUnixTimestamp, unixTimestampToDate } from 'src/utils/format-time-currency';
 import OrderDetailEditDrawer from './order-detail-edit-drawer';
 import { PaymentsApi } from 'src/api/payment';
+import { startDate } from '@utils';
 
 interface OrderNotPaidProps {
   orders: OrderDetail[];
@@ -36,16 +37,12 @@ const OrderNotPaid: React.FC<OrderNotPaidProps> = ({ orders }) => {
   const { deleteOrder, updateOrder } = useOrdersContext();
 
   const [selectedStatus, setSelectedStatus] = useState<string>('Tất cả');
-  const [dateRange, setDateRange] = React.useState(() => {
-    const now = new Date();
-    const yesterday = new Date();
-    yesterday.setDate(now.getDate() - 1);
-    const oneWeekFromNow = new Date();
-    oneWeekFromNow.setDate(now.getDate() + 7);
-    return {
-      startDate: yesterday,
-      endDate: oneWeekFromNow
-    };
+  const [dateRange, setDateRange] = React.useState<{
+    startDate: Date | null;
+    endDate: Date | null;
+  }>({
+    startDate: null,
+    endDate: null
   });
   const [searchInput, setSearchInput] = useState<string>('');
 
@@ -159,7 +156,12 @@ const OrderNotPaid: React.FC<OrderNotPaidProps> = ({ orders }) => {
                       ? order.latestStatus === 'REJECTED'
                       : false;
       const orderDate = formatUnixTimestamp(order.deliveryDate);
-      const filterDate = dateRange.startDate <= orderDate && orderDate <= dateRange.endDate;
+      const filterDate =
+        !dateRange.startDate || !dateRange.endDate
+          ? true
+          : dateRange.startDate && dateRange.endDate
+            ? dateRange.startDate <= orderDate && orderDate <= dateRange.endDate
+            : true;
       const filterCheckCode = searchInput
         ? order.checkCode.toLocaleLowerCase().includes(searchInput.toLocaleLowerCase())
         : true;

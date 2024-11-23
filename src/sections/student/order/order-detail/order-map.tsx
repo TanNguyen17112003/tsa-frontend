@@ -17,6 +17,8 @@ const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
   const [shipperCoordinate, setShipperCoordinate] = useState<[number, number]>([
     106.80712035274313, 10.878177113714147
   ]);
+  const [distance, setDistance] = useState<number>(0);
+
   const [routeCoordinates, setRouteCoordinates] = useState<[number, number][]>([]);
   const [mapLoaded, setMapLoaded] = useState(false);
   const { socket } = useSocketContext();
@@ -38,6 +40,7 @@ const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
           );
           setDirection(direction);
           setRouteCoordinates(direction.routes[0].geometry.coordinates);
+          setDistance(Math.round(direction.routes[0].distance));
         }
       } catch (error) {
         console.error('Error fetching direction:', error);
@@ -47,7 +50,7 @@ const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
     if (shipperCoordinate && exactOrderLocation) {
       fetchDirection();
     }
-  }, [shipperCoordinate, exactOrderLocation]);
+  }, [shipperCoordinate, exactOrderLocation, setDistance, setDirection, setRouteCoordinates]);
 
   useEffect(() => {
     if (socket && order.shipperId) {
@@ -62,7 +65,7 @@ const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
         }
       );
     }
-  }, [socket, order.shipperId]);
+  }, [order.shipperId]);
 
   const directionCoordinates = useMemo(
     () => direction?.routes[0]?.geometry?.coordinates,
@@ -70,20 +73,14 @@ const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
   );
 
   return (
-    <Box className='p-4'>
-      <Stack direction={'row'} alignItems={'center'} gap={1} marginBottom={1}>
-        <Typography>Địa chỉ đơn hàng #{order.checkCode}:</Typography>
-        <Typography fontWeight={'bold'}>
-          Phòng {order.room}, Tòa {order.building}, Kí túc xá khu {order.dormitory}
-        </Typography>
-      </Stack>
-      <Box className='w-full h-96'>
+    <Box className='min-h-full'>
+      <Box className='w-full h-96 relative'>
         <Map
           mapboxAccessToken={MAPBOX_ACCESS_TOKEN}
           initialViewState={{
             longitude: exactOrderLocation ? exactOrderLocation[1] : 106.80703872956525,
             latitude: exactOrderLocation ? exactOrderLocation[0] : 10.878102666077439,
-            zoom: 14,
+            zoom: 17,
             pitch: 60,
             bearing: -60
           }}
@@ -152,6 +149,18 @@ const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
             </>
           )}
         </Map>
+        <Stack
+          direction={'row'}
+          alignItems={'center'}
+          gap={0.5}
+          marginBottom={1}
+          className='absolute right-3 bottom-3 bg-orange-500 px-3 py-2 rounded-lg'
+        >
+          <Typography color='white'>Khoảng cách:</Typography>
+          <Typography fontWeight={'bold'} color='white'>
+            {(distance / 1000).toFixed(2)} km
+          </Typography>
+        </Stack>
       </Box>
     </Box>
   );

@@ -29,8 +29,10 @@ function ProfileSection() {
     return AddressData.dormitories;
   }, [AddressData]);
   const buildingList = useMemo(() => {
-    return user?.dormitory === 'A' ? AddressData.buildings.A : AddressData.buildings.B;
-  }, [user?.dormitory]);
+    return firebaseUser?.dormitory === 'A' || user?.dormitory === 'A'
+      ? AddressData.buildings.A
+      : AddressData.buildings.B;
+  }, [user?.dormitory, firebaseUser?.dormitory]);
   const roomList = useMemo(() => {
     return AddressData.rooms;
   }, [buildingList]);

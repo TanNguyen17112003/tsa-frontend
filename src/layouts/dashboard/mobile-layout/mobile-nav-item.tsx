@@ -17,6 +17,7 @@ interface MobileNavItemProps {
   open?: boolean;
   path?: string;
   title: string;
+  onClose?: () => void;
 }
 
 export const MobileNavItem: FC<MobileNavItemProps> = (props) => {
@@ -30,13 +31,20 @@ export const MobileNavItem: FC<MobileNavItemProps> = (props) => {
     label,
     open: openProp,
     path,
-    title
+    title,
+    onClose
   } = props;
   const [open, setOpen] = useState<boolean>(!!openProp);
 
   const handleToggle = useCallback((): void => {
     setOpen((prevOpen) => !prevOpen);
   }, []);
+
+  const handleClick = useCallback(() => {
+    if (onClose) {
+      onClose();
+    }
+  }, [onClose]);
 
   let startIcon: ReactNode;
 
@@ -163,11 +171,13 @@ export const MobileNavItem: FC<MobileNavItemProps> = (props) => {
       ? {
           component: 'a',
           href: path,
-          target: '_blank'
+          target: '_blank',
+          onClick: handleClick
         }
       : {
           component: RouterLink,
-          href: path
+          href: path,
+          onClick: handleClick
         }
     : {};
 
@@ -196,7 +206,7 @@ export const MobileNavItem: FC<MobileNavItemProps> = (props) => {
             })
           }),
           '&:hover': {
-            backgroundColor: 'orange'
+            backgroundColor: 'success'
           }
         }}
         {...linkProps}
@@ -257,5 +267,6 @@ MobileNavItem.propTypes = {
   icon: PropTypes.any,
   open: PropTypes.bool,
   path: PropTypes.string,
-  title: PropTypes.string.isRequired
+  title: PropTypes.string.isRequired,
+  onClose: PropTypes.func
 };

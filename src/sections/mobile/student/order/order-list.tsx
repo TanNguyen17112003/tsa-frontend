@@ -10,7 +10,7 @@ import {
   Typography,
   FormControl,
   Pagination,
-  paginationClasses
+  CircularProgress
 } from '@mui/material';
 import { Box, AddCircle } from 'iconsax-react';
 import MobileContentHeader from 'src/components/mobile-content-header';
@@ -36,6 +36,7 @@ function MobileOrderList() {
     startDate: null,
     endDate: null
   });
+  const [loading, setLoading] = useState(true);
   const statusList = [
     'Tất cả',
     'Đã giao',
@@ -94,7 +95,8 @@ function MobileOrderList() {
   }, [getOrdersApi.data]);
 
   const filteredOrders = useMemo(() => {
-    return orders.filter((order) => {
+    setLoading(true);
+    const result = orders.filter((order) => {
       const filteredByPaid =
         paymentStatus === '0' ? !order.isPaid : paymentStatus === '1' ? order.isPaid : true;
       const filteredBySearch = order.checkCode.toLowerCase().includes(searchInput.toLowerCase());
@@ -123,6 +125,8 @@ function MobileOrderList() {
             : true;
       return filteredByPaid && filteredBySearch && filterStatus && filterDate;
     });
+    setLoading(false);
+    return result;
   }, [orders, searchInput, paymentStatus, selectedStatus, dateRange]);
 
   const pagination = usePagination({
@@ -185,22 +189,28 @@ function MobileOrderList() {
           <MobileAdvancedFilter filters={filters} />
         </Stack>
       </Stack>
-      <Stack mt={1.5}>
+      <Stack mt={1.5} sx={{ flexGrow: 1, overflowY: 'auto' }}>
         <Typography fontWeight={'bold'} color='black'>
           {filteredOrders.length} đơn hàng
         </Typography>
-        <Stack spacing={1.5} mt={1}>
-          {paginatedOrders.length === 0 && (
-            <Stack className='items-center justify-center h-[300px]'>
-              <Typography variant='h5' color='error'>
-                Không có đơn hàng nào
-              </Typography>
-            </Stack>
-          )}
-          {paginatedOrders.map((order, index) => (
-            <OrderCard key={index} order={order} />
-          ))}
-        </Stack>
+        {loading ? (
+          <Stack className='items-center justify-center h-[300px]'>
+            <CircularProgress />
+          </Stack>
+        ) : (
+          <Stack spacing={1.5} mt={1}>
+            {paginatedOrders.length === 0 && (
+              <Stack className='items-center justify-center h-[300px]'>
+                <Typography variant='h5' color='error'>
+                  Không có đơn hàng nào
+                </Typography>
+              </Stack>
+            )}
+            {paginatedOrders.map((order, index) => (
+              <OrderCard key={index} order={order} />
+            ))}
+          </Stack>
+        )}
         <Pagination
           count={Math.ceil(filteredOrders.length / pagination.rowsPerPage)}
           page={pagination.page}

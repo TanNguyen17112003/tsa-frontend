@@ -81,16 +81,13 @@ const Page: PageType = () => {
   const paidOrders = useMemo(() => {
     return orders.filter((order) => order.isPaid);
   }, [orders]);
+
   return (
     <Box className='bg-white'>
-      {isMobile ? (
-        router.query.orderId ? (
-          <MobileOrderDetail />
-        ) : (
-          <MobileOrderList />
-        )
-      ) : router.query.orderId ? (
+      {router.query.orderId ? (
         <OrderDetailPage />
+      ) : isMobile ? (
+        <MobileOrderList />
       ) : (
         <Stack
           sx={{

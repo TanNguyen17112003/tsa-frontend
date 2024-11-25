@@ -125,7 +125,7 @@ interface MobileNavProps {
 }
 
 export const MobileNav: FC<MobileNavProps> = (props) => {
-  const { color = 'evident', open, onClose } = props;
+  const { color = 'evident', open, onClose, sections } = props;
   const cssVars = useCssVars(color);
   const { user } = useAuth();
   const { user: firebaseUser } = useFirebaseAuth();
@@ -172,6 +172,7 @@ export const MobileNav: FC<MobileNavProps> = (props) => {
                 height: 40,
                 width: '40%'
               }}
+              onClick={onClose}
             >
               <Image alt='Logo' height={40} src={logo} width={40} />
             </Box>
@@ -188,12 +189,13 @@ export const MobileNav: FC<MobileNavProps> = (props) => {
             }}
             alignItems={'flex-start'}
           >
-            {props.sections?.map((section, index) => (
+            {sections?.map((section, index) => (
               <MobileNavSection
                 key={index}
                 items={section.items}
                 pathname={router.pathname}
                 subheader={section.subheader}
+                onClose={onClose}
               />
             ))}
           </Stack>
@@ -206,6 +208,7 @@ export const MobileNav: FC<MobileNavProps> = (props) => {
                   href={paths.dashboard.index}
                   underline='none'
                   width={'100%'}
+                  onClick={onClose}
                 >
                   <Stack
                     direction={'row'}
@@ -252,5 +255,6 @@ export const MobileNav: FC<MobileNavProps> = (props) => {
 MobileNav.propTypes = {
   color: PropTypes.oneOf<NavColor>(['blend-in', 'discreet', 'evident']),
   onClose: PropTypes.func.isRequired,
-  open: PropTypes.bool
+  open: PropTypes.bool,
+  sections: PropTypes.array
 };

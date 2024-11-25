@@ -1,21 +1,12 @@
 import { Card, Divider, Stack, Typography } from '@mui/material';
 import { Box, Money, Bank } from 'iconsax-react';
-import React, { useCallback } from 'react';
+import React from 'react';
 import { OrderDetail } from 'src/types/order';
 import { formatDate, formatUnixTimestamp, formatVNDcurrency } from 'src/utils/format-time-currency';
-import { useRouter } from 'next/router';
 
-const OrderCard: React.FC<{ order: OrderDetail }> = ({ order }) => {
-  const router = useRouter();
-
-  const handleGoOrder = useCallback(() => {
-    router.push({
-      pathname: router.pathname,
-      query: { ...router.query, orderId: order.id }
-    });
-  }, []);
+const ReportCard: React.FC<{ order: OrderDetail }> = ({ order }) => {
   return (
-    <Card className='px-4 py-3 flex flex-col gap-1 cursor-pointer' onClick={handleGoOrder}>
+    <Card className='px-4 py-3 flex flex-col gap-1'>
       <Typography variant='subtitle1' fontWeight={'bold'} color='primary'>
         Mã đơn hàng: #{order.checkCode}
       </Typography>
@@ -61,4 +52,4 @@ const OrderCard: React.FC<{ order: OrderDetail }> = ({ order }) => {
   );
 };
 
-export default OrderCard;
+export default ReportCard;

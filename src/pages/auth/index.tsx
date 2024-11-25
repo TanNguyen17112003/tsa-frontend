@@ -78,7 +78,7 @@ const Page: PageType = () => {
         </Box>
       )}
       <Box width={isMobile ? '100%' : '60%'} className='flex justify-center'>
-        <Box width={'70%'} className='flex flex-col gap-5'>
+        <Box width={isMobile ? '100%' : '70%'} className='flex flex-col gap-5'>
           <Stack
             direction={'row'}
             spacing={1}

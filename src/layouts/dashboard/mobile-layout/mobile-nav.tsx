@@ -1,5 +1,15 @@
 import CloseIcon from '@mui/icons-material/Close';
-import { Avatar, Box, Drawer, IconButton, Link, Stack, SvgIcon, Typography } from '@mui/material';
+import {
+  Avatar,
+  Box,
+  Divider,
+  Drawer,
+  IconButton,
+  Link,
+  Stack,
+  SvgIcon,
+  Typography
+} from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import User01Icon from '@untitled-ui/icons-react/build/esm/User01';
 import { useRouter } from 'next/router';
@@ -9,9 +19,13 @@ import { useMemo } from 'react';
 import { RouterLink } from '@components';
 import { Scrollbar } from 'src/components/scrollbar';
 import { useAuth } from 'src/hooks/use-auth';
+import { useFirebaseAuth } from 'src/hooks/use-auth';
 import { paths } from 'src/paths';
 import type { NavColor } from 'src/types/settings';
 import { Section } from '../config/config';
+import { MobileNavSection } from './mobile-nav-section';
+import logo from 'public/logo.png';
+import Image from 'next/image';
 
 const MOBILE_NAV_WIDTH: number = 280;
 
@@ -113,13 +127,9 @@ interface MobileNavProps {
 export const MobileNav: FC<MobileNavProps> = (props) => {
   const { color = 'evident', open, onClose } = props;
   const cssVars = useCssVars(color);
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
+  const { user: firebaseUser } = useFirebaseAuth();
   const router = useRouter();
-
-  const handleScrollToSection = (ref: string) => {
-    router.push(`/#${ref}`);
-    onClose?.();
-  };
 
   return (
     <Drawer
@@ -129,8 +139,8 @@ export const MobileNav: FC<MobileNavProps> = (props) => {
       PaperProps={{
         sx: {
           ...cssVars,
-          backgroundColor: '#34a853',
-          color: 'white',
+          backgroundColor: '#f8f9fa',
+          color: 'black',
           width: MOBILE_NAV_WIDTH
         }
       }}
@@ -152,7 +162,7 @@ export const MobileNav: FC<MobileNavProps> = (props) => {
             alignItems='center'
             direction='row'
             spacing={2}
-            sx={{ p: 3, justifyContent: 'space-between', alignItems: 'center' }}
+            sx={{ p: 2, justifyContent: 'space-between', alignItems: 'center' }}
           >
             <Box
               component={RouterLink}
@@ -163,112 +173,76 @@ export const MobileNav: FC<MobileNavProps> = (props) => {
                 width: '40%'
               }}
             >
-              {/* <Logo /> */}
+              <Image alt='Logo' height={40} src={logo} width={40} />
             </Box>
             <IconButton onClick={onClose} color='inherit'>
-              <CloseIcon />
+              <CloseIcon color='success' />
             </IconButton>
           </Stack>
-          {user?.email && (
+
+          <Stack
+            component='nav'
+            spacing={2}
+            sx={{
+              px: 2
+            }}
+            alignItems={'flex-start'}
+          >
+            {props.sections?.map((section, index) => (
+              <MobileNavSection
+                key={index}
+                items={section.items}
+                pathname={router.pathname}
+                subheader={section.subheader}
+              />
+            ))}
+          </Stack>
+          <Divider className='py-2' />
+          {(user?.email || firebaseUser?.email) && (
             <Stack mb={2}>
-              <Stack direction={'row'}>
-                <Link component={RouterLink} href={paths.dashboard.index} underline='none'>
+              <Stack direction={'row'} alignItems={'center'}>
+                <Link
+                  component={RouterLink}
+                  href={paths.dashboard.index}
+                  underline='none'
+                  width={'100%'}
+                >
                   <Stack
                     direction={'row'}
+                    alignItems={'center'}
                     spacing={1.5}
+                    width={'100%'}
                     sx={{
                       p: 2,
                       position: 'sticky',
                       cursor: 'pointer',
                       bottom: 0,
-                      backgroundColor: 'white'
+                      backgroundColor: '#f8f9fa'
                     }}
                   >
                     <Avatar
                       sx={{
-                        height: 40,
-                        width: 40
+                        height: 45,
+                        width: 45,
+                        borderWidth: 2
                       }}
-                      src={user?.photoUrl}
+                      src={user?.photoUrl || firebaseUser?.photoUrl}
                     >
                       <SvgIcon>
                         <User01Icon />
                       </SvgIcon>
                     </Avatar>
-                    <Typography color={'black'} fontWeight={600}>
-                      {user.lastName} {user.firstName}
-                    </Typography>
+                    <Stack>
+                      <Typography fontSize={10} color={'black'} fontWeight={600}>
+                        {user?.lastName || firebaseUser?.lastName}{' '}
+                        {user?.firstName || firebaseUser?.firstName}
+                      </Typography>
+                    </Stack>
                   </Stack>
                 </Link>
               </Stack>
             </Stack>
           )}
-          <Stack
-            component='nav'
-            spacing={2}
-            sx={{
-              flexGrow: 1,
-              px: 2
-            }}
-            alignItems={'flex-start'}
-          >
-            {props?.sections?.map((section, index) => (
-              <IconButton
-                key={index}
-                sx={{
-                  color: 'var(--nav-item-color)',
-                  fontWeight: 600,
-                  fontSize: 14,
-                  textTransform: 'none',
-                  borderRadius: 1.5,
-                  backgroundColor: 'transparent',
-                  '&:hover': {
-                    backgroundColor: 'var(--nav-item-hover-bg)'
-                  },
-                  '&:active': {
-                    backgroundColor: 'var(--nav-item-active-bg)',
-                    color: 'var(--nav-item-active-color)'
-                  },
-                  '&:disabled': {
-                    color: 'var(--nav-item-disabled-color)'
-                  }
-                }}
-                // onClick={() => handleScrollToSection(section.ref)}
-              >
-                <Typography variant='subtitle2' color='white'>
-                  {section.items[0].title}
-                </Typography>
-              </IconButton>
-            ))}
-            {user?.email && (
-              <IconButton
-                sx={{
-                  color: 'var(--nav-item-color)',
-                  fontWeight: 600,
-                  fontSize: 14,
-                  textTransform: 'none',
-                  borderRadius: 1.5,
-                  backgroundColor: 'transparent',
-                  '&:hover': {
-                    backgroundColor: 'var(--nav-item-hover-bg)'
-                  },
-                  '&:active': {
-                    backgroundColor: 'var(--nav-item-active-bg)',
-                    color: 'var(--nav-item-active-color)'
-                  },
-                  '&:disabled': {
-                    color: 'var(--nav-item-disabled-color)'
-                  },
-                  justifyContent: 'start'
-                }}
-                onClick={signOut}
-              >
-                <Typography variant='subtitle2' color='white'>
-                  Đăng xuất
-                </Typography>
-              </IconButton>
-            )}
-          </Stack>
         </Stack>
       </Scrollbar>
     </Drawer>

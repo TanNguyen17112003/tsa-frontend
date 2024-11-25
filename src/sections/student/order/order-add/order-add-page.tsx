@@ -1,5 +1,5 @@
 import { ArrowBack } from '@mui/icons-material';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, Typography, useTheme, useMediaQuery } from '@mui/material';
 import { Container, Stack } from '@mui/system';
 import { useFormik } from 'formik';
 import { useRouter } from 'next/router';
@@ -14,11 +14,12 @@ import OrderUploadSection from './order-upload-section';
 import { OrderFormProps } from 'src/api/orders';
 import { useOrdersContext } from 'src/contexts/orders/orders-context';
 import { initialOrderForm } from 'src/types/order';
-import dayjs from 'dayjs';
 
 const OrderAddPage = () => {
   const [resetUploadSection, setResetUploadSection] = useState('');
   const [isUploaded, setIsUploaded] = useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [orderList, setOrderList] = useState<OrderFormProps[]>([]);
   const router = useRouter();
   const { showSnackbarError, showSnackbarSuccess } = useAppSnackbar();
@@ -76,7 +77,7 @@ const OrderAddPage = () => {
   return (
     <Box className='text-black bg-white'>
       <Stack className='py-4 space-y-2'>
-        <Stack p={3}>
+        <Stack p={isMobile ? 2 : 3}>
           <Box>
             <Button
               size='small'

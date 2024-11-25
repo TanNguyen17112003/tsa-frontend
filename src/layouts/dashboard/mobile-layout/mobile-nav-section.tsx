@@ -66,7 +66,8 @@ const reduceChildRoutes = ({
           sx={{
             listStyle: 'none',
             m: 0,
-            p: 0
+            p: 0,
+            width: '100%'
           }}
         >
           {renderItems({
@@ -112,7 +113,8 @@ export const MobileNavSection: FC<MobileNavSectionProps> = (props) => {
       sx={{
         listStyle: 'none',
         m: 0,
-        p: 0
+        p: 0,
+        width: '100%'
       }}
       {...other}
     >
@@ -120,7 +122,7 @@ export const MobileNavSection: FC<MobileNavSectionProps> = (props) => {
         <Box
           component='li'
           sx={{
-            color: 'var(--nav-section-title-color)',
+            color: 'black',
             fontSize: 14,
             fontWeight: 700,
             lineHeight: 1.66,

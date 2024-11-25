@@ -13,7 +13,6 @@ import { useOrdersContext } from 'src/contexts/orders/orders-context';
 import { formatUnixTimestamp, unixTimestampToDate } from 'src/utils/format-time-currency';
 import OrderDetailEditDrawer from './order-detail-edit-drawer';
 import { PaymentsApi } from 'src/api/payment';
-import { startDate } from '@utils';
 
 interface OrderNotPaidProps {
   orders: OrderDetail[];

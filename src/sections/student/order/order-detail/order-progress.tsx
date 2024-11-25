@@ -45,38 +45,36 @@ const OrderProgress: React.FC<OrderProgressProps> = ({ order }) => {
       <Typography variant='h5' color='primary'>
         Tiến độ đơn hàng
       </Typography>
-      <Card className='px-3 py-2'>
-        <Grid container spacing={2}>
-          <Grid item xs={8}>
-            <Timeline position='left' className='items-start'>
-              {progressTimeList.map((progressTime, index) => (
-                <TimelineItem key={index} className='flex items-center'>
-                  <TimelineContent className='flex items-center w-full whitespace-nowrap'>
-                    <Typography variant='h6'>{progressTime.title}</Typography>
-                  </TimelineContent>
-                  <TimelineSeparator>
-                    <TimelineDot sx={{ bgcolor: progressTime.color }}>
-                      {progressTime.icon}
-                    </TimelineDot>
-                    {index !== progressTimeList.length - 1 && <TimelineConnector />}
-                  </TimelineSeparator>
-                </TimelineItem>
-              ))}
-            </Timeline>
-          </Grid>
-          <Grid item xs={4}>
-            <Box className='flex flex-col justify-between h-full'>
-              {progressTimeList.map((progressTime, index) => (
-                <Box key={index} className='flex items-center h-full'>
-                  <Typography variant='body2' color='error' fontWeight={'bold'}>
-                    {formatDate(formatUnixTimestamp(progressTime.time))}
-                  </Typography>
-                </Box>
-              ))}
-            </Box>
-          </Grid>
+      <Grid container>
+        <Grid item xs={8}>
+          <Timeline position='left' className='items-start'>
+            {progressTimeList.map((progressTime, index) => (
+              <TimelineItem key={index} className='flex items-center'>
+                <TimelineContent className='flex items-center w-full whitespace-nowrap'>
+                  <Typography variant='h6'>{progressTime.title}</Typography>
+                </TimelineContent>
+                <TimelineSeparator>
+                  <TimelineDot sx={{ bgcolor: progressTime.color }}>
+                    {progressTime.icon}
+                  </TimelineDot>
+                  {index !== progressTimeList.length - 1 && <TimelineConnector />}
+                </TimelineSeparator>
+              </TimelineItem>
+            ))}
+          </Timeline>
         </Grid>
-      </Card>
+        <Grid item xs={4}>
+          <Box className='flex flex-col justify-between h-full'>
+            {progressTimeList.map((progressTime, index) => (
+              <Box key={index} className='flex items-center h-full'>
+                <Typography variant='body2' color='error' fontWeight={'bold'}>
+                  {formatDate(formatUnixTimestamp(progressTime.time))}
+                </Typography>
+              </Box>
+            ))}
+          </Box>
+        </Grid>
+      </Grid>
     </Stack>
   );
 };

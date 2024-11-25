@@ -8,7 +8,6 @@ import { paths } from 'src/paths';
 import type { Page as PageType } from 'src/types/page';
 import OrderInfoCard from 'src/sections/admin/order/order-detail/order-info-card';
 import { useOrdersContext } from 'src/contexts/orders/orders-context';
-import { initialOrderList } from 'src/types/order';
 
 const tabs = [
   {
@@ -80,12 +79,12 @@ const Page: PageType = () => {
                 mt: 3
               }}
             >
-              <Typography variant='h5'>Chi tiết đơn hàng #{router.query.orderId}</Typography>
+              <Typography variant='h5'>Chi tiết đơn hàng #{order?.checkCode}</Typography>
             </Box>
           </Box>
         </Box>
 
-        <OrderInfoCard order={initialOrderList[0] || order!} />
+        <OrderInfoCard order={order!} />
       </Stack>
     </Box>
   );

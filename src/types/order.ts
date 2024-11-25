@@ -14,12 +14,6 @@ export type OrderStatus =
 
 export const orderStatusIconList = [
   {
-    // "CANCELLED": React.createElement(CloseCircle),
-    // "DELIVERED": React.createElement(TickCircle),
-    // "ACCEPETED": React.createElement(UserTick),
-    // "REJECTED": React.createElement(CloseCircle)
-    // "PENDING": React.createElement(MessageQuestion),
-    // "IN_TRANSPORT": React.createElement(Truck),
     status: 'CANCELLED',
     icon: React.createElement(CloseCircle),
     color: 'red',

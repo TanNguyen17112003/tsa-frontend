@@ -22,7 +22,7 @@ export class MapboxsApi {
 
   static async getDirection(start: coordinate, end: coordinate) {
     const response = await axios.get(
-      `https://api.mapbox.com/directions/v5/mapbox/driving/${start.longitude},${start.latitude};${end.longitude},${end.latitude}?geometries=geojson&access_token=${MAPBOX_ACCESS_TOKEN}`
+      `https://api.mapbox.com/directions/v5/mapbox/walking/${start.longitude},${start.latitude};${end.longitude},${end.latitude}?geometries=geojson&access_token=${MAPBOX_ACCESS_TOKEN}`
     );
     return response.data;
   }

@@ -1,5 +1,5 @@
 import { Box } from '@mui/material';
-import React from 'react';
+import React, { useState } from 'react';
 import { CustomTable } from '@components';
 import getReportTableConfigs from './report-table-config';
 import { ReportDetail } from 'src/types/report';
@@ -26,16 +26,9 @@ const ReportList: React.FC<ReportListProps> = ({ reports }) => {
   const orders = useOrdersData();
 
   const [status, setStatus] = React.useState(statusList[0]);
-  const [dateRange, setDateRange] = React.useState(() => {
-    const now = new Date();
-    const yesterday = new Date();
-    yesterday.setDate(now.getDate() - 1);
-    const oneWeekFromNow = new Date();
-    oneWeekFromNow.setDate(now.getDate() + 7);
-    return {
-      startDate: yesterday,
-      endDate: oneWeekFromNow
-    };
+  const [dateRange, setDateRange] = useState<{ startDate: Date | null; endDate: Date | null }>({
+    startDate: null,
+    endDate: null
   });
 
   const reportTableConfig = React.useMemo(() => {
@@ -50,10 +43,6 @@ const ReportList: React.FC<ReportListProps> = ({ reports }) => {
     });
   }, [orders]);
 
-  const pagination = usePagination({
-    count: reports.length
-  });
-
   const result = React.useMemo(() => {
     return reports.filter((report) => {
       const filterStatus =
@@ -63,10 +52,20 @@ const ReportList: React.FC<ReportListProps> = ({ reports }) => {
             ? report.status === 'REPLIED'
             : report.status === 'PENDING';
       const reportDate = formatUnixTimestamp(report.reportedAt!);
-      const filterDate = dateRange.startDate <= reportDate && reportDate <= dateRange.endDate;
+      const filterDate =
+        !dateRange.startDate || !dateRange.endDate
+          ? true
+          : dateRange.startDate !== null &&
+            dateRange.endDate !== null &&
+            dateRange.startDate <= reportDate &&
+            reportDate <= dateRange.endDate;
       return filterStatus && filterDate;
     });
   }, [status, dateRange, reports]);
+
+  const pagination = usePagination({
+    count: result.length
+  });
 
   return (
     <Box className='flex flex-col min-h-screen bg-white px-6 py-4 text-black'>

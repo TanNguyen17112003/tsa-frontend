@@ -38,8 +38,6 @@ export const MobileNavItem: FC<MobileNavItemProps> = (props) => {
     setOpen((prevOpen) => !prevOpen);
   }, []);
 
-  // Icons can be defined at top level only, deep levels have bullets instead of actual icons.
-
   let startIcon: ReactNode;
 
   if (depth === 0) {
@@ -60,7 +58,7 @@ export const MobileNavItem: FC<MobileNavItemProps> = (props) => {
             borderRadius: '50%',
             backgroundColor: 'var(--nav-item-icon-color)',
             height: 4,
-            opacity: 0, // remove this if you want it to be visible
+            opacity: 0,
             width: 4,
             ...(active && {
               backgroundColor: 'var(--nav-item-icon-active-color)',
@@ -194,11 +192,11 @@ export const MobileNavItem: FC<MobileNavItemProps> = (props) => {
           width: '100%',
           ...(active && {
             ...(depth === 0 && {
-              backgroundColor: 'var(--nav-item-active-bg)'
+              backgroundColor: '#5ee03e'
             })
           }),
           '&:hover': {
-            backgroundColor: 'var(--nav-item-hover-bg)'
+            backgroundColor: 'orange'
           }
         }}
         {...linkProps}
@@ -208,12 +206,12 @@ export const MobileNavItem: FC<MobileNavItemProps> = (props) => {
             component='span'
             sx={{
               alignItems: 'center',
-              color: 'var(--nav-item-icon-color)',
+              color: 'black',
               display: 'inline-flex',
               justifyContent: 'center',
               mr: 2,
               ...(active && {
-                color: 'var(--nav-item-icon-active-color)'
+                color: 'white'
               })
             }}
           >
@@ -223,7 +221,7 @@ export const MobileNavItem: FC<MobileNavItemProps> = (props) => {
         <Box
           component='span'
           sx={{
-            color: 'var(--nav-item-color)',
+            color: 'black',
             flexGrow: 1,
             fontFamily: (theme) => theme.typography.fontFamily,
             fontSize: depth > 0 ? 13 : 14,
@@ -231,7 +229,7 @@ export const MobileNavItem: FC<MobileNavItemProps> = (props) => {
             lineHeight: '24px',
             whiteSpace: 'nowrap',
             ...(active && {
-              color: 'var(--nav-item-active-color)'
+              color: 'white'
             }),
             ...(disabled && {
               color: 'var(--nav-item-disabled-color)'

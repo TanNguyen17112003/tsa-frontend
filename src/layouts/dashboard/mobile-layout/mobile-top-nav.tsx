@@ -23,11 +23,11 @@ const MobileTopNav: React.FC<MobileTopNavProps> = ({ sections }) => {
 
   return (
     <>
-      <AppBar position='fixed' sx={{ backgroundColor: 'background.paper', color: 'text.primary' }}>
+      <AppBar position='fixed' sx={{ backgroundColor: '#34a853', color: 'white' }}>
         <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Image src={logo} alt='logo' width={40} height={40} />
-            <Typography fontWeight={'bold'} color='success' fontSize={20}>
+            <Typography fontWeight={'bold'} color='white' fontSize={20}>
               TSA
             </Typography>
           </Box>

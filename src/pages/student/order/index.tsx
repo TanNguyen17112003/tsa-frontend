@@ -15,7 +15,10 @@ import OrdersProvider from 'src/contexts/orders/orders-context';
 import { useOrdersContext } from 'src/contexts/orders/orders-context';
 import { useAuth, useDialog, useFirebaseAuth } from '@hooks';
 import useFunction from 'src/hooks/use-function';
+import MobileOrderList from 'src/sections/mobile/student/order/order-list';
+import MobileOrderDetail from 'src/sections/mobile/student/order/order-detail';
 import UpdateInformationDialog, { InformationProps } from '../update-information-dialog';
+import { useResponsive } from 'src/utils/use-responsive';
 
 const tabs = [
   {
@@ -30,6 +33,7 @@ const tabs = [
 
 const Page: PageType = () => {
   const updateInformationDialog = useDialog();
+  const { isMobile } = useResponsive();
   const { user: firebaseUser, updateProfile } = useFirebaseAuth();
 
   useEffect(() => {
@@ -79,7 +83,13 @@ const Page: PageType = () => {
   }, [orders]);
   return (
     <Box className='bg-white'>
-      {router.query.orderId ? (
+      {isMobile ? (
+        router.query.orderId ? (
+          <MobileOrderDetail />
+        ) : (
+          <MobileOrderList />
+        )
+      ) : router.query.orderId ? (
         <OrderDetailPage />
       ) : (
         <Stack

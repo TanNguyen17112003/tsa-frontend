@@ -4,7 +4,6 @@ import { useRouter } from 'next/router';
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from 'src/components/shadcn/ui/button';
 import FormInput from 'src/components/ui/FormInput';
-import { AuthContextType } from 'src/contexts/auth/jwt-context';
 import { useAuth } from 'src/hooks/use-auth';
 import { paths } from 'src/paths';
 import PasswordInput from 'src/sections/auth/PasswordInput';
@@ -12,9 +11,8 @@ import type { Page as PageType } from 'src/types/page';
 import * as Yup from 'yup';
 import backgroundImage from 'public/ui/background-auth.png';
 import Link from 'next/link';
-import { useSearchParams } from 'src/hooks/use-search-params';
 import React from 'react';
-import { Box, Typography, Divider, Stack } from '@mui/material';
+import { Box, Typography, Divider, Stack, useTheme, useMediaQuery } from '@mui/material';
 import GoogleButton from 'src/sections/auth/GoogleButton';
 import { HomeIcon } from '@heroicons/react/24/solid';
 import { useMounted } from '@hooks';
@@ -25,12 +23,12 @@ export const loginSchema = Yup.object({
 });
 
 const Page: PageType = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isMounted = useMounted();
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
-  const { signIn } = useAuth();
-  const searchParams = useSearchParams();
-  const returnTo = searchParams.get('returnTo');
+  const { signIn, user } = useAuth();
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -70,11 +68,17 @@ const Page: PageType = () => {
 
   return (
     <Box className='h-screen flex bg-[#F6FDF5] items-center gap-10 px-6 text-black'>
-      <Box width={'40%'}>
-        <Image src={backgroundImage} className='w-[100%] object-contain' alt='Background images' />
-      </Box>
-      <Box width='60%' className='flex justify-center'>
-        <Box width={'70%'} className='flex flex-col gap-5'>
+      {!isMobile && (
+        <Box width={'40%'}>
+          <Image
+            src={backgroundImage}
+            className='w-[100%] object-contain'
+            alt='Background images'
+          />
+        </Box>
+      )}
+      <Box width={isMobile ? '100%' : '60%'} className='flex justify-center'>
+        <Box width={isMobile ? '100%' : '70%'} className='flex flex-col gap-5'>
           <Stack
             direction={'row'}
             spacing={1}

@@ -1,4 +1,4 @@
-import { Stack, StackProps, Typography } from '@mui/material';
+import { Stack, StackProps, Typography, useTheme, useMediaQuery } from '@mui/material';
 import _ from 'lodash';
 import { useCallback, useState } from 'react';
 import { File, FileDropzone } from 'src/components/file-dropzone';
@@ -26,6 +26,8 @@ function OrderUploadSection({
 } & StackProps) {
   const [files, setFiles] = useState<File[]>([]);
   const { showSnackbarError } = useAppSnackbar();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const handleDrop = useCallback(
     async (newFiles: File[]) => {
@@ -131,7 +133,13 @@ function OrderUploadSection({
   }, [handleUpload, onUpload]);
 
   return (
-    <Stack spacing={2} {...StackProps}>
+    <Stack
+      spacing={2}
+      {...StackProps}
+      flexDirection={isMobile ? 'column-reverse' : 'row'}
+      alignItems={isMobile ? 'center' : ''}
+      gap={1}
+    >
       <Stack gap={2} flex={1}>
         <Typography variant='body2'>
           File import là file Excel (xlsx hoặc xls) mẫu được hệ thống cung cấp.

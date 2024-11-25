@@ -32,10 +32,28 @@ const LandingPage = () => {
       }
     };
 
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const sections = document.querySelectorAll('.section');
+      const currentSectionIndex = Array.from(sections).findIndex((section) => {
+        const rect = section.getBoundingClientRect();
+        return rect.top >= 0 && rect.top < window.innerHeight / 2;
+      });
+
+      if (event.key === 'ArrowDown' && currentSectionIndex < sections.length - 1) {
+        sections[currentSectionIndex + 1].scrollIntoView({ behavior: 'smooth' });
+        history.pushState(null, '', `/#${sections[currentSectionIndex + 1].id}`);
+      } else if (event.key === 'ArrowUp' && currentSectionIndex > 0) {
+        sections[currentSectionIndex - 1].scrollIntoView({ behavior: 'smooth' });
+        history.pushState(null, '', `/#${sections[currentSectionIndex - 1].id}`);
+      }
+    };
+
     window.addEventListener('wheel', handleScroll, { passive: false });
+    window.addEventListener('keydown', handleKeyDown);
 
     return () => {
       window.removeEventListener('wheel', handleScroll);
+      window.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
 

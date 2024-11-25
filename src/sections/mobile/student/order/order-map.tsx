@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Box, Typography, Stack } from '@mui/material';
+import { Box, Typography, Stack, Tooltip } from '@mui/material';
 import { MapboxsApi } from 'src/api/mapboxs';
 import Map, { Marker, Source, Layer } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -8,6 +8,9 @@ import studentImage from 'public/ui/student-location.png';
 import { OrderDetail } from 'src/types/order';
 import { coordinateList } from 'src/utils/coordinate-list';
 import { useSocketContext } from 'src/contexts/socket-client/socket-client-context';
+import { ArrowUp2, ArrowLeft } from 'iconsax-react';
+import { useDialog } from '@hooks';
+import OrderDeliveryDialog from './order-delivery-dialog';
 
 const MAPBOX_ACCESS_TOKEN =
   'pk.eyJ1IjoicXVhbmNhbzIzMTAiLCJhIjoiY20yNXMxZ3BlMGRpMjJ3cWR5ZTMyNjh2MCJ9.ILNCWFtulso1GeCR7OBz-w';
@@ -17,6 +20,7 @@ const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
   const [shipperCoordinate, setShipperCoordinate] = useState<[number, number]>([
     106.80712035274313, 10.878177113714147
   ]);
+  const deliveryHistoryDialog = useDialog<OrderDetail>();
   const [distance, setDistance] = useState<number>(0);
 
   const [routeCoordinates, setRouteCoordinates] = useState<[number, number][]>([]);
@@ -25,7 +29,9 @@ const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
 
   const exactOrderLocation = useMemo(() => {
     const foundCoordinate = coordinateList.find((coordinate) => {
-      return order.building === coordinate.address[0] && order.dormitory === coordinate.address[1];
+      return (
+        order?.building === coordinate.address[0] && order?.dormitory === coordinate.address[1]
+      );
     });
     return foundCoordinate?.value;
   }, [order, coordinateList]);
@@ -53,9 +59,9 @@ const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
   }, [shipperCoordinate, exactOrderLocation, setDistance, setDirection, setRouteCoordinates]);
 
   useEffect(() => {
-    if (socket && order.shipperId) {
-      socket.emit('subscribeToShipper', { shipperId: order.shipperId });
-      console.log(`Subscribed to shipper with ID ${order.shipperId}`);
+    if (socket && order?.shipperId) {
+      socket.emit('subscribeToShipper', { shipperId: order?.shipperId });
+      console.log(`Subscribed to shipper with ID ${order?.shipperId}`);
 
       socket.on(
         'locationUpdate',
@@ -65,7 +71,7 @@ const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
         }
       );
     }
-  }, [order.shipperId]);
+  }, [order?.shipperId]);
 
   const directionCoordinates = useMemo(
     () => direction?.routes[0]?.geometry?.coordinates,
@@ -73,8 +79,8 @@ const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
   );
 
   return (
-    <Box className='min-h-full'>
-      <Box className='w-full h-96 relative'>
+    <Box className='min-h-screen h-full'>
+      <Box className='w-full h-screen relative'>
         <Map
           mapboxAccessToken={MAPBOX_ACCESS_TOKEN}
           initialViewState={{
@@ -149,19 +155,36 @@ const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
             </>
           )}
         </Map>
+        <Stack>
+          <ArrowLeft color='white' size={40} />
+        </Stack>
         <Stack
           direction={'row'}
           alignItems={'center'}
           gap={0.5}
           marginBottom={1}
-          className='absolute right-3 bottom-3 bg-orange-500 px-3 py-2 rounded-lg'
+          className='absolute right-3 top-3 bg-orange-500 px-3 py-2 rounded-lg'
         >
           <Typography color='white'>Khoảng cách:</Typography>
           <Typography fontWeight={'bold'} color='white'>
             {(distance / 1000).toFixed(2)} km
           </Typography>
         </Stack>
+        <Tooltip
+          title='Xem lịch sử đơn hàng'
+          className='absolute bottom-[50px] left-1/2 -translate-x-1/2'
+          onClick={() => deliveryHistoryDialog.handleOpen(order)}
+        >
+          <Stack className='w-auto bg-white px-3 py-2 rounded-t-lg cursor-pointer'>
+            <ArrowUp2 size={30} color='black' />
+          </Stack>
+        </Tooltip>
       </Box>
+      <OrderDeliveryDialog
+        order={order}
+        open={deliveryHistoryDialog.open}
+        onClose={deliveryHistoryDialog.handleClose}
+      />
     </Box>
   );
 };

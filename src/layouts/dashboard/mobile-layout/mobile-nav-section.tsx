@@ -16,11 +16,13 @@ interface DashboardItem {
 const renderItems = ({
   depth = 0,
   items,
-  pathname
+  pathname,
+  onClose
 }: {
   depth?: number;
   items: DashboardItem[];
   pathname?: string | null;
+  onClose?: () => void;
 }): JSX.Element[] =>
   items.reduce(
     (acc: JSX.Element[], item) =>
@@ -28,7 +30,8 @@ const renderItems = ({
         acc,
         depth,
         item,
-        pathname
+        pathname,
+        onClose
       }),
     []
   );
@@ -37,12 +40,14 @@ const reduceChildRoutes = ({
   acc,
   depth,
   item,
-  pathname
+  pathname,
+  onClose
 }: {
   acc: JSX.Element[];
   depth: number;
   item: DashboardItem;
   pathname?: string | null;
+  onClose?: () => void;
 }): Array<JSX.Element> => {
   const checkPath = !!(item.path && pathname);
   const partialMatch = checkPath ? pathname.includes(item.path!) : false;
@@ -59,6 +64,7 @@ const reduceChildRoutes = ({
         label={item.label}
         open={partialMatch}
         title={item.title}
+        onClose={onClose}
       >
         <Stack
           component='ul'
@@ -73,7 +79,8 @@ const reduceChildRoutes = ({
           {renderItems({
             depth: depth + 1,
             items: item.items,
-            pathname
+            pathname,
+            onClose
           })}
         </Stack>
       </MobileNavItem>
@@ -90,6 +97,7 @@ const reduceChildRoutes = ({
         label={item.label}
         path={item.path}
         title={item.title}
+        onClose={onClose}
       />
     );
   }
@@ -101,10 +109,11 @@ interface MobileNavSectionProps {
   items?: DashboardItem[];
   pathname?: string | null;
   subheader?: string;
+  onClose?: () => void;
 }
 
 export const MobileNavSection: FC<MobileNavSectionProps> = (props) => {
-  const { items = [], pathname, subheader = '', ...other } = props;
+  const { items = [], pathname, subheader = '', onClose, ...other } = props;
 
   return (
     <Stack
@@ -134,7 +143,7 @@ export const MobileNavSection: FC<MobileNavSectionProps> = (props) => {
           {subheader}
         </Box>
       )}
-      {renderItems({ items, pathname })}
+      {renderItems({ items, pathname, onClose })}
     </Stack>
   );
 };
@@ -142,5 +151,6 @@ export const MobileNavSection: FC<MobileNavSectionProps> = (props) => {
 MobileNavSection.propTypes = {
   items: PropTypes.array,
   pathname: PropTypes.string,
-  subheader: PropTypes.string
+  subheader: PropTypes.string,
+  onClose: PropTypes.func
 };

@@ -9,6 +9,9 @@ import type { Page as PageType } from 'src/types/page';
 import OrderInfoCard from 'src/sections/student/order/order-detail/order-info-card';
 import OrderDeliveryHistory from 'src/sections/student/order/order-detail/order-delivery-history';
 import { useOrdersContext } from 'src/contexts/orders/orders-context';
+import { useResponsive } from 'src/utils/use-responsive';
+import MobileOrderDetail from 'src/sections/mobile/student/order/order-detail';
+import { OrderDetail } from 'src/types/order';
 
 const tabs = [
   {
@@ -17,19 +20,22 @@ const tabs = [
   },
   {
     label: 'Lịch sử giao hàng',
-    key: 'Danh sách tham gia'
+    key: 'Lịch sử giao hàng'
   }
 ];
 
 const Page: PageType = () => {
   const router = useRouter();
+  const { isMobile } = useResponsive();
   const { getOrdersApi } = useOrdersContext();
   const order = useMemo(() => {
     return (getOrdersApi.data || []).find((order) => order.id === router.query.orderId);
-  }, [getOrdersApi.data]);
+  }, [getOrdersApi.data, router.query.orderId]);
   const [tab, setTab] = useState(tabs[0].key);
 
-  return (
+  return isMobile ? (
+    <MobileOrderDetail order={order as OrderDetail} />
+  ) : (
     <Box
       sx={{
         maxWidth: 'xl',

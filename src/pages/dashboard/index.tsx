@@ -4,7 +4,14 @@ import type { Page as PageType } from 'src/types/page';
 import ContentHeader from 'src/components/content-header';
 import { Box, Stack, Card } from '@mui/material';
 import AnaLysticCard, { AnaLysticCardProps } from '../../sections/admin/analystic-card';
-import { Profile2User, DocumentText, Box1, Diagram, ArrowRotateLeft } from 'iconsax-react';
+import {
+  Profile2User,
+  DocumentText,
+  Box1,
+  Diagram,
+  ArrowRotateLeft,
+  Category2
+} from 'iconsax-react';
 import RevenueChart from 'src/sections/admin/revenue-chart';
 import NumberOrderChart from 'src/sections/admin/number-order-chart';
 import NumberOrderPercentageChart from 'src/sections/admin/number-order-percentage-chart';
@@ -17,12 +24,16 @@ import { ReportsApi } from 'src/api/reports';
 import useFunction from 'src/hooks/use-function';
 import { useEffect, useMemo } from 'react';
 import { formatDate, formatUnixTimestamp, formatVNDcurrency } from 'src/utils/format-time-currency';
+import { useResponsive } from 'src/utils/use-responsive';
+import MobileContentHeader from 'src/components/mobile-content-header';
 
 const Page: PageType = () => {
   const router = useRouter();
   const getOrdersApi = useFunction(OrdersApi.getOrders);
   const getListUsersApi = useFunction(UsersApi.getUsers);
   const getReportsApi = useFunction(ReportsApi.getReports);
+
+  const { isMobile, isTablet } = useResponsive();
 
   const users = useMemo(() => {
     return (getListUsersApi.data || []).filter((user) => user.role === 'STUDENT');
@@ -219,36 +230,52 @@ const Page: PageType = () => {
   }, []);
 
   return (
-    <Stack className='min-h-screen bg-white'>
-      <ContentHeader title='Bảng điều khiển' />
-      <Box padding={3}>
-        <Stack direction={'row'} justifyContent={'space-between'} gap={2}>
-          {analysticList.map((analystic, index) => (
-            <Box className='w-1/5' key={index}>
-              <AnaLysticCard {...analystic} />
-            </Box>
-          ))}
+    <>
+      {!isMobile ? (
+        <Stack className='min-h-screen bg-white'>
+          <ContentHeader title='Bảng điều khiển' />
+          <Box padding={3}>
+            <Stack direction={'row'} justifyContent={'space-between'} gap={2}>
+              {analysticList.map((analystic, index) => (
+                <Box className='w-1/5' key={index}>
+                  <AnaLysticCard {...analystic} />
+                </Box>
+              ))}
+            </Stack>
+          </Box>
+          <Box padding={3} display={'flex'} flexDirection={'column'} gap={3}>
+            <Stack direction={'row'} spacing={2}>
+              <Card className='p-3 w-1/2'>
+                <RevenueChart orders={orders} />
+              </Card>
+              <Card className='p-3 w-1/2'>
+                <PaymentMethodLineChart orders={orders} />
+              </Card>
+            </Stack>
+            <Stack direction={'row'} spacing={2}>
+              <Card className='p-3 w-1/2'>
+                <NumberOrderChart orders={orders} />
+              </Card>
+              <Card className='p-3 w-1/2'>
+                <NumberOrderPercentageChart orders={orders} />
+              </Card>
+            </Stack>
+          </Box>
         </Stack>
-      </Box>
-      <Box padding={3} display={'flex'} flexDirection={'column'} gap={3}>
-        <Stack direction={'row'} spacing={2}>
-          <Card className='p-3 w-1/2'>
-            <RevenueChart orders={orders} />
-          </Card>
-          <Card className='p-3 w-1/2'>
-            <PaymentMethodLineChart orders={orders} />
-          </Card>
-        </Stack>
-        <Stack direction={'row'} spacing={2}>
-          <Card className='p-3 w-1/2'>
-            <NumberOrderChart orders={orders} />
-          </Card>
-          <Card className='p-3 w-1/2'>
-            <NumberOrderPercentageChart orders={orders} />
-          </Card>
-        </Stack>
-      </Box>
-    </Stack>
+      ) : (
+        <Box className='px-4 py-3'>
+          <MobileContentHeader
+            title='Thống kê hệ thống'
+            image={<Category2 variant='Bold' color='green' />}
+          />
+          <Stack mt={2} gap={1.5} sx={{ flexGrow: 1, overFlowY: 'auto' }}>
+            {analysticList.map((analystic, index) => (
+              <AnaLysticCard key={index} {...analystic} />
+            ))}
+          </Stack>
+        </Box>
+      )}
+    </>
   );
 };
 

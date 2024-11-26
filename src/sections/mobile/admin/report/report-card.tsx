@@ -1,6 +1,8 @@
 import { Card, Divider, Stack, Typography, Box, Chip } from '@mui/material';
+import { Money, Bank } from 'iconsax-react';
 import React from 'react';
 import { ReportDetail } from 'src/types/report';
+import Image from 'next/image';
 import { formatDate, formatUnixTimestamp, formatVNDcurrency } from 'src/utils/format-time-currency';
 
 const ReportCard: React.FC<{ report: ReportDetail; number: number }> = ({ report }) => {

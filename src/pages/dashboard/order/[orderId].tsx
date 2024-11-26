@@ -8,6 +8,9 @@ import { paths } from 'src/paths';
 import type { Page as PageType } from 'src/types/page';
 import OrderInfoCard from 'src/sections/admin/order/order-detail/order-info-card';
 import { useOrdersContext } from 'src/contexts/orders/orders-context';
+import { useResponsive } from 'src/utils/use-responsive';
+import MobileOrderDetail from 'src/sections/mobile/admin/order/order-detail';
+import { OrderDetail } from 'src/types/order';
 
 const tabs = [
   {
@@ -22,6 +25,7 @@ const tabs = [
 
 const Page: PageType = () => {
   const router = useRouter();
+  const { isMobile } = useResponsive();
   const { getOrdersApi } = useOrdersContext();
   const order = useMemo(() => {
     return (getOrdersApi.data || []).find((order) => order.id === router.query.orderId);
@@ -29,64 +33,70 @@ const Page: PageType = () => {
   const [tab, setTab] = useState(tabs[0].key);
 
   return (
-    <Box
-      sx={{
-        maxWidth: 'xl',
-        minHeight: '100vh',
-        width: '100%',
-        marginLeft: 'auto',
-        marginRight: 'auto',
-        py: 3,
-        px: 2,
-        color: 'black',
-        bgcolor: 'white'
-      }}
-    >
-      <Stack spacing={4}>
+    <>
+      {isMobile ? (
+        <MobileOrderDetail order={order as OrderDetail} />
+      ) : (
         <Box
           sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'flex-start'
+            maxWidth: 'xl',
+            minHeight: '100vh',
+            width: '100%',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            py: 3,
+            px: 2,
+            color: 'black',
+            bgcolor: 'white'
           }}
         >
-          <Box
-            sx={{
-              width: '100%'
-            }}
-          >
-            <Box
-              sx={{ cursor: 'pointer' }}
-              onClick={() => {
-                router.push(paths.dashboard.order.index);
-              }}
-            >
-              <ArrowBack
-                fontSize='small'
-                sx={{
-                  verticalAlign: 'middle'
-                }}
-              />{' '}
-              Quay lại
-            </Box>
+          <Stack spacing={4}>
             <Box
               sx={{
                 display: 'flex',
-                alignItems: 'center',
-                gap: '16px',
                 justifyContent: 'space-between',
-                width: '100%',
-                mt: 3
+                alignItems: 'flex-start'
               }}
             >
-              <Typography variant='h5'>Chi tiết đơn hàng #{order?.checkCode}</Typography>
+              <Box
+                sx={{
+                  width: '100%'
+                }}
+              >
+                <Box
+                  sx={{ cursor: 'pointer' }}
+                  onClick={() => {
+                    router.push(paths.dashboard.order.index);
+                  }}
+                >
+                  <ArrowBack
+                    fontSize='small'
+                    sx={{
+                      verticalAlign: 'middle'
+                    }}
+                  />{' '}
+                  Quay lại
+                </Box>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '16px',
+                    justifyContent: 'space-between',
+                    width: '100%',
+                    mt: 3
+                  }}
+                >
+                  <Typography variant='h5'>Chi tiết đơn hàng #{order?.checkCode}</Typography>
+                </Box>
+              </Box>
             </Box>
-          </Box>
-        </Box>
 
-        <OrderInfoCard order={order!} />
-      </Stack>
-    </Box>
+            <OrderInfoCard order={order!} />
+          </Stack>
+        </Box>
+      )}
+    </>
   );
 };
 

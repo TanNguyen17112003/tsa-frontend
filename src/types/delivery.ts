@@ -8,6 +8,14 @@ export const deliveryStatusMap = {
   'Đã hoàn thành': 'FINISHED',
   'Đã hủy': 'CANCELED'
 };
+
+interface DeliveryStatusHistory {
+  id: string;
+  deliveryId: string;
+  status: DeliveryStatus;
+  reason?: string;
+  time: string;
+}
 export interface Delivery {
   id: string;
   createdAt: string;
@@ -18,6 +26,7 @@ export interface Delivery {
   status: DeliveryStatus;
   orders: OrderDetail[];
   staffId: string;
+  DeliveryStatusHistory: DeliveryStatusHistory[];
 }
 
 export interface DeliveryDetail extends Delivery {}

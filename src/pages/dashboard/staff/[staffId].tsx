@@ -19,10 +19,12 @@ import useFunction from 'src/hooks/use-function';
 import { useEffect, useMemo } from 'react';
 import { useUsersContext } from '@contexts';
 import { UserDetail } from 'src/types/user';
+import { useResponsive } from 'src/utils/use-responsive';
 import StaffDetailDeliveryRadialChart from 'src/sections/admin/staff/staff-detail/staff-detail-delivery-radial-chart';
 
 const Page: PageType = () => {
   const router = useRouter();
+  const { isMobile } = useResponsive();
   const getDeliveriesApi = useFunction(DeliveriesApi.getDeliveries);
   const getOrdersApi = useFunction(OrdersApi.getOrders);
   const { getListUsersApi } = useUsersContext();
@@ -154,7 +156,9 @@ const Page: PageType = () => {
               <ArrowBack fontSize='small' className='align-middle' /> Quay lại
             </Box>
             <Box className='flex items-center gap-4 justify-between w-full mt-3'>
-              <Typography variant='h5'>Chi tiết nhân viên #{router.query.staffId}</Typography>
+              <Typography variant={isMobile ? 'body1' : 'h5'} fontWeight={'bold'}>
+                Chi tiết nhân viên {detailStaff?.lastName} {detailStaff?.firstName}
+              </Typography>
             </Box>
             <Box className='mt-5'>
               <Stack direction={'row'} gap={2}>
@@ -168,36 +172,40 @@ const Page: PageType = () => {
           </Box>
         </Box>
         <Grid container spacing={2}>
-          <Grid item xs={4}>
+          <Grid item xs={isMobile ? 12 : 4}>
             <Stack className='h-full'>
               <StaffDetailInformation info={detailStaff as UserDetail} />
             </Stack>
           </Grid>
-          <Grid item xs={4}>
-            <Stack className='h-full'>
-              <StaffDetailDeliveryRadialChart deliveries={deliveries} />
-            </Stack>
-          </Grid>
-          <Grid item xs={4}>
-            <Stack className='h-full'>
-              <StaffDetailPaymentChart orders={orders} />
-            </Stack>
-          </Grid>
-          <Grid item xs={12}>
-            <Stack className='h-full'>
-              <StaffDetailHeatChart orders={orders} />
-            </Stack>
-          </Grid>
-          <Grid item xs={6}>
-            <Stack className='h-full'>
-              <StaffDetailOrderRevenueChart orders={orders} />
-            </Stack>
-          </Grid>
-          <Grid item xs={6}>
-            <Stack className='h-full'>
-              <StaffDetailOrderChart orders={orders} />
-            </Stack>
-          </Grid>
+          {!isMobile && (
+            <>
+              <Grid item xs={4}>
+                <Stack className='h-full'>
+                  <StaffDetailDeliveryRadialChart deliveries={deliveries} />
+                </Stack>
+              </Grid>
+              <Grid item xs={4}>
+                <Stack className='h-full'>
+                  <StaffDetailPaymentChart orders={orders} />
+                </Stack>
+              </Grid>
+              <Grid item xs={12}>
+                <Stack className='h-full'>
+                  <StaffDetailHeatChart orders={orders} />
+                </Stack>
+              </Grid>
+              <Grid item xs={6}>
+                <Stack className='h-full'>
+                  <StaffDetailOrderRevenueChart orders={orders} />
+                </Stack>
+              </Grid>
+              <Grid item xs={6}>
+                <Stack className='h-full'>
+                  <StaffDetailOrderChart orders={orders} />
+                </Stack>
+              </Grid>
+            </>
+          )}
         </Grid>
       </Stack>
     </Box>

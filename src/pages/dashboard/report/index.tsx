@@ -5,13 +5,22 @@ import ContentHeader from 'src/components/content-header';
 import { Box } from '@mui/material';
 import ReportsProvider from 'src/contexts/reports/reports-context';
 import ReportList from 'src/sections/admin/report';
+import { useResponsive } from 'src/utils/use-responsive';
+import MobileReportList from 'src/sections/mobile/admin/report/report-list';
 
 const Page: PageType = () => {
+  const { isMobile } = useResponsive();
   return (
-    <Box className='text-black bg-white min-h-screen'>
-      <ContentHeader title='Quản lý khiếu nại' />
-      <ReportList />
-    </Box>
+    <>
+      {isMobile ? (
+        <MobileReportList />
+      ) : (
+        <Box className='text-black bg-white min-h-screen'>
+          <ContentHeader title='Quản lý khiếu nại' />
+          <ReportList />
+        </Box>
+      )}
+    </>
   );
 };
 Page.getLayout = (page) => (

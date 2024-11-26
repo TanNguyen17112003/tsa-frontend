@@ -39,7 +39,8 @@ function DeliveryList() {
           ? new Date(Number(delivery.createdAt) * 1000) >= dateRange.startDate &&
             new Date(Number(delivery.createdAt) * 1000) <= dateRange.endDate
           : true;
-      const matchesStatus = selectedStatus === '' ? true : delivery.status === selectedStatus;
+      const matchesStatus =
+        selectedStatus === '' ? true : delivery.DeliveryStatusHistory[0].status === selectedStatus;
       return matchesDateRange && matchesStatus;
     });
   }, [dateRange, selectedStatus, deliveries]);

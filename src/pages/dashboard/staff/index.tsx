@@ -7,11 +7,17 @@ import StaffList from 'src/sections/admin/staff/staff-list';
 import StaffDetail from './[staffId]';
 import { useRouter } from 'next/router';
 import { Add } from '@mui/icons-material';
+import UsersProvider from 'src/contexts/users/users-context';
+import MobileStaffList from 'src/sections/mobile/admin/staff/staff-list';
+import { useResponsive } from 'src/utils/use-responsive';
 
 const Page: PageType = () => {
+  const { isMobile } = useResponsive();
   const router = useRouter();
   return router.query.staffId ? (
     <StaffDetail />
+  ) : isMobile ? (
+    <MobileStaffList />
   ) : (
     <Box className='text-black bg-white min-h-screen'>
       <ContentHeader
@@ -28,6 +34,10 @@ const Page: PageType = () => {
     </Box>
   );
 };
-Page.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
+Page.getLayout = (page) => (
+  <DashboardLayout>
+    <UsersProvider>{page}</UsersProvider>
+  </DashboardLayout>
+);
 
 export default Page;

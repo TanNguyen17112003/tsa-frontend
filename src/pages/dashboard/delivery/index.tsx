@@ -2,26 +2,29 @@ import { Layout as DashboardLayout } from 'src/layouts/dashboard';
 import type { Page as PageType } from 'src/types/page';
 import { Stack } from '@mui/system';
 import ContentHeader from 'src/components/content-header';
-import { useRouter } from 'next/router';
-import { useAuth } from '@hooks';
+import { useResponsive } from 'src/utils/use-responsive';
 import DeliverList from 'src/sections/admin/delivery/delivery-list';
 import DeliveriesProvider from 'src/contexts/deliveries/deliveries-context';
+import MobileDeliveryList from 'src/sections/mobile/admin/delivery/delivery-list';
 const Page: PageType = () => {
-  const { user } = useAuth();
-  const router = useRouter();
+  const { isMobile } = useResponsive();
   return (
     <>
-      <Stack
-        sx={{
-          maxHeight: '100vh',
-          overflow: 'auto',
-          bgcolor: 'white'
-        }}
-        className='min-h-screen'
-      >
-        <ContentHeader title='Quản lý chuyến đi' />
-        <DeliverList />
-      </Stack>
+      {isMobile ? (
+        <MobileDeliveryList />
+      ) : (
+        <Stack
+          sx={{
+            maxHeight: '100vh',
+            overflow: 'auto',
+            bgcolor: 'white'
+          }}
+          className='min-h-screen'
+        >
+          <ContentHeader title='Quản lý chuyến đi' />
+          <DeliverList />
+        </Stack>
+      )}
     </>
   );
 };

@@ -182,12 +182,18 @@ function MobileOrderList() {
   );
 
   return (
-    <Stack className='min-h-screen py-4 px-3'>
+    <Stack className='min-h-screen py-4 px-3 bg-white'>
       <MobileContentHeader
         title={'Danh sách đơn hàng'}
         image={<Box size={24} name={'ShoppingCart'} color='green' />}
         rigthComponent={
-          <AddCircle size={40} variant='Bold' onClick={handleGoAddOrder} color='green' />
+          <AddCircle
+            size={40}
+            variant='Bold'
+            onClick={handleGoAddOrder}
+            color='green'
+            className='cursor-pointer'
+          />
         }
       />
       <Stack mt={1}>

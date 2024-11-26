@@ -11,13 +11,18 @@ import { useRouter } from 'next/router';
 import OrderDetailPage from './[orderId]';
 import OrdersProvider from 'src/contexts/orders/orders-context';
 import OrderList from 'src/sections/admin/order/order-list';
+import MobileOrderList from 'src/sections/mobile/admin/order/order-list';
+import { useResponsive } from 'src/utils/use-responsive';
 
 const Page: PageType = () => {
   const router = useRouter();
+  const { isMobile } = useResponsive();
   return (
     <>
       {router.query.orderId ? (
         <OrderDetailPage />
+      ) : isMobile ? (
+        <MobileOrderList />
       ) : (
         <Stack
           sx={{

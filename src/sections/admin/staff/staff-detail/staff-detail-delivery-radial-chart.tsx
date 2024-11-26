@@ -10,10 +10,10 @@ const aggregateDeliveryDataByStatus = (
   const statusCounts: { [key in DeliveryStatus]?: number } = {};
 
   deliveries.forEach((delivery) => {
-    if (statusCounts[delivery.status]) {
-      statusCounts[delivery.status]! += 1;
+    if (statusCounts[delivery.DeliveryStatusHistory[0].status]) {
+      statusCounts[delivery.DeliveryStatusHistory[0].status]! += 1;
     } else {
-      statusCounts[delivery.status] = 1;
+      statusCounts[delivery.DeliveryStatusHistory[0].status] = 1;
     }
   });
 

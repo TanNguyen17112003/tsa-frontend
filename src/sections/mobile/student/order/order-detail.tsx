@@ -66,7 +66,14 @@ const MobileOrderDetail: React.FC<{ order: OrderDetail }> = ({ order }) => {
         <MobileOrderDeliveryHistory order={order} />
       ) : (
         <Box className='bg-white text-black px-4 py-3 min-h-screen'>
-          <Stack direction={'row'} alignItems={'center'} gap={1} onClick={handleGoOrderList} mb={2}>
+          <Stack
+            direction={'row'}
+            alignItems={'center'}
+            gap={1}
+            onClick={handleGoOrderList}
+            mb={2}
+            className='cursor-pointer'
+          >
             <ArrowLeft />
             <Typography>Quay lại</Typography>
           </Stack>

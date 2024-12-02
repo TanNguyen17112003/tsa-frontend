@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 import React, { useState } from 'react';
 import { CustomTable } from '@components';
 import getReportTableConfigs from './report-table-config';
@@ -15,9 +15,10 @@ import { useReportsContext } from 'src/contexts/reports/reports-context';
 
 interface ReportListProps {
   reports: ReportDetail[];
+  loading: boolean;
 }
 
-const ReportList: React.FC<ReportListProps> = ({ reports }) => {
+const ReportList: React.FC<ReportListProps> = ({ reports, loading }) => {
   const statusList = ['Tất cả', 'Đã giải quyết', 'Đang chờ xử lý'];
   const { deleteReport } = useReportsContext();
 
@@ -78,12 +79,18 @@ const ReportList: React.FC<ReportListProps> = ({ reports }) => {
         setDateRange={setDateRange}
       />
       <Box sx={{ flex: 1 }}>
-        <CustomTable
-          rows={result}
-          configs={reportTableConfig}
-          pagination={pagination}
-          className='my-5 -mx-6'
-        />
+        {loading ? (
+          <Box display='flex' justifyContent='center' alignItems='center' height='100%'>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <CustomTable
+            rows={result}
+            configs={reportTableConfig}
+            pagination={pagination}
+            className='my-5 -mx-6'
+          />
+        )}
       </Box>
       <ReportDetailEditDrawer
         report={editDetailReportDrawer.data}

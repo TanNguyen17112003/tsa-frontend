@@ -37,7 +37,6 @@ export const LandingIntroduction = () => {
   return (
     <Box
       sx={{
-        minHeight: '100vh',
         color: 'text.primary',
         backgroundColor: '#f6fdf5'
       }}
@@ -47,9 +46,9 @@ export const LandingIntroduction = () => {
           display: 'flex',
           flexDirection: isMobile ? 'column-reverse' : 'start',
           alignItems: 'center',
+          justifyContent: 'center',
           p: 8,
-          gap: isMobile ? 2 : 4,
-          height: '100vh'
+          gap: isMobile ? 2 : 4
         }}
       >
         <Box

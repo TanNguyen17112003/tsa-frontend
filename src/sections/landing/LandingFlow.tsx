@@ -25,11 +25,6 @@ export const LandingFlow = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const flowList: LandingFlowProps[] = [
     {
-      image: <Box1 size={'70%'} />,
-      title: 'Nhận hàng',
-      description: 'Shipper giao những đơn hàng của sinh viên cho nhân viên hệ thống phụ trách'
-    },
-    {
       image: <Edit size={'70%'} />,
       title: 'Nhập liệu thông tin',
       description: 'Sinh viên nhập liệu thông tin đơn hàng lên hệ thống'
@@ -38,6 +33,11 @@ export const LandingFlow = () => {
       image: <PiMotorcycle size={'70%'} />,
       title: 'Giao hàng',
       description: 'Quản trị hệ thống tiến hành chỉ định nhân viên giao hàng'
+    },
+    {
+      image: <Box1 size={'70%'} />,
+      title: 'Nhận hàng',
+      description: 'Sinh viên nhận hàng được giao từ nhân viên hệ thống'
     }
   ];
 

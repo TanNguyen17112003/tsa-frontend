@@ -24,7 +24,7 @@ export const LandingFeatures = () => {
     {
       title: 'Tiết kiệm thời gian nhận hàng',
       description:
-        'Sinh viên không cần tốn thời gian đi đến tận nơi shipper giao hàng. Chỉ cần một cú “clck” sẽ giải quyết tất cả'
+        'Sinh viên không cần tốn thời gian đi đến tận nơi shipper giao hàng. Chỉ cần một cú “click” sẽ giải quyết tất cả'
     },
     {
       title: 'Giá cả phải chăng',

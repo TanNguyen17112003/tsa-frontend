@@ -62,14 +62,19 @@ function ProfileSection() {
     async (file: File) => {
       try {
         const uploadedImage = await UploadImagesApi.postImage(file);
-        if (updateProfile) {
-          await updateProfile({ photoUrl: uploadedImage.secure_url });
+        if (uploadedImage && uploadedImage.url) {
+          if (user && updateProfile) {
+            await updateProfile({ photoUrl: uploadedImage.url });
+          }
+          if (firebaseUser && updateFirebaseProfile) {
+            await updateFirebaseProfile({ photoUrl: uploadedImage.url });
+          }
         }
       } catch (error) {
         throw error;
       }
     },
-    [updateProfile]
+    [updateProfile, user, firebaseUser, updateFirebaseProfile]
   );
 
   return (

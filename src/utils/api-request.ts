@@ -63,7 +63,7 @@ const refreshToken = async () => {
   const refreshToken = CookieHelper.getItem(CookieKeys.REFRESH_TOKEN);
   if (refreshToken) {
     try {
-      const response = await UsersApi.refreshToken(refreshToken);
+      const response = await UsersApi.refreshToken(refreshToken as string);
       if (response && response.accessToken && response.refreshToken) {
         CookieHelper.setItem(CookieKeys.TOKEN, response.accessToken);
         CookieHelper.setItem(CookieKeys.REFRESH_TOKEN, response.refreshToken);

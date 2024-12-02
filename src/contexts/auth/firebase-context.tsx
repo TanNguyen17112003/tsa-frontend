@@ -38,7 +38,8 @@ interface State {
 enum ActionType {
   INITIALIZE = 'INITIALIZE',
   SIGN_IN = 'SIGN_IN',
-  UPDATE_PROFILE = 'UPDATE_PROFILE'
+  UPDATE_PROFILE = 'UPDATE_PROFILE',
+  SIGN_OUT = 'SIGN_OUT'
 }
 
 type UpdateAction = {
@@ -62,9 +63,13 @@ type SignInAction = {
     user: UserDetail;
   };
 };
+
+type SignOutAction = {
+  type: ActionType.SIGN_OUT;
+};
 type Handler = (state: State, action: any) => State;
 
-type Action = InitializeAction | SignInAction | UpdateAction;
+type Action = InitializeAction | SignInAction | UpdateAction | SignOutAction;
 
 const initialState: State = {
   isAuthenticated: false,
@@ -99,7 +104,12 @@ const handlers: Record<ActionType, Handler> = {
       isAuthenticated: true,
       user: state.user ? { ...state.user, ...user } : null
     };
-  }
+  },
+  SIGN_OUT: (state: State): State => ({
+    ...state,
+    isAuthenticated: false,
+    user: null
+  })
 };
 const reducer = (state: State, action: Action): State =>
   handlers[action.type] ? handlers[action.type](state, action) : state;
@@ -220,8 +230,7 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
         const userInfo: UserDetail = { ...response.userInfo, authMethod: 'firebase' };
         CookieHelper.setItem(CookieKeys.TOKEN, response.accessToken);
         CookieHelper.setItem(CookieKeys.REFRESH_TOKEN, response.refreshToken);
-        localStorage.setItem('user_data', JSON.stringify(userInfo));
-
+        CookieHelper.setItem('user_data', JSON.stringify(userInfo));
         dispatch({
           type: ActionType.SIGN_IN,
           payload: {
@@ -288,14 +297,9 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
       await signOut(auth);
       CookieHelper.removeItem(CookieKeys.TOKEN);
       CookieHelper.removeItem(CookieKeys.REFRESH_TOKEN);
-      dispatch({
-        type: ActionType.INITIALIZE,
-        payload: {
-          isAuthenticated: false,
-          user: null
-        }
-      });
-      setFbUser(null); // Reset the Firebase user state
+      CookieHelper.removeItem('user_data');
+      dispatch({ type: ActionType.SIGN_OUT });
+      setFbUser(null);
     } catch (error) {
       if (errorMap[(error as any).code]) {
         throw new Error(errorMap[(error as any).code]);

@@ -94,6 +94,10 @@ const OrderAddPage = () => {
                 variant='contained'
                 onClick={() => formik.handleSubmit()}
                 className='bg-green-500 hover:bg-green-400'
+                disabled={
+                  orderList.length === 0 &&
+                  (!formik.values.checkCode || !formik.values.product || !formik.values.weight)
+                }
               >
                 Thêm
               </Button>

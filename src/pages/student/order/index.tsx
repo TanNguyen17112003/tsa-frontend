@@ -141,8 +141,10 @@ const Page: PageType = () => {
               </Tabs>
             }
           />
-          {tab === tabs[0].key && <OrderPaid orders={paidOrders} />}
-          {tab === tabs[1].key && <OrderNotPaid orders={notPaidOrders} />}
+          {tab === tabs[0].key && <OrderPaid orders={paidOrders} loading={getOrdersApi.loading} />}
+          {tab === tabs[1].key && (
+            <OrderNotPaid orders={notPaidOrders} loading={getOrdersApi.loading} />
+          )}
         </Stack>
       )}
       <UpdateInformationDialog

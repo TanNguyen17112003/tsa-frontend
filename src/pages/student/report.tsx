@@ -23,7 +23,7 @@ const Page: PageType = () => {
         <Box className='min-h-screen overflow-auto'>
           {' '}
           <ContentHeader title='Lịch sử khiếu nại' description='Danh sách khiếu nại của bạn' />
-          <ReportList reports={reports} />
+          <ReportList reports={reports} loading={getReportsApi.loading} />
         </Box>
       )}
     </Box>

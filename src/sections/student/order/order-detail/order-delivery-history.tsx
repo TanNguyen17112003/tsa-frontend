@@ -6,7 +6,7 @@ import { Stack, Box, Typography, Divider } from '@mui/material';
 import { OrderDetail } from 'src/types/order';
 import noEmployeeImage from 'public/ui/no-employee.jpg';
 import Image from 'next/image';
-import { TickCircle } from 'iconsax-react';
+import { TickCircle, Warning2 } from 'iconsax-react';
 
 interface OrderDeliveryHistoryProps {
   order: OrderDetail;
@@ -18,7 +18,7 @@ const OrderDeliveryHistory: React.FC<OrderDeliveryHistoryProps> = ({ order }) =>
       <Stack spacing={3} width='40%'>
         <OrderProgress order={order} />
         <Divider className='border-black' />
-        {order.shipperId ? (
+        {order?.shipperId ? (
           <OrderStaff order={order} />
         ) : (
           <Stack gap={2}>
@@ -36,7 +36,7 @@ const OrderDeliveryHistory: React.FC<OrderDeliveryHistoryProps> = ({ order }) =>
           </Stack>
         )}
       </Stack>
-      <Stack width='60%' className='h-[100%]'>
+      <Stack width='60%' className='h-auto'>
         {order.latestStatus === 'DELIVERED' ? (
           <Stack
             gap={2}
@@ -48,6 +48,19 @@ const OrderDeliveryHistory: React.FC<OrderDeliveryHistoryProps> = ({ order }) =>
             <TickCircle color='white' size={50} />
             <Typography color='white' variant='h5'>
               Đơn hàng #{order.checkCode} của bạn đã được giao thành công!
+            </Typography>
+          </Stack>
+        ) : order.latestStatus !== 'IN_TRANSPORT' ? (
+          <Stack
+            gap={2}
+            alignItems={'center'}
+            justifyContent={'center'}
+            height={'100%'}
+            className='bg-orange-500'
+          >
+            <Warning2 color='white' size={50} />
+            <Typography color='white' variant='h5'>
+              Đơn hàng #{order.checkCode} của bạn chưa được bắt đầu!
             </Typography>
           </Stack>
         ) : (

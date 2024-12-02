@@ -48,7 +48,6 @@ const OrderAddPage = () => {
             }))
           );
         } else {
-          console.log(formik.values.deliveryDate);
           await createOrder([
             {
               ...values,
@@ -57,6 +56,7 @@ const OrderAddPage = () => {
           ]);
         }
         showSnackbarSuccess('Tạo đơn hàng thành công!');
+        formik.resetForm();
       } catch (error) {
         showSnackbarError('Có lỗi xảy ra');
       }
@@ -98,6 +98,17 @@ const OrderAddPage = () => {
                 variant='contained'
                 onClick={() => formik.handleSubmit()}
                 className='bg-green-500 hover:bg-green-400'
+                disabled={
+                  (!formik.values.checkCode ||
+                    !formik.values.weight ||
+                    !formik.values.product ||
+                    !formik.values.building ||
+                    !formik.values.room ||
+                    !formik.values.dormitory ||
+                    !formik.values.deliveryDate ||
+                    !formik.values.paymentMethod) &&
+                  orderList.length === 0
+                }
               >
                 Thêm
               </Button>

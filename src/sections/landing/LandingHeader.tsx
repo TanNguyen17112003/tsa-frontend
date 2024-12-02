@@ -21,7 +21,7 @@ import {
   Stack
 } from '@mui/material';
 import Image from 'next/image';
-import logo from '../../../public/logo.png';
+import logo from '../../../public/bold-mobile-logo.png';
 import { useRouter } from 'next/router';
 import { paths } from 'src/paths';
 
@@ -96,7 +96,7 @@ export const LandingHeader = () => {
     <AppBar position='fixed' sx={{ backgroundColor: 'background.paper', color: 'text.primary' }}>
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', paddingY: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Image src={logo} alt='logo' width={50} />
+          <Image src={logo} alt='logo' width={isMobile ? 50 : 70} />
           <Typography variant='h5' component='span' sx={{ fontWeight: 'bold', color: '#5BE23D' }}>
             TSA
           </Typography>

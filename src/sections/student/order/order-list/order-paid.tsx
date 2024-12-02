@@ -1,6 +1,6 @@
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
 import OrderFilter from './order-filter';
-import { Box } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 import { OrderDetail } from 'src/types/order';
 import getOrderTableConfigs from './order-table-config';
 import { CustomTable } from '@components';
@@ -15,9 +15,10 @@ import OrderDetailEditDrawer from './order-detail-edit-drawer';
 
 interface OrderPaidProps {
   orders: OrderDetail[];
+  loading: boolean;
 }
 
-const OrderPaid: React.FC<OrderPaidProps> = ({ orders }) => {
+const OrderPaid: React.FC<OrderPaidProps> = ({ orders, loading }) => {
   const router = useRouter();
   const orderStatusList = [
     'Tất cả',
@@ -129,13 +130,19 @@ const OrderPaid: React.FC<OrderPaidProps> = ({ orders }) => {
         onSearch={setSearchInput}
       />
       <Box sx={{ flex: 1 }}>
-        <CustomTable
-          rows={result}
-          configs={orderTableConfig}
-          pagination={pagination}
-          className='my-5 -mx-6'
-          onClickRow={(data) => handleGoReport(data)}
-        />
+        {loading ? (
+          <Box display='flex' justifyContent='center' alignItems='center' height='100%'>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <CustomTable
+            rows={result}
+            configs={orderTableConfig}
+            pagination={pagination}
+            className='my-5 -mx-6'
+            onClickRow={(data) => handleGoReport(data)}
+          />
+        )}
       </Box>
       <OrderDetailReportDrawer
         open={orderDetailReportDrawer.open}

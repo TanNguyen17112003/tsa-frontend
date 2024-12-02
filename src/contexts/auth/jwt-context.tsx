@@ -1,5 +1,4 @@
-import type { FC, ReactNode } from 'react';
-import { createContext, useCallback, useEffect, useReducer } from 'react';
+import { createContext, FC, ReactNode, useCallback, useEffect, useReducer } from 'react';
 import PropTypes from 'prop-types';
 import { UpdateProfileRequest, UsersApi } from 'src/api/users';
 import type { UserDetail } from 'src/types/user';
@@ -264,9 +263,10 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
     }
     CookieHelper.removeItem(CookieKeys.TOKEN);
     CookieHelper.removeItem(CookieKeys.REFRESH_TOKEN);
+    CookieHelper.removeItem('user_data');
     dispatch({ type: ActionType.SIGN_OUT });
     router.push(paths.auth.login);
-  }, [router]);
+  }, [router, dispatch]);
 
   const refreshToken = useCallback(async (): Promise<void> => {
     const refreshToken = CookieHelper.getItem(CookieKeys.REFRESH_TOKEN);

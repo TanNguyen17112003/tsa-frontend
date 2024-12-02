@@ -28,6 +28,14 @@ export const paths = {
     account: { index: '/student/account' },
     report: { index: '/student/report' }
   },
+  staff: {
+    index: '/staff',
+    delivery: { index: '/staff/delivery' },
+    order: {
+      index: '/staff/order'
+    },
+    account: { index: '/staff/account' }
+  },
   notifications: {
     index: '/notifications'
   },

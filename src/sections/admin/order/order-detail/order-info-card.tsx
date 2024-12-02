@@ -9,7 +9,6 @@ import { formatUnixTimestamp, unixTimestampToDate } from 'src/utils/format-time-
 import { formatVNDcurrency } from 'src/utils/format-time-currency';
 
 function OrderInfoCard({ order }: { order: OrderDetail }) {
-  const orderDetailReportDrawer = useDrawer<OrderDetail>();
   const boxFields = [
     {
       name: 'Mã đơn hàng',

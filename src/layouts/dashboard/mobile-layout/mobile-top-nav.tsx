@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { AppBar, Toolbar, IconButton, Box, Typography } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import Image from 'next/image';
-import logo from 'public/logo.png';
+import mobileLogo from 'public/mobile-logo.png';
 import { MobileNav } from './mobile-nav';
 import { Section } from '../config/config';
 
@@ -26,7 +26,7 @@ const MobileTopNav: React.FC<MobileTopNavProps> = ({ sections }) => {
       <AppBar position='fixed' sx={{ backgroundColor: '#34a853', color: 'white' }}>
         <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Image src={logo} alt='logo' width={40} height={40} />
+            <Image src={mobileLogo} alt='logo' width={60} height={60} />
             <Typography fontWeight={'bold'} color='white' fontSize={20}>
               TSA
             </Typography>

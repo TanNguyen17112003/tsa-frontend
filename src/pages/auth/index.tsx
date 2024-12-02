@@ -45,6 +45,8 @@ const Page: PageType = () => {
             router.replace(paths.student.order.index);
           } else if (user.role === 'ADMIN') {
             router.replace(paths.dashboard.index);
+          } else {
+            router.replace(paths.staff.order.index);
           }
         }
       } catch (error) {

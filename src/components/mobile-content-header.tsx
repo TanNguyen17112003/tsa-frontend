@@ -4,7 +4,7 @@ import { Box, Stack, Typography } from '@mui/material';
 interface MobileContentHeaderProps {
   title: string;
   image: React.ReactNode;
-  rigthComponent?: React.ReactNode;
+  rightComponent?: React.ReactNode;
 }
 
 const MobileContentHeader: React.FC<MobileContentHeaderProps> = (props) => {
@@ -16,7 +16,7 @@ const MobileContentHeader: React.FC<MobileContentHeaderProps> = (props) => {
           {props.title}
         </Typography>
       </Stack>
-      {props.rigthComponent}
+      {props.rightComponent}
     </Stack>
   );
 };

@@ -186,7 +186,7 @@ function MobileOrderList() {
       <MobileContentHeader
         title={'Danh sách đơn hàng'}
         image={<Box size={24} name={'ShoppingCart'} color='green' />}
-        rigthComponent={
+        rightComponent={
           <AddCircle
             size={40}
             variant='Bold'

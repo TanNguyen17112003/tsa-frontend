@@ -23,9 +23,12 @@ import MobileAdvancedFilter from 'src/components/mobile-advanced-filter/mobile-a
 import usePagination from 'src/hooks/use-pagination';
 import { Filter } from 'src/types/filter';
 import { formatUnixTimestamp } from 'src/utils/format-time-currency';
+import { useAuth, useFirebaseAuth } from '@hooks';
 
 function MobileOrderList() {
   const router = useRouter();
+  const { user } = useAuth();
+  const { user: firebaseUser } = useFirebaseAuth();
   const [searchInput, setSearchInput] = useState('');
   const [paymentStatus, setPaymentStatus] = useState('');
   const [selectedStatus, setSelectedStatus] = useState<string>('Tất cả');
@@ -36,7 +39,6 @@ function MobileOrderList() {
     startDate: null,
     endDate: null
   });
-  const [loading, setLoading] = useState(true);
   const statusList = [
     'Tất cả',
     'Đã giao',
@@ -91,11 +93,16 @@ function MobileOrderList() {
   }, []);
 
   const orders = useMemo(() => {
-    return getOrdersApi.data || [];
-  }, [getOrdersApi.data]);
+    return (getOrdersApi.data || []).filter((order) => {
+      if (user?.role === 'STUDENT' || firebaseUser?.role === 'STUDENT') {
+        return true;
+      } else {
+        return order.shipperId === user?.id || order.shipperId === firebaseUser?.id;
+      }
+    });
+  }, [getOrdersApi.data, user, firebaseUser]);
 
   const filteredOrders = useMemo(() => {
-    setLoading(true);
     const result = orders.filter((order) => {
       const filteredByPaid =
         paymentStatus === '0' ? !order.isPaid : paymentStatus === '1' ? order.isPaid : true;
@@ -125,7 +132,6 @@ function MobileOrderList() {
             : true;
       return filteredByPaid && filteredBySearch && filterStatus && filterDate;
     });
-    setLoading(false);
     return result;
   }, [orders, searchInput, paymentStatus, selectedStatus, dateRange]);
 
@@ -154,10 +160,18 @@ function MobileOrderList() {
   return (
     <Stack className='min-h-screen py-4 px-3'>
       <MobileContentHeader
-        title={'Danh sách đơn hàng'}
-        image={<Box size={24} name={'ShoppingCart'} color='green' />}
-        rigthComponent={
-          <AddCircle size={40} variant='Bold' onClick={handleGoAddOrder} color='green' />
+        title='Danh sách đơn hàng'
+        image={<Box size={24} name='ShoppingCart' color='green' />}
+        rightComponent={
+          (user?.role === 'STUDENT' || firebaseUser?.role === 'STUDENT') && (
+            <AddCircle
+              size={40}
+              variant='Bold'
+              onClick={handleGoAddOrder}
+              color='green'
+              className='cursor-pointer'
+            />
+          )
         }
       />
       <Stack mt={1}>
@@ -193,7 +207,7 @@ function MobileOrderList() {
         <Typography fontWeight={'bold'} color='black'>
           {filteredOrders.length} đơn hàng
         </Typography>
-        {loading ? (
+        {getOrdersApi.loading ? (
           <Stack className='items-center justify-center h-[300px]'>
             <CircularProgress />
           </Stack>

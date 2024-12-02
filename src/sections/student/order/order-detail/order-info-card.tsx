@@ -1,16 +1,14 @@
-import { Download, Edit } from '@mui/icons-material';
-import { Box, Button, Card, Divider, Stack, Tooltip, Typography } from '@mui/material';
-import { format } from 'date-fns';
-import { useEffect, useMemo } from 'react';
+import { Box, Button, Card, Divider, Typography } from '@mui/material';
 import { useDrawer } from 'src/hooks/use-drawer';
-import useFunction from 'src/hooks/use-function';
 import { OrderDetail } from 'src/types/order';
 import OrderDetailReportDrawer from '../order-list/order-detail-report-drawer';
-import { formatUnixTimestamp, unixTimestampToDate } from 'src/utils/format-time-currency';
 import { formatVNDcurrency } from 'src/utils/format-time-currency';
+import { useAuth, useFirebaseAuth } from '@hooks';
 
 function OrderInfoCard({ order }: { order: OrderDetail }) {
   const orderDetailReportDrawer = useDrawer<OrderDetail>();
+  const { user } = useAuth();
+  const { user: firebaseUser } = useFirebaseAuth();
   const boxFields = [
     {
       name: 'Mã đơn hàng',
@@ -76,13 +74,15 @@ function OrderInfoCard({ order }: { order: OrderDetail }) {
         <Card className='pt-4 pb-2 border border-divider' elevation={5}>
           <Box className='flex justify-between gap-4 items-center pb-4 px-6'>
             <Typography variant='h6'>Thông tin chung</Typography>
-            <Button
-              variant='contained'
-              className='bg-[#34a853]'
-              onClick={() => orderDetailReportDrawer.handleOpen()}
-            >
-              Khiếu nại
-            </Button>
+            {user?.role === 'STUDENT' && firebaseUser?.role === 'STUDENT' && (
+              <Button
+                variant='contained'
+                className='bg-[#34a853]'
+                onClick={() => orderDetailReportDrawer.handleOpen()}
+              >
+                Khiếu nại
+              </Button>
+            )}
           </Box>
 
           {boxFields.map((boxField, index) => {

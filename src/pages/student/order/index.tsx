@@ -16,7 +16,6 @@ import { useOrdersContext } from 'src/contexts/orders/orders-context';
 import { useAuth, useDialog, useFirebaseAuth } from '@hooks';
 import useFunction from 'src/hooks/use-function';
 import MobileOrderList from 'src/sections/mobile/student/order/order-list';
-import MobileOrderDetail from 'src/sections/mobile/student/order/order-detail';
 import UpdateInformationDialog, { InformationProps } from '../update-information-dialog';
 import { useResponsive } from 'src/utils/use-responsive';
 

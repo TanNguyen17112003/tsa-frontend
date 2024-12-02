@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Box, Typography, Stack, Tooltip } from '@mui/material';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { Box, Typography, Stack, Tooltip, IconButton } from '@mui/material';
 import { MapboxsApi } from 'src/api/mapboxs';
-import Map, { Marker, Source, Layer } from 'react-map-gl';
+import Map, { Marker, Source, Layer, MapRef } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import shipperImage from 'public/ui/background-auth.png';
 import studentImage from 'public/ui/student-location.png';
 import { OrderDetail } from 'src/types/order';
 import { coordinateList } from 'src/utils/coordinate-list';
 import { useSocketContext } from 'src/contexts/socket-client/socket-client-context';
-import { ArrowUp2, ArrowLeft } from 'iconsax-react';
+import { GpsFixed } from '@mui/icons-material';
 import { useDialog } from '@hooks';
 import OrderDeliveryDialog from './order-delivery-dialog';
 
@@ -16,16 +16,17 @@ const MAPBOX_ACCESS_TOKEN =
   'pk.eyJ1IjoicXVhbmNhbzIzMTAiLCJhIjoiY20yNXMxZ3BlMGRpMjJ3cWR5ZTMyNjh2MCJ9.ILNCWFtulso1GeCR7OBz-w';
 
 const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
+  const mapRef = useRef<MapRef>(null);
   const [direction, setDirection] = useState<any>(null);
-  const [shipperCoordinate, setShipperCoordinate] = useState<[number, number]>([
-    106.80712035274313, 10.878177113714147
+  const [shipperCoordinate, setShipperCoordinate] = useState<[number, number] | null>([
+    106.806709613827, 10.877568988757174
   ]);
-  const deliveryHistoryDialog = useDialog<OrderDetail>();
   const [distance, setDistance] = useState<number>(0);
 
   const [routeCoordinates, setRouteCoordinates] = useState<[number, number][]>([]);
   const [mapLoaded, setMapLoaded] = useState(false);
   const { socket } = useSocketContext();
+  const deliveryHistoryDialog = useDialog<OrderDetail>();
 
   const exactOrderLocation = useMemo(() => {
     const foundCoordinate = coordinateList.find((coordinate) => {
@@ -66,22 +67,51 @@ const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
       socket.on(
         'locationUpdate',
         (data: { shipperId: string; latitude: number; longitude: number }) => {
-          setShipperCoordinate([Number(data.latitude), Number(data.longitude)]);
+          setShipperCoordinate([Number(data.longitude), Number(data.latitude)]);
           console.log(`Received location update: ${JSON.stringify(data)}`);
         }
       );
     }
-  }, [order?.shipperId]);
+  }, [order?.shipperId, socket]);
+
+  useEffect(() => {
+    if (mapRef.current && exactOrderLocation && shipperCoordinate) {
+      const bounds: [number, number, number, number] = [
+        Math.min(shipperCoordinate[0], exactOrderLocation[1]),
+        Math.min(shipperCoordinate[1], exactOrderLocation[0]),
+        Math.max(shipperCoordinate[0], exactOrderLocation[1]),
+        Math.max(shipperCoordinate[1], exactOrderLocation[0])
+      ];
+      mapRef.current.fitBounds(bounds, { padding: 50, duration: 1000 });
+    }
+  }, [exactOrderLocation, shipperCoordinate]);
+
+  useEffect(() => {
+    console.log('shipperCoordinate:', shipperCoordinate);
+  }, [shipperCoordinate]);
 
   const directionCoordinates = useMemo(
     () => direction?.routes[0]?.geometry?.coordinates,
     [direction]
   );
 
+  const handleRecenter = () => {
+    if (mapRef.current && exactOrderLocation) {
+      mapRef.current.flyTo({
+        center: [exactOrderLocation[1], exactOrderLocation[0]],
+        zoom: 17,
+        pitch: 60,
+        bearing: -60,
+        essential: true
+      });
+    }
+  };
+
   return (
     <Box className='min-h-screen h-full'>
       <Box className='w-full h-screen relative'>
         <Map
+          ref={mapRef}
           mapboxAccessToken={MAPBOX_ACCESS_TOKEN}
           initialViewState={{
             longitude: exactOrderLocation ? exactOrderLocation[1] : 106.80703872956525,
@@ -155,9 +185,14 @@ const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
             </>
           )}
         </Map>
-        <Stack>
-          <ArrowLeft color='white' size={40} />
-        </Stack>
+        <Tooltip
+          title='Quay trở lại vị trí đơn hàng'
+          className='bg-white absolute bottom-[380px] left-5'
+        >
+          <IconButton className=' bg-white p-2 rounded-full shadow-md' onClick={handleRecenter}>
+            <GpsFixed color='primary' fontSize='large' />
+          </IconButton>
+        </Tooltip>
         <Stack
           direction={'row'}
           alignItems={'center'}
@@ -170,15 +205,6 @@ const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
             {(distance / 1000).toFixed(2)} km
           </Typography>
         </Stack>
-        <Tooltip
-          title='Xem lịch sử đơn hàng'
-          className='absolute bottom-[50px] left-1/2 -translate-x-1/2'
-          onClick={() => deliveryHistoryDialog.handleOpen(order)}
-        >
-          <Stack className='w-auto bg-white px-3 py-2 rounded-t-lg cursor-pointer'>
-            <ArrowUp2 size={30} color='black' />
-          </Stack>
-        </Tooltip>
       </Box>
       <OrderDeliveryDialog
         order={order}

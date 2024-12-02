@@ -13,6 +13,7 @@ import {
 
 const LandingPage = () => {
   const [visibleSections, setVisibleSections] = useState<string[]>([]);
+  const [touchStartY, setTouchStartY] = useState<number | null>(null);
 
   useEffect(() => {
     const handleScroll = (event: WheelEvent) => {
@@ -48,14 +49,45 @@ const LandingPage = () => {
       }
     };
 
+    const handleTouchStart = (event: TouchEvent) => {
+      setTouchStartY(event.touches[0].clientY);
+    };
+
+    const handleTouchEnd = (event: TouchEvent) => {
+      if (touchStartY !== null) {
+        const touchEndY = event.changedTouches[0].clientY;
+        const sections = document.querySelectorAll('.section');
+        const currentSectionIndex = Array.from(sections).findIndex((section) => {
+          const rect = section.getBoundingClientRect();
+          return rect.top >= 0 && rect.top < window.innerHeight / 2;
+        });
+
+        if (touchStartY < window.innerHeight / 2 && currentSectionIndex > 0) {
+          sections[currentSectionIndex - 1].scrollIntoView({ behavior: 'smooth' });
+          history.pushState(null, '', `/#${sections[currentSectionIndex - 1].id}`);
+        } else if (
+          touchStartY >= window.innerHeight / 2 &&
+          currentSectionIndex < sections.length - 1
+        ) {
+          sections[currentSectionIndex + 1].scrollIntoView({ behavior: 'smooth' });
+          history.pushState(null, '', `/#${sections[currentSectionIndex + 1].id}`);
+        }
+      }
+      setTouchStartY(null);
+    };
+
     window.addEventListener('wheel', handleScroll, { passive: false });
     window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('touchstart', handleTouchStart);
+    window.addEventListener('touchend', handleTouchEnd);
 
     return () => {
       window.removeEventListener('wheel', handleScroll);
       window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchend', handleTouchEnd);
     };
-  }, []);
+  }, [touchStartY]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(

@@ -112,21 +112,26 @@ export const SideNav: FC<SideNavProps> = (props) => {
                     </Tooltip>
                   )}
                 </Box>
-                <Stack>
-                  <Button
-                    variant='contained'
-                    startIcon={<Add />}
-                    className='!text-black !bg-white'
-                    LinkComponent={Link}
-                    href={
-                      user?.role === 'STUDENT' || firebaseUser?.role === 'STUDENT'
-                        ? paths.student.order.add
-                        : paths.dashboard.order.add
-                    }
-                  >
-                    Thêm đơn hàng
-                  </Button>
-                </Stack>
+                {(user?.role === 'STUDENT' ||
+                  user?.role === 'ADMIN' ||
+                  firebaseUser?.role === 'STUDENT' ||
+                  firebaseUser?.role === 'ADMIN') && (
+                  <Stack>
+                    <Button
+                      variant='contained'
+                      startIcon={<Add />}
+                      className='!text-black !bg-white'
+                      LinkComponent={Link}
+                      href={
+                        user?.role === 'STUDENT' || firebaseUser?.role === 'STUDENT'
+                          ? paths.student.order.add
+                          : paths.dashboard.order.add
+                      }
+                    >
+                      Thêm đơn hàng
+                    </Button>
+                  </Stack>
+                )}
                 {sections.map((section, index) => (
                   <SideNavSection
                     items={section.items}

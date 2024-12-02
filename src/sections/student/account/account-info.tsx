@@ -1,14 +1,4 @@
-import {
-  Box,
-  Typography,
-  Button,
-  TextField,
-  Grid,
-  Card,
-  CardContent,
-  Avatar,
-  IconButton
-} from '@mui/material';
+import { Box, Typography, Grid, Card, CardContent, Avatar, IconButton } from '@mui/material';
 import { Stack } from '@mui/system';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useAuth } from 'src/hooks/use-auth';
@@ -128,27 +118,34 @@ function ProfileSection() {
                 value={user?.firstName || firebaseUser?.firstName}
                 onSave={async (value) => await handleSave('firstName', value)}
               />
-              <AccountInfoEditField
-                label='Kí túc xá'
-                type='select'
-                value={user?.dormitory || firebaseUser?.dormitory || ''}
-                onSave={async (value) => await handleSave('dormitory', value)}
-                items={dormitoryList}
-              />
-              <AccountInfoEditField
-                label='Tòa'
-                type='select'
-                value={user?.building || firebaseUser?.building || ''}
-                onSave={async (value) => await handleSave('building', value)}
-                items={buildingList}
-              />
-              <AccountInfoEditField
-                label='Phòng'
-                type='select'
-                value={user?.room || firebaseUser?.room || ''}
-                onSave={async (value) => await handleSave('room', value)}
-                items={roomList}
-              />
+              {(user?.dormitory || firebaseUser?.dormitory) && (
+                <AccountInfoEditField
+                  label='Kí túc xá'
+                  type='select'
+                  value={user?.dormitory || firebaseUser?.dormitory || ''}
+                  onSave={async (value) => await handleSave('dormitory', value)}
+                  items={dormitoryList}
+                />
+              )}
+              {(user?.building || firebaseUser?.building) && (
+                <AccountInfoEditField
+                  label='Tòa'
+                  type='select'
+                  value={user?.building || firebaseUser?.building || ''}
+                  onSave={async (value) => await handleSave('building', value)}
+                  items={buildingList}
+                />
+              )}
+              {(user?.room || firebaseUser?.room) && (
+                <AccountInfoEditField
+                  label='Phòng'
+                  type='select'
+                  value={user?.room || firebaseUser?.room || ''}
+                  onSave={async (value) => await handleSave('room', value)}
+                  items={roomList}
+                />
+              )}
+
               <AccountInfoEditField
                 label='Số điện thoại'
                 type='text'
@@ -178,11 +175,15 @@ function ProfileSection() {
                   user
                     ? user.role === 'STUDENT'
                       ? 'Sinh viên'
-                      : 'Quản trị viên'
+                      : user.role === 'ADMIN'
+                        ? 'Quản trị viên'
+                        : 'Nhân viên'
                     : firebaseUser
                       ? firebaseUser.role === 'STUDENT'
                         ? 'Sinh viên'
-                        : 'Quản trị viên'
+                        : firebaseUser.role === 'ADMIN'
+                          ? 'Quản trị viên'
+                          : 'Nhân viên'
                       : ''
                 }
                 disabled

@@ -5,6 +5,7 @@ import VerticalLayout from './vertical-layout';
 import { withAuthGuard } from '@hocs';
 import { useTheme, useMediaQuery } from '@mui/material';
 import MobileLayout from './mobile-layout';
+import TabletLayout from './tablet-layout';
 
 interface LayoutProps {
   children?: ReactNode;
@@ -14,9 +15,12 @@ interface LayoutProps {
 export const Layout: FC<LayoutProps> = withAuthGuard((props) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isTablet = useMediaQuery(theme.breakpoints.down('md'));
   const sections = useSections();
   return isMobile ? (
     <MobileLayout sections={sections} {...props} />
+  ) : isTablet ? (
+    <TabletLayout sections={sections} {...props} />
   ) : (
     <VerticalLayout sections={sections} {...props} />
   );

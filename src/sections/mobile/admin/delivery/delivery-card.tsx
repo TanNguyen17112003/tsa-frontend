@@ -1,18 +1,24 @@
 import { Card, Chip, Divider, Stack, Typography } from '@mui/material';
-import { Box, Money, Bank } from 'iconsax-react';
 import React, { useMemo } from 'react';
 import { formatDate, formatUnixTimestamp } from 'src/utils/format-time-currency';
-import { useRouter } from 'next/router';
 import { DeliveryDetail } from 'src/types/delivery';
 import { PiMotorcycle } from 'react-icons/pi';
 import useStaffData from 'src/hooks/use-staff-data';
+import { useAuth, useFirebaseAuth } from '@hooks';
 
 const DeliveryCard: React.FC<{ delivery: DeliveryDetail }> = ({ delivery }) => {
   const { users } = useStaffData();
+  const { user } = useAuth();
+  const { user: firebaseUser } = useFirebaseAuth();
+
   const staffName = useMemo(() => {
-    const foundStaff = users.find((user) => user.id === delivery?.staffId);
-    return `${foundStaff?.lastName} ${foundStaff?.firstName}`;
-  }, [delivery, users]);
+    if (user?.role === 'ADMIN' || firebaseUser?.role === 'ADMIN') {
+      const foundStaff = users.find((user) => user.id === delivery?.staffId);
+      return `${foundStaff?.lastName} ${foundStaff?.firstName}`;
+    }
+    return null;
+  }, [delivery, users, user, firebaseUser]);
+
   return (
     <Card className='px-4 py-3 flex flex-col gap-1 cursor-pointer'>
       <Typography variant='subtitle1' fontWeight={'bold'} color='primary'>
@@ -27,9 +33,11 @@ const DeliveryCard: React.FC<{ delivery: DeliveryDetail }> = ({ delivery }) => {
             <Typography variant='subtitle2' color='grey'>
               Thời gian giới hạn: {delivery.limitTime}
             </Typography>
-            <Typography variant='subtitle2' color='grey'>
-              Nhân viên: {staffName}
-            </Typography>
+            {staffName && (
+              <Typography variant='subtitle2' color='grey'>
+                Nhân viên: {staffName}
+              </Typography>
+            )}
           </Stack>
         </Stack>
         <Chip

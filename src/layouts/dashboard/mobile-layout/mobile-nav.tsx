@@ -24,10 +24,9 @@ import { paths } from 'src/paths';
 import type { NavColor } from 'src/types/settings';
 import { Section } from '../config/config';
 import { MobileNavSection } from './mobile-nav-section';
-import logo from 'public/logo.png';
+import mobileLogo from 'public/bold-mobile-logo.png';
 import Image from 'next/image';
-
-const MOBILE_NAV_WIDTH: number = 280;
+import { MOBILE_NAV_WIDTH } from 'src/config';
 
 const useCssVars = (color: NavColor): Record<string, string> => {
   const theme = useTheme();
@@ -168,13 +167,11 @@ export const MobileNav: FC<MobileNavProps> = (props) => {
               component={RouterLink}
               href={paths.index}
               sx={{
-                display: 'flex',
-                height: 40,
-                width: '40%'
+                display: 'flex'
               }}
               onClick={onClose}
             >
-              <Image alt='Logo' height={40} src={logo} width={40} />
+              <Image alt='Logo' height={80} src={mobileLogo} width={60} />
             </Box>
             <IconButton onClick={onClose} color='inherit'>
               <CloseIcon color='success' />

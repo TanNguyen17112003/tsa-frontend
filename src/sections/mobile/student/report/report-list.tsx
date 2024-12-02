@@ -1,5 +1,12 @@
 import React, { useCallback, useMemo, useState, useEffect } from 'react';
-import { SelectChangeEvent, Stack, Typography, Pagination, Box as MuiBox } from '@mui/material';
+import {
+  SelectChangeEvent,
+  Stack,
+  Typography,
+  Pagination,
+  Box as MuiBox,
+  CircularProgress
+} from '@mui/material';
 import { Box, DocumentText } from 'iconsax-react';
 import MobileContentHeader from 'src/components/mobile-content-header';
 import { useRouter } from 'next/router';
@@ -120,18 +127,24 @@ function MobileReportList() {
         <Typography fontWeight={'bold'} color='black' className='mb-2'>
           {filteredReports.length} khiếu nại
         </Typography>
-        <Stack spacing={1.5} mt={1}>
-          {paginatedReports.length === 0 && (
-            <Stack className='items-center justify-center h-[300px]'>
-              <Typography variant='h5' color='error'>
-                Không có khiếu nại nào
-              </Typography>
-            </Stack>
-          )}
-          {paginatedReports.map((report, index) => (
-            <ReportCard key={index} report={report} number={index + 1} />
-          ))}
-        </Stack>
+        {getReportsApi.loading ? (
+          <Stack className='items-center justify-center h-[300px]'>
+            <CircularProgress />
+          </Stack>
+        ) : (
+          <Stack spacing={1.5} mt={1}>
+            {paginatedReports.length === 0 && (
+              <Stack className='items-center justify-center h-[300px]'>
+                <Typography variant='h5' color='error'>
+                  Không có khiếu nại nào
+                </Typography>
+              </Stack>
+            )}
+            {paginatedReports.map((report, index) => (
+              <ReportCard key={index} report={report} number={index + 1} />
+            ))}
+          </Stack>
+        )}
         <Pagination
           count={Math.ceil(filteredReports.length / pagination.rowsPerPage)}
           page={pagination.page}

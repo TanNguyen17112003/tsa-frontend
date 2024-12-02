@@ -1,7 +1,7 @@
 import { Box, Typography, Stack, Divider, Grid, Link } from '@mui/material';
 import React from 'react';
 import Image from 'next/image';
-import logo from '../../../public/logo.png';
+import logo from '../../../public/bold-mobile-logo.png';
 import { Facebook, Instagram, Youtube } from 'iconsax-react';
 
 interface FooterLinkProps {
@@ -68,7 +68,7 @@ export const LandingFooter = () => {
   return (
     <Box bgcolor={'#636e7b'} paddingY={2} color={'white'} paddingX={5}>
       <Box display={'flex'} paddingBottom={2} justifyContent={'space-around'}>
-        <Image src={logo} alt='logo' width={150} height={150} />
+        <Image src={logo} alt='logo' width={200} height={200} />
         <Stack spacing={2} width={'70%'}>
           <Typography variant='h4' marginBottom={5} color='#5be23d'>
             Transport Support Application (TSA)

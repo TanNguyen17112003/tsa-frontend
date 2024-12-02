@@ -1,4 +1,6 @@
 export const SIDE_NAV_WIDTH = 280;
+export const MOBILE_NAV_WIDTH: number = 250;
+export const TABLET_NAV_WIDTH: number = 80;
 
 export const firebaseConfig = {
   apiKey: 'AIzaSyC3yy1_69dvDEnTIj62enCH_vFXQcpboV0',

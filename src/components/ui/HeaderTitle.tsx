@@ -1,5 +1,5 @@
 import React from 'react';
-import logo from '../../../public/logo.png';
+import logo from '../../../public/bold-mobile-logo.png';
 import Image from 'next/image';
 const HeaderTitle = () => {
   return (

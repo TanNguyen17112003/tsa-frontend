@@ -2,14 +2,14 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { CustomTable } from '@components';
 import { Box } from '@mui/material';
 import usePagination from 'src/hooks/use-pagination';
-import { SelectChangeEvent } from '@mui/material';
-import { useDrawer, useDialog } from '@hooks';
+import { SelectChangeEvent, CircularProgress } from '@mui/material';
 import { UserDetail } from 'src/types/user';
 import getStudentTableConfig from './student-table-config';
 import StudentFilter from './student-filter';
 import { useRouter } from 'next/router';
 import { useUsersContext } from '@contexts';
 import DeleteUserDialog from '../../delete-user-dialog';
+import { useDialog } from '@hooks';
 
 function StudentList() {
   const router = useRouter();
@@ -115,12 +115,19 @@ function StudentList() {
         onResetFilters={handleResetFilters}
         numberOfStudent={filteredStudents.length}
       />
-      <CustomTable
-        rows={filteredStudents}
-        configs={studentTableConfig}
-        pagination={pagination}
-        onClickRow={(data: UserDetail) => handleGoStudent(data)}
-      />
+      {getListUsersApi.loading ? (
+        <Box display='flex' justifyContent='center' alignItems='center' height='100%'>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <CustomTable
+          rows={filteredStudents}
+          configs={studentTableConfig}
+          pagination={pagination}
+          onClickRow={(data: UserDetail) => handleGoStudent(data)}
+        />
+      )}
+
       <DeleteUserDialog
         open={deleteStudentDialog.open}
         user={deleteStudentDialog.data as UserDetail}

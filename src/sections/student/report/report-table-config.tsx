@@ -20,7 +20,7 @@ const getReportTableConfigs = ({
     headerLabel: 'Mã đơn hàng',
     type: 'string',
     renderCell: (data) => {
-      const dataOrder = orders.find((order) => order.id === data.orderId);
+      const dataOrder = orders?.find((order) => order.id === data.orderId);
       return <Typography>#{dataOrder?.checkCode}</Typography>;
     }
   },

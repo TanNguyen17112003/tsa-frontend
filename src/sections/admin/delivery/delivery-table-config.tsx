@@ -56,22 +56,23 @@ const getDeliveryTableConfig = ({
       <Chip
         variant='filled'
         label={
-          data.status === 'FINISHED'
+          data.DeliveryStatusHistory[0].status === 'FINISHED'
             ? 'Hoàn thành'
-            : data.status === 'CANCELED'
+            : data.DeliveryStatusHistory[0].status === 'CANCELED'
               ? 'Đã hủy'
-              : data.status === 'PENDING'
+              : data.DeliveryStatusHistory[0].status === 'PENDING'
                 ? 'Đang chờ xử lý'
-                : 'Chấp nhận'
+                : data.DeliveryStatusHistory[0].status === 'ACCEPTED'
+                  ? 'Đã xác nhận'
+                  : ''
         }
         color={
-          data.status === 'FINISHED'
+          data.DeliveryStatusHistory[0].status === 'FINISHED' ||
+          data.DeliveryStatusHistory[0].status === 'ACCEPTED'
             ? 'success'
-            : data.status === 'PENDING'
+            : data.DeliveryStatusHistory[0].status === 'PENDING'
               ? 'warning'
-              : data.status === 'ACCEPTED'
-                ? 'primary'
-                : 'error'
+              : 'error'
         }
       />
     )

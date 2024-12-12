@@ -71,7 +71,7 @@ const Page: PageType = () => {
   const router = useRouter();
   const { getOrdersApi } = useOrdersContext();
   const orders = useMemo(() => {
-    return getOrdersApi.data || [];
+    return getOrdersApi.data?.results || [];
   }, [getOrdersApi.data]);
 
   const notPaidOrders = useMemo(() => {

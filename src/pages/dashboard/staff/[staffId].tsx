@@ -34,7 +34,9 @@ const Page: PageType = () => {
   }, [getListUsersApi.data, router.query.staffId]);
 
   const orders = useMemo(() => {
-    return (getOrdersApi.data || []).filter((order) => order.shipperId === router.query.staffId);
+    return (getOrdersApi.data?.results || []).filter(
+      (order) => order.shipperId === router.query.staffId
+    );
   }, [getOrdersApi.data]);
 
   const deliveries = useMemo(() => {

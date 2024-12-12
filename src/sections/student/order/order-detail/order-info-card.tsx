@@ -64,7 +64,9 @@ function OrderInfoCard({ order }: { order: OrderDetail }) {
               ? 'Đang chờ xử lý'
               : order?.latestStatus === 'CANCELLED'
                 ? 'Đã hủy'
-                : 'Đã từ chối'
+                : order.latestStatus === 'ACCEPTED'
+                  ? 'Đã xác nhận'
+                  : 'Đã từ chối'
     }
   ];
 
@@ -74,15 +76,16 @@ function OrderInfoCard({ order }: { order: OrderDetail }) {
         <Card className='pt-4 pb-2 border border-divider' elevation={5}>
           <Box className='flex justify-between gap-4 items-center pb-4 px-6'>
             <Typography variant='h6'>Thông tin chung</Typography>
-            {user?.role === 'STUDENT' && firebaseUser?.role === 'STUDENT' && (
-              <Button
-                variant='contained'
-                className='bg-[#34a853]'
-                onClick={() => orderDetailReportDrawer.handleOpen()}
-              >
-                Khiếu nại
-              </Button>
-            )}
+            {(user?.role === 'STUDENT' || firebaseUser?.role === 'STUDENT') &&
+              (order.latestStatus === 'IN_TRANSPORT' || order.latestStatus === 'DELIVERED') && (
+                <Button
+                  variant='contained'
+                  className='bg-[#34a853]'
+                  onClick={() => orderDetailReportDrawer.handleOpen()}
+                >
+                  Khiếu nại
+                </Button>
+              )}
           </Box>
 
           {boxFields.map((boxField, index) => {

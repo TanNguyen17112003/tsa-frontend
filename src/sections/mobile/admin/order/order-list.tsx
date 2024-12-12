@@ -28,7 +28,6 @@ import OrderFilter from './order-filter/order-filter';
 
 function MobileOrderList() {
   const router = useRouter();
-  const mobileOrderFilterDialog = useDialog();
   const [searchInput, setSearchInput] = useState('');
   const [paymentStatus, setPaymentStatus] = useState('');
   const [selectedStatus, setSelectedStatus] = useState<string>('Tất cả');
@@ -43,15 +42,6 @@ function MobileOrderList() {
     endDate: null
   });
   const [loading, setLoading] = useState(true);
-  const statusList = [
-    'Tất cả',
-    'Đã giao',
-    'Đã hủy',
-    'Đang giao',
-    'Đã xác nhận',
-    'Đang chờ xử lý',
-    'Đã từ chối'
-  ];
   const { getOrdersApi } = useOrdersContext();
 
   const handleDateChange = useCallback((range: { startDate?: Date; endDate?: Date }) => {

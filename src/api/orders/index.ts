@@ -25,11 +25,17 @@ interface OrderCreateResponse {
   data: OrderDetail;
 }
 
+export interface OrderResponse {
+  totalElements: number;
+  totalPages: number;
+  results: OrderDetail[];
+}
+
 export class OrdersApi {
   static async postOrders(request: OrderFormProps): Promise<OrderCreateResponse> {
     return await apiPost('/orders', request);
   }
-  static async getOrders(request: {}): Promise<OrderDetail[]> {
+  static async getOrders(request: {}): Promise<OrderResponse> {
     const response = await apiGet('/orders', getFormData(request));
     return response;
   }
@@ -42,7 +48,7 @@ export class OrdersApi {
   }
 
   static async updateOrderStatus(status: OrderStatus, id: string): Promise<OrderDetail> {
-    return await apiPut('/orders/status' + id, status);
+    return await apiPatch('/orders/status/' + id, { status });
   }
 
   static async deleteOrder(id: Order['id']) {

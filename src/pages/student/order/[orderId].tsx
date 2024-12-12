@@ -29,7 +29,7 @@ const Page: PageType = () => {
   const { isMobile } = useResponsive();
   const { getOrdersApi } = useOrdersContext();
   const order = useMemo(() => {
-    return (getOrdersApi.data || []).find((order) => order.id === router.query.orderId);
+    return (getOrdersApi.data?.results || []).find((order) => order.id === router.query.orderId);
   }, [getOrdersApi.data, router.query.orderId]);
   const [tab, setTab] = useState(tabs[0].key);
 

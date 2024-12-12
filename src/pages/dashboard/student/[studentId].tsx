@@ -28,7 +28,9 @@ const Page: PageType = () => {
   const { getListUsersApi } = useUsersContext();
 
   const orders = useMemo(() => {
-    return (getOrdersApi.data || []).filter((order) => order.studentId === router.query.studentId);
+    return (getOrdersApi.data?.results || []).filter(
+      (order) => order.studentId === router.query.studentId
+    );
   }, [getOrdersApi.data]);
 
   const reports = useMemo(() => {
@@ -142,7 +144,7 @@ const Page: PageType = () => {
             </Box>
             <Box className='flex items-center gap-4 justify-between w-full mt-3'>
               <Typography variant={isMobile ? 'body1' : 'h5'} fontWeight={'bold'}>
-                Chi tiết người dùng #{router.query.studentId}
+                Chi tiết người dùng {detailStudent?.lastName + ' ' + detailStudent?.firstName}
               </Typography>
             </Box>
             <Box className='mt-5'>

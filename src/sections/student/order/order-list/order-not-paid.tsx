@@ -13,6 +13,8 @@ import { useOrdersContext } from 'src/contexts/orders/orders-context';
 import { formatUnixTimestamp, unixTimestampToDate } from 'src/utils/format-time-currency';
 import OrderDetailEditDrawer from './order-detail-edit-drawer';
 import { PaymentsApi } from 'src/api/payment';
+import { usePayOS, PayOSConfig } from 'payos-checkout';
+import useAppSnackbar from 'src/hooks/use-app-snackbar';
 
 interface OrderNotPaidProps {
   orders: OrderDetail[];
@@ -21,6 +23,39 @@ interface OrderNotPaidProps {
 
 const OrderNotPaid: React.FC<OrderNotPaidProps> = ({ orders, loading }) => {
   const router = useRouter();
+  const { deleteOrder, updateOrder } = useOrdersContext();
+  const { showSnackbarSuccess, showSnackbarError } = useAppSnackbar();
+  const [checkoutUrl, setCheckoutUrl] = useState<string>('');
+  const [order, setOrder] = useState<OrderDetail>();
+  const payOSConfig: PayOSConfig = useMemo(() => {
+    return {
+      RETURN_URL: `${window.location.origin}/student/order`,
+      ELEMENT_ID: 'payos-checkout-iframe',
+      CHECKOUT_URL: checkoutUrl,
+      onSuccess: (event: any) => {
+        updateOrder(
+          {
+            deliveryDate: unixTimestampToDate(order?.deliveryDate as string).toString(),
+            isPaid: true
+          },
+          order?.id as string
+        );
+        showSnackbarSuccess('Thanh toán thành công');
+        setCheckoutUrl('');
+      },
+      onCancel: (event: any) => {
+        showSnackbarError('Thanh toán bị hủy');
+        setCheckoutUrl('');
+      }
+    };
+  }, [checkoutUrl, order, updateOrder, setCheckoutUrl]);
+  const { open } = usePayOS(payOSConfig);
+
+  useEffect(() => {
+    if (checkoutUrl) {
+      open();
+    }
+  }, [checkoutUrl, open]);
   const orderStatusList = [
     'Tất cả',
     'Đã giao',
@@ -33,8 +68,6 @@ const OrderNotPaid: React.FC<OrderNotPaidProps> = ({ orders, loading }) => {
   const orderDetailReportDrawer = useDrawer<OrderDetail>();
   const orderDetailDeleteDialog = useDialog<OrderDetail>();
   const orderDetailEditDrawer = useDrawer<OrderDetail>();
-
-  const { deleteOrder, updateOrder } = useOrdersContext();
 
   const [selectedStatus, setSelectedStatus] = useState<string>('Tất cả');
   const [dateRange, setDateRange] = React.useState<{
@@ -73,62 +106,106 @@ const OrderNotPaid: React.FC<OrderNotPaidProps> = ({ orders, loading }) => {
   const handlePayment = useCallback(
     async (order: OrderDetail) => {
       try {
-        if (order.paymentMethod === 'MOMO') {
-          const paymentResponse = await PaymentsApi.postMomoPayment({
-            orderId: order.id,
-            amount: order.shippingFee?.toString() || '1000',
-            orderInfo: 'Thanh toán đơn hàng ' + order.checkCode + ' qua MOMO',
-            returnUrl: `${window.location.origin}/student/order`,
-            notifyUrl: `${window.location.origin}/api/payment/momo/notify`,
-            extraData: order.id
-          });
-          if (paymentResponse && paymentResponse.payUrl) {
-            window.location.href = paymentResponse.payUrl;
-          }
-          updateOrder(
-            {
-              deliveryDate: unixTimestampToDate(order.deliveryDate).toString(),
-              isPaid: true
-            },
-            order.id
+        if (order.latestStatus === 'REJECTED' || order.latestStatus === 'CANCELLED') {
+          showSnackbarError(
+            `Không thể thanh toán đơn hàng ${
+              order.latestStatus === 'REJECTED' ? 'đã từ chối' : 'đã hủy'
+            }`
           );
-        } else if (order.paymentMethod === 'CREDIT') {
-          const paymentResponse = await PaymentsApi.postPayOSPayment({
-            orderId: order.id,
-            amount: order.shippingFee || 2000,
-            description: 'Thanh toán đơn hàng',
-            returnUrl: `${window.location.origin}/student/order`,
-            cancelUrl: `${window.location.origin}/student/order`,
-            extraData: order.id
-          });
-          if (paymentResponse && paymentResponse.checkoutUrl) {
-            window.location.href = paymentResponse.checkoutUrl;
+        } else {
+          if (order.paymentMethod === 'MOMO') {
+            const paymentResponse = await PaymentsApi.postMomoPayment({
+              orderId: order.id,
+              amount: order.shippingFee?.toString() || '1000',
+              orderInfo: 'Thanh toán đơn hàng ' + order.checkCode + ' qua MOMO',
+              returnUrl: `${window.location.origin}/student/order`,
+              notifyUrl: `${window.location.origin}/api/payment/momo/notify`,
+              extraData: order.id
+            });
+            if (paymentResponse && paymentResponse.payUrl) {
+              window.location.href = paymentResponse.payUrl;
+            }
+            updateOrder(
+              {
+                deliveryDate: unixTimestampToDate(order.deliveryDate).toString(),
+                isPaid: false
+              },
+              order.id
+            );
+          } else if (order.paymentMethod === 'CREDIT') {
+            setOrder(order);
+            const paymentResponse = await PaymentsApi.postPayOSPayment({
+              orderId: order.id,
+              amount: order.shippingFee || 2000,
+              description: 'Thanh toán đơn hàng ' + order.checkCode,
+              returnUrl: `${window.location.origin}/student/order`,
+              cancelUrl: `${window.location.origin}/student/order`,
+              extraData: order.id
+            });
+            if (paymentResponse && paymentResponse.checkoutUrl) {
+              setCheckoutUrl(paymentResponse.checkoutUrl);
+            }
           }
-          updateOrder(
-            {
-              deliveryDate: unixTimestampToDate(order.deliveryDate).toString(),
-              isPaid: true
-            },
-            order.id
-          );
         }
       } catch (error) {
         console.error('Payment error:', error);
+        showSnackbarError('Có lỗi xảy ra khi thanh toán');
       }
     },
-    [updateOrder]
+    [updateOrder, showSnackbarError, setCheckoutUrl, PaymentsApi]
+  );
+
+  const handleDeleteOrder = useCallback(
+    (order: OrderDetail) => {
+      if (
+        order.latestStatus === 'IN_TRANSPORT' ||
+        order.latestStatus === 'DELIVERED' ||
+        order.latestStatus === 'ACCEPTED'
+      ) {
+        showSnackbarError(
+          `Không thể xóa đơn hàng ${order.latestStatus === 'IN_TRANSPORT' ? 'đang giao' : order.latestStatus === 'DELIVERED' ? 'đã giao' : 'đã xác nhận'}`
+        );
+      } else {
+        orderDetailDeleteDialog.handleOpen(order);
+      }
+    },
+    [orderDetailDeleteDialog, showSnackbarError]
+  );
+
+  const handleEditOrder = useCallback(
+    (order: OrderDetail) => {
+      if (order.latestStatus === 'IN_TRANSPORT' || order.latestStatus === 'DELIVERED') {
+        showSnackbarError(
+          `Không thể chỉnh sửa đơn hàng ${order.latestStatus === 'IN_TRANSPORT' ? 'đang giao' : order.latestStatus === 'DELIVERED' ? 'đã giao' : 'đã xác nhận'}`
+        );
+      } else {
+        orderDetailEditDrawer.handleOpen(order);
+      }
+    },
+    [showSnackbarError, orderDetailEditDrawer]
+  );
+
+  const handleReportOrder = useCallback(
+    (order: OrderDetail) => {
+      if (order.latestStatus !== 'IN_TRANSPORT' && order.latestStatus !== 'DELIVERED') {
+        showSnackbarError('Không thể khiếu nại đơn hàng chưa được vận hành');
+      } else {
+        orderDetailReportDrawer.handleOpen(order);
+      }
+    },
+    [showSnackbarError, orderDetailReportDrawer]
   );
 
   const orderTableConfig = useMemo(() => {
     return getOrderTableConfigs({
       onClickReport: (data: OrderDetail) => {
-        orderDetailReportDrawer.handleOpen(data);
+        handleReportOrder(data);
       },
       onClickEdit: (data: OrderDetail) => {
-        orderDetailEditDrawer.handleOpen(data);
+        handleEditOrder(data);
       },
       onClickDelete: (data: OrderDetail) => {
-        orderDetailDeleteDialog.handleOpen(data);
+        handleDeleteOrder(data);
       },
       onClickPayment: (data: OrderDetail) => {
         handlePayment(data);
@@ -173,50 +250,61 @@ const OrderNotPaid: React.FC<OrderNotPaidProps> = ({ orders, loading }) => {
     count: result.length
   });
 
+  // I want to console.log checkoutUrl after interval of 3 seconds
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     console.log(checkoutUrl);
+  //   }, 3000);
+  //   return () => clearInterval(interval);
+  // }, [checkoutUrl]);
+
   return (
-    <Box className='flex flex-col min-h-screen bg-white px-6 py-4 text-black'>
-      <OrderFilter
-        statusList={orderStatusList}
-        numberOfOrders={result.length}
-        selectedStatus={selectedStatus}
-        setSelectedStatus={setSelectedStatus}
-        dateRange={dateRange}
-        setDateRange={setDateRange}
-        onSearch={setSearchInput}
-      />
-      <Box sx={{ flex: 1 }}>
-        {loading ? (
-          <Box display='flex' justifyContent='center' alignItems='center' height='100%'>
-            <CircularProgress />
-          </Box>
-        ) : (
-          <CustomTable
-            rows={result}
-            configs={orderTableConfig}
-            pagination={pagination}
-            className='my-5 -mx-6'
-            onClickRow={(data) => handleGoReport(data)}
-          />
-        )}
+    <>
+      <Box id='payos-checkout-iframe' className='absolute top-0 left-0 w-full h-full' />
+      <Box className='flex flex-col min-h-screen bg-white px-6 py-4 text-black'>
+        <OrderFilter
+          statusList={orderStatusList}
+          numberOfOrders={result.length}
+          selectedStatus={selectedStatus}
+          setSelectedStatus={setSelectedStatus}
+          dateRange={dateRange}
+          setDateRange={setDateRange}
+          onSearch={setSearchInput}
+        />
+        <Box sx={{ flex: 1 }}>
+          {loading ? (
+            <Box display='flex' justifyContent='center' alignItems='center' height='100%'>
+              <CircularProgress />
+            </Box>
+          ) : (
+            <CustomTable
+              rows={result}
+              configs={orderTableConfig}
+              pagination={pagination}
+              className='my-5 -mx-6'
+              onClickRow={(data) => handleGoReport(data)}
+            />
+          )}
+        </Box>
+        <OrderDetailReportDrawer
+          open={orderDetailReportDrawer.open}
+          onClose={orderDetailReportDrawer.handleClose}
+          order={orderDetailReportDrawer.data}
+        />
+        <OrderDetailDeleteDialog
+          open={orderDetailDeleteDialog.open}
+          onClose={orderDetailDeleteDialog.handleClose}
+          order={orderDetailDeleteDialog.data as OrderDetail}
+          onConfirm={() => deleteOrder([orderDetailDeleteDialog.data?.id] as string[])}
+        />
+        <OrderDetailEditDrawer
+          open={orderDetailEditDrawer.open}
+          onClose={orderDetailEditDrawer.handleClose}
+          order={orderDetailEditDrawer.data}
+        />
+        {/* <Chat /> */}
       </Box>
-      <OrderDetailReportDrawer
-        open={orderDetailReportDrawer.open}
-        onClose={orderDetailReportDrawer.handleClose}
-        order={orderDetailReportDrawer.data}
-      />
-      <OrderDetailDeleteDialog
-        open={orderDetailDeleteDialog.open}
-        onClose={orderDetailDeleteDialog.handleClose}
-        order={orderDetailDeleteDialog.data as OrderDetail}
-        onConfirm={() => deleteOrder([orderDetailDeleteDialog.data?.id] as string[])}
-      />
-      <OrderDetailEditDrawer
-        open={orderDetailEditDrawer.open}
-        onClose={orderDetailEditDrawer.handleClose}
-        order={orderDetailEditDrawer.data}
-      />
-      {/* <Chat /> */}
-    </Box>
+    </>
   );
 };
 

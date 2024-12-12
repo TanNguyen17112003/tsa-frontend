@@ -9,7 +9,7 @@ interface SeoProps {
 export const Seo: FC<SeoProps> = (props) => {
   const { title } = props;
 
-  const fullTitle = title ? title + ' | Tiktoday' : 'Tiktoday';
+  const fullTitle = title ? title + ' | TSA' : 'TSA';
 
   return (
     <Head>

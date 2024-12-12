@@ -35,7 +35,7 @@ export const getDashboardAdminConfigs = () => {
           icon: <UserTick className='h-6 w-6' />
         },
         {
-          title: 'Quản lý người dùng',
+          title: 'Quản lý sinh viên',
           path: paths.dashboard.student.index,
           icon: <User className='h-6 w-6' />
         },

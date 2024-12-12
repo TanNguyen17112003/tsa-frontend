@@ -1,10 +1,9 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { CustomTable } from '@components';
 import { Box } from '@mui/material';
-import { ReportDetail } from 'src/types/report';
 import usePagination from 'src/hooks/use-pagination';
-import { SelectChangeEvent } from '@mui/material';
-import { useDrawer, useDialog } from '@hooks';
+import { SelectChangeEvent, CircularProgress } from '@mui/material';
+import { useDialog } from '@hooks';
 import { UserDetail } from 'src/types/user';
 import getStaffTableConfig from './staff-table-config';
 import StudentFilter from './staff-filter';
@@ -85,12 +84,19 @@ function StaffList() {
         onResetFilters={handleResetFilters}
         numberOfStaff={filteredStaffs.length}
       />
-      <CustomTable
-        rows={filteredStaffs}
-        configs={staffTableConfig}
-        pagination={pagination}
-        onClickRow={(data: UserDetail) => handleGoStaff(data)}
-      />
+      {getListUsersApi.loading ? (
+        <Box display='flex' justifyContent='center' alignItems='center' height='100%'>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <CustomTable
+          rows={filteredStaffs}
+          configs={staffTableConfig}
+          pagination={pagination}
+          onClickRow={(data: UserDetail) => handleGoStaff(data)}
+        />
+      )}
+
       <DeleteUserDialog
         open={deleteStaffDialog.open}
         user={deleteStaffDialog.data as UserDetail}

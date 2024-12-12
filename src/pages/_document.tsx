@@ -64,11 +64,11 @@ const Vendors: FC = () => (
 
 const Pwa: FC = () => (
   <>
-    <meta name='application-name' content='Tiktoday' />
+    <meta name='application-name' content='TSA' />
     <meta name='apple-mobile-web-app-capable' content='yes' />
     <meta name='apple-mobile-web-app-status-bar-style' content='default' />
-    <meta name='apple-mobile-web-app-title' content='Tiktoday' />
-    <meta name='description' content='Tiktoday' />
+    <meta name='apple-mobile-web-app-title' content='TSA' />
+    <meta name='description' content='TSA' />
     <meta name='format-detection' content='telephone=no' />
     <meta name='mobile-web-app-capable' content='yes' />
     <meta name='msapplication-config' content='/browserconfig.xml' />
@@ -83,17 +83,17 @@ const Pwa: FC = () => (
 //   <>
 //     <meta name="twitter:card" content="summary" />
 //     <meta name="twitter:url" content="http://4.194.163.254:3001" />
-//     <meta name="twitter:title" content="Tiktoday" />
-//     <meta name="twitter:description" content="Tiktoday" />
+//     <meta name="twitter:title" content="TSA" />
+//     <meta name="twitter:description" content="TSA" />
 //     <meta
 //       name="twitter:image"
 //       content="http://4.194.163.254:3001/icons/android-chrome-192x192.png"
 //     />
 //     <meta name="twitter:creator" content="@SHub" />
 //     <meta property="og:type" content="website" />
-//     <meta property="og:title" content="Tiktoday" />
-//     <meta property="og:description" content="Tiktoday" />
-//     <meta property="og:site_name" content="Tiktoday" />
+//     <meta property="og:title" content="TSA" />
+//     <meta property="og:description" content="TSA" />
+//     <meta property="og:site_name" content="TSA" />
 //     <meta property="og:url" content="http://4.194.163.254:3001" />
 //     <meta
 //       property="og:image"

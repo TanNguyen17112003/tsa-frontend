@@ -33,13 +33,13 @@ const Page: PageType = () => {
   const getListUsersApi = useFunction(UsersApi.getUsers);
   const getReportsApi = useFunction(ReportsApi.getReports);
 
-  const { isMobile, isTablet } = useResponsive();
+  const { isMobile } = useResponsive();
 
   const users = useMemo(() => {
     return (getListUsersApi.data || []).filter((user) => user.role === 'STUDENT');
   }, [getListUsersApi.data]);
   const orders = useMemo(() => {
-    return getOrdersApi.data || [];
+    return getOrdersApi.data?.results || [];
   }, [getOrdersApi.data]);
   const reports = useMemo(() => {
     return getReportsApi.data || [];
@@ -105,7 +105,7 @@ const Page: PageType = () => {
     const lastSunday = new Date(lastMonday);
     lastSunday.setDate(lastMonday.getDate() + 6);
 
-    return orders.filter((order) => {
+    return orders?.filter((order) => {
       const orderDate = new Date(order.deliveryDate);
       return orderDate >= lastMonday && orderDate <= lastSunday;
     });
@@ -116,7 +116,7 @@ const Page: PageType = () => {
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
-    return orders.filter((order) => {
+    return orders?.filter((order) => {
       const deliveredAt = new Date(Number(order.deliveryDate) * 1000);
       return deliveredAt >= startOfMonth && deliveredAt <= endOfMonth;
     });
@@ -126,7 +126,7 @@ const Page: PageType = () => {
     const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
     const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
 
-    return orders.filter((order) => {
+    return orders?.filter((order) => {
       const deliveredAt = new Date(Number(order.deliveryDate) * 1000);
       return deliveredAt >= startOfLastMonth && deliveredAt <= endOfLastMonth;
     });

@@ -93,7 +93,7 @@ function MobileOrderList() {
   }, []);
 
   const orders = useMemo(() => {
-    return (getOrdersApi.data || []).filter(
+    return (getOrdersApi.data?.results || []).filter(
       (order) => order.shipperId === user?.id || order.shipperId === firebaseUser?.id
     );
   }, [getOrdersApi.data, user, firebaseUser]);

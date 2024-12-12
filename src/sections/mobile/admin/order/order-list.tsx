@@ -91,7 +91,7 @@ function MobileOrderList() {
   }, []);
 
   const orders = useMemo(() => {
-    return getOrdersApi.data || [];
+    return getOrdersApi.data?.results || [];
   }, [getOrdersApi.data]);
 
   const filteredOrders = useMemo(() => {

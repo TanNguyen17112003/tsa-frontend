@@ -153,15 +153,17 @@ function OrderDetailEditDrawer({
                 value={formik.values.checkCode as string}
                 name={'checkCode'}
               />
-              <OrderFormTextField
-                type='number'
-                title={'Khối lượng đơn hàng (kg)'}
-                lg={0}
-                xs={12}
-                onChange={formik.handleChange}
-                value={formik.values.weight as number}
-                name={'weight'}
-              />
+              {!order?.isPaid && (
+                <OrderFormTextField
+                  type='number'
+                  title={'Khối lượng đơn hàng (kg)'}
+                  lg={0}
+                  xs={12}
+                  onChange={formik.handleChange}
+                  value={formik.values.weight as number}
+                  name={'weight'}
+                />
+              )}
               <OrderFormTextField
                 type='autoComplete'
                 title={'Sản phẩm'}
@@ -173,57 +175,59 @@ function OrderDetailEditDrawer({
                 name={'product'}
                 placeholder='Nhập danh sách sản phẩm'
               />
-              <Grid item xs={12} lg={0}>
-                <Box display={'flex'} flexDirection={'column'} gap={1}>
-                  <Typography>Địa chỉ nhận hàng</Typography>
-                  <Box display={'flex'}>
-                    <Stack direction={'row'} spacing={5} className='w-[100%]'>
-                      <FormControl className='w-[33.33%]'>
-                        <InputLabel>Chọn kí túc xá</InputLabel>
-                        <Select
-                          value={formik.values.dormitory}
-                          onChange={formik.handleChange}
-                          name='dormitory'
-                        >
-                          {dormitoryList.map((dormitoryItem, index) => (
-                            <MenuItem key={index} value={dormitoryItem}>
-                              {dormitoryItem}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                      <FormControl className='w-[33.33%]'>
-                        <InputLabel>Chọn tòa</InputLabel>
-                        <Select
-                          value={formik.values.building}
-                          onChange={formik.handleChange}
-                          name='building'
-                        >
-                          {buildingList.map((building, index) => (
-                            <MenuItem key={index} value={building}>
-                              {building}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                      <FormControl className='w-[33.33%]'>
-                        <InputLabel>Chọn phòng</InputLabel>
-                        <Select
-                          value={formik.values.room}
-                          onChange={formik.handleChange}
-                          name='room'
-                        >
-                          {roomList.map((room, index) => (
-                            <MenuItem key={index} value={room}>
-                              {room}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Stack>
+              {!order?.isPaid && (
+                <Grid item xs={12} lg={0}>
+                  <Box display={'flex'} flexDirection={'column'} gap={1}>
+                    <Typography>Địa chỉ nhận hàng</Typography>
+                    <Box display={'flex'}>
+                      <Stack direction={'row'} spacing={5} className='w-[100%]'>
+                        <FormControl className='w-[33.33%]'>
+                          <InputLabel>Chọn kí túc xá</InputLabel>
+                          <Select
+                            value={formik.values.dormitory}
+                            onChange={formik.handleChange}
+                            name='dormitory'
+                          >
+                            {dormitoryList.map((dormitoryItem, index) => (
+                              <MenuItem key={index} value={dormitoryItem}>
+                                {dormitoryItem}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                        <FormControl className='w-[33.33%]'>
+                          <InputLabel>Chọn tòa</InputLabel>
+                          <Select
+                            value={formik.values.building}
+                            onChange={formik.handleChange}
+                            name='building'
+                          >
+                            {buildingList.map((building, index) => (
+                              <MenuItem key={index} value={building}>
+                                {building}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                        <FormControl className='w-[33.33%]'>
+                          <InputLabel>Chọn phòng</InputLabel>
+                          <Select
+                            value={formik.values.room}
+                            onChange={formik.handleChange}
+                            name='room'
+                          >
+                            {roomList.map((room, index) => (
+                              <MenuItem key={index} value={room}>
+                                {room}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </Stack>
+                    </Box>
                   </Box>
-                </Box>
-              </Grid>
+                </Grid>
+              )}
               <OrderFormTextField
                 type='dateTime'
                 title={'Thời gian giao hàng'}
@@ -234,28 +238,29 @@ function OrderDetailEditDrawer({
                 onChange={formik.handleChange}
                 value={formik.values.deliveryDate as string}
               />
-
-              <OrderFormTextField
-                type='text'
-                title={'Phương thức thanh toán'}
-                lg={0}
-                xs={12}
-                name={'paymentMethod'}
-                value={formik.values.paymentMethod as string}
-                select
-                onChange={formik.handleChange}
-              >
-                {paymentMethodOptions.map((option, index) => (
-                  <MenuItem key={index} value={option.value}>
-                    <ListItem alignItems='center'>
-                      <ListItemIcon>
-                        <Image src={option.image} width={24} height={24} alt='' />
-                      </ListItemIcon>
-                      {option.label}
-                    </ListItem>
-                  </MenuItem>
-                ))}
-              </OrderFormTextField>
+              {!order?.isPaid && (
+                <OrderFormTextField
+                  type='text'
+                  title={'Phương thức thanh toán'}
+                  lg={0}
+                  xs={12}
+                  name={'paymentMethod'}
+                  value={formik.values.paymentMethod as string}
+                  select
+                  onChange={formik.handleChange}
+                >
+                  {paymentMethodOptions.map((option, index) => (
+                    <MenuItem key={index} value={option.value}>
+                      <ListItem alignItems='center'>
+                        <ListItemIcon>
+                          <Image src={option.image} width={24} height={24} alt='' />
+                        </ListItemIcon>
+                        {option.label}
+                      </ListItem>
+                    </MenuItem>
+                  ))}
+                </OrderFormTextField>
+              )}
             </Grid>
           </Box>
         </Stack>

@@ -19,7 +19,7 @@ const Page: PageType = () => {
     <MobileStudentList />
   ) : (
     <Box className='text-black bg-white min-h-screen'>
-      <ContentHeader title='Quản lý người dùng' />
+      <ContentHeader title='Quản lý sinh viên' />
       <StudentList />
     </Box>
   );

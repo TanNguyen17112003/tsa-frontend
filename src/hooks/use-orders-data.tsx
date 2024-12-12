@@ -9,7 +9,7 @@ const useOrdersData = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       const fetchedOrders = await getOrdersApi.call({});
-      setOrders(fetchedOrders.data || []);
+      setOrders(fetchedOrders.data?.results || []);
     };
 
     fetchOrders();

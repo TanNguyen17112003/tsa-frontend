@@ -1,8 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { CustomTable } from '@components';
-import { Box, SelectChangeEvent } from '@mui/material';
+import { Box, SelectChangeEvent, CircularProgress } from '@mui/material';
 import usePagination from 'src/hooks/use-pagination';
-import { useRouter } from 'next/router';
 import { useDialog, useDrawer } from '@hooks';
 import { DeliveryDetail } from 'src/types/delivery';
 import getDeliveryTableConfig from '../delivery-table-config';
@@ -13,7 +12,6 @@ import DeliveryDetailEditDrawer from '../delivery-detail/delivery-detail-edit-dr
 import DeliveryDetailDeleteDialog from '../delivery-detail/delivery-detail-delete-dialog';
 
 function DeliveryList() {
-  const router = useRouter();
   const { getDeliveriesApi } = useDeliveriesContext();
   const [selectedStatus, setSelectedStatus] = useState<string>('');
 
@@ -85,11 +83,20 @@ function DeliveryList() {
         onResetFilters={handleResetFilters}
         numberOfDeliveries={deliveries.length}
       />
-      <CustomTable
-        rows={filteredDeliveries}
-        configs={deliveryTableConfig}
-        pagination={pagination}
-      />
+      {getDeliveriesApi.loading ? (
+        <Box
+          sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}
+        >
+          <CircularProgress />
+        </Box>
+      ) : (
+        <CustomTable
+          rows={filteredDeliveries}
+          configs={deliveryTableConfig}
+          pagination={pagination}
+        />
+      )}
+
       <DeliveryDetailDeleteDialog
         open={deleteDeliveryDialog.open}
         delivery={deleteDeliveryDialog.data as DeliveryDetail}

@@ -2,7 +2,7 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { CustomTable } from '@components';
 import OrderFilter from './order-filter';
 import getOrderTableConfigs from './order-table-config';
-import { Box, Button } from '@mui/material';
+import { Box, Button, CircularProgress } from '@mui/material';
 import { Order, OrderDetail } from 'src/types/order';
 import usePagination from 'src/hooks/use-pagination';
 import { SelectChangeEvent } from '@mui/material';
@@ -12,14 +12,20 @@ import { useDrawer, useDialog } from '@hooks';
 import OrderDetailDeleteDialog from '../order-detail/order-detail-delete-dialog';
 import OrderDetailEditDrawer from '../order-detail/order-detail-edit-drawer';
 import { useSelection } from '@hooks';
-import { Additem, Trash } from 'iconsax-react';
+import { Additem, Trash, TickCircle } from 'iconsax-react';
 import OrderGroupDialog from './order-group-dialog';
 import useFunction from 'src/hooks/use-function';
 import useStaffData from 'src/hooks/use-staff-data';
+import useAppSnackbar from 'src/hooks/use-app-snackbar';
+import OrderDeleteWarningDialog from './order-delete-warning-dialog';
+import OrderApproveWarningDialog from './order-approve-warning-dialog';
 
 function OrderList() {
   const router = useRouter();
+  const { showSnackbarError, showSnackbarSuccess } = useAppSnackbar();
   const [selectedDormitory, setSelectedDormitory] = useState<string>('');
+  const [deletedOrders, setDeletedOrders] = useState<OrderDetail[]>([]);
+  const [approvedOrders, setApprovedOrders] = useState<OrderDetail[]>([]);
   const [selectedBuilding, setSelectedBuilding] = useState<string>('');
   const [selectedRoom, setSelectedRoom] = useState<string>('');
   const [selectedStatus, setSelectedStatus] = useState<string>('');
@@ -27,13 +33,15 @@ function OrderList() {
     startDate: null,
     endDate: null
   });
-  const { getOrdersApi, deleteOrder } = useOrdersContext();
+  const { getOrdersApi, deleteOrder, updateOrderStatus } = useOrdersContext();
   const orderDetailDrawer = useDrawer<OrderDetail>();
   const orderDetailDeleteDialog = useDialog<OrderDetail>();
   const orderGroupDialog = useDialog<OrderDetail[]>();
+  const orderDeleteWarningDialog = useDialog<OrderDetail[]>();
+  const orderApproveWarningDialog = useDialog<OrderDetail[]>();
 
   const orders = useMemo(() => {
-    return getOrdersApi.data || [];
+    return getOrdersApi.data?.results || [];
   }, [getOrdersApi.data]);
 
   const users = useStaffData();
@@ -77,16 +85,67 @@ function OrderList() {
     });
   }, []);
 
-  const handleDeleteOrders = useCallback((ids: string[]) => {
-    return deleteOrder(ids);
-  }, []);
+  const numberOfOrders = useMemo(() => {
+    return getOrdersApi.data?.totalElements || 0;
+  }, [getOrdersApi.data]);
 
-  const handleDeleteOrdersHelper = useFunction(handleDeleteOrders, {
-    successMessage: 'Xóa danh sách đơn hàng thành công'
-  });
+  const handleDeleteOrders = useCallback(
+    async (orders: OrderDetail[]) => {
+      const notDeletedOrders = orders?.filter(
+        (order) =>
+          order.latestStatus === 'IN_TRANSPORT' ||
+          order.latestStatus === 'DELIVERED' ||
+          order.latestStatus === 'ACCEPTED'
+      );
+      const deletedOrders = orders?.filter(
+        (order) =>
+          order.latestStatus !== 'IN_TRANSPORT' &&
+          order.latestStatus !== 'DELIVERED' &&
+          order.latestStatus !== 'ACCEPTED'
+      );
+      if (notDeletedOrders.length === orders.length) {
+        showSnackbarError('Không thể xóa danh sách đơn hàng đang giao, đã giao hoặc đã xác nhận');
+      } else if (notDeletedOrders.length === 0) {
+        await deleteOrder(deletedOrders.map((order) => order.id));
+        showSnackbarSuccess('Xóa các đơn hàng thành công');
+      } else if (notDeletedOrders.length < orders.length) {
+        orderDeleteWarningDialog.handleOpen(notDeletedOrders);
+        setDeletedOrders(deletedOrders);
+      }
+    },
+    [orderDeleteWarningDialog, setDeletedOrders]
+  );
+
+  const handleApproveOrders = useCallback(
+    async (orders: OrderDetail[]) => {
+      const notApprovedOrders = orders?.filter(
+        (order) => order.latestStatus !== 'PENDING' || !order.studentId
+      );
+      const approvedOrders = orders?.filter(
+        (order) => order.latestStatus === 'PENDING' && order.studentId
+      );
+      if (notApprovedOrders.length === orders.length) {
+        showSnackbarError('Không thể phê duyệt danh sách đơn hàng đang này');
+      } else if (notApprovedOrders.length === 0) {
+        await updateOrderStatus(
+          'ACCEPTED',
+          approvedOrders.map((order) => order.id)
+        );
+        showSnackbarSuccess('Phê duyệt các đơn hàng thành công');
+      } else if (notApprovedOrders.length < orders.length) {
+        orderApproveWarningDialog.handleOpen(notApprovedOrders);
+        setApprovedOrders(approvedOrders);
+      }
+    },
+    [orderApproveWarningDialog, setApprovedOrders]
+  );
+
+  const handleDeleteOrdersHelper = useFunction(handleDeleteOrders, {});
+
+  const handleApproveOrdersHelper = useFunction(handleApproveOrders, {});
 
   const filteredOrders = useMemo(() => {
-    return orders.filter((order) => {
+    return orders?.filter((order) => {
       const matchesDormitory = selectedDormitory ? order.dormitory === selectedDormitory : true;
       const matchesBuilding = selectedBuilding ? order.building === selectedBuilding : true;
       const matchesRoom = selectedRoom ? order.room === selectedRoom : true;
@@ -103,16 +162,59 @@ function OrderList() {
   }, [selectedDormitory, selectedBuilding, selectedRoom, dateRange, selectedStatus, orders]);
 
   const pagination = usePagination({
-    count: filteredOrders.length
+    count: numberOfOrders
   });
+
+  const handleDeleteOrder = useCallback(
+    (order: OrderDetail) => {
+      if (
+        order.latestStatus === 'IN_TRANSPORT' ||
+        order.latestStatus === 'DELIVERED' ||
+        order.latestStatus === 'ACCEPTED'
+      ) {
+        showSnackbarError(
+          `Không thể xóa đơn hàng ${order.latestStatus === 'IN_TRANSPORT' ? 'đang giao' : order.latestStatus === 'DELIVERED' ? 'đã giao' : 'đã xác nhận'}`
+        );
+      } else {
+        orderDetailDeleteDialog.handleOpen(order);
+      }
+    },
+    [orderDetailDeleteDialog, showSnackbarError]
+  );
+
+  const handleEditOrder = useCallback(
+    (order: OrderDetail) => {
+      if (order.latestStatus === 'IN_TRANSPORT' || order.latestStatus === 'DELIVERED') {
+        showSnackbarError(
+          `Không thể chỉnh sửa đơn hàng ${order.latestStatus === 'IN_TRANSPORT' ? 'đang giao' : order.latestStatus === 'DELIVERED' ? 'đã giao' : 'đã xác nhận'}`
+        );
+      } else {
+        orderDetailDrawer.handleOpen(order);
+      }
+    },
+    [showSnackbarError, orderDetailDrawer]
+  );
+
+  const handleConfirmDeleteOrders = useCallback(async () => {
+    await deleteOrder(deletedOrders.map((order) => order.id));
+    setDeletedOrders([]);
+  }, [setDeletedOrders, deleteOrder, deletedOrders]);
+
+  const handleConfirmApproveOrders = useCallback(async () => {
+    await updateOrderStatus(
+      'ACCEPTED',
+      approvedOrders.map((order) => order.id)
+    );
+    setApprovedOrders([]);
+  }, [setApprovedOrders, updateOrderStatus, approvedOrders]);
 
   const orderTableConfig = useMemo(() => {
     return getOrderTableConfigs({
       onClickDelete: (data: any) => {
-        orderDetailDeleteDialog.handleOpen(data);
+        handleDeleteOrder(data);
       },
       onClickEdit: (data: any) => {
-        orderDetailDrawer.handleOpen(data);
+        handleEditOrder(data);
       },
       users: users.users
     });
@@ -132,7 +234,7 @@ function OrderList() {
         onRoomChange={handleRoomChange}
         onDateChange={handleDateChange}
         onResetFilters={handleResetFilters}
-        numberOfOrders={filteredOrders.length}
+        numberOfOrders={numberOfOrders}
       />
       <Box
         sx={{
@@ -144,9 +246,18 @@ function OrderList() {
       >
         <Button
           variant='contained'
+          color='success'
+          startIcon={<TickCircle color='white' />}
+          onClick={() => handleApproveOrdersHelper.call(select.selected)}
+          disabled={select.selected.length === 0}
+        >
+          Phê duyệt
+        </Button>
+        <Button
+          variant='contained'
           color='error'
           startIcon={<Trash color='white' />}
-          onClick={() => handleDeleteOrdersHelper.call(select.selected.map((order) => order.id))}
+          onClick={() => handleDeleteOrdersHelper.call(select.selected)}
           disabled={select.selected.length === 0}
         >
           Xóa
@@ -161,13 +272,20 @@ function OrderList() {
           Gom nhóm đơn hàng
         </Button>
       </Box>
-      <CustomTable
-        select={select}
-        rows={filteredOrders}
-        configs={orderTableConfig}
-        pagination={pagination}
-        onClickRow={(data: OrderDetail) => handleGoOrder(data)}
-      />
+      {getOrdersApi.loading ? (
+        <Box className='flex items-center justify-center h-[300px]'>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <CustomTable
+          select={select}
+          rows={filteredOrders}
+          configs={orderTableConfig}
+          pagination={pagination}
+          onClickRow={(data: OrderDetail) => handleGoOrder(data)}
+        />
+      )}
+
       <OrderDetailDeleteDialog
         open={orderDetailDeleteDialog.open}
         onClose={orderDetailDeleteDialog.handleClose}
@@ -183,6 +301,18 @@ function OrderList() {
         orders={select.selected}
         open={orderGroupDialog.open}
         onClose={orderGroupDialog.handleClose}
+      />
+      <OrderDeleteWarningDialog
+        orders={orderDeleteWarningDialog.data as OrderDetail[]}
+        open={orderDeleteWarningDialog.open}
+        onClose={orderDeleteWarningDialog.handleClose}
+        onConfirm={handleConfirmDeleteOrders}
+      />
+      <OrderApproveWarningDialog
+        orders={orderApproveWarningDialog.data as OrderDetail[]}
+        open={orderApproveWarningDialog.open}
+        onClose={orderApproveWarningDialog.handleClose}
+        onConfirm={handleConfirmApproveOrders}
       />
     </Box>
   );

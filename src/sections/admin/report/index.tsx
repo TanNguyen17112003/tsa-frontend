@@ -5,7 +5,7 @@ import getReportTableConfig from './report-table-config';
 import { Box } from '@mui/material';
 import { ReportDetail } from 'src/types/report';
 import usePagination from 'src/hooks/use-pagination';
-import { SelectChangeEvent } from '@mui/material';
+import { SelectChangeEvent, CircularProgress } from '@mui/material';
 import { useDrawer, useDialog } from '@hooks';
 import { useReportsContext } from 'src/contexts/reports/reports-context';
 import ReportDetailDenyDialog from './report-detail-deny-dialog';
@@ -92,7 +92,14 @@ function ReportList() {
         onResetFilters={handleResetFilters}
         numberOfReport={filteredReports.length}
       />
-      <CustomTable rows={filteredReports} configs={reportTableConfig} pagination={pagination} />
+      {getReportsApi.loading ? (
+        <Box display='flex' justifyContent='center'>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <CustomTable rows={filteredReports} configs={reportTableConfig} pagination={pagination} />
+      )}
+
       <ReportDetailDenyDialog
         open={reportDetailDenyDialog.open}
         onClose={reportDetailDenyDialog.handleClose}

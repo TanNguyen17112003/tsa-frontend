@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useCallback, useEffect, useContext } from 'react';
-import { OrdersApi } from 'src/api/orders';
+import { OrderResponse, OrdersApi } from 'src/api/orders';
 import useFunction, {
   DEFAULT_FUNCTION_RETURN,
   UseFunctionReturnType
@@ -9,11 +9,11 @@ import { OrderFormProps } from 'src/api/orders';
 import { dateToUnixTimestamp } from 'src/utils/format-time-currency';
 
 interface ContextValue {
-  getOrdersApi: UseFunctionReturnType<FormData, OrderDetail[]>;
+  getOrdersApi: UseFunctionReturnType<FormData, OrderResponse>;
   getOrderById: (id: Order['id']) => Promise<OrderDetail>;
   createOrder: (requests: OrderFormProps[]) => Promise<void>;
   updateOrder: (Order: Partial<OrderDetail>, orderId: string) => Promise<void>;
-  updateOrderStatus: (status: OrderStatus, id: string) => Promise<void>;
+  updateOrderStatus: (status: OrderStatus, ids: string[]) => Promise<void>;
   deleteOrder: (ids: Order['id'][]) => Promise<void>;
 }
 
@@ -48,10 +48,12 @@ const OrdersProvider = ({ children }: { children: ReactNode }) => {
         const newOrders = await Promise.all(
           requests.map((request) => OrdersApi.postOrders(request))
         );
-        getOrdersApi.setData([
-          ...(getOrdersApi.data || []),
-          ...newOrders.map((order) => order.data)
-        ]);
+        getOrdersApi.setData({
+          ...getOrdersApi.data,
+          results: [...(getOrdersApi.data?.results || []), ...newOrders.map((order) => order.data)],
+          totalElements: (getOrdersApi.data?.totalElements || 0) + newOrders.length,
+          totalPages: Math.ceil(((getOrdersApi.data?.totalElements || 0) + newOrders.length) / 1)
+        });
       } catch (error) {
         throw error;
       }
@@ -63,8 +65,9 @@ const OrdersProvider = ({ children }: { children: ReactNode }) => {
     async (order: Partial<Order>, orderId: string) => {
       try {
         const updatedOrder = await OrdersApi.updateOrder(order, orderId);
-        getOrdersApi.setData(
-          (getOrdersApi.data || []).map((c) =>
+        getOrdersApi.setData({
+          ...getOrdersApi.data,
+          results: (getOrdersApi.data?.results || []).map((c) =>
             c.id === orderId
               ? Object.assign(c, {
                   ...order,
@@ -73,8 +76,10 @@ const OrdersProvider = ({ children }: { children: ReactNode }) => {
                     : undefined
                 })
               : c
-          )
-        );
+          ),
+          totalElements: getOrdersApi.data?.totalElements || 0,
+          totalPages: getOrdersApi.data?.totalPages || 1
+        });
       } catch (error) {
         throw error;
       }
@@ -82,21 +87,24 @@ const OrdersProvider = ({ children }: { children: ReactNode }) => {
     [getOrdersApi]
   );
 
-  const updateOrderStatus = useCallback(
-    async (status: OrderStatus, id: string) => {
-      try {
-        await OrdersApi.updateOrderStatus(status, id);
-        getOrdersApi.setData(
-          (getOrdersApi.data || []).map((c) =>
-            c.id == id ? Object.assign(c, { latestStatus: status }) : c
-          )
-        );
-      } catch (error) {
-        throw error;
-      }
-    },
-    [getOrdersApi]
-  );
+  // const updateOrderStatus = useCallback(
+  //   async (status: OrderStatus, id: string) => {
+  //     try {
+  //       await OrdersApi.updateOrderStatus(status, id);
+  //       getOrdersApi.setData({
+  //         ...getOrdersApi.data,
+  //         results: (getOrdersApi.data?.results || []).map((c) =>
+  //           c.id == id ? Object.assign(c, { latestStatus: status }) : c
+  //         ),
+  //         totalElements: getOrdersApi.data?.totalElements || 0,
+  //         totalPages: getOrdersApi.data?.totalPages || 1
+  //       });
+  //     } catch (error) {
+  //       throw error;
+  //     }
+  //   },
+  //   [getOrdersApi]
+  // );
 
   // const deleteOrder = useCallback(
   //   async (id: Order['id']) => {
@@ -114,7 +122,31 @@ const OrdersProvider = ({ children }: { children: ReactNode }) => {
     async (ids: Order['id'][]) => {
       try {
         await Promise.all(ids.map((id) => OrdersApi.deleteOrder(id)));
-        getOrdersApi.setData((getOrdersApi.data || []).filter((order) => !ids.includes(order.id)));
+        getOrdersApi.setData({
+          ...getOrdersApi.data,
+          results: (getOrdersApi.data?.results || []).filter((order) => !ids.includes(order.id)),
+          totalElements: (getOrdersApi.data?.totalElements || 0) - ids.length,
+          totalPages: getOrdersApi.data?.totalPages || 1
+        });
+      } catch (error) {
+        throw error;
+      }
+    },
+    [getOrdersApi]
+  );
+
+  const updateOrderStatus = useCallback(
+    async (status: OrderStatus, ids: Order['id'][]) => {
+      try {
+        await Promise.all(ids.map((id) => OrdersApi.updateOrderStatus(status, id)));
+        getOrdersApi.setData({
+          ...getOrdersApi.data,
+          results: (getOrdersApi.data?.results || []).map((c) =>
+            ids.includes(c.id) ? Object.assign(c, { latestStatus: status }) : c
+          ),
+          totalElements: getOrdersApi.data?.totalElements || 0,
+          totalPages: getOrdersApi.data?.totalPages || 1
+        });
       } catch (error) {
         throw error;
       }

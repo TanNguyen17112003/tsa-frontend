@@ -11,7 +11,10 @@ const StudentDetailInformation: React.FC<StudentDetailInformationProps> = ({ inf
   return (
     <Card className='relative overflow-hidden h-full'>
       <Box className='w-full h-32 bg-green-400 rounded-b-full relative'>
-        <Avatar className='absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-30 h-30 border-4 border-white' />
+        <Avatar
+          src={info.photoUrl}
+          className='absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-30 h-30 border-4 border-white'
+        />
       </Box>
       <Stack direction='column' spacing={2} className='p-4 mt-5' alignItems={'center'}>
         <Stack>

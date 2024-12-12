@@ -6758,6 +6758,11 @@ path2d@^0.1.2:
   resolved "https://registry.yarnpkg.com/path2d/-/path2d-0.1.2.tgz#b6ae1dcce306cd75137cf6705961d128bbe8009a"
   integrity sha512-LW++2uxgHNL/FANhgGTPo/yDDQcgsVbKotwIVbpTgTBgRlKUpjOpjp3s3+KjG4OWCQ/r6z+WLDljH1/fC03PWw==
 
+payos-checkout@^1.0.9:
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/payos-checkout/-/payos-checkout-1.0.9.tgz#98a9fdc4bac812df678afd2f7f3299a106f5c335"
+  integrity sha512-5QEc169pMh9ZIC2yqe+uVdBAr6OokYUKqAQH/y2q7waOnvKEfmDBEpLAc2+pW1x6YVXqAU20xPFx+EDE8bQo3g==
+
 pbf@^3.2.1:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/pbf/-/pbf-3.3.0.tgz#1790f3d99118333cc7f498de816028a346ef367f"

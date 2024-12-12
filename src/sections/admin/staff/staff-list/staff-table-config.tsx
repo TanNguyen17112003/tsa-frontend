@@ -16,7 +16,13 @@ const getStaffTableConfig = ({
     type: 'string',
     renderCell: (data) => (
       <Stack direction={'row'} alignItems={'center'} gap={1}>
-        <Avatar />
+        {data.photoUrl ? (
+          <Avatar src={data.photoUrl} />
+        ) : data.firstName ? (
+          <Avatar>{data.firstName[0]}</Avatar>
+        ) : (
+          <Avatar />
+        )}
         <Stack>
           <Typography fontWeight={'bold'}>{data.lastName + ' ' + data.firstName}</Typography>
           <Typography>{data.email}</Typography>

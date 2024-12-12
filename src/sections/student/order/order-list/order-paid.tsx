@@ -12,6 +12,7 @@ import OrderDetailDeleteDialog from './order-detail-delete-dialog';
 import { useOrdersContext } from 'src/contexts/orders/orders-context';
 import { formatUnixTimestamp } from 'src/utils/format-time-currency';
 import OrderDetailEditDrawer from './order-detail-edit-drawer';
+import useAppSnackbar from 'src/hooks/use-app-snackbar';
 
 interface OrderPaidProps {
   orders: OrderDetail[];
@@ -20,6 +21,7 @@ interface OrderPaidProps {
 
 const OrderPaid: React.FC<OrderPaidProps> = ({ orders, loading }) => {
   const router = useRouter();
+  const { showSnackbarError } = useAppSnackbar();
   const orderStatusList = [
     'Tất cả',
     'Đã giao',
@@ -69,20 +71,68 @@ const OrderPaid: React.FC<OrderPaidProps> = ({ orders, loading }) => {
     [router]
   );
 
+  const handleDeleteOrder = useCallback(
+    (order: OrderDetail) => {
+      if (
+        order.latestStatus === 'IN_TRANSPORT' ||
+        order.latestStatus === 'DELIVERED' ||
+        order.latestStatus === 'ACCEPTED'
+      ) {
+        showSnackbarError(
+          `Không thể xóa đơn hàng ${order.latestStatus === 'IN_TRANSPORT' ? 'đang giao' : order.latestStatus === 'DELIVERED' ? 'đã giao' : 'đã xác nhận'}`
+        );
+      } else {
+        orderDetailDeleteDialog.handleOpen(order);
+      }
+    },
+    [orderDetailDeleteDialog, showSnackbarError]
+  );
+
+  const handleEditOrder = useCallback(
+    (order: OrderDetail) => {
+      if (order.latestStatus === 'IN_TRANSPORT' || order.latestStatus === 'DELIVERED') {
+        showSnackbarError(
+          `Không thể chỉnh sửa đơn hàng ${order.latestStatus === 'IN_TRANSPORT' ? 'đang giao' : order.latestStatus === 'DELIVERED' ? 'đã giao' : 'đã xác nhận'}`
+        );
+      } else {
+        orderDetailEditDrawer.handleOpen(order);
+      }
+    },
+    [showSnackbarError, orderDetailEditDrawer]
+  );
+
+  const handleReportOrder = useCallback(
+    (order: OrderDetail) => {
+      if (order.latestStatus !== 'IN_TRANSPORT' && order.latestStatus !== 'DELIVERED') {
+        showSnackbarError('Không thể khiếu nại đơn hàng chưa được vận hành');
+      } else {
+        orderDetailReportDrawer.handleOpen(order);
+      }
+    },
+    [showSnackbarError, orderDetailReportDrawer]
+  );
+
   const orderTableConfig = useMemo(() => {
     return getOrderTableConfigs({
       onClickReport: (data: OrderDetail) => {
-        orderDetailReportDrawer.handleOpen(data);
+        handleReportOrder(data);
       },
       onClickEdit: (data: OrderDetail) => {
-        orderDetailEditDrawer.handleOpen(data);
+        handleEditOrder(data);
       },
       onClickDelete: (data: OrderDetail) => {
-        orderDetailDeleteDialog.handleOpen(data);
+        handleDeleteOrder(data);
       },
       isPaid: true
     });
-  }, [orderDetailReportDrawer, orderDetailDeleteDialog, orderDetailEditDrawer]);
+  }, [
+    orderDetailReportDrawer,
+    orderDetailDeleteDialog,
+    orderDetailEditDrawer,
+    handleReportOrder,
+    handleEditOrder,
+    handleDeleteOrder
+  ]);
 
   const result = useMemo(() => {
     return orders.filter((order) => {

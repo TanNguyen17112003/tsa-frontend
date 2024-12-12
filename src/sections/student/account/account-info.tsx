@@ -35,9 +35,11 @@ function ProfileSection() {
       try {
         if (field) {
           if (user && updateProfile) {
+            console.log(1);
             await updateProfile({ [field]: value });
           }
           if (firebaseUser && updateFirebaseProfile) {
+            console.log(2);
             await updateFirebaseProfile({ [field]: value });
           }
         }

@@ -93,7 +93,7 @@ function MobileOrderList() {
   }, []);
 
   const orders = useMemo(() => {
-    return (getOrdersApi.data || []).filter((order) => {
+    return (getOrdersApi.data?.results || []).filter((order) => {
       if (user?.role === 'STUDENT' || firebaseUser?.role === 'STUDENT') {
         return true;
       } else {

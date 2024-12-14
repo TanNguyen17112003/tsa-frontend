@@ -1,24 +1,23 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { CustomTable } from '@components';
 import OrderFilter from './order-filter';
 import getOrderTableConfigs from './order-table-config';
-import { Box, Button, CircularProgress } from '@mui/material';
+import { Box, Button, CircularProgress, Stack } from '@mui/material';
 import { Order, OrderDetail } from 'src/types/order';
-import usePagination from 'src/hooks/use-pagination';
 import { SelectChangeEvent } from '@mui/material';
 import { useRouter } from 'next/router';
 import { useOrdersContext } from 'src/contexts/orders/orders-context';
-import { useDrawer, useDialog } from '@hooks';
-import OrderDetailDeleteDialog from '../order-detail/order-detail-delete-dialog';
-import OrderDetailEditDrawer from '../order-detail/order-detail-edit-drawer';
-import { useSelection } from '@hooks';
-import { Additem, Trash, TickCircle } from 'iconsax-react';
-import OrderGroupDialog from './order-group-dialog';
+import { useDrawer, useDialog, useSelection } from '@hooks';
 import useFunction from 'src/hooks/use-function';
 import useStaffData from 'src/hooks/use-staff-data';
 import useAppSnackbar from 'src/hooks/use-app-snackbar';
+import { Additem, Trash, TickCircle } from 'iconsax-react';
+import OrderDetailDeleteDialog from '../order-detail/order-detail-delete-dialog';
+import OrderDetailEditDrawer from '../order-detail/order-detail-edit-drawer';
+import OrderGroupDialog from './order-group-dialog';
 import OrderDeleteWarningDialog from './order-delete-warning-dialog';
 import OrderApproveWarningDialog from './order-approve-warning-dialog';
+import Pagination from 'src/components/ui/Pagination';
 
 function OrderList() {
   const router = useRouter();
@@ -33,7 +32,14 @@ function OrderList() {
     startDate: null,
     endDate: null
   });
-  const { getOrdersApi, deleteOrder, updateOrderStatus } = useOrdersContext();
+  const {
+    getOrdersApi,
+    deleteOrder,
+    updateOrderStatus,
+    setOrderFilter,
+    orderFilter,
+    orderPagination
+  } = useOrdersContext();
   const orderDetailDrawer = useDrawer<OrderDetail>();
   const orderDetailDeleteDialog = useDialog<OrderDetail>();
   const orderGroupDialog = useDialog<OrderDetail[]>();
@@ -42,7 +48,7 @@ function OrderList() {
 
   const orders = useMemo(() => {
     return getOrdersApi.data?.results || [];
-  }, [getOrdersApi.data]);
+  }, [getOrdersApi.data, orderFilter]);
 
   const users = useStaffData();
 
@@ -78,12 +84,15 @@ function OrderList() {
     setDateRange({ startDate: null, endDate: null });
   };
 
-  const handleGoOrder = useCallback((data: OrderDetail) => {
-    router.push({
-      pathname: router.pathname,
-      query: { ...router.query, orderId: data.id }
-    });
-  }, []);
+  const handleGoOrder = useCallback(
+    (data: OrderDetail) => {
+      router.push({
+        pathname: router.pathname,
+        query: { ...router.query, orderId: data.id }
+      });
+    },
+    [router]
+  );
 
   const numberOfOrders = useMemo(() => {
     return getOrdersApi.data?.totalElements || 0;
@@ -113,7 +122,13 @@ function OrderList() {
         setDeletedOrders(deletedOrders);
       }
     },
-    [orderDeleteWarningDialog, setDeletedOrders]
+    [
+      orderDeleteWarningDialog,
+      setDeletedOrders,
+      deleteOrder,
+      showSnackbarError,
+      showSnackbarSuccess
+    ]
   );
 
   const handleApproveOrders = useCallback(
@@ -137,7 +152,13 @@ function OrderList() {
         setApprovedOrders(approvedOrders);
       }
     },
-    [orderApproveWarningDialog, setApprovedOrders]
+    [
+      orderApproveWarningDialog,
+      setApprovedOrders,
+      updateOrderStatus,
+      showSnackbarError,
+      showSnackbarSuccess
+    ]
   );
 
   const handleDeleteOrdersHelper = useFunction(handleDeleteOrders, {});
@@ -161,9 +182,12 @@ function OrderList() {
     });
   }, [selectedDormitory, selectedBuilding, selectedRoom, dateRange, selectedStatus, orders]);
 
-  const pagination = usePagination({
-    count: numberOfOrders
-  });
+  useEffect(() => {
+    setOrderFilter({
+      ...orderFilter,
+      page: orderPagination.page + 1
+    });
+  }, [orderPagination.page]);
 
   const handleDeleteOrder = useCallback(
     (order: OrderDetail) => {
@@ -186,7 +210,7 @@ function OrderList() {
     (order: OrderDetail) => {
       if (order.latestStatus === 'IN_TRANSPORT' || order.latestStatus === 'DELIVERED') {
         showSnackbarError(
-          `Không thể chỉnh sửa đơn hàng ${order.latestStatus === 'IN_TRANSPORT' ? 'đang giao' : order.latestStatus === 'DELIVERED' ? 'đã giao' : 'đã xác nhận'}`
+          `Không thể chỉnh sửa đơn hàng ${order.latestStatus === 'IN_TRANSPORT' ? 'đang giao' : order.latestStatus === 'DELIVERED' ? 'đã giao' : ''}`
         );
       } else {
         orderDetailDrawer.handleOpen(order);
@@ -218,7 +242,7 @@ function OrderList() {
       },
       users: users.users
     });
-  }, [users]);
+  }, [users, handleDeleteOrder, handleEditOrder]);
 
   return (
     <Box className='px-6 text-black'>
@@ -277,13 +301,20 @@ function OrderList() {
           <CircularProgress />
         </Box>
       ) : (
-        <CustomTable
-          select={select}
-          rows={filteredOrders}
-          configs={orderTableConfig}
-          pagination={pagination}
-          onClickRow={(data: OrderDetail) => handleGoOrder(data)}
-        />
+        <Stack spacing={2} mt={1} alignItems={'center'}>
+          <CustomTable
+            select={select}
+            rows={orders}
+            configs={orderTableConfig}
+            onClickRow={(data: OrderDetail) => handleGoOrder(data)}
+          />
+          <Pagination
+            page={orderPagination.page}
+            count={numberOfOrders}
+            onChange={orderPagination.onPageChange}
+            rowsPerPage={orderPagination.rowsPerPage}
+          />
+        </Stack>
       )}
 
       <OrderDetailDeleteDialog

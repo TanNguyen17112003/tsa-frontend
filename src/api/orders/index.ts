@@ -35,8 +35,8 @@ export class OrdersApi {
   static async postOrders(request: OrderFormProps): Promise<OrderCreateResponse> {
     return await apiPost('/orders', request);
   }
-  static async getOrders(request: {}): Promise<OrderResponse> {
-    const response = await apiGet('/orders', getFormData(request));
+  static async getOrders(request: any): Promise<OrderResponse> {
+    const response = await apiGet('/orders', request);
     return response;
   }
 

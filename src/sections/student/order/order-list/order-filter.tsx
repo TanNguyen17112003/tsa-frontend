@@ -3,6 +3,7 @@ import { Box, Typography, Stack, TextField, InputAdornment } from '@mui/material
 import { SearchIcon } from 'lucide-react';
 import AdvancedFilter from 'src/components/advanced-filter/advanced-filter';
 import { Filter } from 'src/types/filter';
+import { orderStatusMap } from 'src/types/order';
 
 interface OrderFilterProps {
   statusList: string[];
@@ -25,7 +26,7 @@ const OrderFilter: React.FC<OrderFilterProps> = (props) => {
   }, []);
 
   const handleStatusChange = React.useCallback((status: string) => {
-    props.setSelectedStatus(status);
+    props.setSelectedStatus(orderStatusMap[status as keyof typeof orderStatusMap]);
   }, []);
 
   const handleSearch = () => {

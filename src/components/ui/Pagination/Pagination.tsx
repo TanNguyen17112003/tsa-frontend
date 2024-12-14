@@ -15,7 +15,7 @@ interface PaginationProps {
 
 const Pagination: FC<PaginationProps> = ({ page, count, onChange, rowsPerPage, length = 1 }) => {
   const totalPages = Math.ceil(count / rowsPerPage) || 1;
-
+  const { isMobile } = useResponsive();
   const buttonIndexes = useMemo(() => {
     let indexes: number[] = [0, 1, page, totalPages - 1, totalPages - 2];
     for (let i = 1; i <= length; i++) {

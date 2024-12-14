@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState, useEffect } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import {
   InputAdornment,
   InputLabel,
@@ -9,7 +9,6 @@ import {
   TextField,
   Typography,
   FormControl,
-  Pagination,
   CircularProgress
 } from '@mui/material';
 import { Box, AddCircle } from 'iconsax-react';
@@ -20,17 +19,18 @@ import { SearchIcon } from 'lucide-react';
 import OrderCard from './order-card';
 import { useOrdersContext } from 'src/contexts/orders/orders-context';
 import MobileAdvancedFilter from 'src/components/mobile-advanced-filter/mobile-advanced-filter';
-import usePagination from 'src/hooks/use-pagination';
 import { Filter } from 'src/types/filter';
-import { formatUnixTimestamp } from 'src/utils/format-time-currency';
 import { useAuth, useFirebaseAuth } from '@hooks';
+import { OrderStatus, orderStatusMap } from 'src/types/order';
+import Pagination from 'src/components/ui/Pagination';
 
 function MobileOrderList() {
   const router = useRouter();
   const { user } = useAuth();
   const { user: firebaseUser } = useFirebaseAuth();
   const [searchInput, setSearchInput] = useState('');
-  const [paymentStatus, setPaymentStatus] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [paymentStatus, setPaymentStatus] = useState('0');
   const [selectedStatus, setSelectedStatus] = useState<string>('Tất cả');
   const [dateRange, setDateRange] = useState<{
     startDate: Date | null;
@@ -48,7 +48,7 @@ function MobileOrderList() {
     'Đang chờ xử lý',
     'Đã từ chối'
   ];
-  const { getOrdersApi } = useOrdersContext();
+  const { getOrdersApi, orderFilter, setOrderFilter, orderPagination } = useOrdersContext();
 
   const handleDateChange = useCallback(
     (range: { startDate: Date | null; endDate: Date | null }) => {
@@ -58,7 +58,7 @@ function MobileOrderList() {
   );
 
   const handleStatusChange = useCallback((status: string) => {
-    setSelectedStatus(status);
+    setSelectedStatus(orderStatusMap[status as keyof typeof orderStatusMap]);
   }, []);
 
   const filters: Filter[] = [
@@ -88,6 +88,10 @@ function MobileOrderList() {
     setSearchInput(event.target.value);
   }, []);
 
+  const handleSearch = useCallback(() => {
+    setSearchQuery(searchInput);
+  }, [searchInput]);
+
   const handlePaymentStatusChange = useCallback((event: SelectChangeEvent<string>) => {
     setPaymentStatus(event.target.value as string);
   }, []);
@@ -102,60 +106,20 @@ function MobileOrderList() {
     });
   }, [getOrdersApi.data, user, firebaseUser]);
 
-  const filteredOrders = useMemo(() => {
-    const result = orders.filter((order) => {
-      const filteredByPaid =
-        paymentStatus === '0' ? !order.isPaid : paymentStatus === '1' ? order.isPaid : true;
-      const filteredBySearch = order.checkCode.toLowerCase().includes(searchInput.toLowerCase());
-      const filterStatus =
-        selectedStatus === 'Tất cả'
-          ? true
-          : selectedStatus === 'Đã giao'
-            ? order.latestStatus === 'DELIVERED'
-            : selectedStatus === 'Đã hủy'
-              ? order.latestStatus === 'CANCELLED'
-              : selectedStatus === 'Đang giao'
-                ? order.latestStatus === 'IN_TRANSPORT'
-                : selectedStatus === 'Đã xác nhận'
-                  ? order.latestStatus === 'ACCEPTED'
-                  : selectedStatus === 'Đang chờ xử lý'
-                    ? order.latestStatus === 'PENDING'
-                    : selectedStatus === 'Đã từ chối'
-                      ? order.latestStatus === 'REJECTED'
-                      : false;
-      const orderDate = formatUnixTimestamp(order.deliveryDate);
-      const filterDate =
-        !dateRange.startDate || !dateRange.endDate
-          ? true
-          : dateRange.startDate && dateRange.endDate
-            ? dateRange.startDate <= orderDate && orderDate <= dateRange.endDate
-            : true;
-      return filteredByPaid && filteredBySearch && filterStatus && filterDate;
-    });
-    return result;
-  }, [orders, searchInput, paymentStatus, selectedStatus, dateRange]);
-
-  const pagination = usePagination({
-    count: filteredOrders.length,
-    initialRowsPerPage: 5
-  });
+  const numberOfOrders = useMemo(() => {
+    return getOrdersApi.data?.totalElements || 0;
+  }, [getOrdersApi.data]);
 
   useEffect(() => {
-    pagination.onPageChange(null, 1);
-  }, [filteredOrders.length]);
-
-  const paginatedOrders = useMemo(() => {
-    const startIndex = (pagination.page - 1) * pagination.rowsPerPage;
-    const endIndex = startIndex + pagination.rowsPerPage;
-    return filteredOrders.slice(startIndex, endIndex);
-  }, [filteredOrders, pagination.page, pagination.rowsPerPage]);
-
-  const handlePageChange = useCallback(
-    (event: React.ChangeEvent<unknown>, page: number) => {
-      pagination.onPageChange(null, page);
-    },
-    [pagination]
-  );
+    setOrderFilter({
+      ...orderFilter,
+      isPaid: paymentStatus === '1',
+      status: selectedStatus !== 'Tất cả' ? (selectedStatus as OrderStatus) : undefined,
+      dateRange,
+      search: searchQuery,
+      page: orderPagination.page + 1
+    });
+  }, [searchQuery, paymentStatus, selectedStatus, dateRange, orderPagination.page]);
 
   return (
     <Stack className='min-h-screen py-4 px-3'>
@@ -182,7 +146,7 @@ function MobileOrderList() {
           onChange={handleSearchChange}
           InputProps={{
             endAdornment: (
-              <InputAdornment position='end' className='cursor-pointer' onClick={() => {}}>
+              <InputAdornment position='end' className='cursor-pointer' onClick={handleSearch}>
                 <SearchIcon />
               </InputAdornment>
             )
@@ -205,35 +169,32 @@ function MobileOrderList() {
       </Stack>
       <Stack mt={1.5} sx={{ flexGrow: 1, overflowY: 'auto' }}>
         <Typography fontWeight={'bold'} color='black'>
-          {filteredOrders.length} đơn hàng
+          {numberOfOrders} đơn hàng
         </Typography>
         {getOrdersApi.loading ? (
           <Stack className='items-center justify-center h-[300px]'>
             <CircularProgress />
           </Stack>
         ) : (
-          <Stack spacing={1.5} mt={1}>
-            {paginatedOrders.length === 0 && (
+          <Stack spacing={2} mt={1}>
+            {orders.length === 0 && (
               <Stack className='items-center justify-center h-[300px]'>
                 <Typography variant='h5' color='error'>
                   Không có đơn hàng nào
                 </Typography>
               </Stack>
             )}
-            {paginatedOrders.map((order, index) => (
+            {orders.map((order, index) => (
               <OrderCard key={index} order={order} />
             ))}
+            <Pagination
+              page={orderPagination.page}
+              count={numberOfOrders}
+              onChange={orderPagination.onPageChange}
+              rowsPerPage={orderPagination.rowsPerPage}
+            />
           </Stack>
         )}
-        <Pagination
-          count={Math.ceil(filteredOrders.length / pagination.rowsPerPage)}
-          page={pagination.page}
-          onChange={handlePageChange}
-          color='primary'
-          shape='rounded'
-          size='small'
-          className='self-center mt-2'
-        />
       </Stack>
     </Stack>
   );

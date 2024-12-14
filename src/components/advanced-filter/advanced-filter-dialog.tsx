@@ -41,7 +41,6 @@ const AdvancedFilterDialog: React.FC<AdvancedFilterDialogProps> = ({ open, onClo
       value: filter.type === 'select' ? '' : { startDate: null, endDate: null }
     }));
     setLocalFilters(resetFilters);
-    onClose();
   };
 
   const handleApplyFilters = () => {

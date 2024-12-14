@@ -3,6 +3,7 @@ import { Button } from '../../shadcn/ui/button';
 import _ from 'lodash';
 import { Typography } from '@mui/material';
 import clsx from 'clsx';
+import { useResponsive } from 'src/utils/use-responsive';
 
 interface PaginationProps {
   page: number;
@@ -40,9 +41,9 @@ const Pagination: FC<PaginationProps> = ({ page, count, onChange, rowsPerPage, l
   }, [length, page, totalPages]);
 
   return (
-    <div className='flex items-center gap-2'>
+    <div className='flex items-center gap-2 self-center'>
       <Typography
-        className='text-xs opacity-60 hover:opacity-100 cursor-pointer'
+        className='text-xs opacity-60 hover:opacity-100 cursor-pointer text-black'
         onClick={(e) => onChange(e, page > 0 ? page - 1 : page)}
       >
         Previous
@@ -50,9 +51,8 @@ const Pagination: FC<PaginationProps> = ({ page, count, onChange, rowsPerPage, l
 
       {buttonIndexes.map((index) => (
         <Button
-          // className='rounded-lg bg-[#624DE3]'
           className={clsx(
-            'rounded-lg',
+            'rounded-lg z-40',
             page == index ? 'bg-[#624DE3] text-white' : 'bg-[#E0E0E0] text-black'
           )}
           variant={page == index ? undefined : 'outline'}
@@ -65,7 +65,7 @@ const Pagination: FC<PaginationProps> = ({ page, count, onChange, rowsPerPage, l
       ))}
 
       <Typography
-        className='text-xs opacity-60 hover:opacity-100 cursor-pointer'
+        className='text-xs opacity-60 hover:opacity-100 cursor-pointer text-black'
         onClick={(e) => onChange(e, page < totalPages - 1 ? page + 1 : page)}
       >
         Next

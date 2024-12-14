@@ -2,7 +2,7 @@ import { Box, Button, Tab, Tabs } from '@mui/material';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard';
 import type { Page as PageType } from 'src/types/page';
 import { Add } from '@mui/icons-material';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { paths } from 'src/paths';
 import Link from 'next/link';
 import { Stack } from '@mui/system';
@@ -12,8 +12,7 @@ import OrderPaid from 'src/sections/student/order/order-list/order-paid';
 import { useRouter } from 'next/router';
 import OrderDetailPage from './[orderId]';
 import OrdersProvider from 'src/contexts/orders/orders-context';
-import { useOrdersContext } from 'src/contexts/orders/orders-context';
-import { useAuth, useDialog, useFirebaseAuth } from '@hooks';
+import { useDialog, useFirebaseAuth } from '@hooks';
 import useFunction from 'src/hooks/use-function';
 import MobileOrderList from 'src/sections/mobile/student/order/order-list';
 import UpdateInformationDialog, { InformationProps } from '../update-information-dialog';
@@ -67,19 +66,7 @@ const Page: PageType = () => {
     successMessage: 'Cập nhật thông tin thành công!'
   });
   const [tab, setTab] = useState(tabs[0].key);
-  const { user } = useAuth();
   const router = useRouter();
-  const { getOrdersApi } = useOrdersContext();
-  const orders = useMemo(() => {
-    return getOrdersApi.data?.results || [];
-  }, [getOrdersApi.data]);
-
-  const notPaidOrders = useMemo(() => {
-    return orders.filter((order) => !order.isPaid);
-  }, [orders]);
-  const paidOrders = useMemo(() => {
-    return orders.filter((order) => order.isPaid);
-  }, [orders]);
 
   return (
     <Box className='bg-white'>
@@ -140,10 +127,8 @@ const Page: PageType = () => {
               </Tabs>
             }
           />
-          {tab === tabs[0].key && <OrderPaid orders={paidOrders} loading={getOrdersApi.loading} />}
-          {tab === tabs[1].key && (
-            <OrderNotPaid orders={notPaidOrders} loading={getOrdersApi.loading} />
-          )}
+          {tab === tabs[0].key && <OrderPaid />}
+          {tab === tabs[1].key && <OrderNotPaid />}
         </Stack>
       )}
       <UpdateInformationDialog

@@ -1,5 +1,4 @@
 import { OrderFormProps } from 'src/api/orders';
-import { AddressData } from '@utils';
 import { CloseCircle, TickCircle, Truck, UserTick, MessageQuestion } from 'iconsax-react';
 import React from 'react';
 

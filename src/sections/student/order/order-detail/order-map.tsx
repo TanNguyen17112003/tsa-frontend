@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Box, Typography, Stack, Tooltip, IconButton } from '@mui/material';
 import { MapboxsApi } from 'src/api/mapboxs';
 import Map, { Marker, Source, Layer, MapRef } from 'react-map-gl';
@@ -9,6 +9,7 @@ import { OrderDetail } from 'src/types/order';
 import { coordinateList } from 'src/utils/coordinate-list';
 import { useSocketContext } from 'src/contexts/socket-client/socket-client-context';
 import { GpsFixed } from '@mui/icons-material';
+import { InfoCircle } from 'iconsax-react';
 import { useDialog } from '@hooks';
 import OrderDeliveryDialog from 'src/sections/mobile/student/order/order-delivery-dialog';
 const MAPBOX_ACCESS_TOKEN =
@@ -17,7 +18,9 @@ const MAPBOX_ACCESS_TOKEN =
 const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
   const mapRef = useRef<MapRef>(null);
   const [direction, setDirection] = useState<any>(null);
-  const [shipperCoordinate, setShipperCoordinate] = useState<[number, number] | null>(null);
+  const [shipperCoordinate, setShipperCoordinate] = useState<[number, number] | null>([
+    106.806709613827, 10.877568988757174
+  ]);
   const [distance, setDistance] = useState<number>(0);
 
   const [routeCoordinates, setRouteCoordinates] = useState<[number, number][]>([]);
@@ -104,6 +107,9 @@ const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
     }
   };
 
+  const handleViewHistoryDialog = useCallback(() => {
+    deliveryHistoryDialog.handleOpen(order);
+  }, [order, deliveryHistoryDialog]);
   return (
     <Box className='h-full'>
       <Box className='w-full h-full relative'>
@@ -182,11 +188,21 @@ const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
             </>
           )}
         </Map>
-        <Tooltip title='Quay trở lại vị trí đơn hàng' className='bg-white absolute top-5 left-5'>
-          <IconButton className=' bg-white p-2 rounded-full shadow-md' onClick={handleRecenter}>
-            <GpsFixed color='primary' fontSize='large' />
-          </IconButton>
-        </Tooltip>
+        <Stack className='absolute top-3 left-3' direction={'row'} gap={1}>
+          <Tooltip title='Quay trở lại vị trí đơn hàng'>
+            <IconButton className=' bg-white rounded-full shadow-md' onClick={handleRecenter}>
+              <GpsFixed color='primary' fontSize='large' />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title='Theo dõi lịch sử đơn hàng'>
+            <IconButton
+              className=' bg-white rounded-full shadow-md'
+              onClick={handleViewHistoryDialog}
+            >
+              <InfoCircle color='blue' size={32} />
+            </IconButton>
+          </Tooltip>
+        </Stack>
         <Stack
           direction={'row'}
           alignItems={'center'}

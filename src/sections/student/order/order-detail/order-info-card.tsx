@@ -64,7 +64,7 @@ function OrderInfoCard({ order }: { order: OrderDetail }) {
               ? 'Đang chờ xử lý'
               : order?.latestStatus === 'CANCELLED'
                 ? 'Đã hủy'
-                : order.latestStatus === 'ACCEPTED'
+                : order?.latestStatus === 'ACCEPTED'
                   ? 'Đã xác nhận'
                   : 'Đã từ chối'
     }

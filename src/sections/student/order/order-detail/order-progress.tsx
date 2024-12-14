@@ -26,7 +26,7 @@ interface OrderProgressProps {
 const OrderProgress: React.FC<OrderProgressProps> = ({ order }) => {
   const progressTimeList: progressTimeProps[] = useMemo(() => {
     const progressTimeList: progressTimeProps[] = [];
-    order.historyTime?.forEach((historyTime) => {
+    order?.historyTime?.forEach((historyTime) => {
       const status = orderStatusIconList.find((status) => status.status === historyTime.status);
       if (status) {
         progressTimeList.push({
@@ -38,7 +38,7 @@ const OrderProgress: React.FC<OrderProgressProps> = ({ order }) => {
       }
     });
     return progressTimeList;
-  }, [order.historyTime, orderStatusIconList]);
+  }, [order?.historyTime, orderStatusIconList]);
 
   return (
     <Stack spacing={2}>

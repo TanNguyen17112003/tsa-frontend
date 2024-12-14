@@ -1,17 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions,
-  Button,
   Stack,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Box,
-  Divider,
   Slide,
   SlideProps,
   Typography
@@ -20,6 +12,7 @@ import { OrderDetail } from 'src/types/order';
 import Image from 'next/image';
 import fakeShipper from 'public/ui/background-auth.png';
 import OrderProgress from './order-progress';
+import { useResponsive } from 'src/utils/use-responsive';
 
 interface OrderDeliveryDialogProps {
   open: boolean;
@@ -35,17 +28,17 @@ const Transition = React.forwardRef(function Transition(
 });
 
 const OrderDeliveryDialog: React.FC<OrderDeliveryDialogProps> = ({ open, onClose, order }) => {
+  const { isMobile } = useResponsive();
   return (
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth='sm'
       fullWidth
       TransitionComponent={Transition}
       sx={{
         '& .MuiDialog-paper': {
           position: 'fixed',
-          bottom: 0,
+          bottom: isMobile ? 0 : undefined,
           margin: 0,
           width: '100%',
           height: '60vh',

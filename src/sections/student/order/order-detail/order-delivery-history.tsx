@@ -15,29 +15,31 @@ interface OrderDeliveryHistoryProps {
 const OrderDeliveryHistory: React.FC<OrderDeliveryHistoryProps> = ({ order }) => {
   return (
     <Box display='flex' gap={2} className='min-h-[500px]'>
-      <Stack spacing={3} width='40%'>
-        <OrderProgress order={order} />
-        <Divider className='border-black' />
-        {order?.shipperId ? (
-          <OrderStaff order={order} />
-        ) : (
-          <Stack gap={2}>
-            <Typography variant='h6'>Thông tin nhân viên phụ trách</Typography>
-            <Typography fontWeight={'bold'} color='error'>
-              Đơn hàng chưa được chỉ định!
-            </Typography>
-            <Image
-              src={noEmployeeImage}
-              alt='No employee'
-              width={300}
-              height={300}
-              className='self-center'
-            />
-          </Stack>
-        )}
-      </Stack>
-      <Stack width='60%' className='h-auto'>
-        {order.latestStatus === 'DELIVERED' ? (
+      {order?.latestStatus !== 'IN_TRANSPORT' && (
+        <Stack spacing={3} width={'50%'}>
+          <OrderProgress order={order} />
+          <Divider className='border-black' />
+          {order?.shipperId ? (
+            <OrderStaff order={order} />
+          ) : (
+            <Stack gap={2}>
+              <Typography variant='h6'>Thông tin nhân viên phụ trách</Typography>
+              <Typography fontWeight={'bold'} color='error'>
+                Đơn hàng chưa được chỉ định!
+              </Typography>
+              <Image
+                src={noEmployeeImage}
+                alt='No employee'
+                width={300}
+                height={300}
+                className='self-center'
+              />
+            </Stack>
+          )}
+        </Stack>
+      )}
+      <Stack width={'100%'} className='h-auto'>
+        {order?.latestStatus === 'DELIVERED' ? (
           <Stack
             gap={2}
             alignItems={'center'}
@@ -47,10 +49,10 @@ const OrderDeliveryHistory: React.FC<OrderDeliveryHistoryProps> = ({ order }) =>
           >
             <TickCircle color='white' size={50} />
             <Typography color='white' variant='h5'>
-              Đơn hàng #{order.checkCode} của bạn đã được giao thành công!
+              Đơn hàng #{order?.checkCode} của bạn đã được giao thành công!
             </Typography>
           </Stack>
-        ) : order.latestStatus !== 'IN_TRANSPORT' ? (
+        ) : order?.latestStatus !== 'IN_TRANSPORT' ? (
           <Stack
             gap={2}
             alignItems={'center'}
@@ -60,7 +62,7 @@ const OrderDeliveryHistory: React.FC<OrderDeliveryHistoryProps> = ({ order }) =>
           >
             <Warning2 color='white' size={50} />
             <Typography color='white' variant='h5'>
-              Đơn hàng #{order.checkCode} của bạn chưa được bắt đầu!
+              Đơn hàng #{order?.checkCode} của bạn chưa được bắt đầu!
             </Typography>
           </Stack>
         ) : (

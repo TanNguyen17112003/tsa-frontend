@@ -12,12 +12,15 @@ import { GpsFixed } from '@mui/icons-material';
 import { InfoCircle } from 'iconsax-react';
 import { useDialog } from '@hooks';
 import OrderDeliveryDialog from 'src/sections/mobile/student/order/order-delivery-dialog';
+import OrderSucceedDialog from 'src/sections/mobile/student/order/order-succeed-dialog';
+
 const MAPBOX_ACCESS_TOKEN =
   'pk.eyJ1IjoicXVhbmNhbzIzMTAiLCJhIjoiY20yNXMxZ3BlMGRpMjJ3cWR5ZTMyNjh2MCJ9.ILNCWFtulso1GeCR7OBz-w';
 
 const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
   const mapRef = useRef<MapRef>(null);
   const [direction, setDirection] = useState<any>(null);
+  const [verified, setVerified] = useState<boolean>(false);
   const [shipperCoordinate, setShipperCoordinate] = useState<[number, number] | null>([
     106.806709613827, 10.877568988757174
   ]);
@@ -27,6 +30,7 @@ const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
   const [mapLoaded, setMapLoaded] = useState(false);
   const { socket } = useSocketContext();
   const deliveryHistoryDialog = useDialog<OrderDetail>();
+  const successDeliveryDialog = useDialog();
 
   const exactOrderLocation = useMemo(() => {
     const foundCoordinate = coordinateList.find((coordinate) => {
@@ -36,6 +40,11 @@ const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
     });
     return foundCoordinate?.value;
   }, [order, coordinateList]);
+
+  const handleClickVerified = useCallback(() => {
+    setVerified(true);
+    successDeliveryDialog.handleClose();
+  }, [successDeliveryDialog]);
 
   useEffect(() => {
     const fetchDirection = async () => {
@@ -73,6 +82,12 @@ const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
       );
     }
   }, [order?.shipperId, socket]);
+
+  useEffect(() => {
+    if (distance === 0 && !verified) {
+      successDeliveryDialog.handleOpen();
+    }
+  }, [distance, verified]);
 
   useEffect(() => {
     if (mapRef.current && exactOrderLocation && shipperCoordinate) {
@@ -220,6 +235,11 @@ const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
         order={order}
         open={deliveryHistoryDialog.open}
         onClose={deliveryHistoryDialog.handleClose}
+      />
+      <OrderSucceedDialog
+        open={successDeliveryDialog.open}
+        onClose={successDeliveryDialog.handleClose}
+        onConfirm={handleClickVerified}
       />
     </Box>
   );

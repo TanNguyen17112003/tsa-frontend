@@ -135,7 +135,7 @@ const OrderNotPaid: React.FC = () => {
             setOrder(order);
             const paymentResponse = await PaymentsApi.postPayOSPayment({
               orderId: order.id,
-              amount: order.shippingFee || 2000,
+              amount: order.shippingFee || 8000,
               description: 'Thanh toán đơn hàng ' + order.checkCode,
               returnUrl: `${window.location.origin}/student/order`,
               cancelUrl: `${window.location.origin}/student/order`,

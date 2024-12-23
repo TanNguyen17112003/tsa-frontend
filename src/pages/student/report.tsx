@@ -10,11 +10,7 @@ import { useResponsive } from 'src/utils/use-responsive';
 import MobileReportList from 'src/sections/mobile/student/report/report-list';
 
 const Page: PageType = () => {
-  const { getReportsApi } = useReportsContext();
   const { isMobile } = useResponsive();
-  const reports = useMemo(() => {
-    return getReportsApi.data || [];
-  }, [getReportsApi.data]);
   return (
     <Box>
       {isMobile ? (
@@ -23,7 +19,7 @@ const Page: PageType = () => {
         <Box className='min-h-screen overflow-auto'>
           {' '}
           <ContentHeader title='Lịch sử khiếu nại' description='Danh sách khiếu nại của bạn' />
-          <ReportList reports={reports} loading={getReportsApi.loading} />
+          <ReportList />
         </Box>
       )}
     </Box>

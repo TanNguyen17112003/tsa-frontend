@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import TextField, { TextFieldProps } from '@mui/material/TextField';
 import Autocomplete, { AutocompleteRenderInputParams } from '@mui/material/Autocomplete';
 import { Popper } from '@mui/material';
@@ -9,6 +9,7 @@ interface Props {
   onChange: (value: any) => void;
   TextFieldProps: TextFieldProps;
   freeSolo?: boolean;
+  isMultiple?: boolean;
 }
 
 const AutocompleteTextFieldMultiple: React.FC<Props> = ({
@@ -16,7 +17,8 @@ const AutocompleteTextFieldMultiple: React.FC<Props> = ({
   options: initialOptions,
   onChange,
   TextFieldProps,
-  freeSolo = false
+  freeSolo = false,
+  isMultiple = true
 }) => {
   const [options, setOptions] = useState(initialOptions);
   const [inputValue, setInputValue] = useState('');
@@ -27,21 +29,45 @@ const AutocompleteTextFieldMultiple: React.FC<Props> = ({
     setOptions(initialOptions);
   }, [initialOptions]);
 
-  const handleOptionChange = (_: any, newValue: ({ value: string; label: string } | string)[]) => {
-    const newOptions = newValue.map((item) => {
-      if (typeof item === 'string') {
-        if (freeSolo) {
-          const newOption = { value: item, label: `${item} (mới)` };
-          if (!options.some((option) => option.value === item)) {
+  const handleOptionChange = useCallback(
+    (
+      _: React.SyntheticEvent,
+      newValue:
+        | string
+        | { value: any; label: string }
+        | (string | { value: any; label: string })[]
+        | null,
+      reason: any,
+      details?: any
+    ) => {
+      if (isMultiple) {
+        const newOptions = (Array.isArray(newValue) ? newValue : [newValue]).map((item) => {
+          if (typeof item === 'string') {
+            if (freeSolo) {
+              const newOption = { value: item, label: `${item} (mới)` };
+              if (!options.some((option) => option.value === item)) {
+                setOptions((prevOptions) => [...prevOptions, newOption]);
+              }
+              return newOption;
+            }
+          }
+          return item;
+        });
+        onChange(newOptions as { value: any; label: string }[]);
+      } else {
+        if (typeof newValue === 'string' && freeSolo) {
+          const newOption = { value: newValue, label: `${newValue} (mới)` };
+          if (!options.some((option) => option.value === newValue)) {
             setOptions((prevOptions) => [...prevOptions, newOption]);
           }
-          return newOption;
+          onChange(newOption);
+        } else {
+          onChange(newValue as { value: any; label: string });
         }
       }
-      return item;
-    });
-    onChange(newOptions as { value: any; label: string }[]);
-  };
+    },
+    [isMultiple, options, onChange]
+  );
 
   const renderInput = (params: AutocompleteRenderInputParams) => (
     <TextField
@@ -92,7 +118,7 @@ const AutocompleteTextFieldMultiple: React.FC<Props> = ({
       onInputChange={handleInputChange}
       autoHighlight
       disableCloseOnSelect
-      multiple
+      multiple={isMultiple}
       freeSolo={freeSolo}
       PopperComponent={(props) => (
         <Popper

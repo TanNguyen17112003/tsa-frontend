@@ -16,6 +16,7 @@ export interface OrderFormProps
       | 'room'
       | 'shippingFee'
       | 'isPaid'
+      | 'brand'
     >
   > {
   studentId?: string;

@@ -44,11 +44,7 @@ const OrderAddPage = () => {
   const formik = useFormik<OrderFormProps>({
     initialValues: initialOrderForm,
     onSubmit: async (values) => {
-      try {
-        await handleSubmitOrderHelper.call(values);
-      } catch {
-        showSnackbarError('Có lỗi xảy ra');
-      }
+      await handleSubmitOrderHelper.call(values);
     }
   });
 
@@ -118,17 +114,24 @@ const OrderAddPage = () => {
     }
   }, [checkoutUrl, open]);
 
-  const handleConfirmShippingFee = useCallback(async () => {
-    if (orderList && orderList.length > 0) {
-      await formik.handleSubmit();
-    } else {
-      if (formik.values.paymentMethod === 'CASH') {
-        await formik.handleSubmit();
-      } else {
-        orderPaymentDialog.handleOpen();
-      }
+  const handleCreateOrderAndPayment = useCallback(async () => {
+    const paymentResponse = await PaymentsApi.postPayOSPayment({
+      orderId: Math.random().toString(36).substring(7),
+      amount: 2000,
+      description: 'Thanh toán ' + formik.values.checkCode,
+      returnUrl: `${window.location.origin}/student/order/add`,
+      cancelUrl: `${window.location.origin}/student/order/add`,
+      extraData: formik.values.checkCode as string
+    });
+    if (paymentResponse && paymentResponse.paymentLink.checkoutUrl) {
+      setCheckoutUrl(paymentResponse.paymentLink.checkoutUrl);
     }
-  }, [formik.values.paymentMethod, orderPaymentDialog, orderList]);
+  }, [shippingFee, formik.values, setCheckoutUrl]);
+
+  const handleConfirmShippingFee = useCallback(async () => {
+    await formik.handleSubmit();
+  }, [formik.values.paymentMethod]);
+
   const handleSubmitOrder = useCallback(
     async (values: OrderFormProps) => {
       try {
@@ -156,7 +159,7 @@ const OrderAddPage = () => {
         showSnackbarSuccess('Tạo đơn hàng thành công!');
         formik.resetForm();
       } catch (error) {
-        showSnackbarError('Có lỗi xảy ra');
+        throw error;
       }
     },
     [
@@ -170,20 +173,6 @@ const OrderAddPage = () => {
       shippingFee
     ]
   );
-
-  const handleCreateOrderAndPayment = useCallback(async () => {
-    const paymentResponse = await PaymentsApi.postPayOSPayment({
-      orderId: Math.random().toString(36).substring(7),
-      amount: shippingFee || 8000,
-      description: 'Thanh toán ' + formik.values.checkCode,
-      returnUrl: `${window.location.origin}/student/order/add`,
-      cancelUrl: `${window.location.origin}/student/order/add`,
-      extraData: formik.values.checkCode as string
-    });
-    if (paymentResponse && paymentResponse.paymentLink.checkoutUrl) {
-      setCheckoutUrl(paymentResponse.paymentLink.checkoutUrl);
-    }
-  }, [PaymentsApi, shippingFee, formik.values, setCheckoutUrl]);
 
   const handleSubmitOrderHelper = useFunction(handleSubmitOrder);
 
@@ -208,11 +197,9 @@ const OrderAddPage = () => {
             </Box>
             <Stack justifyContent='space-between' direction='row' alignItems='center'>
               <Typography variant='h5'>Thêm đơn hàng</Typography>
-              <>{JSON.stringify(orderList)}</>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Button
                   variant='contained'
-                  // onClick={() => formik.handleSubmit()}
                   onClick={handleOpenShippingFeeDialog}
                   className='bg-green-500 hover:bg-green-400'
                   disabled={
@@ -223,6 +210,7 @@ const OrderAddPage = () => {
                       !formik.values.room ||
                       !formik.values.dormitory ||
                       !formik.values.deliveryDate ||
+                      !formik.values.brand ||
                       !formik.values.paymentMethod) &&
                     orderList.length === 0
                   }
@@ -250,10 +238,12 @@ const OrderAddPage = () => {
           </Stack>
         </Stack>
         <OrderConfirmFeeDialog
+          formik={formik}
           open={orderShippingFeeDialog.open}
           onClose={orderShippingFeeDialog.handleClose}
           shippingFee={shippingFee as number}
           onConfirm={handleConfirmShippingFee}
+          onConfirmPayment={handleCreateOrderAndPayment}
         />
         <OrderPaymentDialog
           open={orderPaymentDialog.open}

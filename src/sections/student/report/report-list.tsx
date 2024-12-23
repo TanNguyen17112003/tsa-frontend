@@ -1,8 +1,8 @@
-import { Box, CircularProgress } from '@mui/material';
-import React, { useState } from 'react';
+import { Box, CircularProgress, Stack } from '@mui/material';
+import React, { useEffect, useMemo, useState } from 'react';
 import { CustomTable } from '@components';
 import getReportTableConfigs from './report-table-config';
-import { ReportDetail } from 'src/types/report';
+import { ReportDetail, ReportStatus } from 'src/types/report';
 import ReportFilter from './report-filter';
 import usePagination from 'src/hooks/use-pagination';
 import { useDrawer } from '@hooks';
@@ -12,21 +12,22 @@ import ReportDetailEditDrawer from './report-detail-edit-drawer';
 import ReportDetailDeleteDialog from './report-detail-delete-dialog';
 import { formatUnixTimestamp } from 'src/utils/format-time-currency';
 import { useReportsContext } from 'src/contexts/reports/reports-context';
+import Pagination from 'src/components/ui/Pagination';
 
-interface ReportListProps {
-  reports: ReportDetail[];
-  loading: boolean;
-}
-
-const ReportList: React.FC<ReportListProps> = ({ reports, loading }) => {
+const ReportList: React.FC<{}> = ({}) => {
   const statusList = ['Tất cả', 'Đã giải quyết', 'Đang chờ xử lý'];
-  const { deleteReport } = useReportsContext();
+  const { deleteReport, getReportsApi, reportFilter, reportPagination, setReportFilter } =
+    useReportsContext();
 
   const editDetailReportDrawer = useDrawer<ReportDetail>();
   const removeDetailReportDialog = useDialog<ReportDetail>();
   const orders = useOrdersData();
 
-  const [status, setStatus] = React.useState(statusList[0]);
+  const reports = useMemo(() => {
+    return getReportsApi.data?.results || [];
+  }, [getReportsApi.data]);
+
+  const [status, setStatus] = React.useState('Tất cả');
   const [dateRange, setDateRange] = useState<{ startDate: Date | null; endDate: Date | null }>({
     startDate: null,
     endDate: null
@@ -44,52 +45,40 @@ const ReportList: React.FC<ReportListProps> = ({ reports, loading }) => {
     });
   }, [orders]);
 
-  const result = React.useMemo(() => {
-    return reports.filter((report) => {
-      const filterStatus =
-        status === 'Tất cả'
-          ? true
-          : status === 'Đã giải quyết'
-            ? report.status === 'REPLIED'
-            : report.status === 'PENDING';
-      const reportDate = formatUnixTimestamp(report.reportedAt!);
-      const filterDate =
-        !dateRange.startDate || !dateRange.endDate
-          ? true
-          : dateRange.startDate !== null &&
-            dateRange.endDate !== null &&
-            dateRange.startDate <= reportDate &&
-            reportDate <= dateRange.endDate;
-      return filterStatus && filterDate;
+  useEffect(() => {
+    setReportFilter({
+      ...reportFilter,
+      page: reportPagination.page + 1,
+      status: status !== 'Tất cả' ? (status as ReportStatus) : undefined,
+      dateRange
     });
-  }, [status, dateRange, reports]);
-
-  const pagination = usePagination({
-    count: result.length
-  });
+  }, [status, dateRange, reportPagination.page]);
 
   return (
     <Box className='flex flex-col min-h-screen bg-white px-6 py-4 text-black'>
       <ReportFilter
         statusList={statusList}
-        numberOfReports={result.length}
+        numberOfReports={getReportsApi.data?.totalElements || 0}
         status={status}
         setStatus={setStatus}
         dateRange={dateRange}
         setDateRange={setDateRange}
       />
       <Box sx={{ flex: 1 }}>
-        {loading ? (
+        {getReportsApi.loading ? (
           <Box display='flex' justifyContent='center' alignItems='center' height='100%'>
             <CircularProgress />
           </Box>
         ) : (
-          <CustomTable
-            rows={result}
-            configs={reportTableConfig}
-            pagination={pagination}
-            className='my-5 -mx-6'
-          />
+          <Stack spacing={2} mt={3}>
+            <CustomTable rows={reports} configs={reportTableConfig} className='my-5 -mx-6' />
+            <Pagination
+              page={reportPagination.page}
+              count={getReportsApi.data?.totalElements || 0}
+              rowsPerPage={reportPagination.rowsPerPage}
+              onChange={reportPagination.onPageChange}
+            />
+          </Stack>
         )}
       </Box>
       <ReportDetailEditDrawer

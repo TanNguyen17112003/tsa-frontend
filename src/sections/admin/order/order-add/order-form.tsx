@@ -25,15 +25,30 @@ interface OrderFormAttributes {
 }
 
 export const OrderForm: FC<OrderFormAttributes> = ({ formik, title, status }) => {
-  const dormitoryList = useMemo(() => {
-    return AddressData.dormitories;
-  }, []);
-  const buildingList = useMemo(() => {
-    return formik.values.dormitory === 'A' ? AddressData.buildings.A : AddressData.buildings.B;
-  }, [formik.values.dormitory]);
-  const roomList = useMemo(() => {
-    return AddressData.rooms;
-  }, [buildingList]);
+  const options = [
+    { value: 'Mũ', label: 'Mũ' },
+    { value: 'Điện thoại', label: 'Điện thoại' },
+    { value: 'Túi xách', label: 'Túi xách' },
+    { value: 'Giá đỡ', label: 'Giá đỡ' }
+  ];
+  const brandOptions = [
+    {
+      value: 'Shoppee',
+      label: 'Shoppee'
+    },
+    {
+      value: 'Lazada',
+      label: 'Lazada'
+    },
+    {
+      value: 'Tiki',
+      label: 'Tiki'
+    },
+    {
+      value: 'Tiktok shop',
+      label: 'Tiktok shop'
+    }
+  ];
 
   return (
     <Stack spacing={2}>
@@ -54,6 +69,18 @@ export const OrderForm: FC<OrderFormAttributes> = ({ formik, title, status }) =>
             name={'checkCode'}
           />
           <OrderFormTextField
+            type='autoComplete'
+            title='Thương hiệu'
+            lg={6}
+            xs={12}
+            options={brandOptions}
+            onChange={formik.handleChange}
+            value={formik.values.brand as string}
+            name='brand'
+            placeholder='Nhập thương hiệu của đơn hàng'
+            isMultiple={false}
+          />
+          <OrderFormTextField
             type='number'
             title={'Khối lượng đơn hàng (kg)'}
             lg={6}
@@ -67,11 +94,12 @@ export const OrderForm: FC<OrderFormAttributes> = ({ formik, title, status }) =>
             title={'Sản phẩm'}
             lg={6}
             xs={12}
-            options={[]}
+            options={options}
             onChange={(event) => formik.setFieldValue('product', event.target.value)}
             value={formik.values.product as string}
             name={'product'}
             placeholder='Nhập danh sách sản phẩm'
+            isMultiple={true}
           />
         </Grid>
       </Box>

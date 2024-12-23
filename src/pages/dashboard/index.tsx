@@ -42,7 +42,7 @@ const Page: PageType = () => {
     return getOrdersApi.data?.results || [];
   }, [getOrdersApi.data]);
   const reports = useMemo(() => {
-    return getReportsApi.data || [];
+    return getReportsApi.data?.results || [];
   }, [getReportsApi.data]);
 
   const thisWeekUsers = useMemo(() => {
@@ -149,8 +149,7 @@ const Page: PageType = () => {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-
-    return reports.filter((report) => {
+    return reports?.filter((report) => {
       const reportedAt = new Date(Number(report.reportedAt) * 1000);
       return reportedAt >= startOfMonth && reportedAt <= endOfMonth;
     });
@@ -160,7 +159,7 @@ const Page: PageType = () => {
     const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
     const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
 
-    return reports.filter((report) => {
+    return reports?.filter((report) => {
       const reportedAt = new Date(Number(report.reportedAt) * 1000);
       return reportedAt >= startOfLastMonth && reportedAt <= endOfLastMonth;
     });

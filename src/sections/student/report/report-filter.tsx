@@ -2,6 +2,7 @@ import { Box, Typography, Stack } from '@mui/material';
 import React from 'react';
 import AdvancedFilter from 'src/components/advanced-filter/advanced-filter';
 import { Filter } from 'src/types/filter';
+import { statusMap } from 'src/types/report';
 
 interface ReportFilterProps {
   statusList: string[];
@@ -21,7 +22,7 @@ const ReportFilter: React.FC<ReportFilterProps> = (props) => {
   }, []);
 
   const handleStatusChange = React.useCallback((status: string) => {
-    props.setStatus(status);
+    props.setStatus(statusMap[status as keyof typeof statusMap]);
   }, []);
 
   const filters: Filter[] = [

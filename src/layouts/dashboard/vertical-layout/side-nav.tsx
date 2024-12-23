@@ -45,15 +45,15 @@ export const SideNav: FC<SideNavProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, firebaseUser]);
 
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      if (user || firebaseUser) {
-        getNotificationsApi.call({});
-      }
-    }, 10000); // 10 seconds
+  // useEffect(() => {
+  //   const intervalId = setInterval(() => {
+  //     if (user || firebaseUser) {
+  //       getNotificationsApi.call({});
+  //     }
+  //   }, 10000); // 10 seconds
 
-    return () => clearInterval(intervalId); // Cleanup interval on component unmount
-  }, [user, firebaseUser, getNotificationsApi]);
+  //   return () => clearInterval(intervalId); // Cleanup interval on component unmount
+  // }, [user, firebaseUser, getNotificationsApi]);
 
   const notificationCount = notifications.length > 9 ? '9+' : notifications.length;
 

@@ -52,7 +52,7 @@ const OrderDeliveryHistory: React.FC<OrderDeliveryHistoryProps> = ({ order }) =>
               Đơn hàng #{order?.checkCode} của bạn đã được giao thành công!
             </Typography>
           </Stack>
-        ) : order?.latestStatus === 'IN_TRANSPORT' ? (
+        ) : order?.latestStatus !== 'IN_TRANSPORT' ? (
           <Stack
             gap={2}
             alignItems={'center'}

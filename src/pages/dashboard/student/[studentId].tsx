@@ -34,7 +34,7 @@ const Page: PageType = () => {
   }, [getOrdersApi.data]);
 
   const reports = useMemo(() => {
-    return (getReportsApi.data || []).filter(
+    return (getReportsApi.data?.results || []).filter(
       (report) => report.studentId === router.query.studentId
     );
   }, [getReportsApi.data]);

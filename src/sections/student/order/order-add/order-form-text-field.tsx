@@ -1,10 +1,7 @@
-import { ChangeEventHandler, FC, PropsWithChildren } from 'react';
+import React, { ChangeEventHandler, FC, PropsWithChildren } from 'react';
 import { OrderFormField } from './order-form-field';
 import { TextField } from '@mui/material';
 import AutocompleteTextFieldMultiple from 'src/components/autocomplete-textfield-multiple';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 interface OrderFormTextFieldProps {
   type: 'text' | 'autoComplete' | 'dateTime' | 'number';
@@ -18,6 +15,7 @@ interface OrderFormTextFieldProps {
   placeholder?: string;
   select?: boolean;
   children?: React.ReactNode;
+  isMultiple?: boolean;
 }
 
 export const OrderFormTextField: FC<OrderFormTextFieldProps> = ({
@@ -31,30 +29,45 @@ export const OrderFormTextField: FC<OrderFormTextFieldProps> = ({
   name,
   placeholder,
   select,
-  children
+  children,
+  isMultiple
 }) => {
   if (type === 'autoComplete' && options) {
-    const formattedValue = Array.isArray(value)
-      ? value
+    const formattedValue = isMultiple
+      ? Array.isArray(value)
+        ? value
+        : typeof value === 'string'
+          ? value.split(',').map((val) => ({ value: val.trim(), label: val.trim() }))
+          : []
       : typeof value === 'string'
-        ? value.split(',').map((val) => ({ value: val.trim(), label: val.trim() }))
-        : [];
+        ? { value, label: value }
+        : value;
 
     return (
       <OrderFormField title={title} lg={lg} xs={xs}>
         <AutocompleteTextFieldMultiple
-          onChange={(newValue) =>
-            onChange({
-              target: { name, value: newValue.map((item: { value: any }) => item.value).join(', ') }
-            })
-          }
-          value={formattedValue}
+          onChange={(newValue) => {
+            if (isMultiple) {
+              onChange({
+                target: {
+                  name,
+                  value: newValue.map((item: { value: any }) => item.value).join(', ')
+                }
+              });
+            } else {
+              onChange({
+                target: { name, value: newValue?.value }
+              });
+            }
+          }}
+          value={formattedValue as any}
           options={options!}
           TextFieldProps={{
             variant: 'outlined',
             placeholder: placeholder
           }}
           freeSolo={true}
+          isMultiple={isMultiple}
         />
       </OrderFormField>
     );

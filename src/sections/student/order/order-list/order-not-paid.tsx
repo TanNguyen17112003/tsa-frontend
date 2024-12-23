@@ -69,7 +69,7 @@ const OrderNotPaid: React.FC = () => {
 
   const orders = useMemo(() => {
     return getOrdersApi.data?.results || [];
-  }, [getOrdersApi]);
+  }, [getOrdersApi.data]);
 
   const [selectedStatus, setSelectedStatus] = useState<string>('Tất cả');
   const [dateRange, setDateRange] = useState<{

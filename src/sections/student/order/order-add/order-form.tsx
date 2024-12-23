@@ -32,6 +32,25 @@ export const OrderForm: FC<OrderFormAttributes> = ({ formik, title, status }) =>
     { value: 'Giá đỡ', label: 'Giá đỡ' }
   ];
 
+  const brandOptions = [
+    {
+      value: 'Shoppee',
+      label: 'Shoppee'
+    },
+    {
+      value: 'Lazada',
+      label: 'Lazada'
+    },
+    {
+      value: 'Tiki',
+      label: 'Tiki'
+    },
+    {
+      value: 'Tiktok shop',
+      label: 'Tiktok shop'
+    }
+  ];
+
   const dormitoryList = useMemo(() => {
     return AddressData.dormitories;
   }, []);
@@ -61,6 +80,18 @@ export const OrderForm: FC<OrderFormAttributes> = ({ formik, title, status }) =>
             name={'checkCode'}
           />
           <OrderFormTextField
+            type='autoComplete'
+            title='Thương hiệu'
+            lg={6}
+            xs={12}
+            options={brandOptions}
+            onChange={formik.handleChange}
+            value={formik.values.brand as string}
+            name='brand'
+            placeholder='Nhập thương hiệu của đơn hàng'
+            isMultiple={false}
+          />
+          <OrderFormTextField
             type='number'
             title={'Khối lượng đơn hàng (kg)'}
             lg={6}
@@ -79,6 +110,7 @@ export const OrderForm: FC<OrderFormAttributes> = ({ formik, title, status }) =>
             value={formik.values.product as string}
             name={'product'}
             placeholder='Nhập danh sách sản phẩm'
+            isMultiple={true}
           />
           <Grid item xs={12} lg={6}>
             <Box display={'flex'} flexDirection={'column'} gap={1}>

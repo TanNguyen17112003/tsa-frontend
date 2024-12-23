@@ -1,21 +1,13 @@
 import React, { useCallback, useMemo, useState, useEffect } from 'react';
-import {
-  SelectChangeEvent,
-  Stack,
-  Typography,
-  Pagination,
-  Box as MuiBox,
-  CircularProgress
-} from '@mui/material';
-import { Box, DocumentText } from 'iconsax-react';
+import { Stack, Typography, Box as MuiBox, CircularProgress } from '@mui/material';
+import Pagination from 'src/components/ui/Pagination';
+import { DocumentText } from 'iconsax-react';
 import MobileContentHeader from 'src/components/mobile-content-header';
-import { useRouter } from 'next/router';
 import ReportCard from './report-card';
 import { useReportsContext } from 'src/contexts/reports/reports-context';
-import usePagination from 'src/hooks/use-pagination';
 import { Filter } from 'src/types/filter';
-import { formatUnixTimestamp } from 'src/utils/format-time-currency';
 import MobileAdvancedFilter from 'src/components/mobile-advanced-filter/mobile-advanced-filter';
+import { ReportStatus } from 'src/types/report';
 
 function MobileReportList() {
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
@@ -40,7 +32,7 @@ function MobileReportList() {
       value: 'PENDING'
     }
   ];
-  const { getReportsApi } = useReportsContext();
+  const { getReportsApi, setReportFilter, reportFilter, reportPagination } = useReportsContext();
 
   const handleDateChange = useCallback(
     (range: { startDate: Date | null; endDate: Date | null }) => {
@@ -66,51 +58,28 @@ function MobileReportList() {
     },
     {
       type: 'dateRange',
-      title: 'Nhập thời gian giao khiếu nại',
+      title: 'Nhập thời gian tạo khiếu nại',
       value: dateRange,
       onChange: handleDateChange
     }
   ];
 
   const reports = useMemo(() => {
-    return getReportsApi.data || [];
+    return getReportsApi.data?.results || [];
   }, [getReportsApi.data]);
 
-  const filteredReports = useMemo(() => {
-    return reports.filter((report) => {
-      const filterStatus = selectedStatus === 'all' || report.status === selectedStatus;
-      const reportDate = formatUnixTimestamp(report.reportedAt as string);
-      const filterDate =
-        !dateRange.startDate || !dateRange.endDate
-          ? true
-          : dateRange.startDate && dateRange.endDate
-            ? dateRange.startDate <= reportDate && reportDate <= dateRange.endDate
-            : true;
-      return filterStatus && filterDate;
-    });
-  }, [reports, selectedStatus, dateRange]);
-
-  const pagination = usePagination({
-    count: filteredReports.length,
-    initialRowsPerPage: 5
-  });
+  const numberOfReports = useMemo(() => {
+    return getReportsApi.data?.totalElements || 0;
+  }, [getReportsApi.data]);
 
   useEffect(() => {
-    pagination.onPageChange(null, 1);
-  }, [filteredReports.length]);
-
-  const paginatedReports = useMemo(() => {
-    const startIndex = (pagination.page - 1) * pagination.rowsPerPage;
-    const endIndex = startIndex + pagination.rowsPerPage;
-    return filteredReports.slice(startIndex, endIndex);
-  }, [filteredReports, pagination.page, pagination.rowsPerPage]);
-
-  const handlePageChange = useCallback(
-    (event: React.ChangeEvent<unknown>, page: number) => {
-      pagination.onPageChange(null, page);
-    },
-    [pagination]
-  );
+    setReportFilter({
+      ...reportFilter,
+      status: selectedStatus !== 'Tất cả' ? (selectedStatus as ReportStatus) : undefined,
+      dateRange,
+      page: reportPagination.page + 1
+    });
+  }, [selectedStatus, dateRange, reportPagination.page]);
 
   return (
     <Stack className='min-h-screen py-4 px-3 bg-white'>
@@ -125,7 +94,7 @@ function MobileReportList() {
       </Stack>
       <Stack mt={1.5} sx={{ flexGrow: 1, overflowY: 'auto' }}>
         <Typography fontWeight={'bold'} color='black' className='mb-2'>
-          {filteredReports.length} khiếu nại
+          {numberOfReports} khiếu nại
         </Typography>
         {getReportsApi.loading ? (
           <Stack className='items-center justify-center h-[300px]'>
@@ -133,27 +102,24 @@ function MobileReportList() {
           </Stack>
         ) : (
           <Stack spacing={1.5} mt={1}>
-            {paginatedReports.length === 0 && (
+            {reports.length === 0 && (
               <Stack className='items-center justify-center h-[300px]'>
                 <Typography variant='h5' color='error'>
                   Không có khiếu nại nào
                 </Typography>
               </Stack>
             )}
-            {paginatedReports.map((report, index) => (
+            {reports.map((report, index) => (
               <ReportCard key={index} report={report} number={index + 1} />
             ))}
+            <Pagination
+              page={reportPagination.page}
+              count={numberOfReports}
+              onChange={reportPagination.onPageChange}
+              rowsPerPage={10}
+            />
           </Stack>
         )}
-        <Pagination
-          count={Math.ceil(filteredReports.length / pagination.rowsPerPage)}
-          page={pagination.page}
-          onChange={handlePageChange}
-          color='primary'
-          shape='rounded'
-          size='small'
-          className='self-center mt-2'
-        />
       </Stack>
     </Stack>
   );

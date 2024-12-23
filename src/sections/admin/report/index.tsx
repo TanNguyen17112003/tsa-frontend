@@ -2,9 +2,8 @@ import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { CustomTable } from '@components';
 import ReportFilter from './report-filter';
 import getReportTableConfig from './report-table-config';
-import { Box } from '@mui/material';
-import { ReportDetail } from 'src/types/report';
-import usePagination from 'src/hooks/use-pagination';
+import { Box, Stack } from '@mui/material';
+import { ReportDetail, ReportStatus } from 'src/types/report';
 import { SelectChangeEvent, CircularProgress } from '@mui/material';
 import { useDrawer, useDialog } from '@hooks';
 import { useReportsContext } from 'src/contexts/reports/reports-context';
@@ -13,6 +12,7 @@ import ReportDetailReplyDrawer from './report-detail-reply-drawer';
 import useOrdersData from 'src/hooks/use-orders-data';
 import { UsersApi } from 'src/api/users';
 import useFunction from 'src/hooks/use-function';
+import Pagination from 'src/components/ui/Pagination';
 
 function ReportList() {
   const [selectedStatus, setSelectedStatus] = useState<string>('');
@@ -24,11 +24,12 @@ function ReportList() {
   const reportDetailDenyDialog = useDialog<ReportDetail>();
   const orders = useOrdersData();
 
-  const { getReportsApi, deleteReport } = useReportsContext();
+  const { getReportsApi, deleteReport, reportFilter, setReportFilter, reportPagination } =
+    useReportsContext();
   const getListUsersApi = useFunction(UsersApi.getUsers);
 
   const reports = useMemo(() => {
-    return getReportsApi.data || [];
+    return getReportsApi.data?.results || [];
   }, [getReportsApi.data]);
 
   const users = useMemo(() => {
@@ -48,22 +49,6 @@ function ReportList() {
     setDateRange({ startDate: null, endDate: null });
   }, []);
 
-  const filteredReports = useMemo(() => {
-    return reports.filter((report) => {
-      const matchesDateRange =
-        dateRange.startDate && dateRange.endDate
-          ? new Date(Number(report.reportedAt) * 1000) >= dateRange.startDate &&
-            new Date(Number(report.reportedAt) * 1000) <= dateRange.endDate
-          : true;
-      const matchesStatus = selectedStatus === '' ? true : report.status === selectedStatus;
-      return matchesDateRange && matchesStatus;
-    });
-  }, [dateRange, selectedStatus, reports]);
-
-  const pagination = usePagination({
-    count: filteredReports.length
-  });
-
   const reportTableConfig = useMemo(() => {
     return getReportTableConfig({
       onClickDeny: (data: any) => {
@@ -82,6 +67,15 @@ function ReportList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    setReportFilter({
+      ...reportFilter,
+      page: reportPagination.page + 1,
+      status: selectedStatus !== 'Tất cả' ? (selectedStatus as ReportStatus) : undefined,
+      dateRange
+    });
+  }, [selectedStatus, dateRange, reportPagination.page]);
+
   return (
     <Box className='px-6 text-black bg-white'>
       <ReportFilter
@@ -90,14 +84,22 @@ function ReportList() {
         onStatusChange={handleStatusChange}
         onDateChange={handleDateChange}
         onResetFilters={handleResetFilters}
-        numberOfReport={filteredReports.length}
+        numberOfReport={getReportsApi.data?.totalElements || 0}
       />
       {getReportsApi.loading ? (
         <Box display='flex' justifyContent='center'>
           <CircularProgress />
         </Box>
       ) : (
-        <CustomTable rows={filteredReports} configs={reportTableConfig} pagination={pagination} />
+        <Stack spacing={2} mt={3}>
+          <CustomTable rows={reports} configs={reportTableConfig} className='my-5 -mx-6' />
+          <Pagination
+            page={reportPagination.page}
+            count={getReportsApi.data?.totalElements || 0}
+            rowsPerPage={reportPagination.rowsPerPage}
+            onChange={reportPagination.onPageChange}
+          />
+        </Stack>
       )}
 
       <ReportDetailDenyDialog

@@ -25,6 +25,12 @@ const getOrderTableConfigs = ({
       renderCell: (data) => <Typography>#{data.checkCode}</Typography>
     },
     {
+      key: 'brand',
+      headerLabel: 'Thương hiệu',
+      type: 'string',
+      renderCell: (data) => <Typography>{data.brand}</Typography>
+    },
+    {
       key: 'product',
       headerLabel: 'Sản phẩm',
       type: 'string',

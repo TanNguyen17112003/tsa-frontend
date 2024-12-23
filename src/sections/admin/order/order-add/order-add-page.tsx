@@ -28,11 +28,7 @@ const OrderAddPage = () => {
   const formik = useFormik<OrderFormProps>({
     initialValues: adminInitialOrderForm,
     onSubmit: async (values) => {
-      try {
-        await handleSubmitOrderHelper.call(values);
-      } catch {
-        showSnackbarError('Có lỗi xảy ra');
-      }
+      await handleSubmitOrderHelper.call(values);
     }
   });
 
@@ -54,7 +50,7 @@ const OrderAddPage = () => {
         }
         showSnackbarSuccess('Tạo đơn hàng thành công!');
       } catch (error) {
-        showSnackbarError('Có lỗi xảy ra');
+        throw error;
       }
     },
     [
@@ -96,7 +92,10 @@ const OrderAddPage = () => {
                 className='bg-green-500 hover:bg-green-400'
                 disabled={
                   orderList.length === 0 &&
-                  (!formik.values.checkCode || !formik.values.product || !formik.values.weight)
+                  (!formik.values.checkCode ||
+                    !formik.values.product ||
+                    !formik.values.weight ||
+                    !formik.values.brand)
                 }
               >
                 Thêm

@@ -26,7 +26,7 @@ const getOrderTableConfigs = ({
     },
     {
       key: 'brand',
-      headerLabel: 'Thương hiệu',
+      headerLabel: 'Sàn thương mại',
       type: 'string',
       renderCell: (data) => <Typography>{data.brand}</Typography>
     },

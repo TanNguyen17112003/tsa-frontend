@@ -48,7 +48,7 @@ const OrderAddPage = () => {
             }
           ]);
         }
-        showSnackbarSuccess('Tạo đơn hàng thành công!');
+        formik.resetForm();
       } catch (error) {
         throw error;
       }
@@ -64,10 +64,12 @@ const OrderAddPage = () => {
     ]
   );
 
-  const handleSubmitOrderHelper = useFunction(handleSubmitOrder);
+  const handleSubmitOrderHelper = useFunction(handleSubmitOrder, {
+    successMessage: 'Thêm đơn hàng thành công'
+  });
 
   return (
-    <Box className='text-black bg-white'>
+    <Box className='text-black bg-white min-h-screen'>
       <Stack className='py-4 space-y-2'>
         <Stack p={3}>
           <Box>

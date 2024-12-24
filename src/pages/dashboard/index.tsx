@@ -168,7 +168,7 @@ const Page: PageType = () => {
   const analysticList: AnaLysticCardProps[] = [
     {
       title: 'Số người dùng',
-      value: thisWeekUsers.length,
+      value: users.length,
       type: 'WEEK',
       icon: <Profile2User variant='Bold' />,
       changeValue: (thisWeekUsers.length - lastWeekUsers.length) / lastWeekUsers.length,
@@ -178,7 +178,7 @@ const Page: PageType = () => {
     },
     {
       title: 'Tổng số đơn hàng',
-      value: thisWeekOrders.length,
+      value: orders.length,
       type: 'WEEK',
       icon: <Box1 variant='Bold' />,
       changeValue: (thisWeekOrders.length - lastWeekOrders.length) / lastWeekOrders.length,
@@ -198,7 +198,7 @@ const Page: PageType = () => {
     },
     {
       title: 'Số đơn chưa xử lý',
-      value: thisWeekOrders.filter((order) => order.latestStatus === 'PENDING').length,
+      value: orders.filter((order) => order.latestStatus === 'PENDING').length,
       type: 'WEEK',
       icon: <ArrowRotateLeft variant='Bold' />,
       changeValue:
@@ -232,7 +232,7 @@ const Page: PageType = () => {
     <>
       {!isMobile ? (
         <Stack className='min-h-screen bg-white'>
-          <ContentHeader title='Bảng điều khiển' />
+          <ContentHeader title='Thống kê' />
           <Box padding={3}>
             <Stack direction={'row'} justifyContent={'space-between'} gap={2}>
               {analysticList.map((analystic, index) => (

@@ -34,6 +34,7 @@ const Page: PageType = () => {
         >
           <ContentHeader
             title='Quản lý đơn hàng'
+            description='Danh sách đơn hàng trong hệ thống'
             rightSection={
               <Box
                 sx={{

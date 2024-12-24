@@ -91,7 +91,6 @@ const OrderAddPage = () => {
         createOrder([
           {
             ...formik.values,
-            shippingFee: shippingFee as number,
             deliveryDate: formik.values.deliveryDate,
             isPaid: true
           }
@@ -117,7 +116,7 @@ const OrderAddPage = () => {
   const handleCreateOrderAndPayment = useCallback(async () => {
     const paymentResponse = await PaymentsApi.postPayOSPayment({
       orderId: Math.random().toString(36).substring(7),
-      amount: 2000,
+      amount: shippingFee || 2000,
       description: 'Thanh toán ' + formik.values.checkCode,
       returnUrl: `${window.location.origin}/student/order/add`,
       cancelUrl: `${window.location.origin}/student/order/add`,
@@ -128,35 +127,23 @@ const OrderAddPage = () => {
     }
   }, [shippingFee, formik.values, setCheckoutUrl]);
 
-  const handleConfirmShippingFee = useCallback(async () => {
-    await formik.handleSubmit();
-  }, [formik.values.paymentMethod]);
-
   const handleSubmitOrder = useCallback(
     async (values: OrderFormProps) => {
       try {
         if (orderList && orderList.length > 0) {
           await createOrder(
             orderList.map((order) => ({
-              ...order,
-              shippingFee: getShippingFee(
-                order.room as string,
-                order.building as string,
-                order.dormitory as string,
-                order.weight as number
-              )
+              ...order
             }))
           );
         } else {
           await createOrder([
             {
               ...values,
-              deliveryDate: formik.values.deliveryDate,
-              shippingFee: shippingFee as number
+              deliveryDate: formik.values.deliveryDate
             }
           ]);
         }
-        showSnackbarSuccess('Tạo đơn hàng thành công!');
         formik.resetForm();
       } catch (error) {
         throw error;
@@ -174,7 +161,9 @@ const OrderAddPage = () => {
     ]
   );
 
-  const handleSubmitOrderHelper = useFunction(handleSubmitOrder);
+  const handleSubmitOrderHelper = useFunction(handleSubmitOrder, {
+    successMessage: 'Tạo đơn hàng thành công'
+  });
 
   return (
     <>
@@ -238,11 +227,12 @@ const OrderAddPage = () => {
           </Stack>
         </Stack>
         <OrderConfirmFeeDialog
+          orders={orderList}
           formik={formik}
           open={orderShippingFeeDialog.open}
           onClose={orderShippingFeeDialog.handleClose}
           shippingFee={shippingFee as number}
-          onConfirm={handleConfirmShippingFee}
+          onConfirm={async () => formik.handleSubmit()}
           onConfirmPayment={handleCreateOrderAndPayment}
         />
         <OrderPaymentDialog

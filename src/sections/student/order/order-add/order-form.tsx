@@ -34,8 +34,8 @@ export const OrderForm: FC<OrderFormAttributes> = ({ formik, title, status }) =>
 
   const brandOptions = [
     {
-      value: 'Shoppee',
-      label: 'Shoppee'
+      value: 'Shopee',
+      label: 'Shopee'
     },
     {
       value: 'Lazada',
@@ -81,14 +81,14 @@ export const OrderForm: FC<OrderFormAttributes> = ({ formik, title, status }) =>
           />
           <OrderFormTextField
             type='autoComplete'
-            title='Thương hiệu'
+            title='Sàn thương mại'
             lg={6}
             xs={12}
             options={brandOptions}
             onChange={formik.handleChange}
             value={formik.values.brand as string}
             name='brand'
-            placeholder='Nhập thương hiệu của đơn hàng'
+            placeholder='Nhập sàn thương mại của đơn hàng'
             isMultiple={false}
           />
           <OrderFormTextField

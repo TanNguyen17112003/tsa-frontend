@@ -3,7 +3,8 @@ import { Box } from '@mui/system';
 import React, { useMemo } from 'react';
 import useFunction from 'src/hooks/use-function';
 import { OrderDetail } from 'src/types/order';
-import { Warning2 } from 'iconsax-react';
+import Image from 'next/image';
+import warningImage from 'public/ui/approve-warning.jpg';
 
 function OrderApproveWarningDialog({
   orders,
@@ -13,9 +14,6 @@ function OrderApproveWarningDialog({
   orders: OrderDetail[];
   onConfirm?: () => Promise<any>;
 }) {
-  const onConfirmHelper = useFunction(onConfirm!, {
-    successMessage: 'Phê duyệt các đơn hàng thành công!'
-  });
   const orderList = useMemo(() => {
     return orders?.map((order) => order.checkCode).join(', ');
   }, [orders]);
@@ -31,7 +29,8 @@ function OrderApproveWarningDialog({
             gap: 1
           }}
         >
-          <Warning2 size='50' color='red' variant='Bold' />
+          {/* <Warning2 size='50' color='red' variant='Bold' /> */}
+          <Image src={warningImage} alt='delete image' height={200} />
           <Typography textAlign={'center'} fontWeight={'bold'}>
             Có {orders?.length} đơn hàng: {orderList} không thể phê duyệt, bạn có muốn phê duyệt các
             đơn hàng còn lại?
@@ -53,7 +52,7 @@ function OrderApproveWarningDialog({
           color='success'
           onClick={async (e) => {
             dialogProps.onClose?.(e, 'escapeKeyDown');
-            await onConfirmHelper.call({});
+            await onConfirm?.call({});
           }}
         >
           Phê duyệt

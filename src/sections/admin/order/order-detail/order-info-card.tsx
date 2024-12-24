@@ -12,48 +12,55 @@ function OrderInfoCard({ order }: { order: OrderDetail }) {
   const boxFields = [
     {
       name: 'Mã đơn hàng',
-      value: '#' + (order.checkCode || '123')
+      value: '#' + (order?.checkCode || '123')
     },
     {
       name: 'Sản phẩm',
-      value: order.product ? order.product.substring(2) : 'Không có sản phẩm nào'
+      value: order?.product ? order?.product : 'Không có sản phẩm nào'
     },
     {
       name: 'Địa chỉ giao hàng',
       value:
-        'Phòng ' + order.room + ', ' + 'Tòa ' + order.building + ', ' + 'KTX khu ' + order.dormitory
+        'Phòng ' +
+        order?.room +
+        ', ' +
+        'Tòa ' +
+        order?.building +
+        ', ' +
+        'KTX khu ' +
+        order?.dormitory
     },
     {
       name: 'Đơn giá',
-      value: formatVNDcurrency(order.shippingFee)
+      value: formatVNDcurrency(order?.shippingFee)
     },
     {
       name: 'Khối lượng',
-      value: order.weight + ' kg'
+      value: order?.weight + ' kg'
     },
     {
       name: 'Phương thức thanh toán',
       value:
-        order.paymentMethod === 'CREDIT'
+        order?.paymentMethod === 'CREDIT'
           ? 'Qua ngân hàng'
-          : order.paymentMethod === 'MOMO'
+          : order?.paymentMethod === 'MOMO'
             ? 'Qua MoMo'
             : 'Tiền mặt'
     },
     {
       name: 'Nhân viên phụ trách',
-      value: order.shipperId ? order.shipperId : 'Chưa được chỉ định'
+      value: order?.shipperId ? order?.shipperId : 'Chưa được chỉ định'
     },
     {
       name: 'Trạng thái',
       value:
-        order.latestStatus === 'DELIVERED'
+        order?.latestStatus === 'DELIVERED'
           ? 'Đã giao'
-          : order.latestStatus === 'IN_TRANSPORT'
+          : order?.latestStatus === 'IN_TRANSPORT'
             ? 'Đang giao'
-            : order.latestStatus === 'PENDING'
+            : order?.latestStatus === 'PENDING'
               ? 'Đang chờ xử lý'
-              : order.latestStatus === 'CANCELLED'
+              : order?.latestStatus === 'CANCELLED'
                 ? 'Đã hủy'
                 : 'Đã từ chối'
     }

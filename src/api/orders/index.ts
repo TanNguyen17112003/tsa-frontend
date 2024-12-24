@@ -34,6 +34,13 @@ export interface OrderResponse {
   results: OrderDetail[];
 }
 
+export interface ShippingFeeRequest {
+  room: string;
+  building: string;
+  dormitory: string;
+  weight: number;
+}
+
 export class OrdersApi {
   static async postOrders(request: OrderFormProps): Promise<OrderCreateResponse> {
     return await apiPost('/orders', request);
@@ -41,6 +48,13 @@ export class OrdersApi {
   static async getOrders(request: any): Promise<OrderResponse> {
     const response = await apiGet('/orders', request);
     return response;
+  }
+
+  static async getShippingFee(request: ShippingFeeRequest): Promise<number> {
+    return await apiPost(
+      `/orders/shipping-fee?room=${request.room}&building=${request.building}&dormitory=${request.dormitory}&weight=${request.weight}`,
+      {}
+    );
   }
 
   static async getOrderById(id: Order['id']): Promise<OrderDetail> {

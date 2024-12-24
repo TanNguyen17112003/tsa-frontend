@@ -22,7 +22,7 @@ const getOrderTableConfigs = ({
   },
   {
     key: 'brand',
-    headerLabel: 'Thương hiệu',
+    headerLabel: 'Sàn thương mại',
     type: 'string',
     renderCell: (data) => <Typography>{data.brand}</Typography>
   },
@@ -33,9 +33,7 @@ const getOrderTableConfigs = ({
     renderCell: (data) =>
       data.product ? (
         <Typography>
-          {data.product[0] == ',' && data.product[1] == ' '
-            ? data.product.substring(2)
-            : data.product}
+          {data.product.startsWith(', ') ? data.product.slice(2) : data.product}
         </Typography>
       ) : (
         <Typography>Không có sản phẩm nào</Typography>

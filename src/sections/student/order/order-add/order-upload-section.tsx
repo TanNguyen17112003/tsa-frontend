@@ -83,6 +83,7 @@ function OrderUploadSection({
                   const paymentMethod = String(
                     item['phương thức thanh toán (momo cash credit)']
                   ).trim();
+                  const brand = String(item['sàn thương mại'] || '').trim();
                   return {
                     checkCode: orderID,
                     weight,
@@ -91,7 +92,8 @@ function OrderUploadSection({
                     room,
                     building,
                     deliveryDate,
-                    paymentMethod: paymentMethod as 'MOMO' | 'CASH' | 'CREDIT'
+                    paymentMethod: paymentMethod as 'MOMO' | 'CASH' | 'CREDIT',
+                    brand
                   };
                 });
                 if (newOrders.length == 0) {

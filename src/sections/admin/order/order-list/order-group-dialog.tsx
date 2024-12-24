@@ -13,7 +13,8 @@ import {
   MenuItem,
   TextField,
   FormControl,
-  InputLabel
+  InputLabel,
+  CircularProgress
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { Box } from '@mui/system';
@@ -63,6 +64,7 @@ function OrderGroupDialog({
     },
     onSubmit: async (values) => {
       await onConfirmHelper.call(values);
+      dialogProps.onClose?.({}, 'escapeKeyDown');
     }
   });
 
@@ -152,15 +154,33 @@ function OrderGroupDialog({
         </Button>
         <Button
           variant='contained'
+          disabled={onConfirmHelper.loading || !formik.values.staffId || !formik.values.limitTime}
           color='primary'
           onClick={async (e) => {
-            dialogProps.onClose?.(e, 'escapeKeyDown');
             await formik.handleSubmit();
           }}
         >
           Gom nhóm
         </Button>
       </DialogActions>
+      {onConfirmHelper.loading && (
+        <Box
+          sx={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: 'rgba(255, 255, 255, 0.7)',
+            zIndex: 9999
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      )}
     </Dialog>
   );
 }

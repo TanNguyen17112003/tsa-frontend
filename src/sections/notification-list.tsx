@@ -99,8 +99,8 @@ const NotificationList: React.FC<NotificationListProps> = ({
   const router = useRouter();
   return (
     <Stack
-      className='flex flex-col bg-gray-100 rounded-lg absolute z-50 left-[220px] top-14'
-      sx={{ boxShadow: 3 }}
+      className='flex flex-col bg-gray-100 rounded-lg absolute left-[220px] top-14'
+      sx={{ boxShadow: 3, zIndex: 1000 }}
     >
       {notifications.slice(0, 5).map((notification, index) => {
         return (

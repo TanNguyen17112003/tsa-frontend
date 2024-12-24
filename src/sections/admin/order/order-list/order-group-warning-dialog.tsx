@@ -3,16 +3,17 @@ import { Box } from '@mui/system';
 import React, { useMemo } from 'react';
 import useFunction from 'src/hooks/use-function';
 import { OrderDetail } from 'src/types/order';
+import { Warning2 } from 'iconsax-react';
 import Image from 'next/image';
-import deleteWarningImage from 'public/ui/delete-warning-v2.jpg';
+import warningImage from 'public/ui/group-warning.jpg';
 
-function OrderDeleteWarningDialog({
+function OrderGroupWarningDialog({
   orders,
   onConfirm,
   ...dialogProps
 }: DialogProps & {
   orders: OrderDetail[];
-  onConfirm?: () => Promise<any>;
+  onConfirm?: () => void;
 }) {
   const orderList = useMemo(() => {
     return orders?.map((order) => order.checkCode).join(', ');
@@ -29,10 +30,11 @@ function OrderDeleteWarningDialog({
             gap: 1
           }}
         >
-          <Image src={deleteWarningImage} alt='delete image' height={200} />
+          {/* <Warning2 size='50' color='red' variant='Bold' /> */}
+          <Image src={warningImage} alt='delete image' height={200} />
           <Typography textAlign={'center'} fontWeight={'bold'}>
-            Có {orders?.length} đơn hàng: {orderList} không thể xóa, bạn có muỗn xóa các đơn hàng
-            còn lại?
+            Có {orders?.length} đơn hàng: {orderList} không thể gom nhóm thành công vì không đạt
+            điều kiện. Bạn có muốn phê duyệt các đơn hàng còn lại?
           </Typography>
         </Box>
       </DialogTitle>
@@ -48,17 +50,17 @@ function OrderDeleteWarningDialog({
         </Button>
         <Button
           variant='contained'
-          color='error'
-          onClick={async (e) => {
+          color='success'
+          onClick={(e) => {
             dialogProps.onClose?.(e, 'escapeKeyDown');
-            await onConfirm?.call({});
+            onConfirm?.call({});
           }}
         >
-          Xóa
+          Gom nhóm
         </Button>
       </DialogActions>
     </Dialog>
   );
 }
 
-export default OrderDeleteWarningDialog;
+export default OrderGroupWarningDialog;

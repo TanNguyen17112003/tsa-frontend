@@ -15,7 +15,7 @@ export const getDashboardAdminConfigs = () => {
       subheader: 'Quản lý',
       items: [
         {
-          title: 'Bảng điều khiển',
+          title: 'Thống kê',
           path: paths.dashboard.index,
           icon: <Category2 className='h-6 w-6' />
         },

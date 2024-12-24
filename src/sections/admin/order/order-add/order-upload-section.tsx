@@ -74,10 +74,12 @@ function OrderUploadSection({
 
                   const weight = item['khối lượng (kg)'];
                   const product = String(item['sản phẩm'] || '').trim();
+                  const brand = String(item['sàn thương mại'] || '').trim();
                   return {
                     checkCode: orderID,
                     weight,
-                    product
+                    product,
+                    brand
                   };
                 });
                 if (newOrders.length == 0) {

@@ -21,7 +21,10 @@ const Page: PageType = () => {
           }}
           className='min-h-screen'
         >
-          <ContentHeader title='Quản lý chuyến đi' />
+          <ContentHeader
+            title='Quản lý chuyến đi'
+            description='Danh sách chuyến đi trong hệ thống'
+          />
           <DeliverList />
         </Stack>
       )}

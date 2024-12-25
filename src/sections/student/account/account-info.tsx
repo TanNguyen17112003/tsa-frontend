@@ -155,17 +155,6 @@ function ProfileSection() {
                 onSave={async (value) => await handleSave('phoneNumber', value)}
               />
               <AccountInfoEditField
-                label='Thời gian tạo tài khoản'
-                value={
-                  user?.createdAt
-                    ? formatDate(formatUnixTimestamp(user?.createdAt))
-                    : firebaseUser?.createdAt
-                      ? formatDate(formatUnixTimestamp(firebaseUser?.createdAt))
-                      : ''
-                }
-                disabled
-              />
-              <AccountInfoEditField
                 label='Email'
                 type='text'
                 value={user?.email || firebaseUser?.email}

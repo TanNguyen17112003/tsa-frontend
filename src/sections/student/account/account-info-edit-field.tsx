@@ -53,19 +53,6 @@ const AccountInfoEditField: FC<AccountInfoFieldProps> = ({
           }}
         />
       )}
-      {type == 'date' && (
-        <DatePicker
-          label={label}
-          value={
-            !isEditing ? (value ? dayjs(value) : null) : editingValue ? dayjs(editingValue) : null
-          }
-          disabled={disabled || !isEditing}
-          onChange={(date) => setEditingValue(date?.toISOString() || '')}
-          sx={{
-            flex: 1
-          }}
-        />
-      )}
       {type == 'select' && (
         <TextField
           label={label}

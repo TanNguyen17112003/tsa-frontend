@@ -1,4 +1,3 @@
-// filepath: /src/contexts/orders/orders-context.ts
 import {
   createContext,
   ReactNode,
@@ -145,17 +144,34 @@ const OrdersProvider = ({ children }: { children: ReactNode }) => {
     async (ids: Order['id'][]) => {
       try {
         await Promise.all(ids.map((id) => OrdersApi.deleteOrder(id)));
-        getOrdersApi.setData({
-          ...getOrdersApi.data,
-          results: (getOrdersApi.data?.results || []).filter((order) => !ids.includes(order.id)),
-          totalElements: (getOrdersApi.data?.totalElements || 0) - ids.length,
-          totalPages: getOrdersApi.data?.totalPages || 1
+        const formData = new FormData();
+        Object.entries(orderFilter).forEach(([key, value]) => {
+          if (value !== undefined && value !== null) {
+            if (key === 'dateRange') {
+              if (
+                typeof value === 'object' &&
+                value !== null &&
+                'startDate' in value &&
+                'endDate' in value
+              ) {
+                if (value.startDate) {
+                  formData.append('startDate', value.startDate.toISOString());
+                }
+                if (value.endDate) {
+                  formData.append('endDate', value.endDate.toISOString());
+                }
+              }
+            } else {
+              formData.append(key, value.toString());
+            }
+          }
         });
+        await getOrdersApi.call(formData);
       } catch (error) {
         throw error;
       }
     },
-    [getOrdersApi]
+    [getOrdersApi, orderFilter]
   );
 
   const updateOrderStatus = useCallback(

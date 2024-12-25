@@ -117,19 +117,34 @@ const ReportsProvider = ({ children }: { children: ReactNode }) => {
     async (id: Report['id']) => {
       try {
         await ReportsApi.deleteReport(id);
-        getReportsApi.setData({
-          ...getReportsApi.data,
-          results: (getReportsApi.data?.results || []).filter((report) => report.id !== id),
-          totalElements: (getReportsApi.data?.totalElements || 0) - 1,
-          totalPages: Math.ceil(
-            ((getReportsApi.data?.totalElements || 0) - 1) / reportPagination.rowsPerPage
-          )
+        const formData = new FormData();
+        Object.entries(reportFilter).forEach(([key, value]) => {
+          if (value !== undefined && value !== null) {
+            if (key === 'dateRange') {
+              if (
+                typeof value === 'object' &&
+                value !== null &&
+                'startDate' in value &&
+                'endDate' in value
+              ) {
+                if (value.startDate) {
+                  formData.append('startDate', value.startDate.toISOString());
+                }
+                if (value.endDate) {
+                  formData.append('endDate', value.endDate.toISOString());
+                }
+              }
+            } else {
+              formData.append(key, value.toString());
+            }
+          }
         });
+        await getReportsApi.call(formData);
       } catch (error) {
         throw error;
       }
     },
-    [getReportsApi]
+    [getReportsApi, reportFilter]
   );
 
   useEffect(() => {

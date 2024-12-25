@@ -94,7 +94,7 @@ export const LandingHeader = () => {
 
   return (
     <AppBar position='fixed' sx={{ backgroundColor: 'background.paper', color: 'text.primary' }}>
-      <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', paddingY: 2 }}>
+      <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', paddingY: 1 }}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Image src={logo} alt='logo' width={isMobile ? 50 : 70} />
           <Typography variant='h5' component='span' sx={{ fontWeight: 'bold', color: '#5BE23D' }}>

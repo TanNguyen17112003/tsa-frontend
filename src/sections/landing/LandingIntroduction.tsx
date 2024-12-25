@@ -40,6 +40,7 @@ export const LandingIntroduction = () => {
         color: 'text.primary',
         backgroundColor: '#f6fdf5'
       }}
+      height={'100vh'}
     >
       <Box
         sx={{

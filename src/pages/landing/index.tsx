@@ -2,6 +2,7 @@ import React, { useEffect, useState, Suspense } from 'react';
 import { Box } from '@mui/material';
 import { LandingHeader } from 'src/sections/landing/LandingHeader';
 import { LandingFAQs } from 'src/sections/landing/LandingFAQs';
+import { LandingPrice } from 'src/sections/landing/LandingPrice';
 import {
   LandingFooter,
   LandingAboutUs,
@@ -125,6 +126,11 @@ const LandingPage = () => {
       <Box id='flow' className='section' sx={{ height: '100vh' }}>
         <Suspense fallback={<div>Loading...</div>}>
           {visibleSections.includes('flow') && <LandingFlow />}
+        </Suspense>
+      </Box>
+      <Box id='price' className='section' sx={{ height: '100vh' }}>
+        <Suspense fallback={<div>Loading...</div>}>
+          {visibleSections.includes('price') && <LandingPrice />}
         </Suspense>
       </Box>
       <Box id='features' className='section' sx={{ height: '100vh' }}>

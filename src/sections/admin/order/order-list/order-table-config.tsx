@@ -52,7 +52,7 @@ const getOrderTableConfigs = ({
     renderCell: (data) => {
       const foundUser = users.find((user) => user.id === data.studentId);
       return data.studentId && foundUser ? (
-        <Typography>{foundUser.lastName + foundUser.firstName}</Typography>
+        <Typography>{foundUser.lastName + ' ' + foundUser.firstName}</Typography>
       ) : (
         <Typography>Chưa có thông tin</Typography>
       );

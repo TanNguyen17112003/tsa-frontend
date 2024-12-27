@@ -67,6 +67,7 @@ export interface Order {
   dormitory: string;
   deliveryDate: string;
   shippingFee: number;
+  remainingAmount: number;
   paymentMethod: PaymentMethod;
   isPaid: boolean;
   studentId?: string;

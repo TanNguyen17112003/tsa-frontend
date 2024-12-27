@@ -11,12 +11,11 @@ import { Box, Stack, Typography, Button, Avatar, Tooltip, Badge } from '@mui/mat
 import { paths } from 'src/paths';
 import { Add } from 'iconsax-react';
 import { Bell } from 'lucide-react';
-import Image from 'next/image';
-import logo from 'public/mobile-logo.png';
 import { NotificationsApi } from 'src/api/notifications';
 import useFunction from 'src/hooks/use-function';
 import { NotificationDetail } from 'src/types/notification';
 import NotificationList from 'src/sections/notification-list';
+import { useRouter } from 'next/router';
 
 interface TabletNavProps {
   color?: NavColor;
@@ -25,6 +24,7 @@ interface TabletNavProps {
 
 export const TabletNav: FC<TabletNavProps> = (props) => {
   const { user } = useAuth();
+  const router = useRouter();
   const { user: firebaseUser } = useFirebaseAuth();
   const { sections = [] } = props;
   const pathname = usePathname();
@@ -32,13 +32,12 @@ export const TabletNav: FC<TabletNavProps> = (props) => {
 
   const getNotificationsApi = useFunction(NotificationsApi.getNotifications);
   const notifications = useMemo(() => {
-    return (getNotificationsApi.data || []).filter((notification: NotificationDetail) => {
-      return (
-        (notification.userId === user?.id || notification.userId === firebaseUser?.id) &&
-        !notification.isRead
-      );
-    });
-  }, [getNotificationsApi.data, user, firebaseUser]);
+    return (getNotificationsApi.data?.notifications || []).filter(
+      (notification: NotificationDetail) => {
+        return !notification.isRead;
+      }
+    );
+  }, [getNotificationsApi.data]);
 
   useEffect(() => {
     if (user || firebaseUser) {
@@ -65,14 +64,27 @@ export const TabletNav: FC<TabletNavProps> = (props) => {
 
   const handleNotificationRead = useCallback(
     (notificationId: string) => {
-      getNotificationsApi.setData(
-        (getNotificationsApi.data || []).map((c) =>
+      getNotificationsApi.setData({
+        notifications: (getNotificationsApi.data?.notifications || []).map((c) =>
           c.id === notificationId ? { ...c, isRead: true } : c
-        )
-      );
+        ),
+        unreadCount: (getNotificationsApi.data?.unreadCount || 0) - 1
+      });
     },
     [getNotificationsApi]
   );
+
+  const handleNotificationReadAll = useCallback(async () => {
+    await NotificationsApi.updateAllNotificationsStatus();
+    await getNotificationsApi.setData({
+      notifications: (getNotificationsApi.data?.notifications || []).map((c) => ({
+        ...c,
+        isRead: true
+      })),
+      unreadCount: 0
+    });
+    router.push(paths.notifications.index);
+  }, [getNotificationsApi]);
 
   return (
     <Box>
@@ -152,6 +164,7 @@ export const TabletNav: FC<TabletNavProps> = (props) => {
         <NotificationList
           notifications={notifications}
           onNotificationRead={handleNotificationRead}
+          onNotificationReadAll={handleNotificationReadAll}
         />
       )}
     </Box>

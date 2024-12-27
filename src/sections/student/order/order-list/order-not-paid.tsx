@@ -15,8 +15,11 @@ import { useDrawer, useDialog } from '@hooks';
 import useAppSnackbar from 'src/hooks/use-app-snackbar';
 import { usePayOS, PayOSConfig } from 'payos-checkout';
 import Pagination from 'src/components/ui/Pagination';
+import { useSocketContext } from 'src/contexts/socket-client/socket-client-context';
+import { paths } from 'src/paths';
 
 const OrderNotPaid: React.FC = () => {
+  const { socket } = useSocketContext();
   const router = useRouter();
   const { getOrdersApi, orderPagination, orderFilter, setOrderFilter, deleteOrder, updateOrder } =
     useOrdersContext();
@@ -40,7 +43,7 @@ const OrderNotPaid: React.FC = () => {
         setCheckoutUrl('');
       },
       onCancel: (event: any) => {
-        showSnackbarError('Thanh toán bị hủy');
+        showSnackbarSuccess('Thanh toán bị hủy');
         setCheckoutUrl('');
       }
     };
@@ -135,7 +138,7 @@ const OrderNotPaid: React.FC = () => {
             setOrder(order);
             const paymentResponse = await PaymentsApi.postPayOSPayment({
               orderId: order.id,
-              amount: order.shippingFee || 8000,
+              amount: order.remainingAmount || 2000,
               description: 'Thanh toán đơn hàng ' + order.checkCode,
               returnUrl: `${window.location.origin}/student/order`,
               cancelUrl: `${window.location.origin}/student/order`,
@@ -216,6 +219,31 @@ const OrderNotPaid: React.FC = () => {
   const result = useMemo(() => {
     return orders;
   }, [orders]);
+
+  useEffect(() => {
+    if (socket && order?.id && checkoutUrl) {
+      const paymentUpdateHandler = async (data: any) => {
+        console.log('Payment update: ' + JSON.stringify(data));
+        if (data.isPaid) {
+          await setCheckoutUrl('');
+          await showSnackbarSuccess('Thanh toán thành công');
+          setTimeout(() => {
+            router.push(paths.student.order.index);
+          }, 2000);
+        }
+      };
+
+      socket.emit('subscribeToPayment', { orderId: order.id });
+      console.log('Subscribe to payment with ' + order.id);
+      socket.on('paymentUpdate', paymentUpdateHandler);
+
+      return () => {
+        socket.emit('unsubscribeToPayment', { orderId: order?.id });
+        console.log(`Unsubscribe to payment with ${order?.id}`);
+        socket.off('paymentUpdate', paymentUpdateHandler);
+      };
+    }
+  }, [socket, order?.id, checkoutUrl]);
 
   return (
     <>

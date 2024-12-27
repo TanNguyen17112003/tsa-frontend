@@ -11,7 +11,7 @@ import useFunction from 'src/hooks/use-function';
 import { paths } from 'src/paths';
 import { OrderForm } from './order-form';
 import OrderUploadSection from './order-upload-section';
-import { OrderFormProps } from 'src/api/orders';
+import { OrderFormProps, OrdersApi } from 'src/api/orders';
 import { useOrdersContext } from 'src/contexts/orders/orders-context';
 import { initialOrderForm } from 'src/types/order';
 import { useDialog } from '@hooks';
@@ -20,12 +20,15 @@ import OrderPaymentDialog from './order-payment-dialog';
 import { getShippingFee } from 'src/utils/shipping-fee';
 import { usePayOS, PayOSConfig } from 'payos-checkout';
 import { PaymentsApi } from 'src/api/payment';
+import { useSocketContext } from 'src/contexts/socket-client/socket-client-context';
 
 const OrderAddPage = () => {
   const [resetUploadSection, setResetUploadSection] = useState('');
+  const { socket } = useSocketContext();
   const { createOrder, updateOrder } = useOrdersContext();
   const [isUploaded, setIsUploaded] = useState(false);
   const [checkoutUrl, setCheckoutUrl] = useState<string>('');
+  const [orderId, setOrderId] = useState<string>('');
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -87,24 +90,27 @@ const OrderAddPage = () => {
       RETURN_URL: `${window.location.origin}/student/order/add`,
       ELEMENT_ID: 'payos-checkout-iframe-add',
       CHECKOUT_URL: checkoutUrl,
-      onSuccess: (event: any) => {
-        createOrder([
+      onSuccess: async (event: any) => {
+        await updateOrder(
           {
-            ...formik.values,
             deliveryDate: formik.values.deliveryDate,
             isPaid: true
-          }
-        ]);
+          },
+          orderId
+        );
+        setOrderId('');
         showSnackbarSuccess('Tạo đơn hàng thành công!');
         setCheckoutUrl('');
         formik.resetForm();
       },
-      onCancel: (event: any) => {
-        showSnackbarError('Thanh toán bị hủy');
+      onCancel: async (event: any) => {
+        await OrdersApi.deleteOrder(orderId);
+        setOrderId('');
+        showSnackbarSuccess('Thanh toán bị hủy');
         setCheckoutUrl('');
       }
     };
-  }, [checkoutUrl, formik, updateOrder, setCheckoutUrl, createOrder, shippingFee]);
+  }, [checkoutUrl, formik, updateOrder, setCheckoutUrl, createOrder, shippingFee, orderId]);
   const { open } = usePayOS(payOSConfig);
 
   useEffect(() => {
@@ -114,9 +120,16 @@ const OrderAddPage = () => {
   }, [checkoutUrl, open]);
 
   const handleCreateOrderAndPayment = useCallback(async () => {
+    const newOrder = await OrdersApi.postOrders({
+      ...formik.values,
+      deliveryDate: formik.values.deliveryDate
+    });
+    if (newOrder && newOrder.data.id) {
+      setOrderId(newOrder.data.id);
+    }
     const paymentResponse = await PaymentsApi.postPayOSPayment({
-      orderId: Math.random().toString(36).substring(7),
-      amount: shippingFee || 2000,
+      orderId: newOrder.data.id,
+      amount: 2000,
       description: 'Thanh toán ' + formik.values.checkCode,
       returnUrl: `${window.location.origin}/student/order/add`,
       cancelUrl: `${window.location.origin}/student/order/add`,
@@ -164,6 +177,33 @@ const OrderAddPage = () => {
   const handleSubmitOrderHelper = useFunction(handleSubmitOrder, {
     successMessage: 'Tạo đơn hàng thành công'
   });
+
+  useEffect(() => {
+    if (socket && orderId && checkoutUrl) {
+      const paymentUpdateHandler = async (data: any) => {
+        console.log('Payment update: ' + JSON.stringify(data));
+        if (data.isPaid) {
+          await setCheckoutUrl('');
+          await showSnackbarSuccess('Thanh toán thành công');
+          setTimeout(() => {
+            router.push(paths.student.order.index);
+          }, 2000);
+        }
+      };
+
+      socket.emit('subscribeToPayment', { orderId: orderId });
+      console.log('Subscribe to payment with ' + orderId);
+      socket.on('paymentUpdate', paymentUpdateHandler);
+
+      return () => {
+        socket.emit('unsubscribeToPayment', { orderId: orderId });
+        console.log(`Unsubscribe to payment with ${orderId}`);
+        socket.off('paymentUpdate', paymentUpdateHandler);
+      };
+    }
+  }, [socket, orderId, checkoutUrl]);
+
+  const handleCancelOrderPayment = useCallback(async () => {}, [orderId, socket, checkoutUrl]);
 
   return (
     <>

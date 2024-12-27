@@ -47,8 +47,8 @@ const NotificationsFilter: React.FC<NotificationsFilterProps> = (props) => {
   return (
     <Box className='flex gap-2 items-center w-full justify-between'>
       <Stack direction='row' spacing={1}>
-        <Typography className='font-bold'>Số lượng thông báo:</Typography>
-        <Typography className='font-bold'>{props.numberOfNotifications}</Typography>
+        <Typography fontWeight={'bold'}>Số lượng thông báo:</Typography>
+        <Typography fontWeight={'bold'}>{props.numberOfNotifications}</Typography>
       </Stack>
       <AdvancedFilter filters={filters} />
     </Box>

@@ -68,25 +68,41 @@ const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
   }, [shipperCoordinate, exactOrderLocation, setDistance, setDirection, setRouteCoordinates]);
 
   useEffect(() => {
+    let intervalId: NodeJS.Timeout | null = null;
+
     if (socket && order?.shipperId) {
       socket.emit('subscribeToShipper', { shipperId: order?.shipperId });
       console.log(`Subscribed to shipper with ID ${order?.shipperId}`);
 
-      socket.on(
-        'locationUpdate',
-        (data: { shipperId: string; latitude: number; longitude: number }) => {
-          setShipperCoordinate([Number(data.longitude), Number(data.latitude)]);
-          console.log(`Received location update: ${JSON.stringify(data)}`);
-        }
-      );
+      const handleLocationUpdate = (data: {
+        shipperId: string;
+        latitude: number;
+        longitude: number;
+      }) => {
+        setShipperCoordinate([Number(data.longitude), Number(data.latitude)]);
+        console.log(`Received location update: ${JSON.stringify(data)}`);
+      };
+
+      socket.on('locationUpdate', handleLocationUpdate);
+
+      intervalId = setInterval(() => {
+        socket.emit('requestLocationUpdate', { shipperId: order?.shipperId });
+      }, 5000);
     }
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+      socket?.off('locationUpdate');
+    };
   }, [order?.shipperId, socket]);
 
-  useEffect(() => {
-    if (distance === 0 && !verified) {
-      successDeliveryDialog.handleOpen();
-    }
-  }, [distance, verified]);
+  // useEffect(() => {
+  //   if (distance === 0 && !verified) {
+  //     successDeliveryDialog.handleOpen();
+  //   }
+  // }, [distance, verified]);
 
   useEffect(() => {
     if (mapRef.current && exactOrderLocation && shipperCoordinate) {

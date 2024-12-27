@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useCallback, useEffect, useContext } from 'react';
-import { NotificationsApi } from 'src/api/notifications';
+import { NotificationResponse, NotificationsApi } from 'src/api/notifications';
 import useFunction, {
   DEFAULT_FUNCTION_RETURN,
   UseFunctionReturnType
@@ -9,7 +9,7 @@ import { Notification, NotificationDetail } from 'src/types/notification';
 import { dateToUnixTimestamp } from 'src/utils/format-time-currency';
 
 interface ContextValue {
-  getNotificationsApi: UseFunctionReturnType<FormData, NotificationDetail[]>;
+  getNotificationsApi: UseFunctionReturnType<FormData, NotificationResponse>;
   sendNotification: (request: Omit<Notification, 'id'>) => Promise<void>;
   updateNotificationStatus: (id: Notification['id']) => Promise<void>;
 }
@@ -33,9 +33,12 @@ const NotificationsProvider = ({ children }: { children: ReactNode }) => {
               ...request,
               id: newNotification.id
             },
-            ...(getNotificationsApi.data || [])
+            ...(getNotificationsApi.data?.notifications || [])
           ];
-          getNotificationsApi.setData(newNotifications);
+          getNotificationsApi.setData({
+            notifications: newNotifications,
+            unreadCount: newNotifications.filter((c) => !c.isRead).length
+          });
         }
       } catch (error) {
         throw error;
@@ -47,11 +50,12 @@ const NotificationsProvider = ({ children }: { children: ReactNode }) => {
   const updateNotificationStatus = useCallback(
     async (id: Notification['id']) => {
       await NotificationsApi.updateNotificationStatus(id);
-      getNotificationsApi.setData(
-        (getNotificationsApi.data || []).map((c) =>
+      getNotificationsApi.setData({
+        notifications: (getNotificationsApi.data?.notifications || []).map((c) =>
           c.id == id ? Object.assign(c, { isRead: true }) : c
-        )
-      );
+        ),
+        unreadCount: (getNotificationsApi.data?.unreadCount || 0) - 1
+      });
     },
     [getNotificationsApi]
   );

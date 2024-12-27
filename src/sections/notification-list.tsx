@@ -17,6 +17,7 @@ interface NotificationItemProps {
 interface NotificationListProps {
   notifications: NotificationDetail[];
   onNotificationRead: (notificationId: string) => void;
+  onNotificationReadAll: () => Promise<void>;
 }
 
 const NotificationItem: React.FC<NotificationItemProps> = (props) => {
@@ -27,11 +28,12 @@ const NotificationItem: React.FC<NotificationItemProps> = (props) => {
     async (orderId: string) => {
       await NotificationsApi.updateNotificationStatus(props.notification.id);
       props.onNotificationRead(props.notification.id);
-      await getNotificationsApi.setData(
-        (getNotificationsApi.data || []).map((c) =>
+      await getNotificationsApi.setData({
+        notifications: (getNotificationsApi.data?.notifications || []).map((c) =>
           c.id == props.notification.id ? Object.assign(c, { isRead: true }) : c
-        )
-      );
+        ),
+        unreadCount: (getNotificationsApi.data?.unreadCount || 0) - 1
+      });
       router.push({
         pathname: paths.student.order.index,
         query: { orderId: orderId }
@@ -44,11 +46,12 @@ const NotificationItem: React.FC<NotificationItemProps> = (props) => {
     async (reportId: string) => {
       await NotificationsApi.updateNotificationStatus(props.notification.id);
       props.onNotificationRead(props.notification.id);
-      await getNotificationsApi.setData(
-        (getNotificationsApi.data || []).map((c) =>
+      await getNotificationsApi.setData({
+        notifications: (getNotificationsApi.data?.notifications || []).map((c) =>
           c.id == props.notification.id ? Object.assign(c, { isRead: true }) : c
-        )
-      );
+        ),
+        unreadCount: (getNotificationsApi.data?.unreadCount || 0) - 1
+      });
       router.push({
         pathname: paths.student.report.index,
         query: { reportId: reportId }
@@ -94,7 +97,8 @@ const NotificationItem: React.FC<NotificationItemProps> = (props) => {
 
 const NotificationList: React.FC<NotificationListProps> = ({
   notifications,
-  onNotificationRead
+  onNotificationRead,
+  onNotificationReadAll
 }) => {
   const router = useRouter();
   return (
@@ -102,6 +106,11 @@ const NotificationList: React.FC<NotificationListProps> = ({
       className='flex flex-col bg-gray-100 rounded-lg absolute left-[220px] top-14'
       sx={{ boxShadow: 3, zIndex: 1000 }}
     >
+      {notifications.length === 0 && (
+        <Typography className='p-2' color='black'>
+          Không có thông báo mới
+        </Typography>
+      )}
       {notifications.slice(0, 5).map((notification, index) => {
         return (
           <Box key={index} className='cursor-pointer'>
@@ -110,13 +119,7 @@ const NotificationList: React.FC<NotificationListProps> = ({
           </Box>
         );
       })}
-      <Button
-        onClick={() => {
-          router.push(paths.notifications.index);
-        }}
-      >
-        Xem thêm
-      </Button>
+      <Button onClick={onNotificationReadAll}>Xem tất cả</Button>
     </Stack>
   );
 };

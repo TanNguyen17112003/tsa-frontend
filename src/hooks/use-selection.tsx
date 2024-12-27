@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from 'react';
 
 export interface Selection<T> {
   handleDeselectAll: () => void;
@@ -9,19 +9,28 @@ export interface Selection<T> {
   selected: T[];
 }
 
-export const useSelection = <T,>(items: T[] = []): Selection<T> => {
+export const useSelection = <T extends { id: any }>(items: T[] = []): Selection<T> => {
   const [selected, setSelected] = useState<T[]>([]);
 
-  useEffect(() => {
-    setSelected([]);
-  }, [items]);
-
   const handleSelectAll = useCallback((): void => {
-    setSelected([...items]);
+    setSelected((prevState) => {
+      const newSelected = [...prevState];
+      items.forEach((item) => {
+        if (!newSelected.some((selectedItem) => selectedItem.id === item.id)) {
+          newSelected.push(item);
+        }
+      });
+      return newSelected;
+    });
   }, [items]);
 
   const handleSelectOne = useCallback((item: T): void => {
-    setSelected((prevState) => [...prevState, item]);
+    setSelected((prevState) => {
+      if (!prevState.some((selectedItem) => selectedItem.id === item.id)) {
+        return [...prevState, item];
+      }
+      return prevState;
+    });
   }, []);
 
   const handleDeselectAll = useCallback(() => {
@@ -30,7 +39,7 @@ export const useSelection = <T,>(items: T[] = []): Selection<T> => {
 
   const handleDeselectOne = useCallback((item: T): void => {
     setSelected((prevState) => {
-      return prevState.filter((_item) => _item !== item);
+      return prevState.filter((selectedItem) => selectedItem.id !== item.id);
     });
   }, []);
 
@@ -40,6 +49,6 @@ export const useSelection = <T,>(items: T[] = []): Selection<T> => {
     handleSelectAll,
     handleSelectOne,
     setSelected,
-    selected,
+    selected
   };
 };

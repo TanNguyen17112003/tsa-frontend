@@ -139,7 +139,7 @@ export function CustomTable<P, T extends { id: P; [key: string]: any }>(
                     <div className='flex gap-1 items-center pl-3'>
                       {select && (
                         <Checkbox
-                          checked={select.selected.includes(row)}
+                          checked={select.selected.some((selectedRow) => selectedRow.id === row.id)}
                           onCheckedChange={(checked) =>
                             checked ? select.handleSelectOne(row) : select.handleDeselectOne(row)
                           }

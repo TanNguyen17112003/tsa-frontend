@@ -246,7 +246,7 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
         throw error;
       }
     },
-    [dispatch]
+    [dispatch, CookieHelper]
   );
 
   const signInWithGoogle = useCallback(async (): Promise<UserDetail> => {
@@ -327,7 +327,7 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
     } else {
       await _signOut();
     }
-  }, [_signOut]);
+  }, [_signOut, CookieHelper]);
 
   const updateProfile = useCallback(
     async (request: UpdateProfileRequest) => {

@@ -224,7 +224,7 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
         return undefined;
       }
     },
-    [dispatch]
+    [dispatch, CookieHelper]
   );
 
   const initiateSignUp = useCallback(async (request: InitialSignUpRequest): Promise<void> => {
@@ -287,7 +287,7 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
     } else {
       await signOut();
     }
-  }, [signOut]);
+  }, [signOut, CookieHelper]);
 
   const updateProfile = useCallback(
     async (request: UpdateProfileRequest) => {

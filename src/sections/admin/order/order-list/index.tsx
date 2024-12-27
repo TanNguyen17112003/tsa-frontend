@@ -127,10 +127,18 @@ function OrderList() {
   const handleApproveOrders = useCallback(
     async (orders: OrderDetail[]) => {
       const notApprovedOrders = orders?.filter(
-        (order) => order.latestStatus !== 'PENDING' || !order.studentId
+        (order) =>
+          order.latestStatus !== 'PENDING' ||
+          !order.studentId ||
+          (order.latestStatus === 'PENDING' && !order.isPaid && order.paymentMethod !== 'CASH')
       );
       const approvedOrders = orders?.filter(
-        (order) => order.latestStatus === 'PENDING' && order.studentId
+        (order) =>
+          (order.latestStatus === 'PENDING' &&
+            order.studentId &&
+            order.paymentMethod !== 'CASH' &&
+            order.isPaid) ||
+          (order.latestStatus === 'PENDING' && order.studentId && order.paymentMethod === 'CASH')
       );
       if (notApprovedOrders.length === orders.length) {
         showSnackbarError('Không thể phê duyệt danh sách đơn hàng này');
@@ -155,8 +163,24 @@ function OrderList() {
   );
 
   const handleGroupOrders = useCallback(async (orders: OrderDetail[]) => {
-    const notGroupedOrders = orders.filter((order) => order.latestStatus !== 'ACCEPTED');
-    const groupedOrders = orders.filter((order) => order.latestStatus === 'ACCEPTED');
+    const notGroupedOrders = orders.filter(
+      (order) =>
+        (order.latestStatus !== 'CANCELLED' && order.shipperId) ||
+        (order.latestStatus !== 'ACCEPTED' && !order.shipperId) ||
+        (order.latestStatus === 'ACCEPTED' &&
+          !order.shipperId &&
+          order.paymentMethod !== 'CASH' &&
+          !order.isPaid)
+    );
+    const groupedOrders = orders.filter(
+      (order) =>
+        (order.latestStatus === 'ACCEPTED' && !order.shipperId) ||
+        (order.latestStatus === 'ACCEPTED' &&
+          !order.shipperId &&
+          order.paymentMethod !== 'CASH' &&
+          order.isPaid) ||
+        (order.latestStatus === 'CANCELLED' && order.shipperId)
+    );
     if (notGroupedOrders.length === orders.length) {
       showSnackbarError('Không thể gom nhóm danh sách đơn hàng này vì không đạt điều kiện!');
     } else if (notGroupedOrders.length === 0) {

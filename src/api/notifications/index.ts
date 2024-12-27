@@ -9,14 +9,23 @@ export interface NotificationFormProps
     >
   > {}
 
+export interface NotificationResponse {
+  notifications: NotificationDetail[];
+  unreadCount: number;
+}
+
 export class NotificationsApi {
-  static async getNotifications(request: {}): Promise<NotificationDetail[]> {
+  static async getNotifications(request: {}): Promise<NotificationResponse> {
     return await apiGet('/notifications', getFormData(request));
   }
 
   static async sendNotification(request: NotificationFormProps): Promise<NotificationDetail> {
     const response = await apiPost('/notifications', request);
     return response;
+  }
+
+  static async updateAllNotificationsStatus(): Promise<void> {
+    await apiPatch('/notifications/read-all', {});
   }
 
   static async updateNotificationStatus(id: Notification['id']): Promise<NotificationDetail> {

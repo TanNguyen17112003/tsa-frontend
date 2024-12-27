@@ -17,6 +17,7 @@ import { usePayOS, PayOSConfig } from 'payos-checkout';
 import Pagination from 'src/components/ui/Pagination';
 import { useSocketContext } from 'src/contexts/socket-client/socket-client-context';
 import { paths } from 'src/paths';
+import { OrdersApi } from 'src/api/orders';
 
 const OrderNotPaid: React.FC = () => {
   const { socket } = useSocketContext();
@@ -227,9 +228,13 @@ const OrderNotPaid: React.FC = () => {
         if (data.isPaid) {
           await setCheckoutUrl('');
           await showSnackbarSuccess('Thanh toán thành công');
-          setTimeout(() => {
-            router.push(paths.student.order.index);
-          }, 2000);
+          OrdersApi.updateOrder(
+            {
+              deliveryDate: unixTimestampToDate(order?.deliveryDate as string).toString(),
+              isPaid: true
+            },
+            order.id
+          );
         }
       };
 

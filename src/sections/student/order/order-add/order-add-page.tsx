@@ -129,7 +129,7 @@ const OrderAddPage = () => {
     }
     const paymentResponse = await PaymentsApi.postPayOSPayment({
       orderId: newOrder.data.id,
-      amount: 2000,
+      amount: shippingFee,
       description: 'Thanh toán ' + formik.values.checkCode,
       returnUrl: `${window.location.origin}/student/order/add`,
       cancelUrl: `${window.location.origin}/student/order/add`,
@@ -185,9 +185,7 @@ const OrderAddPage = () => {
         if (data.isPaid) {
           await setCheckoutUrl('');
           await showSnackbarSuccess('Thanh toán thành công');
-          setTimeout(() => {
-            router.push(paths.student.order.index);
-          }, 2000);
+          formik.resetForm();
         }
       };
 
@@ -201,9 +199,7 @@ const OrderAddPage = () => {
         socket.off('paymentUpdate', paymentUpdateHandler);
       };
     }
-  }, [socket, orderId, checkoutUrl]);
-
-  const handleCancelOrderPayment = useCallback(async () => {}, [orderId, socket, checkoutUrl]);
+  }, [socket, orderId, checkoutUrl, formik]);
 
   return (
     <>

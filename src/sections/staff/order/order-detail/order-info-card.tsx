@@ -1,4 +1,4 @@
-import { Box, Button, Card, Divider, Typography } from '@mui/material';
+import { Box, Button, Card, Chip, Divider, Typography } from '@mui/material';
 import { useDrawer } from 'src/hooks/use-drawer';
 import { OrderDetail } from 'src/types/order';
 import { formatVNDcurrency } from 'src/utils/format-time-currency';
@@ -31,6 +31,14 @@ function OrderInfoCard({ order }: { order: OrderDetail }) {
       value: formatVNDcurrency(order?.shippingFee)
     },
     {
+      name: 'Giao dịch',
+      value: order?.isPaid ? (
+        <Chip variant='filled' color='success' label='Đã thanh toán' />
+      ) : (
+        <Chip variant='filled' color='warning' label='Chưa thanh toán' />
+      )
+    },
+    {
       name: 'Khối lượng',
       value: order?.weight + ' kg'
     },
@@ -60,7 +68,9 @@ function OrderInfoCard({ order }: { order: OrderDetail }) {
               ? 'Đang chờ xử lý'
               : order?.latestStatus === 'CANCELLED'
                 ? 'Đã hủy'
-                : 'Đã từ chối'
+                : order?.latestStatus === 'ACCEPTED'
+                  ? 'Đã xác nhận'
+                  : 'Đã từ chối'
     }
   ];
 

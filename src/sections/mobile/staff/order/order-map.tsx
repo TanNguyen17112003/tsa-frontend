@@ -12,9 +12,6 @@ import { GpsFixed } from '@mui/icons-material';
 import { useDialog } from '@hooks';
 import OrderDeliveryDialog from './order-delivery-dialog';
 
-const MAPBOX_ACCESS_TOKEN =
-  'pk.eyJ1IjoicXVhbmNhbzIzMTAiLCJhIjoiY20yNXMxZ3BlMGRpMjJ3cWR5ZTMyNjh2MCJ9.ILNCWFtulso1GeCR7OBz-w';
-
 const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
   const mapRef = useRef<MapRef>(null);
   const [direction, setDirection] = useState<any>(null);
@@ -112,7 +109,7 @@ const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
       <Box className='w-full h-screen relative'>
         <Map
           ref={mapRef}
-          mapboxAccessToken={MAPBOX_ACCESS_TOKEN}
+          mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
           initialViewState={{
             longitude: exactOrderLocation ? exactOrderLocation[1] : 106.80703872956525,
             latitude: exactOrderLocation ? exactOrderLocation[0] : 10.878102666077439,

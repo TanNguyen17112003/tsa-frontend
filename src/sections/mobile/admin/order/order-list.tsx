@@ -189,7 +189,7 @@ function MobileOrderList() {
       <Stack mt={1}>
         <TextField
           variant='outlined'
-          placeholder='Tìm kiếm theo mã đơn'
+          placeholder='Tìm kiếm theo mã đơn hoặc sản phẩm'
           value={searchInput}
           onChange={handleSearchChange}
           InputProps={{

@@ -38,13 +38,19 @@ const OrderAddPage = () => {
         if (orderList && orderList.length > 0) {
           await createOrder(
             orderList.map((order) => ({
-              ...order
+              ...order,
+              product: formik.values.product?.startsWith(', ')
+                ? formik.values.product.slice(2)
+                : formik.values.product
             }))
           );
         } else {
           await createOrder([
             {
-              ...values
+              ...values,
+              product: formik.values.product?.startsWith(', ')
+                ? formik.values.product.slice(2)
+                : formik.values.product
             }
           ]);
         }

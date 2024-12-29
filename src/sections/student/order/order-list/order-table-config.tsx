@@ -1,8 +1,9 @@
-import { Typography, Stack, Chip } from '@mui/material';
+import { Typography, Stack, Chip, Box } from '@mui/material';
 import { CustomTableConfig } from 'src/components/custom-table';
 import { OrderDetail } from 'src/types/order';
 import { Edit, DocumentText, Trash, Bank } from 'iconsax-react';
 import { formatDate, formatUnixTimestamp, formatVNDcurrency } from 'src/utils/format-time-currency';
+import Image from 'next/image';
 
 const getOrderTableConfigs = ({
   onClickReport,
@@ -124,6 +125,23 @@ const getOrderTableConfigs = ({
           }
         />
       )
+    },
+    {
+      key: 'finishedImage',
+      headerLabel: 'Minh chứng',
+      type: 'string',
+      renderCell: (data) => {
+        const handleClick = () => {
+          window.open(data.finishedImage as string, '_blank');
+        };
+        return data.finishedImage ? (
+          <Box className='cursor-pointer' onClick={handleClick}>
+            <img src={data.finishedImage as string} alt='proof' width={100} />
+          </Box>
+        ) : (
+          <>Chưa có thông tin</>
+        );
+      }
     },
     {
       key: 'report',

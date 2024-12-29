@@ -14,16 +14,11 @@ import { useDialog } from '@hooks';
 import OrderDeliveryDialog from 'src/sections/mobile/student/order/order-delivery-dialog';
 import OrderSucceedDialog from 'src/sections/mobile/student/order/order-succeed-dialog';
 
-const MAPBOX_ACCESS_TOKEN =
-  'pk.eyJ1IjoicXVhbmNhbzIzMTAiLCJhIjoiY20yNXMxZ3BlMGR5ZTMyNjh2MCJ9.ILNCWFtulso1GeCR7OBz-w';
-
 const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
   const mapRef = useRef<MapRef>(null);
   const [direction, setDirection] = useState<any>(null);
   const [verified, setVerified] = useState<boolean>(false);
-  const [shipperCoordinate, setShipperCoordinate] = useState<[number, number] | null>([
-    106.806709613827, 10.877568988757174
-  ]);
+  const [shipperCoordinate, setShipperCoordinate] = useState<[number, number] | null>(null);
   const [distance, setDistance] = useState<number>(-1);
 
   const [routeCoordinates, setRouteCoordinates] = useState<[number, number][]>([]);
@@ -99,11 +94,11 @@ const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
     };
   }, [order?.shipperId, socket]);
 
-  // useEffect(() => {
-  //   if (distance === 0 && !verified) {
-  //     successDeliveryDialog.handleOpen();
-  //   }
-  // }, [distance, verified]);
+  useEffect(() => {
+    if (distance <= 150 && !verified && shipperCoordinate) {
+      successDeliveryDialog.handleOpen();
+    }
+  }, [distance, verified]);
 
   useEffect(() => {
     if (mapRef.current && exactOrderLocation && shipperCoordinate) {
@@ -148,7 +143,7 @@ const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
         <Box className='w-full h-full relative'>
           <Map
             ref={mapRef}
-            mapboxAccessToken={MAPBOX_ACCESS_TOKEN}
+            mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
             initialViewState={{
               longitude: exactOrderLocation ? exactOrderLocation[1] : 106.80703872956525,
               latitude: exactOrderLocation ? exactOrderLocation[0] : 10.878102666077439,
@@ -245,7 +240,10 @@ const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
           >
             <Typography color='white'>Khoảng cách:</Typography>
             <Typography fontWeight={'bold'} color='white'>
-              {(distance / 1000).toFixed(2)} km
+              {(distance / 1000).toFixed(2).startsWith('-')
+                ? (distance / 1000).toFixed(2).slice(1)
+                : (distance / 1000).toFixed(2)}{' '}
+              km
             </Typography>
           </Stack>
         </Box>

@@ -66,7 +66,8 @@ const ReportsProvider = ({ children }: { children: ReactNode }) => {
   });
 
   const [reportFilter, setReportFilter] = useState<ReportFilter>({
-    sortOrder: 'asc'
+    sortOrder: 'desc',
+    sortBy: 'reportedAt'
   });
 
   const reportPagination = usePagination({

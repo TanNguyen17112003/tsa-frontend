@@ -12,6 +12,7 @@ import { useOrdersContext } from 'src/contexts/orders/orders-context';
 import { useResponsive } from 'src/utils/use-responsive';
 import MobileOrderDetail from 'src/sections/mobile/student/order/order-detail';
 import { OrderDetail } from 'src/types/order';
+import { shortenUUID } from 'src/utils/shorten-id';
 
 const tabs = [
   {
@@ -85,7 +86,9 @@ const Page: PageType = () => {
                 mt: 3
               }}
             >
-              <Typography variant='h5'>Chi tiết đơn hàng #{order?.checkCode}</Typography>
+              <Typography variant='h5'>
+                Chi tiết đơn hàng {shortenUUID(order?.id as string, 'ORDER')}
+              </Typography>
             </Box>
           </Box>
         </Box>

@@ -1,5 +1,5 @@
 import { Download, Edit } from '@mui/icons-material';
-import { Box, Button, Card, Divider, Stack, Tooltip, Typography } from '@mui/material';
+import { Box, Button, Card, Chip, Divider, Stack, Tooltip, Typography } from '@mui/material';
 import { format } from 'date-fns';
 import { useEffect, useMemo } from 'react';
 import { useDrawer } from 'src/hooks/use-drawer';
@@ -48,6 +48,14 @@ function OrderInfoCard({ order }: { order: OrderDetail }) {
             : 'Tiền mặt'
     },
     {
+      name: 'Giao dịch',
+      value: order?.isPaid ? (
+        <Chip variant='filled' color='success' label='Đã thanh toán' />
+      ) : (
+        <Chip variant='filled' color='warning' label='Chưa thanh toán' />
+      )
+    },
+    {
       name: 'Nhân viên phụ trách',
       value: order?.shipperId ? order?.shipperId : 'Chưa được chỉ định'
     },
@@ -62,7 +70,9 @@ function OrderInfoCard({ order }: { order: OrderDetail }) {
               ? 'Đang chờ xử lý'
               : order?.latestStatus === 'CANCELLED'
                 ? 'Đã hủy'
-                : 'Đã từ chối'
+                : order?.latestStatus === 'ACCEPTED'
+                  ? 'Đã xác nhận'
+                  : 'Đã từ chối'
     }
   ];
 

@@ -1,4 +1,4 @@
-import { Box, Button, Card, Divider, Typography } from '@mui/material';
+import { Box, Button, Card, Chip, Divider, Typography } from '@mui/material';
 import { useDrawer } from 'src/hooks/use-drawer';
 import { OrderDetail } from 'src/types/order';
 import OrderDetailReportDrawer from '../order-list/order-detail-report-drawer';
@@ -46,6 +46,14 @@ function OrderInfoCard({ order }: { order: OrderDetail }) {
           : order?.paymentMethod === 'MOMO'
             ? 'Qua MoMo'
             : 'Tiền mặt'
+    },
+    {
+      name: 'Giao dịch',
+      value: order?.isPaid ? (
+        <Chip variant='filled' color='success' label='Đã thanh toán' />
+      ) : (
+        <Chip variant='filled' color='warning' label='Chưa thanh toán' />
+      )
     },
     {
       name: 'Nhân viên phụ trách',

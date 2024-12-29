@@ -56,6 +56,7 @@ interface OrderStatusHistory {
   reason?: string;
   time: string;
   status: OrderStatus;
+  cancelImage: string;
 }
 
 export interface Order {
@@ -86,6 +87,7 @@ export interface Order {
     phoneNumber?: string;
     photoUrl?: string;
   };
+  finishedImage: string;
 }
 
 export interface OrderDetail extends Order {

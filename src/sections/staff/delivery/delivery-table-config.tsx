@@ -3,6 +3,7 @@ import { CustomTableConfig } from 'src/components/custom-table';
 import { Edit, Trash } from 'iconsax-react';
 import { DeliveryDetail } from 'src/types/delivery';
 import { formatDate, formatUnixTimestamp } from 'src/utils/format-time-currency';
+import { shortenUUID } from 'src/utils/shorten-id';
 
 const getDeliveryTableConfig = ({}: {}): CustomTableConfig<
   DeliveryDetail['id'],
@@ -13,13 +14,13 @@ const getDeliveryTableConfig = ({}: {}): CustomTableConfig<
       key: 'id',
       headerLabel: 'Mã chuyển đi',
       type: 'string',
-      renderCell: (data) => <Typography>#{data.id}</Typography>
+      renderCell: (data) => <Typography>{shortenUUID(data.id, 'DELIVERY')}</Typography>
     },
     {
       key: 'numberOfOrders',
       headerLabel: 'Số lượng đơn hàng',
       type: 'string',
-      renderCell: (data) => <Typography>{data?.orders?.length}</Typography>
+      renderCell: (data) => <Typography>{data?.numberOrder}</Typography>
     },
     {
       key: 'deliveryDate',
@@ -43,21 +44,20 @@ const getDeliveryTableConfig = ({}: {}): CustomTableConfig<
         <Chip
           variant='filled'
           label={
-            data.DeliveryStatusHistory[0].status === 'FINISHED'
+            data?.latestStatus === 'FINISHED'
               ? 'Hoàn thành'
-              : data.DeliveryStatusHistory[0].status === 'CANCELED'
+              : data?.latestStatus === 'CANCELED'
                 ? 'Đã hủy'
-                : data.DeliveryStatusHistory[0].status === 'PENDING'
+                : data?.latestStatus === 'PENDING'
                   ? 'Đang chờ xử lý'
-                  : data.DeliveryStatusHistory[0].status === 'ACCEPTED'
+                  : data?.latestStatus === 'ACCEPTED'
                     ? 'Đã xác nhận'
                     : ''
           }
           color={
-            data.DeliveryStatusHistory[0].status === 'FINISHED' ||
-            data.DeliveryStatusHistory[0].status === 'ACCEPTED'
+            data?.latestStatus === 'FINISHED' || data?.latestStatus === 'ACCEPTED'
               ? 'success'
-              : data.DeliveryStatusHistory[0].status === 'PENDING'
+              : data?.latestStatus === 'PENDING'
                 ? 'warning'
                 : 'error'
           }

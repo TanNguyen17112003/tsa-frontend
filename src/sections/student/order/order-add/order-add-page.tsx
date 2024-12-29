@@ -122,6 +122,9 @@ const OrderAddPage = () => {
   const handleCreateOrderAndPayment = useCallback(async () => {
     const newOrder = await OrdersApi.postOrders({
       ...formik.values,
+      product: formik.values.product?.startsWith(', ')
+        ? formik.values.product.slice(2)
+        : formik.values.product,
       deliveryDate: formik.values.deliveryDate
     });
     if (newOrder && newOrder.data.id) {
@@ -146,13 +149,19 @@ const OrderAddPage = () => {
         if (orderList && orderList.length > 0) {
           await createOrder(
             orderList.map((order) => ({
-              ...order
+              ...order,
+              product: formik.values.product?.startsWith(', ')
+                ? formik.values.product.slice(2)
+                : formik.values.product
             }))
           );
         } else {
           await createOrder([
             {
               ...values,
+              product: formik.values.product?.startsWith(', ')
+                ? formik.values.product.slice(2)
+                : formik.values.product,
               deliveryDate: formik.values.deliveryDate
             }
           ]);

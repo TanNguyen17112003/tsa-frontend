@@ -2,7 +2,7 @@ import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { CustomTable } from '@components';
 import OrderFilter from './order-filter';
 import getOrderTableConfigs from './order-table-config';
-import { Box, Button, CircularProgress, Stack } from '@mui/material';
+import { Box, Button, CircularProgress, InputAdornment, Stack, TextField } from '@mui/material';
 import { OrderDetail, OrderStatus } from 'src/types/order';
 import { SelectChangeEvent } from '@mui/material';
 import { useRouter } from 'next/router';
@@ -19,10 +19,12 @@ import OrderDeleteWarningDialog from './order-delete-warning-dialog';
 import OrderApproveWarningDialog from './order-approve-warning-dialog';
 import OrderGroupWarningDialog from './order-group-warning-dialog';
 import Pagination from 'src/components/ui/Pagination';
+import { SearchIcon } from 'lucide-react';
 
 function OrderList() {
   const router = useRouter();
   const { showSnackbarError, showSnackbarSuccess } = useAppSnackbar();
+  const [searchInput, setSearchInput] = useState('');
   const [selectedDormitory, setSelectedDormitory] = useState<string>('');
   const [deletedOrders, setDeletedOrders] = useState<OrderDetail[]>([]);
   const [approvedOrders, setApprovedOrders] = useState<OrderDetail[]>([]);
@@ -52,6 +54,13 @@ function OrderList() {
   const orders = useMemo(() => {
     return getOrdersApi.data?.results || [];
   }, [getOrdersApi.data, orderFilter]);
+
+  const handleSearch = useCallback(() => {
+    setOrderFilter({
+      ...orderFilter,
+      search: searchInput
+    });
+  }, [searchInput]);
 
   const users = useStaffData();
 
@@ -128,18 +137,11 @@ function OrderList() {
     async (orders: OrderDetail[]) => {
       const notApprovedOrders = orders?.filter(
         (order) =>
-          order.latestStatus !== 'PENDING' ||
           !order.studentId ||
-          (order.latestStatus === 'PENDING' && !order.isPaid && order.paymentMethod !== 'CASH')
+          order.latestStatus !== 'PENDING' ||
+          (!order.isPaid && order.paymentMethod === 'CREDIT')
       );
-      const approvedOrders = orders?.filter(
-        (order) =>
-          (order.latestStatus === 'PENDING' &&
-            order.studentId &&
-            order.paymentMethod !== 'CASH' &&
-            order.isPaid) ||
-          (order.latestStatus === 'PENDING' && order.studentId && order.paymentMethod === 'CASH')
-      );
+      const approvedOrders = orders?.filter((order) => !notApprovedOrders.includes(order));
       if (notApprovedOrders.length === orders.length) {
         showSnackbarError('Không thể phê duyệt danh sách đơn hàng này');
       } else if (notApprovedOrders.length === 0) {
@@ -165,22 +167,11 @@ function OrderList() {
   const handleGroupOrders = useCallback(async (orders: OrderDetail[]) => {
     const notGroupedOrders = orders.filter(
       (order) =>
-        (order.latestStatus !== 'CANCELLED' && order.shipperId) ||
-        (order.latestStatus !== 'ACCEPTED' && !order.shipperId) ||
-        (order.latestStatus === 'ACCEPTED' &&
-          !order.shipperId &&
-          order.paymentMethod !== 'CASH' &&
-          !order.isPaid)
+        (order.paymentMethod === 'CREDIT' && !order.isPaid) ||
+        (!order.shipperId && order.latestStatus !== 'ACCEPTED') ||
+        (order.shipperId && order.latestStatus !== 'CANCELLED')
     );
-    const groupedOrders = orders.filter(
-      (order) =>
-        (order.latestStatus === 'ACCEPTED' && !order.shipperId) ||
-        (order.latestStatus === 'ACCEPTED' &&
-          !order.shipperId &&
-          order.paymentMethod !== 'CASH' &&
-          order.isPaid) ||
-        (order.latestStatus === 'CANCELLED' && order.shipperId)
-    );
+    const groupedOrders = orders.filter((order) => !notGroupedOrders.includes(order));
     if (notGroupedOrders.length === orders.length) {
       showSnackbarError('Không thể gom nhóm danh sách đơn hàng này vì không đạt điều kiện!');
     } else if (notGroupedOrders.length === 0) {
@@ -195,23 +186,6 @@ function OrderList() {
   const handleDeleteOrdersHelper = useFunction(handleDeleteOrders, {});
 
   const handleApproveOrdersHelper = useFunction(handleApproveOrders, {});
-
-  const filteredOrders = useMemo(() => {
-    return orders?.filter((order) => {
-      const matchesDormitory = selectedDormitory ? order.dormitory === selectedDormitory : true;
-      const matchesBuilding = selectedBuilding ? order.building === selectedBuilding : true;
-      const matchesRoom = selectedRoom ? order.room === selectedRoom : true;
-      const matchesDateRange =
-        dateRange.startDate && dateRange.endDate
-          ? new Date(Number(order.deliveryDate) * 1000) >= dateRange.startDate &&
-            new Date(Number(order.deliveryDate) * 1000) <= dateRange.endDate
-          : true;
-      const matchesStatus = selectedStatus === '' ? true : order.latestStatus === selectedStatus;
-      return (
-        matchesDormitory && matchesBuilding && matchesRoom && matchesDateRange && matchesStatus
-      );
-    });
-  }, [selectedDormitory, selectedBuilding, selectedRoom, dateRange, selectedStatus, orders]);
 
   useEffect(() => {
     setOrderFilter({
@@ -305,38 +279,54 @@ function OrderList() {
       <Box
         sx={{
           display: 'flex',
-          justifyContent: 'flex-end',
+          justifyContent: 'space-between',
           mb: 3,
           gap: 2
         }}
       >
-        <Button
-          variant='contained'
-          color='success'
-          startIcon={<TickCircle color='white' />}
-          onClick={() => handleApproveOrdersHelper.call(select.selected)}
-          disabled={select.selected.length === 0}
-        >
-          Phê duyệt
-        </Button>
-        <Button
-          variant='contained'
-          color='error'
-          startIcon={<Trash color='white' />}
-          onClick={() => handleDeleteOrdersHelper.call(select.selected)}
-          disabled={select.selected.length === 0}
-        >
-          Xóa
-        </Button>
-        <Button
+        <TextField
           variant='outlined'
-          color='primary'
-          startIcon={<Additem />}
-          onClick={() => handleGroupOrders(select.selected)}
-          disabled={select.selected.length === 0}
-        >
-          Gom nhóm đơn hàng
-        </Button>
+          placeholder='Tìm kiếm theo mã đơn hoặc sản phẩm'
+          className='w-[35%]'
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position='end' className='cursor-pointer' onClick={handleSearch}>
+                <SearchIcon />
+              </InputAdornment>
+            )
+          }}
+        />
+        <Stack direction={'row'} alignItems={'center'} gap={1}>
+          <Button
+            variant='contained'
+            color='success'
+            startIcon={<TickCircle color='white' />}
+            onClick={() => handleApproveOrdersHelper.call(select.selected)}
+            disabled={select.selected.length === 0}
+          >
+            Phê duyệt
+          </Button>
+          <Button
+            variant='contained'
+            color='error'
+            startIcon={<Trash color='white' />}
+            onClick={() => handleDeleteOrdersHelper.call(select.selected)}
+            disabled={select.selected.length === 0}
+          >
+            Xóa
+          </Button>
+          <Button
+            variant='outlined'
+            color='primary'
+            startIcon={<Additem />}
+            onClick={() => handleGroupOrders(select.selected)}
+            disabled={select.selected.length === 0}
+          >
+            Gom nhóm đơn hàng
+          </Button>
+        </Stack>
       </Box>
       {getOrdersApi.loading ? (
         <Box className='flex items-center justify-center h-[300px]'>

@@ -23,7 +23,8 @@ export interface Delivery {
   deliveryAt?: string;
   limitTime: number;
   delayTime?: number;
-  status: DeliveryStatus;
+  latestStatus: DeliveryStatus;
+  numberOrder: number;
   orders: OrderDetail[];
   staffId: string;
   DeliveryStatusHistory: DeliveryStatusHistory[];

@@ -61,8 +61,8 @@ const OrderFilter: React.FC<OrderFilterProps> = (props) => {
         </Stack>
         <TextField
           variant='outlined'
-          placeholder='Tìm kiếm theo mã đơn'
-          className='w-[20%]'
+          placeholder='Tìm kiếm theo mã đơn hoặc sản phẩm'
+          className='w-[35%]'
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
           InputProps={{

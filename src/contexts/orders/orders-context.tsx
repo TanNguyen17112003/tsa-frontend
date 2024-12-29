@@ -76,8 +76,8 @@ const OrdersProvider = ({ children }: { children: ReactNode }) => {
   });
 
   const [orderFilter, setOrderFilter] = useState<OrderFilter>({
-    sortOrder: 'asc',
-    sortBy: 'checkCode'
+    sortOrder: 'desc',
+    sortBy: 'deliveryDate'
   });
 
   const orderPagination = usePagination({

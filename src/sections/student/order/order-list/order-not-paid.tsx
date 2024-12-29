@@ -140,7 +140,7 @@ const OrderNotPaid: React.FC = () => {
             const paymentResponse = await PaymentsApi.postPayOSPayment({
               orderId: order.id,
               amount: order.remainingAmount || 2000,
-              description: 'Thanh toán đơn hàng ' + order.checkCode,
+              description: 'Thanh toán đơn hàng',
               returnUrl: `${window.location.origin}/student/order`,
               cancelUrl: `${window.location.origin}/student/order`,
               extraData: order.id
@@ -226,15 +226,29 @@ const OrderNotPaid: React.FC = () => {
       const paymentUpdateHandler = async (data: any) => {
         console.log('Payment update: ' + JSON.stringify(data));
         if (data.isPaid) {
-          await setCheckoutUrl('');
-          await showSnackbarSuccess('Thanh toán thành công');
-          OrdersApi.updateOrder(
+          await updateOrder(
             {
               deliveryDate: unixTimestampToDate(order?.deliveryDate as string).toString(),
               isPaid: true
             },
-            order.id
+            order?.id as string
           );
+          await showSnackbarSuccess('Thanh toán thành công');
+          await setCheckoutUrl('');
+          setTimeout(() => {
+            router.push({
+              pathname: router.pathname,
+              query: { ...router.query, orderId: order?.id }
+            });
+          }, 2000);
+        } else {
+          await setCheckoutUrl('');
+          setTimeout(() => {
+            router.push({
+              pathname: router.pathname,
+              query: { ...router.query, orderId: order?.id }
+            });
+          }, 2000);
         }
       };
 
@@ -248,7 +262,7 @@ const OrderNotPaid: React.FC = () => {
         socket.off('paymentUpdate', paymentUpdateHandler);
       };
     }
-  }, [socket, order?.id, checkoutUrl]);
+  }, [socket, order?.id, checkoutUrl, updateOrder]);
 
   return (
     <>

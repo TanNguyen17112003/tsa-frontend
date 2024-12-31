@@ -10,13 +10,19 @@ import { coordinateList } from 'src/utils/coordinate-list';
 import { useSocketContext } from 'src/contexts/socket-client/socket-client-context';
 import { GpsFixed } from '@mui/icons-material';
 import { InfoCircle } from 'iconsax-react';
+import useAppSnackbar from 'src/hooks/use-app-snackbar';
 import { useDialog } from '@hooks';
+import { useRouter } from 'next/router';
 import OrderDeliveryDialog from 'src/sections/mobile/student/order/order-delivery-dialog';
 import OrderSucceedDialog from 'src/sections/mobile/student/order/order-succeed-dialog';
+import { paths } from 'src/paths';
 
 const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
   const mapRef = useRef<MapRef>(null);
+  const router = useRouter();
+  const { showSnackbarSuccess } = useAppSnackbar();
   const [direction, setDirection] = useState<any>(null);
+  const [isFinished, setIsFinished] = useState<boolean>(false);
   const [verified, setVerified] = useState<boolean>(false);
   const [shipperCoordinate, setShipperCoordinate] = useState<[number, number] | null>(null);
   const [distance, setDistance] = useState<number>(-1);
@@ -64,38 +70,50 @@ const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
   }, [shipperCoordinate, exactOrderLocation, setDistance, setDirection, setRouteCoordinates]);
 
   useEffect(() => {
-    let intervalId: NodeJS.Timeout | null = null;
+    const intervalId: NodeJS.Timeout | null = null;
 
     if (socket && order?.shipperId) {
       socket.emit('subscribeToShipper', { shipperId: order?.shipperId });
       console.log(`Subscribed to shipper with ID ${order?.shipperId}`);
 
-      const handleLocationUpdate = (data: {
-        shipperId: string;
-        latitude: number;
-        longitude: number;
+      const handleLocationUpdate = async (data: {
+        shipperId?: string;
+        latitude?: number;
+        longitude?: number;
+        isFinished: boolean;
       }) => {
-        setShipperCoordinate([Number(data.longitude), Number(data.latitude)]);
+        setShipperCoordinate([Number(data?.longitude), Number(data?.latitude)]);
+        if (data.isFinished) {
+          await showSnackbarSuccess('Đơn hàng đã được giao thành công');
+          setTimeout(() => {
+            router.push(paths.student.order.index);
+          }, 2000);
+        }
         console.log(`Received location update: ${JSON.stringify(data)}`);
       };
 
       socket.on('locationUpdate', handleLocationUpdate);
 
-      intervalId = setInterval(() => {
-        socket.emit('requestLocationUpdate', { shipperId: order?.shipperId });
-      }, 5000);
+      // intervalId = setInterval(() => {
+      //   socket.emit('requestLocationUpdate', { shipperId: order?.shipperId });
+      // }, 5000);
     }
 
+    // return () => {
+    //   if (intervalId) {
+    //     clearInterval(intervalId);
+    //   }
+    //   socket?.off('locationUpdate');
+    // };
     return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
       socket?.off('locationUpdate');
+      socket?.emit('unsubscribeToShipper', { shipperId: order?.shipperId });
+      console.log(`Unsubscribed to shipper with ID ${order?.shipperId}`);
     };
   }, [order?.shipperId, socket]);
 
   useEffect(() => {
-    if (distance <= 150 && !verified && shipperCoordinate) {
+    if (distance <= 100 && !verified && shipperCoordinate) {
       successDeliveryDialog.handleOpen();
     }
   }, [distance, verified]);

@@ -20,6 +20,7 @@ import OrderApproveWarningDialog from './order-approve-warning-dialog';
 import OrderGroupWarningDialog from './order-group-warning-dialog';
 import Pagination from 'src/components/ui/Pagination';
 import { SearchIcon } from 'lucide-react';
+import { unixTimestampToDate } from 'src/utils/format-time-currency';
 
 function OrderList() {
   const router = useRouter();
@@ -165,6 +166,26 @@ function OrderList() {
   );
 
   const handleGroupOrders = useCallback(async (orders: OrderDetail[]) => {
+    // I want to check if any order in orders not having the same devlieryDate attribute like others
+    // If yes, show error
+    // If no, show dialog
+    if (orders.length === 0) {
+      showSnackbarError('Không thể gom nhóm danh sách đơn hàng trống!');
+      return;
+    }
+    const deliveryDate = unixTimestampToDate(orders[0].deliveryDate);
+    const notSatisfiedOrders = orders.filter(
+      (order) =>
+        unixTimestampToDate(order.deliveryDate).getDay() !== deliveryDate.getDay() ||
+        unixTimestampToDate(order.deliveryDate).getMonth() !== deliveryDate.getMonth() ||
+        unixTimestampToDate(order.deliveryDate).getFullYear() !== deliveryDate.getFullYear()
+    );
+    if (notSatisfiedOrders.length > 0) {
+      showSnackbarError(
+        'Không thể gom nhóm danh sách đơn hàng này vì ngày giao hàng không giống nhau!'
+      );
+      return;
+    }
     const notGroupedOrders = orders.filter(
       (order) =>
         (order.paymentMethod === 'CREDIT' && !order.isPaid) ||

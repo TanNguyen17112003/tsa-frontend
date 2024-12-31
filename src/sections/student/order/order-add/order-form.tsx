@@ -46,8 +46,16 @@ export const OrderForm: FC<OrderFormAttributes> = ({ formik, title, status }) =>
       label: 'Tiki'
     },
     {
-      value: 'Tiktok shop',
-      label: 'Tiktok shop'
+      value: 'Tiktok',
+      label: 'Tiktok'
+    },
+    {
+      value: 'Sendo',
+      label: 'Sendo'
+    },
+    {
+      value: 'Bách hóa xanh',
+      label: 'Bách hóa xanh'
     }
   ];
 

@@ -42,6 +42,9 @@ export const paths = {
   landing: {
     index: '/landing'
   },
+  tickets: {
+    index: '/tickets'
+  },
   401: '/401',
   404: '/404',
   500: '/500'

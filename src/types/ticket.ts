@@ -51,6 +51,18 @@ export interface TicketAttachment {
   uploadedAt: string;
 }
 
+export interface TicketDetailWithReplies {
+  ticketAttachments: TicketAttachment[];
+  replies: {
+    id: string;
+    ticketId: string;
+    userId: string;
+    content: string;
+    createdAt: string;
+    replyAttachments: TicketAttachment[];
+  }[];
+}
+
 const mockTickets: TicketDetail[] = [
   {
     id: '1',

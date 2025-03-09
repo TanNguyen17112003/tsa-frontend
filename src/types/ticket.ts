@@ -8,6 +8,15 @@ export type TicketType =
   | 'Product and Stock'
   | 'System and Account';
 
+export const ticketTypeMap = {
+  'Thanh toán và phí': 'Payment and Fee',
+  'Đăng ký và theo dõi đơn hàng': 'Order Registration and Tracking',
+  'Giao hàng và vận chuyển': 'Delivery and Shipping',
+  'Trả hàng và hoàn tiền': 'Return and Refund',
+  'Sản phẩm và kho hàng': 'Product and Stock',
+  'Hệ thống và tài khoản': 'System and Account'
+};
+
 export const ticketStatusMap = {
   'Đang mở': 'open',
   'Đang trao đổi': 'in-progress',

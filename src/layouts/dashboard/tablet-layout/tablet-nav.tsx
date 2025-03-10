@@ -7,7 +7,7 @@ import { Section } from '../config/config';
 import { TabletNavSection } from './tablet-nav-section';
 import { NavColor } from 'src/types/settings';
 import { TABLET_NAV_WIDTH } from 'src/config';
-import { Box, Stack, Typography, Button, Avatar, Tooltip, Badge } from '@mui/material';
+import { Box, Stack, Typography, Button, Avatar, Tooltip, Badge, IconButton } from '@mui/material';
 import { paths } from 'src/paths';
 import { Add } from 'iconsax-react';
 import { Bell } from 'lucide-react';
@@ -16,6 +16,7 @@ import useFunction from 'src/hooks/use-function';
 import { NotificationDetail } from 'src/types/notification';
 import NotificationList from 'src/sections/notification-list';
 import { useRouter } from 'next/router';
+import { HelpOutlineOutlined } from '@mui/icons-material';
 
 interface TabletNavProps {
   color?: NavColor;
@@ -153,7 +154,20 @@ export const TabletNav: FC<TabletNavProps> = (props) => {
                   />
                 ))}
               </Box>
-              <Box className='flex gap-2 items-center justify-center'>
+              <Box className='flex flex-col gap-2 items-center justify-center'>
+                {(user?.role === 'STUDENT' ||
+                  firebaseUser?.role === 'STUDENT' ||
+                  user?.role === 'ADMIN' ||
+                  firebaseUser?.role === 'ADMIN') && (
+                  <Tooltip
+                    title='Đi đến trung tâm hỗ trợ TSA'
+                    onClick={() => router.push(paths.tickets.index)}
+                  >
+                    <IconButton color='inherit' size='large'>
+                      <HelpOutlineOutlined fontSize='large' />
+                    </IconButton>
+                  </Tooltip>
+                )}
                 <Avatar src={user?.photoUrl || firebaseUser?.photoUrl || ''} />
               </Box>
             </nav>

@@ -27,6 +27,7 @@ import { MobileNavSection } from './mobile-nav-section';
 import mobileLogo from 'public/bold-mobile-logo.png';
 import Image from 'next/image';
 import { MOBILE_NAV_WIDTH } from 'src/config';
+import { HelpOutlineOutlined } from '@mui/icons-material';
 
 const useCssVars = (color: NavColor): Record<string, string> => {
   const theme = useTheme();
@@ -199,6 +200,21 @@ export const MobileNav: FC<MobileNavProps> = (props) => {
           <Divider className='py-2' />
           {(user?.email || firebaseUser?.email) && (
             <Stack mb={2}>
+              <Stack
+                direction={'row'}
+                alignItems={'center'}
+                mt={2}
+                px={2}
+                className='cursor-pointer'
+                onClick={() => router.push(paths.tickets.index)}
+              >
+                <IconButton color='inherit'>
+                  <HelpOutlineOutlined />
+                </IconButton>
+                <Typography variant='body2' fontWeight={'bold'}>
+                  Trung tâm hỗ trợ
+                </Typography>
+              </Stack>
               <Stack direction={'row'} alignItems={'center'}>
                 <Link
                   component={RouterLink}

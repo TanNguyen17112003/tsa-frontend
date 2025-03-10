@@ -33,7 +33,12 @@ function TicketDetail() {
     return results;
   }, [mockTickets, mockReplies, mockAttachments]);
   return (
-    <Box display={'flex'} flexDirection={isMobile ? 'column' : 'row'} gap={2}>
+    <Box
+      display={'flex'}
+      flexDirection={isMobile ? 'column' : 'row'}
+      gap={2}
+      className='text-black'
+    >
       <Stack flex={0.3}>
         <TicketDetailInfo ticket={ticket as TicketDetailWithReplies} />
       </Stack>

@@ -51,7 +51,7 @@ export interface TicketAttachment {
   uploadedAt: string;
 }
 
-export interface TicketDetailWithReplies {
+export interface TicketDetailWithReplies extends TicketDetail {
   ticketAttachments: TicketAttachment[];
   replies: {
     id: string;

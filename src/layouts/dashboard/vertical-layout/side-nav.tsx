@@ -7,7 +7,7 @@ import { Section } from '../config/config';
 import { SideNavSection } from './side-nav-section';
 import { NavColor } from 'src/types/settings';
 import { SIDE_NAV_WIDTH } from 'src/config';
-import { Box, Stack, Typography, Button, Avatar, Tooltip, Badge } from '@mui/material';
+import { Box, Stack, Typography, Button, Avatar, Tooltip, Badge, IconButton } from '@mui/material';
 import { paths } from 'src/paths';
 import { Add } from 'iconsax-react';
 import { Bell } from 'lucide-react';
@@ -16,6 +16,7 @@ import useFunction from 'src/hooks/use-function';
 import { NotificationDetail } from 'src/types/notification';
 import NotificationList from 'src/sections/notification-list';
 import { useRouter } from 'next/router';
+import { HelpOutlineOutlined } from '@mui/icons-material';
 
 interface SideNavProps {
   color?: NavColor;
@@ -38,6 +39,10 @@ export const SideNav: FC<SideNavProps> = (props) => {
       }
     );
   }, [getNotificationsApi.data]);
+
+  const goToTicketSystem = useCallback(() => {
+    router.push(paths.tickets.index);
+  }, [router]);
 
   useEffect(() => {
     if (user || firebaseUser) {
@@ -155,39 +160,85 @@ export const SideNav: FC<SideNavProps> = (props) => {
                   />
                 ))}
               </Box>
-              <Box className='flex gap-2 items-center'>
-                <Avatar src={user?.photoUrl || firebaseUser?.photoUrl || ''} />
-                <Stack>
-                  {user && !firebaseUser && (
-                    <Typography>
-                      {user?.lastName} {user?.firstName}
-                    </Typography>
-                  )}
-                  {firebaseUser && (
-                    <Typography>
-                      {firebaseUser?.lastName} {firebaseUser?.firstName}
-                    </Typography>
-                  )}
+              <Box>
+                {(user?.role === 'STUDENT' ||
+                  firebaseUser?.role === 'STUDENT' ||
+                  user?.role === 'ADMIN' ||
+                  firebaseUser?.role === 'ADMIN') && (
+                  <Stack
+                    direction={'column'}
+                    justifyContent={'center'}
+                    padding={2}
+                    bgcolor={'white'}
+                    borderRadius={2}
+                    gap={2}
+                    mb={2}
+                    position='relative'
+                  >
+                    <Box
+                      position='absolute'
+                      top={-20}
+                      left='50%'
+                      sx={{ transform: 'translateX(-50%)', bgcolor: 'white', borderRadius: '50%' }}
+                    >
+                      <IconButton color='primary'>
+                        <HelpOutlineOutlined />
+                      </IconButton>
+                    </Box>
+                    <Box display={'flex'} flexDirection={'column'} gap={1} alignItems={'center'}>
+                      <Typography variant={'h6'} color='black' textAlign={'center'}>
+                        Trung tâm hỗ trợ
+                      </Typography>
+                      <Typography
+                        variant={'subtitle2'}
+                        color='black'
+                        fontWeight={'light'}
+                        textAlign={'center'}
+                      >
+                        {user?.role === 'STUDENT' || firebaseUser?.role === 'STUDENT'
+                          ? 'Giúp bạn trả lời những câu hỏi, thắc mắc khi sử dụng dịch vụ'
+                          : 'Hỗ trợ giải quyết các vấn đề'}
+                      </Typography>
+                    </Box>
+                    <Button variant='contained' color='success' onClick={goToTicketSystem}>
+                      Đi tới trung tâm hỗ trợ
+                    </Button>
+                  </Stack>
+                )}
+                <Box className='flex gap-2 items-center'>
+                  <Avatar src={user?.photoUrl || firebaseUser?.photoUrl || ''} />
+                  <Stack>
+                    {user && !firebaseUser && (
+                      <Typography>
+                        {user?.lastName} {user?.firstName}
+                      </Typography>
+                    )}
+                    {firebaseUser && (
+                      <Typography>
+                        {firebaseUser?.lastName} {firebaseUser?.firstName}
+                      </Typography>
+                    )}
 
-                  {user && !firebaseUser && (
-                    <Typography className='text-xs opacity-60'>
-                      {user?.role === 'STUDENT'
-                        ? 'Sinh viên'
-                        : user?.role === 'STAFF'
-                          ? 'Nhân viên'
-                          : 'Quản trị viên'}
-                    </Typography>
-                  )}
-                  {firebaseUser && (
-                    <Typography className='text-xs opacity-60'>
-                      {firebaseUser?.role === 'STUDENT'
-                        ? 'Sinh viên'
-                        : firebaseUser?.role === 'STAFF'
-                          ? 'Nhân viên'
-                          : 'Quản trị viên'}
-                    </Typography>
-                  )}
-                </Stack>
+                    {user && !firebaseUser && (
+                      <Typography className='text-xs opacity-60'>
+                        {user?.role === 'STUDENT'
+                          ? 'Sinh viên'
+                          : user?.role === 'STAFF'
+                            ? 'Nhân viên'
+                            : 'Quản trị viên'}
+                      </Typography>
+                    )}
+                    {firebaseUser && (
+                      <Typography className='text-xs opacity-60'>
+                        {firebaseUser?.role === 'STUDENT'
+                          ? 'Sinh viên'
+                          : firebaseUser?.role === 'STAFF'
+                            ? 'Nhân viên'
+                            : 'Quản trị viên'}
+                      </Typography>
+                    )}
+                  </Stack>
+                </Box>
               </Box>
             </nav>
           </Stack>

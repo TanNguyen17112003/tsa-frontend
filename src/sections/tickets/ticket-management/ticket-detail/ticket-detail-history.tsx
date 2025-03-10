@@ -1,13 +1,21 @@
-import { Avatar, Box, Divider, Stack, Typography } from '@mui/material';
-import React, { useMemo } from 'react';
+import { Avatar, Box, Button, Divider, IconButton, Stack, Typography } from '@mui/material';
+import React, { useCallback, useMemo } from 'react';
 import { TicketDetailWithReplies } from 'src/types/ticket';
 import { useAuth } from '@hooks';
 import { useFirebaseAuth } from '@hooks';
-import { Printer } from 'lucide-react';
-import Image from 'next/image';
+import { Printer, Reply, Send } from 'lucide-react';
+import { AttachCircle, CloseCircle } from 'iconsax-react';
+import { useFormik } from 'formik';
+import { useRef } from 'react';
+import { Editor } from '@tinymce/tinymce-react';
 
 interface TicketDetailHistoryProps {
   ticket: TicketDetailWithReplies;
+}
+
+interface ReplyProps {
+  content: string;
+  attachments: File[];
 }
 
 interface TicketHeaderItemProps {
@@ -16,34 +24,133 @@ interface TicketHeaderItemProps {
 }
 
 const TicketDetailHistoryItem: React.FC<{
-  createdAt: string;
+  createdAt?: string;
   name: string;
   avatarUrl: string;
   isInitial: boolean;
-  content: string;
+  content?: string;
   attachments: string[];
-}> = ({ createdAt, name, avatarUrl, isInitial, content, attachments }) => {
+  toReply: boolean;
+}> = ({ createdAt, name, avatarUrl, isInitial, content, attachments, toReply }) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const handleFileUploadClick = useCallback(() => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  }, []);
+
+  const formik = useFormik<ReplyProps>({
+    initialValues: {
+      content: '',
+      attachments: [] as File[]
+    },
+    onSubmit: (values) => {
+      console.log(values);
+    }
+  });
+
+  const handleRemoveAttachment = useCallback(
+    (index: number) => {
+      const newAttachments = [...formik.values.attachments];
+      newAttachments.splice(index, 1);
+      formik.setFieldValue('attachments', newAttachments);
+    },
+    [formik]
+  );
+
   return (
     <Stack>
-      <Box display={'flex'} alignItems={'center'} gap={1} mb={1}>
-        <Typography variant='body2' color='textSecondary'>
-          {createdAt}
-        </Typography>
-        <Typography textTransform={'uppercase'}>- {name}</Typography>
-        <Typography>{isInitial ? 'Đã tạo' : 'Đã trả lời'}</Typography>
-      </Box>
+      {!toReply && (
+        <Box display={'flex'} alignItems={'center'} gap={1} mb={1}>
+          <Typography variant='body2' color='textSecondary'>
+            {createdAt}
+          </Typography>
+          <Typography textTransform={'uppercase'}>- {name}</Typography>
+          <Typography color='primary' fontWeight={'bold'}>
+            {isInitial ? 'Đã tạo' : 'Đã trả lời'}
+          </Typography>
+        </Box>
+      )}
       <Box display={'flex'} gap={1}>
         <Avatar src={avatarUrl} />
         <Stack direction={'column'} gap={0.5}>
           <Typography variant='body2' color='primary'>
             {name}
           </Typography>
-          <Typography variant='body2'>{content}</Typography>
-          <Stack direction={'row'} gap={1}>
-            {attachments.map((attachment, index) => (
-              <Image key={index} src={attachment} width={50} height={50} alt='Attachment Image' />
-            ))}
-          </Stack>
+          {toReply ? (
+            <Box display={'flex'} flexDirection={'column'} gap={1} width={'100%'}>
+              <Typography>Viết trả lời</Typography>
+              <Box width={'100%'}>
+                <Editor
+                  apiKey='7r36cdzlp8ih2st3kprwlax549cs79vpuvqlqdjsnq4k7t3z'
+                  initialValue=''
+                  init={{
+                    height: 200,
+                    menubar: false,
+                    plugins: ['advlist autolink lists link charmap preview'],
+                    toolbar:
+                      'undo redo | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | link',
+                    content_style: 'body { font-family:Arial; font-size:14px; }'
+                  }}
+                  style={{ width: '100%' }}
+                />
+              </Box>
+              <Stack
+                direction='row'
+                spacing={1}
+                alignItems='center'
+                className='cursor-pointer'
+                onClick={handleFileUploadClick}
+              >
+                <AttachCircle size={32} variant='Bold' color='blue' />
+                <Typography variant='body1' fontWeight='bold' color='primary'>
+                  Tải lên tệp đính kèm
+                </Typography>
+                <input
+                  type='file'
+                  hidden
+                  multiple
+                  ref={fileInputRef}
+                  onChange={(event) => {
+                    const files = event.currentTarget.files;
+                    if (files) {
+                      formik.setFieldValue('attachments', Array.from(files) as File[]);
+                    }
+                  }}
+                />
+              </Stack>
+              <Stack direction='column' spacing={1}>
+                {formik.values.attachments.map((file, index) => (
+                  <Stack key={index} direction='row' alignItems='center' spacing={1}>
+                    <Typography variant='body2'>{file.name}</Typography>
+                    <IconButton size='small' onClick={() => handleRemoveAttachment(index)}>
+                      <CloseCircle size={16} />
+                    </IconButton>
+                  </Stack>
+                ))}
+              </Stack>
+              <Button
+                startIcon={<Send />}
+                sx={{ alignSelf: 'flex-start' }}
+                type='submit'
+                variant='contained'
+                color='primary'
+              >
+                Trả lời
+              </Button>
+            </Box>
+          ) : (
+            <>
+              <Typography variant='body2'>{content}</Typography>
+              <Stack direction={'row'} gap={1}>
+                {attachments.map((attachment, index) => (
+                  <Typography key={index} variant='body2' color='primary'>
+                    {attachment}
+                  </Typography>
+                ))}
+              </Stack>
+            </>
+          )}
         </Stack>
       </Box>
     </Stack>
@@ -68,6 +175,7 @@ const TicketDetailHistory: React.FC<TicketDetailHistoryProps> = ({ ticket }) => 
       }
     ];
   }, [user, firebaseUser, ticket]);
+
   return (
     <Box
       display={'flex'}
@@ -104,23 +212,37 @@ const TicketDetailHistory: React.FC<TicketDetailHistoryProps> = ({ ticket }) => 
         isInitial={true}
         content={ticket.content}
         attachments={ticket.ticketAttachments.map((attachment) => attachment.filePath)}
+        toReply={false}
       />
       {ticket.replies.length > 0 && <Divider />}
       <Stack gap={2}>
         {ticket.replies.map((reply, index) => (
-          <Box key={index}>
+          <Box key={index} display={'flex'} flexDirection={'column'} gap={2}>
             <TicketDetailHistoryItem
               createdAt={reply.createdAt}
               name={reply.userId}
               avatarUrl={reply.userId}
-              isInitial={index === 0}
+              isInitial={false}
               content={reply.content}
               attachments={reply.replyAttachments.map((attachment) => attachment.filePath)}
+              toReply={false}
             />
-            {index !== ticket.replies.length - 1 && <Divider />}
+            <Divider />
           </Box>
         ))}
       </Stack>
+      <TicketDetailHistoryItem
+        name={
+          user?.lastName + ' ' + user?.firstName ||
+          firebaseUser?.lastName + ' ' + firebaseUser?.firstName ||
+          ''
+        }
+        avatarUrl={user?.photoUrl || firebaseUser?.photoUrl || ''}
+        isInitial={false}
+        content={''}
+        attachments={[]}
+        toReply={true}
+      />
     </Box>
   );
 };

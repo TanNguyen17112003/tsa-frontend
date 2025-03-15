@@ -1,21 +1,34 @@
-import { apiDelete, apiGet, apiPatch, apiPost, apiPut, getFormData } from 'src/utils/api-request';
-import {
-  TicketDetail,
-  TicketType,
-  TicketReply,
-  TicketStatus,
-  TicketAttachment
-} from 'src/types/ticket';
+import { apiGet, apiPost, apiPatch, getFormData } from 'src/utils/api-request';
+import { TicketDetail, TicketReply, TicketStatus, TicketAttachment } from 'src/types/ticket';
 
 export interface TicketFormProps {
   title: string;
   content: string;
-  type: TicketType;
+  categoryId: string;
+}
+
+export interface TicketCategoryProps {
+  name: string;
+}
+
+export interface TicketCategoryReplyProps {
+  id: string;
+  name: string;
 }
 
 export class TicketsApi {
   static async getListTicket(): Promise<TicketDetail[]> {
     return await apiGet('/tickets');
+  }
+
+  static async getTicketCategories(): Promise<TicketCategoryReplyProps[]> {
+    return await apiGet('/tickets/categories');
+  }
+
+  static async creatTicketCategory(
+    request: TicketCategoryProps
+  ): Promise<TicketCategoryReplyProps> {
+    return await apiPost('/tickets/categories', request);
   }
 
   static async getDetailTicket(id: string): Promise<TicketDetail> {

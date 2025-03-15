@@ -3,6 +3,7 @@ import { CustomTableConfig } from 'src/components/custom-table';
 import { TicketDetail } from 'src/types/ticket';
 import { Edit, DocumentText, Trash } from 'iconsax-react';
 import { formatDate, formatUnixTimestamp, formatVNDcurrency } from 'src/utils/format-time-currency';
+import { formatDatetime } from '@utils';
 
 const getTicketTableConfigs = ({}: {}): CustomTableConfig<TicketDetail['id'], TicketDetail>[] => [
   {
@@ -22,19 +23,27 @@ const getTicketTableConfigs = ({}: {}): CustomTableConfig<TicketDetail['id'], Ti
     headerLabel: 'Trạng thái',
     type: 'string',
     renderCell: (data) =>
-      data.status === 'open' ? (
+      data.status === 'PENDING' ? (
         <Chip label='Đang mở' color='primary' />
-      ) : data.status === 'in-progress' ? (
+      ) : data.status === 'PROCESSING' ? (
         <Chip label='Đang trao đổi' color='warning' />
+      ) : data.status === 'REPLIED' ? (
+        <Chip label='Đã trả lời' color='success' />
       ) : (
         <Chip label='Đã hoàn thành' color='success' />
       )
   },
   {
+    key: 'number of replies',
+    headerLabel: 'Số lượng trả lời',
+    type: 'string',
+    renderCell: (data) => <Typography>{data.replies.length}</Typography>
+  },
+  {
     key: 'time',
     headerLabel: 'Thời gian',
     type: 'string',
-    renderCell: (data) => <Typography>{data.createdAt}</Typography>
+    renderCell: (data) => <Typography>{formatDatetime(data.createdAt as Date)}</Typography>
   }
 ];
 

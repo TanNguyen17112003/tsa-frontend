@@ -1,20 +1,29 @@
-import { createContext, ReactNode, useCallback, useContext, useState } from 'react';
-import { TicketsApi } from 'src/api/tickets';
+import { createContext, ReactNode, useCallback, useContext, useEffect } from 'react';
+import {
+  TicketCategoryProps,
+  TicketCategoryReplyProps,
+  TicketFormProps,
+  TicketsApi
+} from 'src/api/tickets';
 import useFunction, {
   DEFAULT_FUNCTION_RETURN,
   UseFunctionReturnType
 } from 'src/hooks/use-function';
-import { Ticket, TicketDetail, TicketStatus } from 'src/types/ticket';
+import { TicketDetail, TicketStatus } from 'src/types/ticket';
 
 interface ContextValue {
   getTicketsApi: UseFunctionReturnType<void, TicketDetail[]>;
-  createTicket: (request: Omit<TicketDetail, 'id'>, attachments?: File[]) => Promise<void>;
+  getTicketCategoriesApi: UseFunctionReturnType<void, TicketCategoryReplyProps[]>;
+  createTicketCategory: (request: TicketCategoryProps) => Promise<void>;
+  createTicket: (request: TicketFormProps, attachments?: File[]) => Promise<void>;
   replyTicket: (ticketId: string, reply: string, attachments?: File[]) => Promise<void>;
   updateStatusTicket: (ticketId: string, status: TicketStatus) => Promise<void>;
 }
 
 export const TicketsContext = createContext<ContextValue>({
   getTicketsApi: DEFAULT_FUNCTION_RETURN,
+  getTicketCategoriesApi: DEFAULT_FUNCTION_RETURN,
+  createTicketCategory: async () => {},
   createTicket: async () => {},
   replyTicket: async () => {},
   updateStatusTicket: async () => {}
@@ -25,8 +34,26 @@ const TicketsProvider = ({ children }: { children: ReactNode }) => {
     disableResetOnCall: true
   });
 
+  const getTicketCategoriesApi = useFunction(TicketsApi.getTicketCategories, {
+    disableResetOnCall: true
+  });
+
+  const createTicketCategory = useCallback(
+    async (request: TicketCategoryProps) => {
+      try {
+        const newCategory = await TicketsApi.creatTicketCategory(request);
+        if (newCategory) {
+          getTicketCategoriesApi.setData([...(getTicketCategoriesApi.data || []), newCategory]);
+        }
+      } catch (error) {
+        throw error;
+      }
+    },
+    [getTicketCategoriesApi]
+  );
+
   const createTicket = useCallback(
-    async (request: Omit<TicketDetail, 'id'>, attachments?: File[]) => {
+    async (request: TicketFormProps, attachments?: File[]) => {
       try {
         const ticket = await TicketsApi.createTicket(request, attachments);
         if (ticket) {
@@ -65,10 +92,17 @@ const TicketsProvider = ({ children }: { children: ReactNode }) => {
     [getTicketsApi]
   );
 
+  useEffect(() => {
+    getTicketsApi.call({});
+    getTicketCategoriesApi.call({});
+  }, []);
+
   return (
     <TicketsContext.Provider
       value={{
         getTicketsApi,
+        getTicketCategoriesApi,
+        createTicketCategory,
         createTicket,
         replyTicket,
         updateStatusTicket

@@ -10,37 +10,29 @@ import { useAuth } from '@hooks';
 import useFunction from 'src/hooks/use-function';
 
 interface TicketFormProps {
-  type: TicketType | string;
   title: string;
   content: string;
   attachments: File[];
+  categoryId: string;
 }
 
 function TicketDetail() {
   const { user } = useAuth();
-  const {
-    isMobile,
-    isTablet,
-    isDesktop
-  }: { isMobile: boolean; isTablet: boolean; isDesktop: boolean } = useResponsive();
+  const { getTicketCategoriesApi } = useTicketsContext();
+  const categories = useMemo(() => {
+    return getTicketCategoriesApi.data || [];
+  }, [getTicketCategoriesApi.data]);
+  const { isMobile, isTablet }: { isMobile: boolean; isTablet: boolean; isDesktop: boolean } =
+    useResponsive();
   const { createTicket } = useTicketsContext();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const ticketTypes = useMemo(() => {
-    return Object.entries(ticketTypeMap).map(([key, value]) => ({
-      label: key,
-      value: value as TicketType
-    }));
-  }, []);
 
   const handleSubmitTicket = useCallback(
     async (value: TicketFormProps) => {
-      const ticket: Omit<Ticket, 'id'> = {
-        type: value.type as TicketType,
+      const ticket = {
         title: value.title,
         content: value.content,
-        status: 'open',
-        createdAt: new Date().toISOString(),
-        studentId: user?.id || ''
+        categoryId: value.categoryId
       };
       await createTicket(ticket, value.attachments);
     },
@@ -53,10 +45,10 @@ function TicketDetail() {
 
   const formik = useFormik<TicketFormProps>({
     initialValues: {
-      type: '',
       title: '',
       content: '',
-      attachments: [] as File[]
+      attachments: [] as File[],
+      categoryId: ''
     },
     onSubmit: async (values) => {
       handleSubmitTicketHelper.call(values);
@@ -87,8 +79,8 @@ function TicketDetail() {
         <TextField
           select
           label='Loại'
-          name='type'
-          value={formik.values.type}
+          name='categoryId'
+          value={formik.values.categoryId}
           onChange={formik.handleChange}
           fullWidth
           margin='normal'
@@ -96,9 +88,9 @@ function TicketDetail() {
           <MenuItem value=''>
             <em>Chọn loại</em>
           </MenuItem>
-          {ticketTypes.map((type) => (
-            <MenuItem key={type.value} value={type.value}>
-              {type.label}
+          {categories.map((category) => (
+            <MenuItem key={category.id} value={category.id}>
+              {category.name}
             </MenuItem>
           ))}
         </TextField>

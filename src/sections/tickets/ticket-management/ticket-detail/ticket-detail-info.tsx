@@ -1,10 +1,12 @@
 import { Box, Divider, Stack, Typography } from '@mui/material';
 import React, { useMemo } from 'react';
-import { TicketDetailWithReplies, ticketTypeMap } from 'src/types/ticket';
+import { TicketDetail, ticketTypeMap } from 'src/types/ticket';
 import { Reply, AlarmClock } from 'lucide-react';
+import { formatDate } from 'src/utils/format-time-currency';
 
 interface TicketDetailInfoProps {
-  ticket: TicketDetailWithReplies;
+  ticket: TicketDetail;
+  type: string;
 }
 
 interface TicketDetailInfoItem {
@@ -13,34 +15,33 @@ interface TicketDetailInfoItem {
   value: string | number;
 }
 
-const TicketDetailInfo: React.FC<TicketDetailInfoProps> = ({ ticket }) => {
+const TicketDetailInfo: React.FC<TicketDetailInfoProps> = ({ ticket, type }) => {
   const infoItems: TicketDetailInfoItem[] = useMemo(() => {
     return [
       {
         title: 'Tổng số trả lời',
-        value: ticket.replies.length,
+        value: ticket?.replies.length,
         icon: <Reply size={20} />
       },
       {
         title: 'Thời gian',
-        value: ticket.createdAt,
+        value: formatDate(ticket?.createdAt as Date),
         icon: <AlarmClock size={20} />
       },
       {
         title: 'Tình trạng',
         value:
-          ticket.status === 'open'
+          ticket?.status === 'PENDING'
             ? 'Đang mở'
-            : ticket.status === 'in-progress'
+            : ticket?.status === 'PROCESSING'
               ? 'Đang trao đổi'
-              : 'Đã hoàn thành'
+              : ticket?.status === 'REPLIED'
+                ? 'Đã trả lời'
+                : 'Đã hoàn thành'
       },
       {
         title: 'Loại',
-        value:
-          Object.keys(ticketTypeMap).find(
-            (key) => ticketTypeMap[key as keyof typeof ticketTypeMap] === ticket.type
-          ) || ''
+        value: type
       }
     ];
   }, [ticket]);

@@ -1,6 +1,6 @@
 import { Avatar, Box, Button, Divider, IconButton, Stack, Typography } from '@mui/material';
 import React, { useCallback, useMemo } from 'react';
-import { TicketDetailWithReplies } from 'src/types/ticket';
+import { TicketDetail } from 'src/types/ticket';
 import { useAuth } from '@hooks';
 import { useFirebaseAuth } from '@hooks';
 import { Printer, Reply, Send } from 'lucide-react';
@@ -8,9 +8,10 @@ import { AttachCircle, CloseCircle } from 'iconsax-react';
 import { useFormik } from 'formik';
 import { useRef } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
+import { formatDate } from 'src/utils/format-time-currency';
 
 interface TicketDetailHistoryProps {
-  ticket: TicketDetailWithReplies;
+  ticket: TicketDetail;
 }
 
 interface ReplyProps {
@@ -24,7 +25,7 @@ interface TicketHeaderItemProps {
 }
 
 const TicketDetailHistoryItem: React.FC<{
-  createdAt?: string;
+  createdAt?: Date;
   name: string;
   avatarUrl: string;
   isInitial: boolean;
@@ -63,7 +64,7 @@ const TicketDetailHistoryItem: React.FC<{
       {!toReply && (
         <Box display={'flex'} alignItems={'center'} gap={1} mb={1}>
           <Typography variant='body2' color='textSecondary'>
-            {createdAt}
+            {formatDate(createdAt as Date)}
           </Typography>
           <Typography textTransform={'uppercase'}>- {name}</Typography>
           <Typography color='primary' fontWeight={'bold'}>
@@ -143,7 +144,7 @@ const TicketDetailHistoryItem: React.FC<{
             <>
               <Typography variant='body2'>{content}</Typography>
               <Stack direction={'row'} gap={1}>
-                {attachments.map((attachment, index) => (
+                {attachments?.map((attachment, index) => (
                   <Typography key={index} variant='body2' color='primary'>
                     {attachment}
                   </Typography>
@@ -164,7 +165,7 @@ const TicketDetailHistory: React.FC<TicketDetailHistoryProps> = ({ ticket }) => 
     return [
       {
         title: 'Đã được tạo',
-        value: ticket.createdAt
+        value: formatDate(ticket?.createdAt as Date)
       },
       {
         title: 'Bởi',
@@ -188,7 +189,7 @@ const TicketDetailHistory: React.FC<TicketDetailHistoryProps> = ({ ticket }) => 
       <Box>
         <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'}>
           <Typography variant='h5' fontWeight={'regular'}>
-            {ticket.title}
+            {ticket?.title}
           </Typography>
           <Printer className='cursor-pointer' size={20} onClick={() => window.print()} />
         </Stack>
@@ -206,25 +207,25 @@ const TicketDetailHistory: React.FC<TicketDetailHistoryProps> = ({ ticket }) => 
       </Box>
       <Divider />
       <TicketDetailHistoryItem
-        createdAt={ticket.createdAt}
-        name={ticket.studentId}
-        avatarUrl={ticket.studentId}
+        createdAt={ticket?.createdAt as Date}
+        name={ticket?.studentId}
+        avatarUrl={ticket?.studentId}
         isInitial={true}
-        content={ticket.content}
-        attachments={ticket.ticketAttachments.map((attachment) => attachment.filePath)}
+        content={ticket?.content}
+        attachments={ticket?.attachments.map((attachment) => attachment.fileUrl)}
         toReply={false}
       />
-      {ticket.replies.length > 0 && <Divider />}
+      {ticket?.replies.length > 0 && <Divider />}
       <Stack gap={2}>
-        {ticket.replies.map((reply, index) => (
+        {ticket?.replies.map((reply, index) => (
           <Box key={index} display={'flex'} flexDirection={'column'} gap={2}>
             <TicketDetailHistoryItem
-              createdAt={reply.createdAt}
+              createdAt={reply.createdAt as Date}
               name={reply.userId}
               avatarUrl={reply.userId}
               isInitial={false}
               content={reply.content}
-              attachments={reply.replyAttachments.map((attachment) => attachment.filePath)}
+              attachments={reply.attachments.map((attachment) => attachment.fileUrl)}
               toReply={false}
             />
             <Divider />

@@ -93,7 +93,6 @@ const TicketDetailHistoryItem: React.FC<{
                       'undo redo | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | link',
                     content_style: 'body { font-family:Arial; font-size:14px; }'
                   }}
-                  style={{ width: '100%' }}
                 />
               </Box>
               <Stack

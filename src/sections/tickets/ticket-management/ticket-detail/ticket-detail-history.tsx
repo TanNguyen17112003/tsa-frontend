@@ -1,14 +1,28 @@
-import { Avatar, Box, Button, Divider, IconButton, Stack, Typography } from '@mui/material';
+import {
+  Avatar,
+  Box,
+  Button,
+  CircularProgress,
+  Divider,
+  IconButton,
+  Link,
+  Stack,
+  TextField,
+  Typography
+} from '@mui/material';
 import React, { useCallback, useMemo } from 'react';
 import { TicketDetail } from 'src/types/ticket';
-import { useAuth } from '@hooks';
+import { useAuth, useDialog } from '@hooks';
 import { useFirebaseAuth } from '@hooks';
-import { Printer, Reply, Send } from 'lucide-react';
+import { Printer, Send } from 'lucide-react';
 import { AttachCircle, CloseCircle } from 'iconsax-react';
 import { useFormik } from 'formik';
 import { useRef } from 'react';
-import { Editor } from '@tinymce/tinymce-react';
 import { formatDate } from 'src/utils/format-time-currency';
+import { useTicketsContext } from 'src/contexts/tickets/tickets-context';
+import { useRouter } from 'next/router';
+import useFunction from 'src/hooks/use-function';
+import TicketDetailUpdateStatusDialog from './ticket-detail-update-status-dialog';
 
 interface TicketDetailHistoryProps {
   ticket: TicketDetail;
@@ -34,19 +48,35 @@ const TicketDetailHistoryItem: React.FC<{
   toReply: boolean;
 }> = ({ createdAt, name, avatarUrl, isInitial, content, attachments, toReply }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
+  const { replyTicket } = useTicketsContext();
   const handleFileUploadClick = useCallback(() => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
   }, []);
 
+  const handleReply = useCallback(
+    async (replyForm: ReplyProps) => {
+      await replyTicket(router.query.ticketId as string, replyForm.content, replyForm.attachments);
+    },
+    [router.query.ticketId, replyTicket]
+  );
+
+  const handleReplyHelper = useFunction(handleReply, {
+    successMessage: 'Gửi câu trả lời hành thành công'
+  });
+
   const formik = useFormik<ReplyProps>({
     initialValues: {
       content: '',
       attachments: [] as File[]
     },
-    onSubmit: (values) => {
-      console.log(values);
+    onSubmit: async (values) => {
+      const { error } = await handleReplyHelper.call(values);
+      if (!error) {
+        formik.resetForm();
+      }
     }
   });
 
@@ -60,7 +90,7 @@ const TicketDetailHistoryItem: React.FC<{
   );
 
   return (
-    <Stack>
+    <Stack width={'100%'}>
       {!toReply && (
         <Box display={'flex'} alignItems={'center'} gap={1} mb={1}>
           <Typography variant='body2' color='textSecondary'>
@@ -68,33 +98,36 @@ const TicketDetailHistoryItem: React.FC<{
           </Typography>
           <Typography textTransform={'uppercase'}>- {name}</Typography>
           <Typography color='primary' fontWeight={'bold'}>
-            {isInitial ? 'Đã tạo' : 'Đã trả lời'}
+            {isInitial ? 'đã tạo' : 'đã trả lời'}
           </Typography>
         </Box>
       )}
-      <Box display={'flex'} gap={1}>
+      <Box display={'flex'} gap={1} width={'100%'}>
         <Avatar src={avatarUrl} />
-        <Stack direction={'column'} gap={0.5}>
+        <Stack direction={'column'} gap={0.5} width={'100%'}>
           <Typography variant='body2' color='primary'>
             {name}
           </Typography>
           {toReply ? (
-            <Box display={'flex'} flexDirection={'column'} gap={1} width={'100%'}>
-              <Typography>Viết trả lời</Typography>
-              <Box width={'100%'}>
-                <Editor
-                  apiKey='7r36cdzlp8ih2st3kprwlax549cs79vpuvqlqdjsnq4k7t3z'
-                  initialValue=''
-                  init={{
-                    height: 200,
-                    menubar: false,
-                    plugins: ['advlist autolink lists link charmap preview'],
-                    toolbar:
-                      'undo redo | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | link',
-                    content_style: 'body { font-family:Arial; font-size:14px; }'
-                  }}
-                />
-              </Box>
+            <Box
+              component='form'
+              onSubmit={formik.handleSubmit}
+              display={'flex'}
+              flexDirection={'column'}
+              gap={0.5}
+              width={'100%'}
+            >
+              <Typography>Viết câu trả lời</Typography>
+              <TextField
+                label='Nội dung'
+                name='content'
+                value={formik.values.content}
+                onChange={formik.handleChange}
+                fullWidth
+                margin='normal'
+                multiline
+                rows={6}
+              />
               <Stack
                 direction='row'
                 spacing={1}
@@ -140,25 +173,51 @@ const TicketDetailHistoryItem: React.FC<{
               </Button>
             </Box>
           ) : (
-            <>
+            <Box>
               <Typography variant='body2'>{content}</Typography>
-              <Stack direction={'row'} gap={1}>
+              <Stack direction={'row'} gap={1} flexWrap='wrap'>
                 {attachments?.map((attachment, index) => (
-                  <Typography key={index} variant='body2' color='primary'>
-                    {attachment}
-                  </Typography>
+                  <Link
+                    key={index}
+                    href={attachment}
+                    target='_blank'
+                    sx={{ wordBreak: 'break-all', maxWidth: '100%' }}
+                  >
+                    <Typography variant='body2' color='primary'>
+                      {attachment}
+                    </Typography>
+                  </Link>
                 ))}
               </Stack>
-            </>
+            </Box>
           )}
         </Stack>
       </Box>
+      {handleReplyHelper.loading && (
+        <Box
+          sx={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: 'rgba(255, 255, 255, 0.7)',
+            zIndex: 9999
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      )}
     </Stack>
   );
 };
 
 const TicketDetailHistory: React.FC<TicketDetailHistoryProps> = ({ ticket }) => {
   const { user } = useAuth();
+  const updateTicketStatusDialog = useDialog<TicketDetail>();
   const { user: firebaseUser } = useFirebaseAuth();
   const ticketOwnerInfo: TicketHeaderItemProps[] = useMemo(() => {
     return [
@@ -168,10 +227,7 @@ const TicketDetailHistory: React.FC<TicketDetailHistoryProps> = ({ ticket }) => 
       },
       {
         title: 'Bởi',
-        value:
-          user?.lastName + ' ' + user?.firstName ||
-          firebaseUser?.lastName + ' ' + firebaseUser?.firstName ||
-          ''
+        value: ticket?.userName
       }
     ];
   }, [user, firebaseUser, ticket]);
@@ -190,7 +246,17 @@ const TicketDetailHistory: React.FC<TicketDetailHistoryProps> = ({ ticket }) => 
           <Typography variant='h5' fontWeight={'regular'}>
             {ticket?.title}
           </Typography>
-          <Printer className='cursor-pointer' size={20} onClick={() => window.print()} />
+          <Box display={'flex'} alignItems={'center'} gap={2}>
+            {(user?.role === 'ADMIN' || firebaseUser?.role === 'ADMIN') && (
+              <Button
+                variant='contained'
+                onClick={() => updateTicketStatusDialog.handleOpen(ticket as TicketDetail)}
+              >
+                Cập nhật trạng thái
+              </Button>
+            )}
+            <Printer className='cursor-pointer' size={20} onClick={() => window.print()} />
+          </Box>
         </Stack>
         <Stack direction={'row'} gap={2} mt={1}>
           {ticketOwnerInfo.map((item, index) => (
@@ -207,8 +273,8 @@ const TicketDetailHistory: React.FC<TicketDetailHistoryProps> = ({ ticket }) => 
       <Divider />
       <TicketDetailHistoryItem
         createdAt={ticket?.createdAt as Date}
-        name={ticket?.studentId}
-        avatarUrl={ticket?.studentId}
+        name={ticket?.userName}
+        avatarUrl={ticket?.photoUrl}
         isInitial={true}
         content={ticket?.content}
         attachments={ticket?.attachments.map((attachment) => attachment.fileUrl)}
@@ -220,8 +286,8 @@ const TicketDetailHistory: React.FC<TicketDetailHistoryProps> = ({ ticket }) => 
           <Box key={index} display={'flex'} flexDirection={'column'} gap={2}>
             <TicketDetailHistoryItem
               createdAt={reply.createdAt as Date}
-              name={reply.userId}
-              avatarUrl={reply.userId}
+              name={reply.userName}
+              avatarUrl={reply.photoUrl}
               isInitial={false}
               content={reply.content}
               attachments={reply.attachments.map((attachment) => attachment.fileUrl)}
@@ -242,6 +308,11 @@ const TicketDetailHistory: React.FC<TicketDetailHistoryProps> = ({ ticket }) => 
         content={''}
         attachments={[]}
         toReply={true}
+      />
+      <TicketDetailUpdateStatusDialog
+        ticket={ticket}
+        open={updateTicketStatusDialog.open}
+        onClose={updateTicketStatusDialog.handleClose}
       />
     </Box>
   );

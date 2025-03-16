@@ -9,6 +9,7 @@ import { useFirebaseAuth } from '@hooks';
 import TicketManagement from 'src/sections/tickets/ticket-management';
 import TicketAdd from 'src/sections/tickets/ticket-add';
 import TicketsProvider from 'src/contexts/tickets/tickets-context';
+import { paths } from 'src/paths';
 
 const tabs = [
   {
@@ -22,8 +23,6 @@ const tabs = [
 ];
 
 const Page: PageType = () => {
-  const { user: firebaseUser, updateProfile } = useFirebaseAuth();
-
   const [tab, setTab] = useState(tabs[0].key);
   const router = useRouter();
 
@@ -57,7 +56,16 @@ const Page: PageType = () => {
               }}
             >
               {tabs.map((tab) => (
-                <Tab key={tab.key} label={tab.label} value={tab.key} />
+                <Tab
+                  key={tab.key}
+                  label={tab.label}
+                  value={tab.key}
+                  onClick={() => {
+                    if (tab.key === 'question list') {
+                      router.push(paths.tickets.index);
+                    }
+                  }}
+                />
               ))}
             </Tabs>
           }

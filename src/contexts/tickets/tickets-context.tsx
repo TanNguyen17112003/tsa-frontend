@@ -66,13 +66,28 @@ const TicketsProvider = ({ children }: { children: ReactNode }) => {
     [getTicketsApi]
   );
 
-  const replyTicket = useCallback(async (ticketId: string, reply: string, attachments?: File[]) => {
-    try {
-      await TicketsApi.replyTicket(ticketId, reply, attachments);
-    } catch (error) {
-      throw error;
-    }
-  }, []);
+  const replyTicket = useCallback(
+    async (ticketId: string, reply: string, attachments?: File[]) => {
+      try {
+        const newReply = await TicketsApi.replyTicket(ticketId, reply, attachments);
+        if (newReply) {
+          getTicketsApi.setData(
+            (getTicketsApi.data || []).map((ticket) =>
+              ticket.id === ticketId
+                ? {
+                    ...ticket,
+                    replies: [...ticket.replies, newReply]
+                  }
+                : ticket
+            )
+          );
+        }
+      } catch (error) {
+        throw error;
+      }
+    },
+    [getTicketsApi]
+  );
 
   const updateStatusTicket = useCallback(
     async (ticketId: string, status: TicketStatus) => {

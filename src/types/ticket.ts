@@ -27,6 +27,8 @@ export const ticketStatusMap = {
 export interface Ticket {
   id: string;
   categoryId: string;
+  userName: string;
+  photoUrl: string;
   title: string;
   content: string;
   status: TicketStatus;
@@ -44,6 +46,8 @@ export interface TicketReply {
   content: string;
   createdAt: Date | string;
   attachments: TicketAttachment[];
+  userName: string;
+  photoUrl: string;
 }
 
 export interface TicketAttachment {

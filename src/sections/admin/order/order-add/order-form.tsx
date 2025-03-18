@@ -1,21 +1,8 @@
-import {
-  Box,
-  Grid,
-  MenuItem,
-  Typography,
-  ListItemIcon,
-  ListItem,
-  FormControl,
-  InputLabel,
-  Select
-} from '@mui/material';
+import { Box, Grid, Typography } from '@mui/material';
 import { Stack } from '@mui/system';
 import { FormikProps } from 'formik';
-import React, { useMemo, type FC } from 'react';
+import React, { type FC } from 'react';
 import { OrderFormTextField } from './order-form-text-field';
-import { paymentMethodOptions } from 'src/utils/payment-method';
-import Image from 'next/image';
-import { AddressData } from '@utils';
 import { OrderFormProps } from 'src/api/orders';
 
 interface OrderFormAttributes {
@@ -24,13 +11,7 @@ interface OrderFormAttributes {
   status: boolean;
 }
 
-export const OrderForm: FC<OrderFormAttributes> = ({ formik, title, status }) => {
-  const options = [
-    { value: 'Mũ', label: 'Mũ' },
-    { value: 'Điện thoại', label: 'Điện thoại' },
-    { value: 'Túi xách', label: 'Túi xách' },
-    { value: 'Giá đỡ', label: 'Giá đỡ' }
-  ];
+export const OrderForm: FC<OrderFormAttributes> = ({ formik, title }) => {
   const brandOptions = [
     {
       value: 'Shopee',
@@ -87,27 +68,6 @@ export const OrderForm: FC<OrderFormAttributes> = ({ formik, title, status }) =>
             name='brand'
             placeholder='Nhập sàn thương mại của đơn hàng'
             isMultiple={false}
-          />
-          <OrderFormTextField
-            type='number'
-            title={'Khối lượng đơn hàng (kg)'}
-            lg={6}
-            xs={12}
-            onChange={formik.handleChange}
-            value={formik.values.weight as number}
-            name={'weight'}
-          />
-          <OrderFormTextField
-            type='autoComplete'
-            title={'Sản phẩm'}
-            lg={6}
-            xs={12}
-            options={options}
-            onChange={(event) => formik.setFieldValue('product', event.target.value)}
-            value={formik.values.product as string}
-            name={'product'}
-            placeholder='Nhập danh sách sản phẩm'
-            isMultiple={true}
           />
         </Grid>
       </Box>

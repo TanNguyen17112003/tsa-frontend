@@ -1,6 +1,6 @@
 import { ArrowBack } from '@mui/icons-material';
-import { Box, Button, Typography } from '@mui/material';
-import { Container, Stack } from '@mui/system';
+import { Box, Button, CircularProgress, Typography } from '@mui/material';
+import { Stack } from '@mui/system';
 import { useFormik } from 'formik';
 import { useRouter } from 'next/router';
 import { useState, useCallback } from 'react';
@@ -14,11 +14,25 @@ import OrderUploadSection from './order-upload-section';
 import { OrderFormProps } from 'src/api/orders';
 import { useOrdersContext } from 'src/contexts/orders/orders-context';
 import { adminInitialOrderForm } from 'src/types/order';
+import { FileDropzone } from '@components';
+import { RecognitionssApi } from 'src/api/recognition';
+import { CardTable } from 'src/components/card-table';
+import { orderUploadTableConfigs } from './order-upload-table-configs';
+import { keyBy } from 'lodash';
+
+export interface GeneratedOrder {
+  id: string;
+  orderId: string;
+  brand: string;
+  fileName: string;
+}
 
 const OrderAddPage = () => {
   const [resetUploadSection, setResetUploadSection] = useState('');
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [isUploaded, setIsUploaded] = useState(false);
   const [orderList, setOrderList] = useState<OrderFormProps[]>([]);
+  const [generatedOrderList, setGeneratedOrderList] = useState<GeneratedOrder[]>([]);
   const router = useRouter();
   const { showSnackbarError, showSnackbarSuccess } = useAppSnackbar();
   const { getOrdersApi, createOrder } = useOrdersContext();
@@ -35,24 +49,29 @@ const OrderAddPage = () => {
   const handleSubmitOrder = useCallback(
     async (values: OrderFormProps) => {
       try {
-        if (orderList && orderList.length > 0) {
+        if (generatedOrderList.length == 0) {
+          if (orderList && orderList.length > 0) {
+            await createOrder(
+              orderList.map((order) => ({
+                ...order
+              }))
+            );
+          } else {
+            await createOrder([
+              {
+                ...values
+              }
+            ]);
+          }
+        } else {
           await createOrder(
-            orderList.map((order) => ({
-              ...order,
-              product: formik.values.product?.startsWith(', ')
-                ? formik.values.product.slice(2)
-                : formik.values.product
+            generatedOrderList.map((order) => ({
+              checkCode: order.orderId,
+              brand: order.brand
             }))
           );
-        } else {
-          await createOrder([
-            {
-              ...values,
-              product: formik.values.product?.startsWith(', ')
-                ? formik.values.product.slice(2)
-                : formik.values.product
-            }
-          ]);
+          setGeneratedOrderList([]);
+          setImageFiles([]);
         }
         formik.resetForm();
       } catch (error) {
@@ -64,6 +83,7 @@ const OrderAddPage = () => {
       showSnackbarError,
       showSnackbarSuccess,
       orderList,
+      generatedOrderList,
       user?.id,
       firebaseUser?.id,
       formik
@@ -72,6 +92,38 @@ const OrderAddPage = () => {
 
   const handleSubmitOrderHelper = useFunction(handleSubmitOrder, {
     successMessage: 'Thêm đơn hàng thành công'
+  });
+
+  const handleLoadOrderImage = useCallback(
+    async (files: File[]) => {
+      if (files.length === 1) {
+        const newOrderInfo = await RecognitionssApi.postRecognition({
+          image: files[0]
+        });
+        formik.setFieldValue('checkCode', newOrderInfo.orderId);
+        formik.setFieldValue('brand', newOrderInfo.brand);
+      } else {
+        files.forEach(async (file) => {
+          const newOrderInfo = await RecognitionssApi.postRecognition({
+            image: file
+          });
+          setGeneratedOrderList((prev) => [
+            ...prev,
+            {
+              id: newOrderInfo.orderId,
+              orderId: newOrderInfo.orderId,
+              brand: newOrderInfo.brand,
+              fileName: file.name
+            }
+          ]);
+        });
+      }
+    },
+    [formik, setGeneratedOrderList]
+  );
+
+  const handleLoadOrderImageHelper = useFunction(handleLoadOrderImage, {
+    successMessage: 'Tải ảnh và điền thành công'
   });
 
   return (
@@ -100,10 +152,8 @@ const OrderAddPage = () => {
                 className='bg-green-500 hover:bg-green-400'
                 disabled={
                   orderList.length === 0 &&
-                  (!formik.values.checkCode ||
-                    !formik.values.product ||
-                    !formik.values.weight ||
-                    !formik.values.brand)
+                  (!formik.values.checkCode || !formik.values.brand) &&
+                  generatedOrderList.length === 0
                 }
               >
                 Thêm
@@ -125,9 +175,74 @@ const OrderAddPage = () => {
                 handleUpload={setIsUploaded}
               />
             </Stack>
+            <Stack>
+              <Typography variant='subtitle1' sx={{ fontWeight: 700 }}>
+                3. Tải lên hình ảnh để điền thông tin một cách nhanh chóng
+              </Typography>
+              <Typography variant='subtitle2' fontStyle={'italic'} color='textSecondary'>
+                *Lưu ý: chỉ áp dụng cho những đơn hàng đến từ Shopee và Sendo
+              </Typography>
+              <FileDropzone
+                files={imageFiles}
+                type='multiple'
+                caption={'File ảnh (png, jpg, jpeg)'}
+                title={'Nhấn để tải ảnh lên hoặc kéo thả vào đây'}
+                accept={{
+                  'image/*': ['.png', '.jpg', '.jpeg']
+                }}
+                onDrop={(acceptedFiles) => {
+                  setImageFiles(acceptedFiles);
+                  handleLoadOrderImageHelper.call(acceptedFiles);
+                }}
+                onRemoveAll={() => {
+                  setImageFiles([]);
+                  setGeneratedOrderList([]);
+                  formik.setFieldValue('checkCode', '');
+                  formik.setFieldValue('brand', '');
+                }}
+                onRemove={(file) => {
+                  setImageFiles((prev) => prev.filter((f) => f !== file));
+                  setGeneratedOrderList((prev) => prev.filter((f) => f.fileName !== file.name));
+                  formik.setFieldValue('checkCode', '');
+                  formik.setFieldValue('brand', '');
+                }}
+              />
+              {generatedOrderList.length > 0 && (
+                <CardTable
+                  rows={generatedOrderList}
+                  configs={orderUploadTableConfigs}
+                  onUpdate={async (key, value, item, index) => {
+                    const updatedOrderList = [...generatedOrderList];
+                    updatedOrderList[index] = {
+                      ...updatedOrderList[index],
+                      [key]: value
+                    };
+                    setGeneratedOrderList(updatedOrderList);
+                  }}
+                />
+              )}
+            </Stack>
           </>
         </Stack>
       </Stack>
+      {(handleLoadOrderImageHelper.loading || handleSubmitOrderHelper.loading) && (
+        <Box
+          sx={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: 'rgba(255, 255, 255, 0.7)',
+            zIndex: 9999
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      )}
     </Box>
   );
 };

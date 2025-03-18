@@ -106,9 +106,7 @@ export const initialOrderForm: OrderFormProps = {
 };
 
 export const adminInitialOrderForm: OrderFormProps = {
-  checkCode: '',
-  product: '',
-  weight: 0
+  checkCode: ''
 };
 
 export const orderStatusMap = {

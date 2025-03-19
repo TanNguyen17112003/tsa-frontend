@@ -23,7 +23,9 @@ export const CardTableEditCellTextfield: (
       {type == 'date' || type == 'datetime' ? (
         <DatePicker
           onAccept={onUpdate}
-          value={editingValue as Date}
+          value={
+            editingValue instanceof Date ? (editingValue as unknown as null | undefined) : null
+          }
           slotProps={{
             textField: {
               variant: 'outlined',

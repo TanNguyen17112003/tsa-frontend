@@ -4,7 +4,7 @@ import { TextField } from '@mui/material';
 import AutocompleteTextFieldMultiple from 'src/components/autocomplete-textfield-multiple';
 
 interface OrderFormTextFieldProps {
-  type: 'text' | 'autoComplete' | 'dateTime' | 'number';
+  type: 'text' | 'autoComplete' | 'dateTime' | 'number' | 'date';
   title: string;
   lg: number;
   xs: number;
@@ -76,7 +76,15 @@ export const OrderFormTextField: FC<OrderFormTextFieldProps> = ({
   return (
     <OrderFormField title={title} lg={lg} xs={xs}>
       <TextField
-        type={type === 'dateTime' ? 'datetime-local' : type === 'text' ? 'text' : 'number'}
+        type={
+          type === 'dateTime'
+            ? 'datetime-local'
+            : type === 'date'
+              ? 'date'
+              : type === 'text'
+                ? 'text'
+                : 'number'
+        }
         fullWidth
         variant='outlined'
         onChange={onChange}

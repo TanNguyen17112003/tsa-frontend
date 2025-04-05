@@ -55,7 +55,7 @@ function OrderConfirmFeeDialog({
       },
       {
         title: 'Thời gian giao hàng',
-        value: formik.values.deliveryDate
+        value: `${formik.values.deliveryDay} / ${formik.values.deliveryTimeSlot}`
       },
       {
         title: 'Địa chỉ',
@@ -141,7 +141,7 @@ function OrderConfirmFeeDialog({
                 <Stack key={index} direction={'row'} gap={0.5} justifyContent='space-between'>
                   <Typography variant='body1'>Thời gian giao hàng:</Typography>
                   <Typography variant='body1' fontWeight={'bold'}>
-                    {order.deliveryDate}
+                    {order.deliveryDay}
                   </Typography>
                 </Stack>
                 <Stack key={index} direction={'row'} gap={0.5} justifyContent='space-between'>

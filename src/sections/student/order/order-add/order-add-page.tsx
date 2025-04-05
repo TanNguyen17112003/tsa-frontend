@@ -158,11 +158,14 @@ const OrderAddPage = () => {
         } else {
           await createOrder([
             {
-              ...values,
+              ...(() => {
+                const { deliveryDay, deliveryTimeSlot, ...rest } = values;
+                return rest;
+              })(),
               product: formik.values.product?.startsWith(', ')
                 ? formik.values.product.slice(2)
                 : formik.values.product,
-              deliveryDate: formik.values.deliveryDate
+              deliveryDate: `${values.deliveryDay}T${values.deliveryTimeSlot}:00`
             }
           ]);
         }
@@ -243,7 +246,8 @@ const OrderAddPage = () => {
                       !formik.values.building ||
                       !formik.values.room ||
                       !formik.values.dormitory ||
-                      !formik.values.deliveryDate ||
+                      !formik.values.deliveryDay ||
+                      !formik.values.deliveryTimeSlot ||
                       !formik.values.brand ||
                       !formik.values.paymentMethod) &&
                     orderList.length === 0

@@ -59,6 +59,27 @@ export const OrderForm: FC<OrderFormAttributes> = ({ formik, title, status }) =>
     }
   ];
 
+  const timeSlotOptions = useMemo(() => {
+    const slots = [];
+    let startHour = 7;
+    const startMinute = 0;
+
+    while (startHour < 18 || (startHour === 18 && startMinute <= 45)) {
+      const endHour = startHour + 1;
+      const endMinute = startMinute + 45;
+      const startTime = `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}`;
+      const endTime = `${String(endHour).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}`;
+
+      slots.push({
+        label: `${startTime} - ${endTime}`,
+        value: startTime
+      });
+
+      startHour += 2;
+    }
+    return slots;
+  }, []);
+
   const dormitoryList = useMemo(() => {
     return AddressData.dormitories;
   }, []);
@@ -168,15 +189,32 @@ export const OrderForm: FC<OrderFormAttributes> = ({ formik, title, status }) =>
             </Box>
           </Grid>
           <OrderFormTextField
-            type='dateTime'
-            title={'Thời gian giao hàng'}
-            lg={6}
+            type='date'
+            title={'Ngày giao hàng'}
+            lg={3}
             xs={12}
-            name={'deliveryDate'}
-            placeholder='Chọn thời gian giao hàng'
+            name={'deliveryDay'}
+            placeholder='Chọn ngày gian giao hàng'
             onChange={formik.handleChange}
-            value={formik.values.deliveryDate as string}
+            value={formik.values.deliveryDay as string}
           />
+          <OrderFormTextField
+            type='text'
+            title='Khung giờ giao hàng'
+            lg={3}
+            xs={12}
+            name='deliveryTimeSlot'
+            placeholder='Chọn khung giờ giao hàng'
+            select
+            onChange={(event) => formik.setFieldValue('deliveryTimeSlot', event.target.value)}
+            value={formik.values.deliveryTimeSlot as string}
+          >
+            {timeSlotOptions.map((slot, index) => (
+              <MenuItem key={index} value={slot.value}>
+                {slot.label}
+              </MenuItem>
+            ))}
+          </OrderFormTextField>
 
           <OrderFormTextField
             type='text'

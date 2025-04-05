@@ -17,7 +17,10 @@ export interface OrderFormProps
       | 'shippingFee'
       | 'isPaid'
       | 'brand'
-    >
+    > & {
+      deliveryDay: string;
+      deliveryTimeSlot: string;
+    }
   > {
   studentId?: string;
   adminId?: string;

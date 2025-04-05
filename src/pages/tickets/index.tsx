@@ -10,6 +10,7 @@ import TicketManagement from 'src/sections/tickets/ticket-management';
 import TicketAdd from 'src/sections/tickets/ticket-add';
 import TicketsProvider from 'src/contexts/tickets/tickets-context';
 import { paths } from 'src/paths';
+import { useAuth } from '@hooks';
 
 const tabs = [
   {
@@ -25,6 +26,8 @@ const tabs = [
 const Page: PageType = () => {
   const [tab, setTab] = useState(tabs[0].key);
   const router = useRouter();
+  const { user } = useAuth();
+  const { user: firebaseUser } = useFirebaseAuth();
 
   return (
     <Box className='bg-white'>
@@ -55,24 +58,30 @@ const Page: PageType = () => {
                 }
               }}
             >
-              {tabs.map((tab) => (
-                <Tab
-                  key={tab.key}
-                  label={tab.label}
-                  value={tab.key}
-                  onClick={() => {
-                    if (tab.key === 'question list') {
-                      router.push(paths.tickets.index);
-                    }
-                  }}
-                />
-              ))}
+              {tabs.map((tab) => {
+                // Conditionally render the second tab based on user.role
+                if (tab.key === 'add question' && user?.role === 'ADMIN') {
+                  return null;
+                }
+                return (
+                  <Tab
+                    key={tab.key}
+                    label={tab.label}
+                    value={tab.key}
+                    onClick={() => {
+                      if (tab.key === 'question list') {
+                        router.push(paths.tickets.index);
+                      }
+                    }}
+                  />
+                );
+              })}
             </Tabs>
           }
         />
         <Box paddingX={2} paddingY={3}>
           {tab === tabs[0].key && <TicketManagement />}
-          {tab === tabs[1].key && <TicketAdd />}
+          {tab === tabs[1].key && user?.role !== 'ADMIN' && <TicketAdd />}
         </Box>
       </Stack>
     </Box>

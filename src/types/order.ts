@@ -102,7 +102,9 @@ export const initialOrderForm: OrderFormProps = {
   dormitory: '',
   deliveryDate: '',
   paymentMethod: 'CASH',
-  weight: 0
+  weight: 0,
+  deliveryDay: '',
+  deliveryTimeSlot: ''
 };
 
 export const adminInitialOrderForm: OrderFormProps = {

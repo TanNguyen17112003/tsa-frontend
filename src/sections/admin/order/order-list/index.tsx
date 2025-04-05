@@ -21,6 +21,7 @@ import OrderGroupWarningDialog from './order-group-warning-dialog';
 import Pagination from 'src/components/ui/Pagination';
 import { SearchIcon } from 'lucide-react';
 import { unixTimestampToDate } from 'src/utils/format-time-currency';
+import OrderFastGroupDialog from './order-fast-group-dialog';
 
 function OrderList() {
   const router = useRouter();
@@ -51,6 +52,7 @@ function OrderList() {
   const orderDeleteWarningDialog = useDialog<OrderDetail[]>();
   const orderApproveWarningDialog = useDialog<OrderDetail[]>();
   const orderGroupWarningDialog = useDialog<OrderDetail[]>();
+  const orderFastGroupDialog = useDialog();
 
   const orders = useMemo(() => {
     return getOrdersApi.data?.results || [];
@@ -106,6 +108,10 @@ function OrderList() {
     },
     [router]
   );
+
+  const handleOrderFastGroup = useCallback(() => {
+    orderFastGroupDialog.handleOpen();
+  }, []);
 
   const numberOfOrders = useMemo(() => {
     return getOrdersApi.data?.totalElements || 0;
@@ -347,6 +353,14 @@ function OrderList() {
           >
             Gom nhóm đơn hàng
           </Button>
+          <Button
+            variant='contained'
+            color='success'
+            startIcon={<Additem />}
+            onClick={handleOrderFastGroup}
+          >
+            Gom nhóm nhanh
+          </Button>
         </Stack>
       </Box>
       {getOrdersApi.loading ? (
@@ -403,6 +417,10 @@ function OrderList() {
         open={orderGroupWarningDialog.open}
         onClose={orderGroupWarningDialog.handleClose}
         onConfirm={orderGroupDialog.handleOpen}
+      />
+      <OrderFastGroupDialog
+        open={orderFastGroupDialog.open}
+        onClose={orderFastGroupDialog.handleClose}
       />
       {isLoading && (
         <Box

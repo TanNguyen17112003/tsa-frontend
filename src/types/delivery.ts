@@ -2,6 +2,11 @@ import { OrderDetail } from './order';
 
 export type DeliveryStatus = 'PENDING' | 'ACCEPTED' | 'FINISHED' | 'CANCELED';
 
+export interface AdvancedDelivery {
+  delayed: Partial<OrderDetail>[];
+  deliveries: Partial<OrderDetail>[][];
+}
+
 export const deliveryStatusMap = {
   'Đang chờ xử lý': 'PENDING',
   'Đã chấp nhận': 'ACCEPTED',

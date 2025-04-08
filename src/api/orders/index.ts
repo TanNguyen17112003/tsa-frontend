@@ -1,5 +1,8 @@
 import { apiDelete, apiGet, apiPatch, apiPost, apiPut, getFormData } from 'src/utils/api-request';
 import { OrderDetail, Order, OrderStatus } from 'src/types/order';
+import { AdvancedDelivery } from 'src/types/delivery';
+
+export type GroupOrderMode = 'balanced' | 'free';
 
 export interface OrderFormProps
   extends Partial<
@@ -25,6 +28,31 @@ export interface OrderFormProps
   studentId?: string;
   adminId?: string;
 }
+interface GroupOrderRequest {
+  maxWeight: number;
+  dormitory: string;
+  timeslot: string;
+  mode: GroupOrderMode;
+}
+interface GroupOrderResponse extends AdvancedDelivery {}
+
+export interface DelayOrderRequest {
+  timeslot: string;
+  orderIds: string[];
+}
+export interface DelayOrderResponse {
+  message: string;
+}
+
+export interface OrderRouteRequest {
+  orders: {
+    id: string;
+    room: string;
+    building: string;
+    dormitory: string;
+  }[];
+}
+export interface OrderRouteResponse extends OrderRouteRequest {}
 
 interface OrderCreateResponse {
   message: string;
@@ -73,5 +101,17 @@ export class OrdersApi {
 
   static async deleteOrder(id: Order['id']) {
     return await apiDelete(`/orders/${id}`, {});
+  }
+
+  static async groupOrders(request: GroupOrderRequest): Promise<GroupOrderResponse> {
+    return await apiPost('/orders/group', request);
+  }
+
+  static async delayOrders(request: DelayOrderRequest): Promise<DelayOrderResponse> {
+    return await apiPost('/orders/delay', request);
+  }
+
+  static async routeOrders(request: OrderRouteRequest): Promise<OrderRouteResponse> {
+    return await apiPost('/orders/route', request);
   }
 }

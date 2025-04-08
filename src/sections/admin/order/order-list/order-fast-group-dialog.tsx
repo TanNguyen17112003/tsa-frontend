@@ -25,12 +25,10 @@ import { UsersApi } from 'src/api/users';
 import { OrderFormTextField } from '../order-add/order-form-text-field';
 import { AddressData } from '@utils';
 import { useFormik } from 'formik';
-import { useAuth } from '@hooks';
-import CookieHelper from 'src/utils/cookie-helper';
-import { CookieKeys } from 'src/utils/cookie-helper';
 import { AdvancedDelivery } from 'src/types/delivery';
 import { useDialog } from '@hooks';
 import OrderConfirmAdvancedDialog from './order-confirm-advanced-dialog';
+import { OrdersApi } from 'src/api/orders';
 
 interface OrderFastGroupFieldProps {
   deliveryDay: string;
@@ -40,9 +38,6 @@ interface OrderFastGroupFieldProps {
 }
 
 function OrderFastGroupDialog({ ...dialogProps }: DialogProps & {}) {
-  const accessToken = useMemo(() => {
-    return CookieHelper.getItem(CookieKeys.TOKEN);
-  }, []);
   const [result, setResult] = useState<AdvancedDelivery | null>(null);
   const confirmAdvancedDialog = useDialog();
   const formik = useFormik<OrderFastGroupFieldProps>({
@@ -64,47 +59,25 @@ function OrderFastGroupDialog({ ...dialogProps }: DialogProps & {}) {
   }, [getListUsersApiApi.data]);
 
   const fetchGroupOrders = useCallback(async () => {
-    if (!accessToken) {
-      console.error('Access token is missing!');
-      return;
-    }
-    try {
-      const response = await fetch(`https://tsa-delivery.onrender.com/group-orders`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          maxWeight: formik.values.maxWeight,
-          dormitory: formik.values.dormitory,
-          timeslot: Math.floor(
-            new Date(`${formik.values.deliveryDay} ${formik.values.deliveryTimeSlot}`).getTime() /
-              1000
-          ).toString(),
-          mode: 'balanced'
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      await setResult(data);
+    const response = await OrdersApi.groupOrders({
+      maxWeight: formik.values.maxWeight,
+      dormitory: formik.values.dormitory,
+      timeslot: Math.floor(
+        new Date(`${formik.values.deliveryDay} ${formik.values.deliveryTimeSlot}`).getTime() / 1000
+      ).toString(),
+      mode: 'balanced'
+    });
+    if (response) {
+      await setResult(response);
       confirmAdvancedDialog.handleOpen();
-      console.log('Fetched group orders:', data);
-    } catch (error) {
-      console.error('Failed to fetch group orders:', error);
     }
   }, [
-    accessToken,
-    setResult,
     formik.values.deliveryDay,
     formik.values.deliveryTimeSlot,
     formik.values.maxWeight,
     formik.values.dormitory,
-    confirmAdvancedDialog
+    confirmAdvancedDialog,
+    setResult
   ]);
 
   const timeSlotOptions = useMemo(() => {

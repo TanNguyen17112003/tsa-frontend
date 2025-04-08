@@ -25,6 +25,7 @@ import { useFormik } from 'formik';
 import { DeliveryRequest } from 'src/api/deliveries';
 import { UsersApi } from 'src/api/users';
 import { DeliveriesApi } from 'src/api/deliveries';
+import { OrdersApi } from 'src/api/orders';
 
 function OrderGroupDialog({
   orders,
@@ -35,8 +36,19 @@ function OrderGroupDialog({
   const onConfirm = useCallback(
     async (values: DeliveryRequest) => {
       try {
+        const extractedOrders = orders.map((order) => {
+          return {
+            id: order.id,
+            room: order.room,
+            building: order.building,
+            dormitory: order.dormitory
+          };
+        });
+        const response = await OrdersApi.routeOrders({
+          orders: extractedOrders
+        });
         await DeliveriesApi.postDeliveries({
-          orderIds: orders.map((order) => order.id),
+          orderIds: response.orders.map((order) => order.id),
           staffId: values.staffId,
           limitTime: Number(values.limitTime)
         });
@@ -44,7 +56,7 @@ function OrderGroupDialog({
         throw error;
       }
     },
-    [orders]
+    [orders, OrdersApi.routeOrders, DeliveriesApi.postDeliveries]
   );
 
   const onConfirmHelper = useFunction(onConfirm!, {
@@ -53,7 +65,9 @@ function OrderGroupDialog({
 
   const getListUsersApiApi = useFunction(UsersApi.getUsers);
   const staffs = useMemo(() => {
-    return (getListUsersApiApi.data || []).filter((user) => user.role === 'STAFF');
+    return (getListUsersApiApi.data || []).filter(
+      (user) => user.role === 'STAFF' && user.status === 'AVAILABLE'
+    );
   }, [getListUsersApiApi.data]);
 
   const formik = useFormik<DeliveryRequest>({

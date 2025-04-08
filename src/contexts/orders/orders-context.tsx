@@ -7,7 +7,7 @@ import {
   ChangeEvent,
   useState
 } from 'react';
-import { OrderResponse, OrdersApi } from 'src/api/orders';
+import { DelayOrderRequest, OrderResponse, OrdersApi } from 'src/api/orders';
 import useFunction, {
   DEFAULT_FUNCTION_RETURN,
   UseFunctionReturnType
@@ -41,6 +41,7 @@ interface ContextValue {
   updateOrder: (Order: Partial<OrderDetail>, orderId: string) => Promise<void>;
   updateOrderStatus: (status: OrderStatus, ids: string[]) => Promise<void>;
   deleteOrder: (ids: Order['id'][]) => Promise<void>;
+  delayOrders: (request: DelayOrderRequest) => Promise<void>;
 }
 
 export const OrdersContext = createContext<ContextValue>({
@@ -67,7 +68,8 @@ export const OrdersContext = createContext<ContextValue>({
   createOrder: async () => {},
   updateOrder: async () => {},
   updateOrderStatus: async () => {},
-  deleteOrder: async () => {}
+  deleteOrder: async () => {},
+  delayOrders: async () => {}
 });
 
 const OrdersProvider = ({ children }: { children: ReactNode }) => {
@@ -193,6 +195,31 @@ const OrdersProvider = ({ children }: { children: ReactNode }) => {
     [getOrdersApi]
   );
 
+  const delayOrders = useCallback(
+    async (request: DelayOrderRequest) => {
+      try {
+        const response = await OrdersApi.delayOrders(request);
+        if (response) {
+          getOrdersApi.setData({
+            ...getOrdersApi.data,
+            results: (getOrdersApi.data?.results || []).map((c) =>
+              request.orderIds.includes(c.id)
+                ? Object.assign(c, {
+                    deliveryDate: request.timeslot
+                  })
+                : c
+            ),
+            totalElements: getOrdersApi.data?.totalElements || 0,
+            totalPages: getOrdersApi.data?.totalPages || 1
+          });
+        }
+      } catch (error) {
+        throw error;
+      }
+    },
+    [getOrdersApi]
+  );
+
   useEffect(() => {
     const formData = new FormData();
     Object.entries(orderFilter).forEach(([key, value]) => {
@@ -230,7 +257,8 @@ const OrdersProvider = ({ children }: { children: ReactNode }) => {
         createOrder,
         updateOrder,
         updateOrderStatus,
-        deleteOrder
+        deleteOrder,
+        delayOrders
       }}
     >
       {children}

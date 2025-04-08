@@ -20,15 +20,27 @@ import {
   TableHead,
   TableRow,
   Paper,
-  FormControl
+  FormControl,
+  Grid
 } from '@mui/material';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Carousel from 'react-material-ui-carousel';
 import { AdvancedDelivery } from 'src/types/delivery';
 import { UserDetail } from 'src/types/user';
 import CloseIcon from '@mui/icons-material/Close';
 import { IconButton } from '@mui/material';
 import { DeliveriesApi } from 'src/api/deliveries';
+import useFunction from 'src/hooks/use-function';
+import { useFormik } from 'formik';
+import { OrdersApi } from 'src/api/orders';
+import { OrderFormTextField } from '../order-add/order-form-text-field';
+import { useOrdersContext } from 'src/contexts/orders/orders-context';
+
+interface OrderDelayFieldProps {
+  deliveryDay: string;
+  deliveryTimeSlot: string;
+  orderIds: string[];
+}
 
 function OrderConfirmAdvancedDialog({
   staffs,
@@ -51,6 +63,31 @@ function OrderConfirmAdvancedDialog({
     ];
   }, []);
 
+  const { delayOrders } = useOrdersContext();
+
+  const timeSlotOptions = useMemo(() => {
+    const slots = [];
+    let startHour = 7;
+    const startMinute = 0;
+
+    while (startHour < 18 || (startHour === 18 && startMinute <= 45)) {
+      const endHour = startHour + 1;
+      const endMinute = startMinute + 45;
+      const startTime = `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}`;
+      const endTime = `${String(endHour).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}`;
+
+      slots.push({
+        label: `${startTime} - ${endTime}`,
+        value: startTime
+      });
+
+      startHour += 2;
+    }
+    return slots;
+  }, []);
+
+  const getOrdersApi = useFunction(OrdersApi.getOrders);
+
   const [tab, setTab] = useState(tabs[0].key);
   const [selectedStaffs, setSelectedStaffs] = useState<Record<number, string>>({});
   const [loading, setLoading] = useState(false);
@@ -69,9 +106,19 @@ function OrderConfirmAdvancedDialog({
     );
   };
 
+  const formik = useFormik<OrderDelayFieldProps>({
+    initialValues: {
+      deliveryDay: new Date().toISOString().split('T')[0],
+      deliveryTimeSlot: '07:00',
+      orderIds: []
+    },
+    onSubmit: async (values) => {
+      console.log(values);
+    }
+  });
+
   const handleCreateDeliveries = useCallback(async () => {
     if (!result?.deliveries) return;
-
     setLoading(true);
     try {
       for (let deliveryIndex = 0; deliveryIndex < result.deliveries.length; deliveryIndex++) {
@@ -91,6 +138,15 @@ function OrderConfirmAdvancedDialog({
           staffId,
           orderIds
         });
+        await delayOrders({
+          timeslot: Math.floor(
+            new Date(`${formik.values.deliveryDay} ${formik.values.deliveryTimeSlot}`).getTime() /
+              1000
+          ).toString(),
+          orderIds: result?.delayed
+            .map((order) => order.id)
+            .filter((id): id is string => id !== undefined)
+        });
       }
 
       dialogProps.onClose?.({}, 'escapeKeyDown');
@@ -99,11 +155,45 @@ function OrderConfirmAdvancedDialog({
     } finally {
       setLoading(false);
     }
-  }, [result?.deliveries, selectedStaffs, dialogProps]);
+  }, [
+    result?.deliveries,
+    selectedStaffs,
+    dialogProps,
+    delayOrders,
+    result?.delayed,
+    formik.values.deliveryDay,
+    formik.values.deliveryTimeSlot
+  ]);
+
+  const handleCreateDeliveriesHelper = useFunction(handleCreateDeliveries, {
+    successMessage:
+      result?.delayed.length === 0
+        ? 'Tạo các chuyến đi thành công'
+        : 'Đã tạo các chuyến đi và cập nhật thời gian giao hàng cho các đơn hàng bị trễ'
+  });
+
   const isConfirmDisabled = useMemo(() => {
-    if (!result?.deliveries) return true;
-    return result.deliveries.some((_, deliveryIndex) => !selectedStaffs[deliveryIndex]);
-  }, [result?.deliveries, selectedStaffs]);
+    if (!result?.deliveries && !result?.delayed) return true;
+    const filteredByDeliveries = result.deliveries.some(
+      (_, deliveryIndex) => !selectedStaffs[deliveryIndex]
+    );
+    const filteredByDelayed =
+      result?.delayed.length > 0 &&
+      formik.values.deliveryDay !== '' &&
+      formik.values.deliveryTimeSlot !== '';
+    return filteredByDeliveries && filteredByDelayed;
+  }, [
+    result?.deliveries,
+    selectedStaffs,
+    formik.values.deliveryDay,
+    formik.values.deliveryTimeSlot,
+    result?.delayed
+  ]);
+
+  useEffect(() => {
+    getOrdersApi.call({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <Dialog fullWidth maxWidth='md' {...dialogProps}>
       <DialogTitle>
@@ -155,7 +245,7 @@ function OrderConfirmAdvancedDialog({
             <>
               {result?.deliveries?.length === 0 ? (
                 <Typography variant='body1' color='textSecondary'>
-                  There are no info for this field.
+                  Không có thông tin cho trường này.
                 </Typography>
               ) : (
                 <Carousel>
@@ -173,7 +263,7 @@ function OrderConfirmAdvancedDialog({
                           displayEmpty
                         >
                           <MenuItem value='' disabled>
-                            Select a staff
+                            Chọn nhân viên giao hàng
                           </MenuItem>
                           {staffs?.map((staff) => (
                             <MenuItem
@@ -218,35 +308,71 @@ function OrderConfirmAdvancedDialog({
           )}
           {tab === 'delayed' && (
             <>
-              {result?.delayed?.length === 0 ? (
+              {result?.delayed.length === 0 ? (
                 <Typography variant='body1' color='textSecondary'>
-                  There are no info for this field.
+                  Không có thông tin cho trường này.
                 </Typography>
               ) : (
-                <TableContainer component={Paper}>
-                  <Table>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Mã đơn hàng</TableCell>
-                        <TableCell>Sản phẩm</TableCell>
-                        <TableCell>Khối lượng</TableCell>
-                        <TableCell>Nhãn hàng</TableCell>
-                        <TableCell>Địa chỉ</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {result?.delayed.map((order, index) => (
-                        <TableRow key={index}>
-                          <TableCell>{order.checkCode}</TableCell>
-                          <TableCell>{order.product}</TableCell>
-                          <TableCell>{order.weight} kg</TableCell>
-                          <TableCell>{order.brand}</TableCell>
-                          <TableCell>{`P.${order.room}, T.${order.building}, KTX khu ${order.dormitory}`}</TableCell>
-                        </TableRow>
+                <>
+                  <Typography variant='body1' fontWeight={'bold'}>
+                    Chỉnh sửa thời gian giao cho các đơn hàng bị trễ
+                  </Typography>
+                  <Grid container spacing={2} my={2}>
+                    <OrderFormTextField
+                      type='date'
+                      title={'Ngày giao hàng'}
+                      lg={6}
+                      xs={6}
+                      name={'deliveryDay'}
+                      placeholder='Chọn ngày gian giao hàng'
+                      onChange={formik.handleChange}
+                      value={formik.values.deliveryDay as string}
+                    />
+                    <OrderFormTextField
+                      type='text'
+                      title='Khung giờ giao hàng'
+                      xs={6}
+                      lg={6}
+                      name='deliveryTimeSlot'
+                      placeholder='Chọn khung giờ giao hàng'
+                      select
+                      onChange={(event) =>
+                        formik.setFieldValue('deliveryTimeSlot', event.target.value)
+                      }
+                      value={formik.values.deliveryTimeSlot as string}
+                    >
+                      {timeSlotOptions.map((slot, index) => (
+                        <MenuItem key={index} value={slot.value}>
+                          {slot.label}
+                        </MenuItem>
                       ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
+                    </OrderFormTextField>
+                  </Grid>
+                  <TableContainer component={Paper}>
+                    <Table>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>Mã đơn hàng</TableCell>
+                          <TableCell>Sản phẩm</TableCell>
+                          <TableCell>Khối lượng</TableCell>
+                          <TableCell>Nhãn hàng</TableCell>
+                          <TableCell>Địa chỉ</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {result?.delayed.map((order, index) => (
+                          <TableRow key={index}>
+                            <TableCell>{order.checkCode}</TableCell>
+                            <TableCell>{order.product}</TableCell>
+                            <TableCell>{order.weight} kg</TableCell>
+                            <TableCell>{order.brand}</TableCell>
+                            <TableCell>{`P.${order.room}, T.${order.building}, KTX khu ${order.dormitory}`}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </>
               )}
             </>
           )}
@@ -265,7 +391,7 @@ function OrderConfirmAdvancedDialog({
         <Button
           variant='contained'
           color='primary'
-          onClick={handleCreateDeliveries}
+          onClick={handleCreateDeliveriesHelper.call}
           disabled={loading || isConfirmDisabled}
         >
           {loading ? 'Đang xử lý...' : 'Xác nhận'}

@@ -141,7 +141,7 @@ function OrderConfirmFeeDialog({
                 <Stack key={index} direction={'row'} gap={0.5} justifyContent='space-between'>
                   <Typography variant='body1'>Thời gian giao hàng:</Typography>
                   <Typography variant='body1' fontWeight={'bold'}>
-                    {order.deliveryDay}
+                    {order.deliveryDate}
                   </Typography>
                 </Stack>
                 <Stack key={index} direction={'row'} gap={0.5} justifyContent='space-between'>

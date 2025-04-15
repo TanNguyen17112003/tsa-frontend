@@ -121,7 +121,10 @@ const OrderAddPage = () => {
 
   const handleCreateOrderAndPayment = useCallback(async () => {
     const newOrder = await OrdersApi.postOrders({
-      ...formik.values,
+      ...(() => {
+        const { deliveryDay, deliveryTimeSlot, ...rest } = formik.values;
+        return rest;
+      })(),
       product: formik.values.product?.startsWith(', ')
         ? formik.values.product.slice(2)
         : formik.values.product,
@@ -168,6 +171,7 @@ const OrderAddPage = () => {
               deliveryDate: `${values.deliveryDay}T${values.deliveryTimeSlot}:00`
             }
           ]);
+          console.log(values);
         }
         formik.resetForm();
       } catch (error) {

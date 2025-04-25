@@ -10,7 +10,7 @@ const getTicketTableConfigs = ({}: {}): CustomTableConfig<TicketDetail['id'], Ti
     key: 'ticketId',
     headerLabel: 'Id câu hỏi/yêu cầu',
     type: 'string',
-    renderCell: (data) => <Typography>#{data.id.slice(0, 5)}</Typography>
+    renderCell: (data) => <Typography>#{data.displayId}</Typography>
   },
   {
     key: 'subject',

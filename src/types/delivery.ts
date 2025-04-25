@@ -22,6 +22,7 @@ interface DeliveryStatusHistory {
   time: string;
 }
 export interface Delivery {
+  displayId: string;
   id: string;
   createdAt: string;
   acceptedAt?: string;

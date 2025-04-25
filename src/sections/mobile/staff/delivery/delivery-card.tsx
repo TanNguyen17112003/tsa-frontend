@@ -12,7 +12,7 @@ const DeliveryCard: React.FC<{ delivery: DeliveryDetail }> = ({ delivery }) => {
   return (
     <Card className='px-4 py-3 flex flex-col gap-1 cursor-pointer'>
       <Typography variant='subtitle1' fontWeight={'bold'} color='primary'>
-        Mã chuyến đi: #{delivery?.id.slice(0, 4)}
+        Mã chuyến đi: {delivery.displayId}
       </Typography>
 
       <Stack direction='row' alignItems='center' gap={1} mt={1} justifyContent={'space-between'}>

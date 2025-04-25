@@ -14,7 +14,7 @@ const getDeliveryTableConfig = ({}: {}): CustomTableConfig<
       key: 'id',
       headerLabel: 'Mã chuyển đi',
       type: 'string',
-      renderCell: (data) => <Typography>{shortenUUID(data.id, 'DELIVERY')}</Typography>
+      renderCell: (data) => <Typography>{data.displayId}</Typography>
     },
     {
       key: 'numberOfOrders',

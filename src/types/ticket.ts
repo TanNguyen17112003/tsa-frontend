@@ -25,6 +25,7 @@ export const ticketStatusMap = {
 };
 
 export interface Ticket {
+  displayId: string;
   id: string;
   categoryId: string;
   userName: string;

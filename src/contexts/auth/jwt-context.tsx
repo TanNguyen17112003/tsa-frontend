@@ -292,17 +292,17 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
   const updateProfile = useCallback(
     async (request: UpdateProfileRequest) => {
       try {
-        await UsersApi.updateProfile(request);
+        const response = await UsersApi.updateProfile(request);
         const currentUserInfo = JSON.parse(CookieHelper.getItem('user_data') as string);
         const newUserInfo = {
           ...currentUserInfo,
-          firstName: request.firstName || currentUserInfo.firstName,
-          lastName: request.lastName || currentUserInfo.lastName,
-          phoneNumber: request.phoneNumber || currentUserInfo.phoneNumber,
-          photoUrl: request.photoUrl || currentUserInfo.photoUrl,
-          dormitory: request.dormitory || currentUserInfo.dormitory || '',
-          building: request.building || currentUserInfo.building || '',
-          room: request.room || currentUserInfo.room || ''
+          firstName: response.firstName || request.firstName || currentUserInfo.firstName,
+          lastName: response.firstName || request.lastName || currentUserInfo.lastName,
+          phoneNumber: response.phoneNumber || request.phoneNumber || currentUserInfo.phoneNumber,
+          photoUrl: response.photoUrl || request.photoUrl || currentUserInfo.photoUrl,
+          dormitory: response.dormitory || request.dormitory || currentUserInfo.dormitory || '',
+          building: response.building || request.building || currentUserInfo.building || '',
+          room: response.room || request.room || currentUserInfo.room || ''
         };
         CookieHelper.setItem('user_data', JSON.stringify(newUserInfo));
         dispatch({

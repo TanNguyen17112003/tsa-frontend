@@ -53,14 +53,11 @@ function ProfileSection() {
   const handleUpload = useCallback(
     async (file: File) => {
       try {
-        const uploadedImage = await UploadImagesApi.postImage(file);
-        if (uploadedImage && uploadedImage.url) {
-          if (user && updateProfile) {
-            await updateProfile({ photoUrl: uploadedImage.url });
-          }
-          if (firebaseUser && updateFirebaseProfile) {
-            await updateFirebaseProfile({ photoUrl: uploadedImage.url });
-          }
+        if (user && updateProfile) {
+          await updateProfile({ avatar: file });
+        }
+        if (firebaseUser && updateFirebaseProfile) {
+          await updateFirebaseProfile({ avatar: file });
         }
       } catch (error) {
         throw error;

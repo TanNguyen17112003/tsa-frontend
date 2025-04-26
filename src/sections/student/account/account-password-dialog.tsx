@@ -15,6 +15,15 @@ import { VisibilityOff, Visibility } from '@mui/icons-material';
 import { useFormik } from 'formik';
 import { UsersApi } from 'src/api/users';
 import useFunction from 'src/hooks/use-function';
+import * as Yup from 'yup';
+
+export const updatePasswordSchema = Yup.object({
+  currentPassword: Yup.string().required('Mật khẩu cũ không được để trống'),
+  newPassword: Yup.string().required('Mật khẩu mới không được để trống'),
+  newPasswordConfirm: Yup.string()
+    .oneOf([Yup.ref('newPassword'), undefined], 'Mật khẩu không khớp')
+    .required('Nhập lại mật khẩu mới không được để trống')
+});
 
 function AccountPasswordDialog({ ...props }: DialogProps) {
   const [viewRawOldPassword, setViewRawOldPassword] = useState(false);
@@ -30,6 +39,7 @@ function AccountPasswordDialog({ ...props }: DialogProps) {
       newPassword: '',
       newPasswordConfirm: ''
     },
+    validationSchema: updatePasswordSchema,
     onSubmit: async (values) => {
       if (values.newPassword != values.newPasswordConfirm) {
         formik.setFieldError('newPasswordConfirm', 'Mật khẩu không khớp');
@@ -39,11 +49,7 @@ function AccountPasswordDialog({ ...props }: DialogProps) {
         newPassword: values.newPassword
       });
       if (!error) {
-        formik.setValues({
-          currentPassword: '',
-          newPassword: '',
-          newPasswordConfirm: ''
-        });
+        formik.resetForm();
         props.onClose?.({}, 'backdropClick');
       }
     }
@@ -72,6 +78,7 @@ function AccountPasswordDialog({ ...props }: DialogProps) {
               value={formik.values.currentPassword}
               name='currentPassword'
               onChange={formik.handleChange}
+              error={formik.touched.currentPassword && !!formik.errors.currentPassword}
               onBlur={formik.handleBlur}
               fullWidth
               InputProps={{
@@ -98,6 +105,7 @@ function AccountPasswordDialog({ ...props }: DialogProps) {
               type={!viewRawNewPassword ? 'password' : 'text'}
               value={formik.values.newPassword}
               name='newPassword'
+              error={formik.touched.newPassword && !!formik.errors.newPassword}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               fullWidth
@@ -125,6 +133,7 @@ function AccountPasswordDialog({ ...props }: DialogProps) {
               type={!viewRawRetypePassword ? 'password' : 'text'}
               required
               value={formik.values.newPasswordConfirm}
+              error={formik.touched.newPasswordConfirm && !!formik.errors.newPasswordConfirm}
               name='newPasswordConfirm'
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
@@ -175,7 +184,12 @@ function AccountPasswordDialog({ ...props }: DialogProps) {
             >
               Hủy bỏ
             </Button>
-            <Button variant='contained' color='primary' type='submit'>
+            <Button
+              variant='contained'
+              color='primary'
+              type='submit'
+              disabled={!formik.isValid || formik.isSubmitting}
+            >
               Cập nhật
             </Button>
           </Box>

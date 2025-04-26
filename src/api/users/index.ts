@@ -37,12 +37,23 @@ export type SignUpRequest = {
   token: string;
 };
 
-export type UpdateProfileRequest = Partial<
-  Pick<
-    SignUpRequest,
-    'firstName' | 'lastName' | 'phoneNumber' | 'dormitory' | 'building' | 'room' | 'photoUrl'
-  >
->;
+// export type UpdateProfileRequest = Partial<
+//   Pick<
+//     SignUpRequest,
+//     'firstName' | 'lastName' | 'phoneNumber' | 'dormitory' | 'building' | 'room' | 'photoUrl'
+//   >
+// >;
+
+export type UpdateProfileRequest = Partial<{
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  dormitory: string;
+  building: string;
+  room: string;
+  photoUrl: string;
+  avatar: File;
+}>;
 
 export class UsersApi {
   static async postUser(request: Omit<User, 'id'>): Promise<User> {
@@ -83,7 +94,7 @@ export class UsersApi {
   }
 
   static async updateProfile(payload: UpdateProfileRequest): Promise<User> {
-    return await apiPatch('/users/profile', payload);
+    return await apiPatch('/users/profile', getFormData(payload));
   }
 
   static async updateUserRole(id: User['id'], role: User['role']): Promise<User> {

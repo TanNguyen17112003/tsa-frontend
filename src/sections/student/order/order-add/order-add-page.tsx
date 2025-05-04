@@ -20,6 +20,7 @@ import OrderPaymentDialog from './order-payment-dialog';
 import { getShippingFee } from 'src/utils/shipping-fee';
 import { usePayOS, PayOSConfig } from 'payos-checkout';
 import { PaymentsApi } from 'src/api/payment';
+import dayjs from 'dayjs';
 import { useSocketContext } from 'src/contexts/socket-client/socket-client-context';
 
 const OrderAddPage = () => {
@@ -128,7 +129,9 @@ const OrderAddPage = () => {
       product: formik.values.product?.startsWith(', ')
         ? formik.values.product.slice(2)
         : formik.values.product,
-      deliveryDate: formik.values.deliveryDate
+      deliveryDate: dayjs(
+        `${formik.values.deliveryDay}T${formik.values.deliveryTimeSlot}:00`
+      ).toISOString()
     });
     if (newOrder && newOrder.data.id) {
       setOrderId(newOrder.data.id);
@@ -153,6 +156,7 @@ const OrderAddPage = () => {
           await createOrder(
             orderList.map((order) => ({
               ...order,
+              deliveryDate: dayjs(order.deliveryDate).toISOString(),
               product: formik.values.product?.startsWith(', ')
                 ? formik.values.product.slice(2)
                 : formik.values.product
@@ -168,7 +172,9 @@ const OrderAddPage = () => {
               product: formik.values.product?.startsWith(', ')
                 ? formik.values.product.slice(2)
                 : formik.values.product,
-              deliveryDate: `${values.deliveryDay}T${values.deliveryTimeSlot}:00`
+              deliveryDate: dayjs(
+                `${formik.values.deliveryDay}T${formik.values.deliveryTimeSlot}:00`
+              ).toISOString()
             }
           ]);
           console.log(values);

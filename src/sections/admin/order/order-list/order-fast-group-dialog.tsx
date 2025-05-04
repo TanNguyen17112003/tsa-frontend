@@ -28,24 +28,38 @@ import { useFormik } from 'formik';
 import { AdvancedDelivery } from 'src/types/delivery';
 import { useDialog } from '@hooks';
 import OrderConfirmAdvancedDialog from './order-confirm-advanced-dialog';
-import { OrdersApi } from 'src/api/orders';
+import { GroupOrderMode, OrdersApi } from 'src/api/orders';
 
 interface OrderFastGroupFieldProps {
   deliveryDay: string;
   deliveryTimeSlot: string;
   dormitory: string;
   maxWeight: number;
+  mode: GroupOrderMode;
 }
 
 function OrderFastGroupDialog({ ...dialogProps }: DialogProps & {}) {
   const [result, setResult] = useState<AdvancedDelivery | null>(null);
   const confirmAdvancedDialog = useDialog();
+  const modeOptions = useMemo(() => {
+    return [
+      {
+        label: 'Gom nhóm tự do',
+        value: 'free'
+      },
+      {
+        label: 'Gom nhóm cân bằng',
+        value: 'balanced'
+      }
+    ];
+  }, []);
   const formik = useFormik<OrderFastGroupFieldProps>({
     initialValues: {
       deliveryDay: new Date().toISOString().split('T')[0],
       deliveryTimeSlot: '07:00',
       dormitory: 'A',
-      maxWeight: 20
+      maxWeight: 20,
+      mode: 'balanced'
     },
     onSubmit: async (values) => {
       console.log(values);
@@ -65,7 +79,7 @@ function OrderFastGroupDialog({ ...dialogProps }: DialogProps & {}) {
       timeslot: Math.floor(
         new Date(`${formik.values.deliveryDay} ${formik.values.deliveryTimeSlot}`).getTime() / 1000
       ).toString(),
-      mode: 'balanced'
+      mode: formik.values.mode
     });
     if (response) {
       await setResult(response);
@@ -76,6 +90,7 @@ function OrderFastGroupDialog({ ...dialogProps }: DialogProps & {}) {
     formik.values.deliveryTimeSlot,
     formik.values.maxWeight,
     formik.values.dormitory,
+    formik.values.mode,
     confirmAdvancedDialog,
     setResult
   ]);
@@ -199,6 +214,23 @@ function OrderFastGroupDialog({ ...dialogProps }: DialogProps & {}) {
               onChange={formik.handleChange}
               value={formik.values.maxWeight as number}
             />
+            <OrderFormTextField
+              type='text'
+              title='Chế độ gom nhóm'
+              xs={12}
+              lg={12}
+              name='mode'
+              placeholder='Chọn chế độ gom nhóm'
+              select
+              onChange={formik.handleChange}
+              value={formik.values.mode as string}
+            >
+              {modeOptions.map((option, index) => (
+                <MenuItem key={index} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </OrderFormTextField>
           </Grid>
         </Box>
       </DialogContent>

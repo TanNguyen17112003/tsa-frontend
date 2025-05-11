@@ -21,6 +21,7 @@ import { CardTableProps, CardTableSortModel } from './card-table-types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { isValid } from 'date-fns';
 import { getObjectValue } from 'src/utils/obj-helper';
+import LoadingProcess from '../LoadingProcess';
 
 export function CardTable<P, T extends { id: P; [key: string]: any }>(props: CardTableProps<P, T>) {
   const {
@@ -208,7 +209,7 @@ export function CardTable<P, T extends { id: P; [key: string]: any }>(props: Car
           left={0}
         >
           {loading ? (
-            <CircularProgress />
+            <LoadingProcess />
           ) : (
             <Typography variant='subtitle1'>Không có dữ liệu</Typography>
           )}

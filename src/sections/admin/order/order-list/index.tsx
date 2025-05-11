@@ -22,6 +22,7 @@ import Pagination from 'src/components/ui/Pagination';
 import { SearchIcon } from 'lucide-react';
 import { unixTimestampToDate } from 'src/utils/format-time-currency';
 import OrderFastGroupDialog from './order-fast-group-dialog';
+import LoadingProcess from 'src/components/LoadingProcess';
 
 function OrderList() {
   const router = useRouter();
@@ -282,6 +283,7 @@ function OrderList() {
   }, [users, handleDeleteOrder, handleEditOrder]);
 
   const isLoading =
+    getOrdersApi.loading ||
     handleDeleteOrdersHelper.loading ||
     handleApproveOrdersHelper.loading ||
     handleConfirmDeleteOrdersHelper.loading ||
@@ -364,9 +366,7 @@ function OrderList() {
         </Stack>
       </Box>
       {getOrdersApi.loading ? (
-        <Box className='flex items-center justify-center h-[300px]'>
-          <CircularProgress />
-        </Box>
+        <LoadingProcess />
       ) : (
         <Stack spacing={2} mt={1}>
           <CustomTable
@@ -422,24 +422,7 @@ function OrderList() {
         open={orderFastGroupDialog.open}
         onClose={orderFastGroupDialog.handleClose}
       />
-      {isLoading && (
-        <Box
-          sx={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: 'rgba(255, 255, 255, 0.7)',
-            zIndex: 9999
-          }}
-        >
-          <CircularProgress />
-        </Box>
-      )}
+      {isLoading && <LoadingProcess />}
     </Box>
   );
 }

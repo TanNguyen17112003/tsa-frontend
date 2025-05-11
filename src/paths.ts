@@ -45,6 +45,9 @@ export const paths = {
   tickets: {
     index: '/tickets'
   },
+  banned: {
+    index: '/banned'
+  },
   401: '/401',
   404: '/404',
   500: '/500'

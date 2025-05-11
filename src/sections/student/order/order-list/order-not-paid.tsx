@@ -18,6 +18,7 @@ import Pagination from 'src/components/ui/Pagination';
 import { useSocketContext } from 'src/contexts/socket-client/socket-client-context';
 import { paths } from 'src/paths';
 import { OrdersApi } from 'src/api/orders';
+import LoadingProcess from 'src/components/LoadingProcess';
 
 const OrderNotPaid: React.FC = () => {
   const { socket } = useSocketContext();
@@ -279,9 +280,7 @@ const OrderNotPaid: React.FC = () => {
         />
         <Box sx={{ flex: 1 }}>
           {getOrdersApi.loading ? (
-            <Box display='flex' justifyContent='center' alignItems='center' height='100%'>
-              <CircularProgress />
-            </Box>
+            <LoadingProcess />
           ) : (
             <Stack spacing={2} mt={3}>
               <CustomTable

@@ -7,6 +7,7 @@ import usePagination from 'src/hooks/use-pagination';
 import { formatUnixTimestamp } from 'src/utils/format-time-currency';
 import MobileStaffFilter from './staff-filter/staff-filter';
 import MobileStaffCard from './staff-card';
+import LoadingProcess from 'src/components/LoadingProcess';
 
 function MobileStaffList() {
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
@@ -104,9 +105,7 @@ function MobileStaffList() {
           {filteredstaffs.length} nhân viên
         </Typography>
         {loading ? (
-          <Stack className='items-center justify-center h-[300px]'>
-            <CircularProgress />
-          </Stack>
+          <LoadingProcess />
         ) : (
           <Stack spacing={1.5} mt={1}>
             {paginatedstaffs.length === 0 && (

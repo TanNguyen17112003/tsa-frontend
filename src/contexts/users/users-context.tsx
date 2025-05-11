@@ -11,11 +11,13 @@ import { useFirebaseAuth } from '@hooks';
 interface ContextValue {
   getListUsersApi: UseFunctionReturnType<FormData, UserDetail[]>;
   deleteUser: (id: UserDetail['id']) => Promise<void>;
+  updateUserStatus: (id: UserDetail['id'], status: UserDetail['status']) => Promise<void>;
 }
 
 export const UsersContext = createContext<ContextValue>({
   getListUsersApi: DEFAULT_FUNCTION_RETURN,
-  deleteUser: async () => {}
+  deleteUser: async () => {},
+  updateUserStatus: async () => {}
 });
 
 const UsersProvider = ({ children }: { children: ReactNode }) => {
@@ -36,6 +38,25 @@ const UsersProvider = ({ children }: { children: ReactNode }) => {
     [getListUsersApi]
   );
 
+  const updateUserStatus = useCallback(
+    async (id: UserDetail['id'], status: UserDetail['status']) => {
+      try {
+        await UsersApi.updateUserStatus(id, status);
+        getListUsersApi.setData(
+          (getListUsersApi.data || []).map((user) => {
+            if (user.id === id) {
+              return { ...user, status };
+            }
+            return user;
+          })
+        );
+      } catch (err) {
+        throw err;
+      }
+    },
+    [getListUsersApi]
+  );
+
   useEffect(() => {
     if (user?.role === 'ADMIN' || firebaseUser?.role === 'ADMIN') {
       getListUsersApi.call(new FormData());
@@ -46,7 +67,8 @@ const UsersProvider = ({ children }: { children: ReactNode }) => {
     <UsersContext.Provider
       value={{
         getListUsersApi,
-        deleteUser
+        deleteUser,
+        updateUserStatus
       }}
     >
       {children}

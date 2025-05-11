@@ -25,6 +25,7 @@ import { Filter as FilterType } from 'src/types/filter';
 import { formatUnixTimestamp } from 'src/utils/format-time-currency';
 import { useDialog } from '@hooks';
 import OrderFilter from './order-filter/order-filter';
+import LoadingProcess from 'src/components/LoadingProcess';
 
 function MobileOrderList() {
   const router = useRouter();
@@ -235,9 +236,7 @@ function MobileOrderList() {
           {filteredOrders.length} đơn hàng
         </Typography>
         {loading ? (
-          <Stack className='items-center justify-center h-[300px]'>
-            <CircularProgress />
-          </Stack>
+          <LoadingProcess />
         ) : (
           <Stack spacing={1.5} mt={1}>
             {paginatedOrders.length === 0 && (

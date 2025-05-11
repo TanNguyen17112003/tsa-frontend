@@ -101,6 +101,10 @@ export class UsersApi {
     return await apiPut(`/users/role/${id}`, { role });
   }
 
+  static async updateUserStatus(id: User['id'], status: User['status']): Promise<User> {
+    return await apiPatch(`/users/status/${id}/${status}`, {});
+  }
+
   static async deleteUser(id: User['id']) {
     return await apiDelete(`/users/${id}`, {});
   }

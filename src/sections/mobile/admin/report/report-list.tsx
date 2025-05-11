@@ -8,6 +8,7 @@ import { useReportsContext } from 'src/contexts/reports/reports-context';
 import { Filter } from 'src/types/filter';
 import MobileAdvancedFilter from 'src/components/mobile-advanced-filter/mobile-advanced-filter';
 import { ReportStatus } from 'src/types/report';
+import LoadingProcess from 'src/components/LoadingProcess';
 
 function MobileReportList() {
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
@@ -97,9 +98,7 @@ function MobileReportList() {
           {numberOfReports} khiếu nại
         </Typography>
         {getReportsApi.loading ? (
-          <Stack className='items-center justify-center h-[300px]'>
-            <CircularProgress />
-          </Stack>
+          <LoadingProcess />
         ) : (
           <Stack spacing={1.5} mt={1}>
             {reports.length === 0 && (

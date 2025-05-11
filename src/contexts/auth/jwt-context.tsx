@@ -141,16 +141,19 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
   const initialize = useCallback(async (): Promise<void> => {
     try {
       const accessToken = CookieHelper.getItem(CookieKeys.TOKEN);
+      const currentUserInfo = JSON.parse(CookieHelper.getItem('user_data') as string);
       if (accessToken) {
         let user: UserDetail | undefined = undefined;
         try {
           const partialUser = await UsersApi.me();
+          console.log(partialUser);
           if (
             partialUser &&
             partialUser.id &&
             partialUser.firstName &&
             partialUser.lastName &&
-            partialUser.role
+            partialUser.role &&
+            partialUser.status
           ) {
             user = partialUser as UserDetail;
           } else {
@@ -167,7 +170,7 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
           type: ActionType.INITIALIZE,
           payload: {
             isAuthenticated: true,
-            user: user || null
+            user: user || currentUserInfo || null
           }
         });
       } else {
@@ -189,7 +192,7 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
         }
       });
     }
-  }, [dispatch]);
+  }, [dispatch, UsersApi.me]);
 
   useEffect(
     () => {
@@ -203,6 +206,7 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
     async (email: string, password: string): Promise<UserDetail | undefined> => {
       try {
         const response = await UsersApi.signIn({ email, password });
+        console.log(response);
         if (response && response.accessToken && response.userInfo) {
           const userInfo = { ...response.userInfo, authMethod: 'jwt' as const };
           CookieHelper.setItem(CookieKeys.TOKEN, response.accessToken);

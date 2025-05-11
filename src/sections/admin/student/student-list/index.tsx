@@ -10,10 +10,12 @@ import { useRouter } from 'next/router';
 import { useUsersContext } from '@contexts';
 import DeleteUserDialog from '../../delete-user-dialog';
 import { useDialog } from '@hooks';
+import RestoreUserDialog from '../../restore-user-dialog';
+import LoadingProcess from 'src/components/LoadingProcess';
 
 function StudentList() {
   const router = useRouter();
-  const { getListUsersApi, deleteUser } = useUsersContext();
+  const { getListUsersApi, deleteUser, updateUserStatus } = useUsersContext();
   const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [selectedDormitory, setSelectedDormitory] = useState<string>('');
   const [selectedBuilding, setSelectedBuilding] = useState<string>('');
@@ -28,6 +30,7 @@ function StudentList() {
   }, [getListUsersApi.data]);
 
   const deleteStudentDialog = useDialog<UserDetail>();
+  const restoreStudentDialog = useDialog<UserDetail>();
 
   const handleStatusChange = (event: SelectChangeEvent<string>) => {
     setSelectedStatus(event.target.value as string);
@@ -95,6 +98,9 @@ function StudentList() {
       },
       onClickUpgrade: (data: UserDetail) => {
         console.log(data);
+      },
+      onClickRestore: (data: UserDetail) => {
+        restoreStudentDialog.handleOpen(data);
       }
     });
   }, []);
@@ -116,9 +122,7 @@ function StudentList() {
         numberOfStudent={filteredStudents.length}
       />
       {getListUsersApi.loading ? (
-        <Box display='flex' justifyContent='center' alignItems='center' height='100%'>
-          <CircularProgress />
-        </Box>
+        <LoadingProcess />
       ) : (
         <CustomTable
           rows={filteredStudents}
@@ -133,6 +137,12 @@ function StudentList() {
         user={deleteStudentDialog.data as UserDetail}
         onClose={deleteStudentDialog.handleClose}
         onConfirm={() => deleteUser(deleteStudentDialog.data?.id as string)}
+      />
+      <RestoreUserDialog
+        open={restoreStudentDialog.open}
+        user={restoreStudentDialog.data as UserDetail}
+        onClose={restoreStudentDialog.handleClose}
+        onConfirm={() => updateUserStatus(restoreStudentDialog.data?.id as string, 'OFFLINE')}
       />
     </Box>
   );

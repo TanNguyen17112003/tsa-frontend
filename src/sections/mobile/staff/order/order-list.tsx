@@ -24,6 +24,7 @@ import usePagination from 'src/hooks/use-pagination';
 import { Filter } from 'src/types/filter';
 import { formatUnixTimestamp } from 'src/utils/format-time-currency';
 import { useAuth, useFirebaseAuth } from '@hooks';
+import LoadingProcess from 'src/components/LoadingProcess';
 
 function MobileOrderList() {
   const router = useRouter();
@@ -204,9 +205,7 @@ function MobileOrderList() {
           {filteredOrders.length} đơn hàng
         </Typography>
         {getOrdersApi.loading ? (
-          <Stack className='items-center justify-center h-[300px]'>
-            <CircularProgress />
-          </Stack>
+          <LoadingProcess />
         ) : (
           <Stack spacing={1.5} mt={1}>
             {paginatedOrders.length === 0 && (

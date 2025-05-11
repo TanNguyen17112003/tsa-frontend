@@ -12,9 +12,12 @@ import OrderDetailEditDrawer from './order-detail-edit-drawer';
 import { useDrawer, useDialog } from '@hooks';
 import useAppSnackbar from 'src/hooks/use-app-snackbar';
 import Pagination from 'src/components/ui/Pagination';
+import { useAuth } from '@hooks';
+import LoadingProcess from 'src/components/LoadingProcess';
 
 const OrderNotPaid: React.FC = () => {
   const router = useRouter();
+  const { user } = useAuth();
   const { getOrdersApi, orderPagination, orderFilter, setOrderFilter, deleteOrder } =
     useOrdersContext();
   const { showSnackbarSuccess, showSnackbarError } = useAppSnackbar();
@@ -143,9 +146,7 @@ const OrderNotPaid: React.FC = () => {
         />
         <Box sx={{ flex: 1 }}>
           {getOrdersApi.loading ? (
-            <Box display='flex' justifyContent='center' alignItems='center' height='100%'>
-              <CircularProgress />
-            </Box>
+            <LoadingProcess />
           ) : (
             <Stack spacing={2} mt={3}>
               <CustomTable

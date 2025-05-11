@@ -4,7 +4,7 @@ import * as yup from 'yup';
 
 export type UserRole = 'STUDENT' | 'STAFF' | 'ADMIN';
 type Dormitory = 'A' | 'B';
-export type UserStatus = 'AVAILABLE' | 'BUSY' | 'OFFLINE';
+export type UserStatus = 'AVAILABLE' | 'BUSY' | 'OFFLINE' | 'BANNED';
 
 export const userStatusMap = {
   'Đang online': 'AVAILABLE',
@@ -42,7 +42,8 @@ export const initialUser: UserDetail = {
   role: 'STUDENT',
   createdAt: '',
   verified: false,
-  email: ''
+  email: '',
+  status: 'AVAILABLE'
 };
 
 const getRandomFirstName = (): string => {

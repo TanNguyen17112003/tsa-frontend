@@ -22,6 +22,7 @@ import React, { useCallback, useState } from 'react';
 import useFunction from 'src/hooks/use-function';
 import { useTicketsContext } from 'src/contexts/tickets/tickets-context';
 import { TicketDetail, TicketStatus, TicketType, ticketStatusMap } from 'src/types/ticket';
+import LoadingProcess from 'src/components/LoadingProcess';
 
 function TicketDetailUpdateStatusDialog({
   ticket,
@@ -106,24 +107,7 @@ function TicketDetailUpdateStatusDialog({
           Xác nhận
         </Button>
       </DialogActions>
-      {onConfirmHelper.loading && (
-        <Box
-          sx={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: 'rgba(255, 255, 255, 0.7)',
-            zIndex: 9999
-          }}
-        >
-          <CircularProgress />
-        </Box>
-      )}
+      {onConfirmHelper.loading && <LoadingProcess />}
     </Dialog>
   );
 }

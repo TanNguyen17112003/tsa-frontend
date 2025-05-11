@@ -11,6 +11,7 @@ import { useRouter } from 'next/router';
 import UpdateRoleDialog from '../../update-role-dialog';
 import DeleteUserDialog from '../../delete-user-dialog';
 import { useUsersContext } from '@contexts';
+import LoadingProcess from 'src/components/LoadingProcess';
 
 function StaffList() {
   const router = useRouter();
@@ -85,9 +86,7 @@ function StaffList() {
         numberOfStaff={filteredStaffs.length}
       />
       {getListUsersApi.loading ? (
-        <Box display='flex' justifyContent='center' alignItems='center' height='100%'>
-          <CircularProgress />
-        </Box>
+        <LoadingProcess />
       ) : (
         <CustomTable
           rows={filteredStaffs}

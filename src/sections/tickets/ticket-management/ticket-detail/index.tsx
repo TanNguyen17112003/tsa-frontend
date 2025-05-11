@@ -6,6 +6,7 @@ import { useResponsive } from 'src/utils/use-responsive';
 import { useRouter } from 'next/router';
 import { useTicketsContext } from 'src/contexts/tickets/tickets-context';
 import { TicketDetail as DetailType } from 'src/types/ticket';
+import LoadingProcess from 'src/components/LoadingProcess';
 
 function TicketDetail() {
   const { isMobile, isDesktop, isTablet } = useResponsive();
@@ -33,24 +34,7 @@ function TicketDetail() {
       <Stack flex={0.7}>
         <TicketDetailHistory ticket={ticket as DetailType} />
       </Stack>
-      {(getTicketCategoriesApi.loading || getTicketsApi.loading) && (
-        <Box
-          sx={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: 'rgba(255, 255, 255, 0.7)',
-            zIndex: 9999
-          }}
-        >
-          <CircularProgress />
-        </Box>
-      )}
+      {(getTicketCategoriesApi.loading || getTicketsApi.loading) && <LoadingProcess />}
     </Box>
   );
 }

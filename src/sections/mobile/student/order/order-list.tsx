@@ -23,6 +23,7 @@ import { Filter } from 'src/types/filter';
 import { useAuth, useFirebaseAuth } from '@hooks';
 import { OrderStatus, orderStatusMap } from 'src/types/order';
 import Pagination from 'src/components/ui/Pagination';
+import LoadingProcess from 'src/components/LoadingProcess';
 
 function MobileOrderList() {
   const router = useRouter();
@@ -172,9 +173,7 @@ function MobileOrderList() {
           {numberOfOrders} đơn hàng
         </Typography>
         {getOrdersApi.loading ? (
-          <Stack className='items-center justify-center h-[300px]'>
-            <CircularProgress />
-          </Stack>
+          <LoadingProcess />
         ) : (
           <Stack spacing={2} mt={1}>
             {orders.length === 0 && (

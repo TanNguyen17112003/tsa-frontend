@@ -8,6 +8,7 @@ import { formatUnixTimestamp } from 'src/utils/format-time-currency';
 import DeliveryFilter from './delivery-filter/delivery-filter';
 import { PiMotorcycle } from 'react-icons/pi';
 import { useAuth, useFirebaseAuth } from '@hooks';
+import LoadingProcess from 'src/components/LoadingProcess';
 
 function MobileDeliveryList() {
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
@@ -115,9 +116,7 @@ function MobileDeliveryList() {
           {filtereddeliveries.length} chuyến đi
         </Typography>
         {loading ? (
-          <Stack className='items-center justify-center h-[300px]'>
-            <CircularProgress />
-          </Stack>
+          <LoadingProcess />
         ) : (
           <Stack spacing={1.5} mt={1}>
             {paginateddeliveries.length === 0 && (

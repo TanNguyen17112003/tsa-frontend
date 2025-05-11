@@ -16,30 +16,25 @@ import { Box, Typography, Divider, Stack, useTheme, useMediaQuery } from '@mui/m
 import GoogleButton from 'src/sections/auth/GoogleButton';
 import { HomeIcon } from '@heroicons/react/24/solid';
 import { useMounted } from '@hooks';
+import LoadingProcess from 'src/components/LoadingProcess';
+import useFunction from 'src/hooks/use-function';
 
 export const loginSchema = Yup.object({
-  email: Yup.string().required('Email không được để trống'),
+  email: Yup.string().required('Email không được để trống').email('Email không đúng định dạng'),
   password: Yup.string().required('Mật khẩu không được để trống')
 });
 
 const Page: PageType = () => {
   const theme = useTheme();
+  const { signIn, user, isAuthenticated } = useAuth();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isMounted = useMounted();
   const [showPassword, setShowPassword] = useState(false);
-  const router = useRouter();
-  const { signIn, user } = useAuth();
-  const formik = useFormik({
-    initialValues: {
-      email: '',
-      password: '',
-      general: ''
-    },
-    validationSchema: loginSchema,
-    onSubmit: async (values, { setSubmitting, setFieldError }) => {
+
+  const handleSignIn = useCallback(
+    async (values: { email: string; password: string }) => {
       try {
         const user = await signIn(values.email, values.password);
-        console.log('user', user);
         if (isMounted() && user) {
           if (user.role === 'STUDENT') {
             router.replace(paths.student.order.index);
@@ -48,14 +43,56 @@ const Page: PageType = () => {
           } else {
             router.replace(paths.staff.order.index);
           }
+        } else {
+          throw new Error('Vui lòng kiểm tra lại Tên đăng nhập/Mật khẩu');
         }
-      } catch (error) {
-        setFieldError('general', 'Vui lòng kiểm tra lại Tên đăng nhập/Mật khẩu');
-      } finally {
-        setSubmitting(false);
+      } catch (error: any) {
+        throw error;
       }
+    },
+    [isMounted, signIn]
+  );
+
+  const handleSignInHelper = useFunction(handleSignIn);
+
+  const router = useRouter();
+  const formik = useFormik({
+    initialValues: {
+      email: '',
+      password: '',
+      general: ''
+    },
+    validationSchema: loginSchema,
+    onSubmit: async (values, { setSubmitting, setFieldError }) => {
+      // try {
+      //   const user = await signIn(values.email, values.password);
+      //   console.log('user', user);
+      //   if (isMounted() && user) {
+      //     if (user.role === 'STUDENT') {
+      //       router.replace(paths.student.order.index);
+      //     } else if (user.role === 'ADMIN') {
+      //       router.replace(paths.dashboard.index);
+      //     } else {
+      //       router.replace(paths.staff.order.index);
+      //     }
+      //   }
+      // } catch (error) {
+      //   setFieldError('general', 'Vui lòng kiểm tra lại Tên đăng nhập/Mật khẩu');
+      //   throw error;
+      // } finally {
+      //   setSubmitting(false);
+      // }
+      await handleSignInHelper.call(values);
+      setSubmitting(false);
     }
   });
+
+  const isButtonDisabled =
+    !formik.values.email ||
+    !formik.values.password ||
+    !!formik.errors.email ||
+    !!formik.errors.password ||
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formik.values.email);
 
   const handleBack = useCallback(() => {
     router.push(paths.landing.index);
@@ -132,13 +169,6 @@ const Page: PageType = () => {
               />
               <Stack direction={'row'} justifyContent={'space-between'}>
                 <Typography variant='body2'>Nhập mật khẩu</Typography>
-                <Button
-                  color='primary'
-                  variant='ghost'
-                  className='px-4 pt-1 pb-1 max-w-max h-[24px] text-xs text-primary hover:text-primary underline'
-                >
-                  Quên mật khẩu
-                </Button>
               </Stack>
             </Box>
             {formik.errors.general && (
@@ -149,7 +179,7 @@ const Page: PageType = () => {
                 <Box className='mt-5'></Box>
               </Box>
             )}
-            <Button className='mt-2' type='submit' disabled={formik.isSubmitting}>
+            <Button className='mt-2' type='submit' disabled={isButtonDisabled}>
               Đăng nhập
             </Button>
           </form>
@@ -167,6 +197,7 @@ const Page: PageType = () => {
           </Box>
         </Box>
       </Box>
+      {formik.isSubmitting && <LoadingProcess />}
     </Box>
   );
 };

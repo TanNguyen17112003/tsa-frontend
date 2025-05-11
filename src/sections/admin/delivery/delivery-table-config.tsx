@@ -44,12 +44,6 @@ const getDeliveryTableConfig = ({
     )
   },
   {
-    key: 'limitTime',
-    headerLabel: 'Thời gian giới hạn (phút)',
-    type: 'string',
-    renderCell: (data) => <Typography>{data.limitTime}</Typography>
-  },
-  {
     key: 'status',
     headerLabel: 'Trạng thái',
     type: 'string',

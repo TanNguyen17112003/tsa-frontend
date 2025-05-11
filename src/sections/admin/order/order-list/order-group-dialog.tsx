@@ -26,6 +26,7 @@ import { DeliveryRequest } from 'src/api/deliveries';
 import { UsersApi } from 'src/api/users';
 import { DeliveriesApi } from 'src/api/deliveries';
 import { OrdersApi } from 'src/api/orders';
+import LoadingProcess from 'src/components/LoadingProcess';
 
 function OrderGroupDialog({
   orders,
@@ -177,24 +178,7 @@ function OrderGroupDialog({
           Gom nhóm
         </Button>
       </DialogActions>
-      {onConfirmHelper.loading && (
-        <Box
-          sx={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: 'rgba(255, 255, 255, 0.7)',
-            zIndex: 9999
-          }}
-        >
-          <CircularProgress />
-        </Box>
-      )}
+      {onConfirmHelper.loading && <LoadingProcess />}
     </Dialog>
   );
 }

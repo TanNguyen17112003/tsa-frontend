@@ -23,6 +23,7 @@ import { useTicketsContext } from 'src/contexts/tickets/tickets-context';
 import { useRouter } from 'next/router';
 import useFunction from 'src/hooks/use-function';
 import TicketDetailUpdateStatusDialog from './ticket-detail-update-status-dialog';
+import LoadingProcess from 'src/components/LoadingProcess';
 
 interface TicketDetailHistoryProps {
   ticket: TicketDetail;
@@ -193,24 +194,7 @@ const TicketDetailHistoryItem: React.FC<{
           )}
         </Stack>
       </Box>
-      {handleReplyHelper.loading && (
-        <Box
-          sx={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: 'rgba(255, 255, 255, 0.7)',
-            zIndex: 9999
-          }}
-        >
-          <CircularProgress />
-        </Box>
-      )}
+      {handleReplyHelper.loading && <LoadingProcess />}
     </Stack>
   );
 };

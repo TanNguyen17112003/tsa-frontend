@@ -10,6 +10,7 @@ import useStaffData from 'src/hooks/use-staff-data';
 import DeliveryFilter from './delivery-filter';
 import DeliveryDetailEditDrawer from '../delivery-detail/delivery-detail-edit-drawer';
 import DeliveryDetailDeleteDialog from '../delivery-detail/delivery-detail-delete-dialog';
+import LoadingProcess from 'src/components/LoadingProcess';
 
 function DeliveryList() {
   const { getDeliveriesApi } = useDeliveriesContext();
@@ -84,11 +85,7 @@ function DeliveryList() {
         numberOfDeliveries={deliveries.length}
       />
       {getDeliveriesApi.loading ? (
-        <Box
-          sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}
-        >
-          <CircularProgress />
-        </Box>
+        <LoadingProcess />
       ) : (
         <CustomTable
           rows={filteredDeliveries}
@@ -107,8 +104,9 @@ function DeliveryList() {
         open={editDeliveryDrawer.open}
         delivery={editDeliveryDrawer.data as DeliveryDetail}
         onClose={editDeliveryDrawer.handleClose}
-        staffs={staffs.users}
+        staffs={Object.values(staffs.staffs).filter((staff) => staff.status === 'AVAILABLE')}
       />
+      {getDeliveriesApi.loading && <LoadingProcess />}
     </Box>
   );
 }

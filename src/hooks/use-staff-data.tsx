@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { UsersApi } from 'src/api/users';
 import useFunction from 'src/hooks/use-function';
-import { UserDetail } from 'src/types/user';
+import { UserDetail, UserStatus } from 'src/types/user';
 
 const useStaffData = () => {
   const getUsersApi = useFunction(UsersApi.getUsers);
   const [staffs, setStaffs] = useState<{
-    [key: string]: { firstName: string; lastName: string; id: string };
+    [key: string]: { firstName: string; lastName: string; id: string; status: UserStatus };
   }>({});
   const [users, setUsers] = useState<UserDetail[]>([]);
 
@@ -15,7 +15,12 @@ const useStaffData = () => {
       const users = await getUsersApi.call({});
       const staffData = (users.data || []).reduce((acc: any, user: any) => {
         if (user.role === 'STAFF') {
-          acc[user.id] = { firstName: user.firstName, lastName: user.lastName, id: user.id };
+          acc[user.id] = {
+            firstName: user.firstName,
+            lastName: user.lastName,
+            id: user.id,
+            status: user.status
+          };
         }
         return acc;
       }, {});

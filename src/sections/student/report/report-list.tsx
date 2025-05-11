@@ -13,6 +13,7 @@ import ReportDetailDeleteDialog from './report-detail-delete-dialog';
 import { formatUnixTimestamp } from 'src/utils/format-time-currency';
 import { useReportsContext } from 'src/contexts/reports/reports-context';
 import Pagination from 'src/components/ui/Pagination';
+import LoadingProcess from 'src/components/LoadingProcess';
 
 const ReportList: React.FC<{}> = ({}) => {
   const statusList = ['Tất cả', 'Đã giải quyết', 'Đang chờ xử lý'];
@@ -66,9 +67,7 @@ const ReportList: React.FC<{}> = ({}) => {
       />
       <Box sx={{ flex: 1 }}>
         {getReportsApi.loading ? (
-          <Box display='flex' justifyContent='center' alignItems='center' height='100%'>
-            <CircularProgress />
-          </Box>
+          <LoadingProcess />
         ) : (
           <Stack spacing={2} mt={3}>
             <CustomTable rows={reports} configs={reportTableConfig} className='my-5 -mx-6' />

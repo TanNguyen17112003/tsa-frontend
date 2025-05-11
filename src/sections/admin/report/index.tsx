@@ -13,6 +13,7 @@ import useOrdersData from 'src/hooks/use-orders-data';
 import { UsersApi } from 'src/api/users';
 import useFunction from 'src/hooks/use-function';
 import Pagination from 'src/components/ui/Pagination';
+import LoadingProcess from 'src/components/LoadingProcess';
 
 function ReportList() {
   const [selectedStatus, setSelectedStatus] = useState<string>('');
@@ -87,9 +88,7 @@ function ReportList() {
         numberOfReport={getReportsApi.data?.totalElements || 0}
       />
       {getReportsApi.loading ? (
-        <Box display='flex' justifyContent='center'>
-          <CircularProgress />
-        </Box>
+        <LoadingProcess />
       ) : (
         <Stack spacing={2} mt={3}>
           <CustomTable rows={reports} configs={reportTableConfig} className='my-5 -mx-6' />

@@ -24,7 +24,7 @@ import { useAuth } from 'src/hooks/use-auth';
 import 'dayjs/locale/en-gb';
 import { DeliveryDetail } from 'src/types/delivery';
 import { DeliveryRequest } from 'src/api/deliveries';
-import { UserDetail } from 'src/types/user';
+import { UserDetail, UserStatus } from 'src/types/user';
 import { useDeliveriesContext } from 'src/contexts/deliveries/deliveries-context';
 
 function DeliveryDetailEditDrawer({
@@ -36,11 +36,11 @@ function DeliveryDetailEditDrawer({
   open: boolean;
   onClose: () => void;
   delivery?: DeliveryDetail;
-  staffs: UserDetail[];
+  staffs: { firstName: string; lastName: string; id: string; status: UserStatus }[];
 }) {
   const { user } = useAuth();
   const orderListTitle = useMemo(() => {
-    return delivery?.orders.map((order) => order.product).join(', ');
+    return delivery?.orders?.map((order) => order.product).join(', ');
   }, [delivery?.orders]);
 
   const { updateDelivery } = useDeliveriesContext();
@@ -59,7 +59,7 @@ function DeliveryDetailEditDrawer({
     return {
       staffId: delivery?.staffId || '',
       limitTime: Number(delivery?.limitTime) || 0,
-      orderIds: delivery?.orders.map((order) => order.id) || []
+      orderIds: delivery?.orders?.map((order) => order.id) || []
     };
   }, [delivery]);
 
@@ -126,7 +126,12 @@ function DeliveryDetailEditDrawer({
                 <Button color='inherit' variant='contained' onClick={onClose}>
                   Hủy bỏ
                 </Button>
-                <Button variant='contained' color='primary' type='submit'>
+                <Button
+                  variant='contained'
+                  color='primary'
+                  type='submit'
+                  disabled={delivery?.latestStatus !== 'PENDING'}
+                >
                   Cập nhật
                 </Button>
               </Box>
@@ -154,16 +159,6 @@ function DeliveryDetailEditDrawer({
                   ))}
                 </Select>
               </FormControl>
-            </Stack>
-            <Stack spacing={1}>
-              <Typography variant='h6'>Thời gian giới hạn</Typography>
-              <TextField
-                type='number'
-                value={formik.values.limitTime}
-                onChange={(event) => formik.setFieldValue('limitTime', Number(event.target.value))}
-                label='Thời gian giới hạn (phút)'
-                fullWidth
-              />
             </Stack>
           </Box>
         </form>

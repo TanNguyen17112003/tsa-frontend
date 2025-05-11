@@ -7,6 +7,7 @@ import { useAuth, useFirebaseAuth } from '@hooks';
 import getNotificationsTableConfig from './notifications-table-config';
 import usePagination from 'src/hooks/use-pagination';
 import { formatUnixTimestamp } from 'src/utils/format-time-currency';
+import LoadingProcess from 'src/components/LoadingProcess';
 
 function NotificationsList() {
   const { getNotificationsApi } = useNotificationsContext();
@@ -71,7 +72,7 @@ function NotificationsList() {
         setDateRange={setDateRange}
       />
       {getNotificationsApi.loading ? (
-        <CircularProgress />
+        <LoadingProcess />
       ) : (
         <CustomTable
           rows={filteredNotifications}

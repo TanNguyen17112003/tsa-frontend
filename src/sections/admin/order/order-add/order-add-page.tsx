@@ -19,6 +19,7 @@ import { RecognitionssApi } from 'src/api/recognition';
 import { CardTable } from 'src/components/card-table';
 import { orderUploadTableConfigs } from './order-upload-table-configs';
 import { keyBy } from 'lodash';
+import LoadingProcess from 'src/components/LoadingProcess';
 
 export interface GeneratedOrder {
   id: string;
@@ -226,22 +227,7 @@ const OrderAddPage = () => {
         </Stack>
       </Stack>
       {(handleLoadOrderImageHelper.loading || handleSubmitOrderHelper.loading) && (
-        <Box
-          sx={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: 'rgba(255, 255, 255, 0.7)',
-            zIndex: 9999
-          }}
-        >
-          <CircularProgress />
-        </Box>
+        <LoadingProcess />
       )}
     </Box>
   );

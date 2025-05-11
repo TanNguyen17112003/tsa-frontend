@@ -26,6 +26,7 @@ import { useEffect, useMemo } from 'react';
 import { formatDate, formatUnixTimestamp, formatVNDcurrency } from 'src/utils/format-time-currency';
 import { useResponsive } from 'src/utils/use-responsive';
 import MobileContentHeader from 'src/components/mobile-content-header';
+import LoadingProcess from 'src/components/LoadingProcess';
 
 const Page: PageType = () => {
   const router = useRouter();
@@ -273,6 +274,9 @@ const Page: PageType = () => {
             ))}
           </Stack>
         </Box>
+      )}
+      {(getOrdersApi.loading || getListUsersApi.loading || getReportsApi.loading) && (
+        <LoadingProcess />
       )}
     </>
   );

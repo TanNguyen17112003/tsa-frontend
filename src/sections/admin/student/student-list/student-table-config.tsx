@@ -3,12 +3,16 @@ import { CustomTableConfig } from 'src/components/custom-table';
 import { ArrowUp, CloseCircle } from 'iconsax-react';
 import { formatDate, formatUnixTimestamp } from 'src/utils/format-time-currency';
 import { UserDetail } from 'src/types/user';
+import { Trash } from 'lucide-react';
+import { Restore } from '@mui/icons-material';
 const getStudentTableConfig = ({
   onClickDelete,
-  onClickUpgrade
+  onClickUpgrade,
+  onClickRestore
 }: {
   onClickDelete: (data: UserDetail) => void;
   onClickUpgrade: (data: UserDetail) => void;
+  onClickRestore: (data: UserDetail) => void;
 }): CustomTableConfig<UserDetail['id'], UserDetail>[] => [
   {
     key: 'information',
@@ -65,6 +69,7 @@ const getStudentTableConfig = ({
       <Stack direction={'row'} spacing={2}>
         <Tooltip title='NÂNG CẤP VAI TRÒ'>
           <ArrowUp
+            fontVariant={'contained'}
             color='blue'
             size={24}
             className='cursor-pointer'
@@ -75,7 +80,8 @@ const getStudentTableConfig = ({
           />
         </Tooltip>
         <Tooltip title='XÓA NGƯỜI DÙNG'>
-          <CloseCircle
+          <Trash
+            fontVariant={'contained'}
             color='red'
             size={24}
             className='cursor-pointer'
@@ -87,6 +93,26 @@ const getStudentTableConfig = ({
         </Tooltip>
       </Stack>
     )
+  },
+  {
+    key: 'recover',
+    headerLabel: 'Khôi phục',
+    type: 'string',
+    renderCell: (data) =>
+      data?.status === 'BANNED' && (
+        <Stack
+          direction={'row'}
+          spacing={2}
+          onClick={(event) => {
+            event.stopPropagation();
+            onClickRestore(data);
+          }}
+        >
+          <Tooltip title='KHÔI PHỤC'>
+            <Restore />
+          </Tooltip>
+        </Stack>
+      )
   }
 ];
 

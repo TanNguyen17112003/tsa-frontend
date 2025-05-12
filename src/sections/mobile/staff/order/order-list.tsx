@@ -110,7 +110,7 @@ function MobileOrderList() {
           : selectedStatus === 'Đã giao'
             ? order.latestStatus === 'DELIVERED'
             : selectedStatus === 'Đã hủy'
-              ? order.latestStatus === 'CANCELLED'
+              ? order.latestStatus === 'CANCELED'
               : selectedStatus === 'Đang giao'
                 ? order.latestStatus === 'IN_TRANSPORT'
                 : selectedStatus === 'Đã xác nhận'

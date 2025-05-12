@@ -26,7 +26,7 @@ import { useSocketContext } from 'src/contexts/socket-client/socket-client-conte
 const OrderAddPage = () => {
   const [resetUploadSection, setResetUploadSection] = useState('');
   const { socket } = useSocketContext();
-  const { createOrder, updateOrder } = useOrdersContext();
+  const { createOrder } = useOrdersContext();
   const [isUploaded, setIsUploaded] = useState(false);
   const [checkoutUrl, setCheckoutUrl] = useState<string>('');
   const [orderId, setOrderId] = useState<string>('');
@@ -92,13 +92,6 @@ const OrderAddPage = () => {
       ELEMENT_ID: 'payos-checkout-iframe-add',
       CHECKOUT_URL: checkoutUrl,
       onSuccess: async (event: any) => {
-        await updateOrder(
-          {
-            deliveryDate: formik.values.deliveryDate,
-            isPaid: true
-          },
-          orderId
-        );
         setOrderId('');
         showSnackbarSuccess('Tạo đơn hàng thành công!');
         setCheckoutUrl('');
@@ -111,7 +104,7 @@ const OrderAddPage = () => {
         setCheckoutUrl('');
       }
     };
-  }, [checkoutUrl, formik, updateOrder, setCheckoutUrl, createOrder, shippingFee, orderId]);
+  }, [checkoutUrl, formik, setCheckoutUrl, createOrder, shippingFee, orderId]);
   const { open } = usePayOS(payOSConfig);
 
   useEffect(() => {
@@ -157,9 +150,7 @@ const OrderAddPage = () => {
             orderList.map((order) => ({
               ...order,
               deliveryDate: dayjs(order.deliveryDate).toISOString(),
-              product: formik.values.product?.startsWith(', ')
-                ? formik.values.product.slice(2)
-                : formik.values.product
+              product: order.product
             }))
           );
         } else {

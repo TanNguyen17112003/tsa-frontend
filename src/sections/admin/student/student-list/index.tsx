@@ -142,7 +142,9 @@ function StudentList() {
         open={restoreStudentDialog.open}
         user={restoreStudentDialog.data as UserDetail}
         onClose={restoreStudentDialog.handleClose}
-        onConfirm={() => updateUserStatus(restoreStudentDialog.data?.id as string, 'OFFLINE')}
+        onConfirm={() =>
+          updateUserStatus(restoreStudentDialog.data?.id as string, { status: 'AVAILABLE' })
+        }
       />
     </Box>
   );

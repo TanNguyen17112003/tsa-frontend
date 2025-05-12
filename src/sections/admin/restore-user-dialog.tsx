@@ -13,7 +13,7 @@ function RestoreUserDialog({
   onConfirm?: () => Promise<void>;
 }) {
   const onConfirmHelper = useFunction(onConfirm!, {
-    successMessage: `Xóa ${user?.role === 'STUDENT' ? 'sinh viên' : 'nhân viên'} thành công!`
+    successMessage: `Khôi phục ${user?.role === 'STUDENT' ? 'sinh viên' : 'nhân viên'} thành công!`
   });
 
   return (

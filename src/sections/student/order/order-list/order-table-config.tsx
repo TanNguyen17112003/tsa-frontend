@@ -106,7 +106,7 @@ const getOrderTableConfigs = ({
               ? 'Đã giao'
               : data.latestStatus === 'PENDING'
                 ? 'Chờ xử lý'
-                : data.latestStatus === 'CANCELLED'
+                : data.latestStatus === 'CANCELED'
                   ? 'Đã hủy'
                   : data.latestStatus === 'REJECTED'
                     ? 'Đã từ chối'

@@ -1,17 +1,17 @@
 import { createContext, ReactNode, useCallback, useEffect, useContext } from 'react';
-import { UsersApi } from 'src/api/users';
+import { UpdateUserStatus, UsersApi } from 'src/api/users';
 import useFunction, {
   DEFAULT_FUNCTION_RETURN,
   UseFunctionReturnType
 } from 'src/hooks/use-function';
-import { UserDetail } from 'src/types/user';
+import { UserDetail, UserStatus } from 'src/types/user';
 import { useAuth } from '@hooks';
 import { useFirebaseAuth } from '@hooks';
 
 interface ContextValue {
   getListUsersApi: UseFunctionReturnType<FormData, UserDetail[]>;
   deleteUser: (id: UserDetail['id']) => Promise<void>;
-  updateUserStatus: (id: UserDetail['id'], status: UserDetail['status']) => Promise<void>;
+  updateUserStatus: (id: UserDetail['id'], status: UpdateUserStatus) => Promise<void>;
 }
 
 export const UsersContext = createContext<ContextValue>({
@@ -39,13 +39,13 @@ const UsersProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const updateUserStatus = useCallback(
-    async (id: UserDetail['id'], status: UserDetail['status']) => {
+    async (id: UserDetail['id'], status: UpdateUserStatus) => {
       try {
         await UsersApi.updateUserStatus(id, status);
         getListUsersApi.setData(
           (getListUsersApi.data || []).map((user) => {
             if (user.id === id) {
-              return { ...user, status };
+              return { ...user, status: status.status };
             }
             return user;
           })

@@ -144,10 +144,7 @@ function OrderList() {
   const handleApproveOrders = useCallback(
     async (orders: OrderDetail[]) => {
       const notApprovedOrders = orders?.filter(
-        (order) =>
-          !order.studentId ||
-          order.latestStatus !== 'PENDING' ||
-          (!order.isPaid && order.paymentMethod === 'CREDIT')
+        (order) => !order.studentId || order.latestStatus !== 'PENDING'
       );
       const approvedOrders = orders?.filter((order) => !notApprovedOrders.includes(order));
       if (notApprovedOrders.length === orders.length) {
@@ -173,9 +170,6 @@ function OrderList() {
   );
 
   const handleGroupOrders = useCallback(async (orders: OrderDetail[]) => {
-    // I want to check if any order in orders not having the same devlieryDate attribute like others
-    // If yes, show error
-    // If no, show dialog
     if (orders.length === 0) {
       showSnackbarError('Không thể gom nhóm danh sách đơn hàng trống!');
       return;
@@ -187,6 +181,13 @@ function OrderList() {
         unixTimestampToDate(order.deliveryDate).getMonth() !== deliveryDate.getMonth() ||
         unixTimestampToDate(order.deliveryDate).getFullYear() !== deliveryDate.getFullYear()
     );
+    const notSameDormitoryOrders = orders.filter(
+      (order) => order.dormitory !== orders[0].dormitory
+    );
+    if (notSameDormitoryOrders.length > 0) {
+      showSnackbarError('Không thể gom nhóm danh sách đơn hàng này vì không cùng khu!');
+      return;
+    }
     if (notSatisfiedOrders.length > 0) {
       showSnackbarError(
         'Không thể gom nhóm danh sách đơn hàng này vì ngày giao hàng không giống nhau!'
@@ -197,7 +198,7 @@ function OrderList() {
       (order) =>
         (order.paymentMethod === 'CREDIT' && !order.isPaid) ||
         (!order.shipperId && order.latestStatus !== 'ACCEPTED') ||
-        (order.shipperId && order.latestStatus !== 'CANCELLED')
+        (order.shipperId && order.latestStatus !== 'CANCELED')
     );
     const groupedOrders = orders.filter((order) => !notGroupedOrders.includes(order));
     if (notGroupedOrders.length === orders.length) {

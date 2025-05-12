@@ -21,13 +21,16 @@ export const BannedGuard: FC<BannedGuardProps> = (props) => {
   const [checked, setChecked] = useState(false);
 
   const check = useCallback(() => {
-    if (isAuthenticated && user?.status === 'BANNED') {
+    if (isAuthenticated && (user?.status === 'BANNED' || user?.status === 'DEACTIVATED')) {
       if (router.pathname !== paths.tickets.index && router.pathname !== paths.auth.logout) {
         router.replace(bannedPaths);
         return;
       }
     }
-    if (isFirebaseAuthenticated && firebaseUser?.status === 'BANNED') {
+    if (
+      isFirebaseAuthenticated &&
+      (firebaseUser?.status === 'BANNED' || firebaseUser?.status === 'DEACTIVATED')
+    ) {
       if (router.pathname !== paths.tickets.index && router.pathname !== paths.auth.logout) {
         router.replace(bannedPaths);
         return;

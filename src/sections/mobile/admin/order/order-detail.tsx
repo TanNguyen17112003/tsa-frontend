@@ -58,7 +58,7 @@ const MobileOrderDetail: React.FC<{ order: OrderDetail }> = ({ order }) => {
         value:
           order?.latestStatus === 'DELIVERED'
             ? 'Đã giao'
-            : order?.latestStatus === 'CANCELLED'
+            : order?.latestStatus === 'CANCELED'
               ? 'Đã hủy'
               : order?.latestStatus === 'PENDING'
                 ? 'Đang chờ xử lý'

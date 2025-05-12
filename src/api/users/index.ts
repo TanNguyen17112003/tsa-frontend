@@ -1,4 +1,4 @@
-import type { User, UserDetail } from 'src/types/user';
+import type { User, UserDetail, UserStatus } from 'src/types/user';
 import { apiDelete, apiGet, apiPatch, apiPost, apiPut, getFormData } from 'src/utils/api-request';
 import CookieHelper, { CookieKeys } from 'src/utils/cookie-helper';
 
@@ -55,6 +55,10 @@ export type UpdateProfileRequest = Partial<{
   avatar: File;
 }>;
 
+export interface UpdateUserStatus {
+  status: UserStatus;
+}
+
 export class UsersApi {
   static async postUser(request: Omit<User, 'id'>): Promise<User> {
     return await apiPost('/users', request);
@@ -101,8 +105,8 @@ export class UsersApi {
     return await apiPut(`/users/role/${id}`, { role });
   }
 
-  static async updateUserStatus(id: User['id'], status: User['status']): Promise<User> {
-    return await apiPatch(`/users/status/${id}/${status}`, {});
+  static async updateUserStatus(id: User['id'], status: UpdateUserStatus): Promise<User> {
+    return await apiPatch(`/users/${id}/status`, status);
   }
 
   static async deleteUser(id: User['id']) {

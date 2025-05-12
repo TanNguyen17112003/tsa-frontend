@@ -4,7 +4,7 @@ import * as yup from 'yup';
 
 export type UserRole = 'STUDENT' | 'STAFF' | 'ADMIN';
 type Dormitory = 'A' | 'B';
-export type UserStatus = 'AVAILABLE' | 'BUSY' | 'OFFLINE' | 'BANNED';
+export type UserStatus = 'AVAILABLE' | 'BUSY' | 'DEACTIVATED' | 'BANNED';
 
 export const userStatusMap = {
   'Đang online': 'AVAILABLE',
@@ -67,7 +67,7 @@ const getRandomEmail = (firstName: string, lastName: string): string => {
 };
 
 const getRandomUserStatus = (): UserStatus => {
-  const statuses: UserStatus[] = ['AVAILABLE', 'BUSY', 'OFFLINE'];
+  const statuses: UserStatus[] = ['AVAILABLE', 'BUSY', 'DEACTIVATED', 'BANNED'];
   return statuses[Math.floor(Math.random() * statuses.length)];
 };
 

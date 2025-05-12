@@ -131,7 +131,7 @@ const StaffDetailOrderChart: React.FC<StaffDetailOrderChartProps> = ({ orders })
             label='Chọn trạng thái'
           >
             <MenuItem value='ALL'>Tất cả</MenuItem>
-            <MenuItem value='CANCELLED'>Đã hủy</MenuItem>
+            <MenuItem value='CANCELED'>Đã hủy</MenuItem>
             <MenuItem value='DELIVERED'>Đã giao</MenuItem>
             <MenuItem value='PENDING'>Đang chờ xử lý</MenuItem>
             <MenuItem value='REJECTED'>Đã từ chối</MenuItem>

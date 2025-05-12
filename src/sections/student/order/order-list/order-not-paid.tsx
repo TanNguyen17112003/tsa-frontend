@@ -110,7 +110,7 @@ const OrderNotPaid: React.FC = () => {
   const handlePayment = useCallback(
     async (order: OrderDetail) => {
       try {
-        if (order.latestStatus === 'REJECTED' || order.latestStatus === 'CANCELLED') {
+        if (order.latestStatus === 'REJECTED' || order.latestStatus === 'CANCELED') {
           showSnackbarError(
             `Không thể thanh toán đơn hàng ${
               order.latestStatus === 'REJECTED' ? 'đã từ chối' : 'đã hủy'

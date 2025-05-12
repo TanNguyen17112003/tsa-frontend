@@ -4,7 +4,7 @@ import React from 'react';
 
 type PaymentMethod = 'CASH' | 'MOMO' | 'CREDIT';
 export type OrderStatus =
-  | 'CANCELLED'
+  | 'CANCELED'
   | 'DELIVERED'
   | 'PENDING'
   | 'REJECTED'
@@ -13,7 +13,7 @@ export type OrderStatus =
 
 export const orderStatusIconList = [
   {
-    status: 'CANCELLED',
+    status: 'CANCELED',
     icon: React.createElement(CloseCircle),
     color: 'red',
     title: 'Bị hủy'
@@ -115,7 +115,7 @@ export const orderStatusMap = {
   'Đã giao': 'DELIVERED',
   'Đang giao': 'IN_TRANSPORT',
   'Đang chờ xử lý': 'PENDING',
-  'Đã hủy': 'CANCELLED',
+  'Đã hủy': 'CANCELED',
   'Đã từ chối': 'REJECTED',
   'Đã xác nhận': 'ACCEPTED'
 };

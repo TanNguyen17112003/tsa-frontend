@@ -207,7 +207,7 @@ const OrderAddPage = () => {
       socket.on('paymentUpdate', paymentUpdateHandler);
 
       return () => {
-        socket.emit('unsubscribeToPayment', { orderId: orderId });
+        socket.emit('unsubscribeFromPayment', { orderId: orderId });
         console.log(`Unsubscribe to payment with ${orderId}`);
         socket.off('paymentUpdate', paymentUpdateHandler);
       };

@@ -258,7 +258,7 @@ const OrderNotPaid: React.FC = () => {
       socket.on('paymentUpdate', paymentUpdateHandler);
 
       return () => {
-        socket.emit('unsubscribeToPayment', { orderId: order?.id });
+        socket.emit('unsubscribeFromPayment', { orderId: order?.id });
         console.log(`Unsubscribe to payment with ${order?.id}`);
         socket.off('paymentUpdate', paymentUpdateHandler);
       };

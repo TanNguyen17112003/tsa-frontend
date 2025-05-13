@@ -10,9 +10,8 @@ import React, {
 import { io, Socket } from 'socket.io-client';
 import CookieHelper, { CookieKeys } from 'src/utils/cookie-helper';
 
-// const SOCKET_SERVER_URL = 'https://2nzxg168-8000.asse.devtunnels.ms';
-const SOCKET_SERVER_URL = 'https://api.transportsupport.systems';
-
+// const SOCKET_SERVER_URL = ';
+const SOCKET_SERVER_URL = 'https://pqvjbn2m-8000.asse.devtunnels.ms';
 interface ContextValue {
   socket: Socket | null;
   sendMessage: (message: string) => void;

@@ -29,6 +29,7 @@ import { AdvancedDelivery } from 'src/types/delivery';
 import { useDialog } from '@hooks';
 import OrderConfirmAdvancedDialog from './order-confirm-advanced-dialog';
 import { GroupOrderMode, OrdersApi } from 'src/api/orders';
+import LoadingProcess from 'src/components/LoadingProcess';
 
 interface OrderFastGroupFieldProps {
   deliveryDay: string;
@@ -94,6 +95,8 @@ function OrderFastGroupDialog({ ...dialogProps }: DialogProps & {}) {
     confirmAdvancedDialog,
     setResult
   ]);
+
+  const fetchGroupOrdersHelper = useFunction(fetchGroupOrders);
 
   const timeSlotOptions = useMemo(() => {
     const slots = [];
@@ -244,7 +247,7 @@ function OrderFastGroupDialog({ ...dialogProps }: DialogProps & {}) {
         >
           Hủy
         </Button>
-        <Button variant='contained' color='primary' onClick={fetchGroupOrders}>
+        <Button variant='contained' color='primary' onClick={fetchGroupOrdersHelper.call}>
           Gom nhóm
         </Button>
       </DialogActions>
@@ -255,6 +258,7 @@ function OrderFastGroupDialog({ ...dialogProps }: DialogProps & {}) {
         staffs={staffs}
         result={result}
       />
+      {(fetchGroupOrdersHelper.loading || getListUsersApiApi.loading) && <LoadingProcess />}
     </Dialog>
   );
 }

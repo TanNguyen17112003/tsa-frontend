@@ -7,7 +7,7 @@ import {
   ChangeEvent,
   useState
 } from 'react';
-import { DelayOrderRequest, OrderResponse, OrdersApi } from 'src/api/orders';
+import { DelayOrderRequest, OrderResponse, OrdersApi, OrderStatusRequest } from 'src/api/orders';
 import useFunction, {
   DEFAULT_FUNCTION_RETURN,
   UseFunctionReturnType
@@ -39,7 +39,7 @@ interface ContextValue {
   getOrderById: (id: Order['id']) => Promise<OrderDetail>;
   createOrder: (requests: OrderFormProps[]) => Promise<void>;
   updateOrder: (Order: Partial<OrderDetail>, orderId: string) => Promise<void>;
-  updateOrderStatus: (status: OrderStatus, ids: string[]) => Promise<void>;
+  updateOrderStatus: (request: OrderStatusRequest, ids: string[]) => Promise<void>;
   deleteOrder: (ids: Order['id'][]) => Promise<void>;
   delayOrders: (request: DelayOrderRequest) => Promise<void>;
 }
@@ -177,13 +177,28 @@ const OrdersProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const updateOrderStatus = useCallback(
-    async (status: OrderStatus, ids: Order['id'][]) => {
+    async (request: OrderStatusRequest, ids: Order['id'][]) => {
       try {
-        await Promise.all(ids.map((id) => OrdersApi.updateOrderStatus(status, id)));
+        await Promise.all(ids.map((id) => OrdersApi.updateOrderStatus(request, id)));
         getOrdersApi.setData({
           ...getOrdersApi.data,
           results: (getOrdersApi.data?.results || []).map((c) =>
-            ids.includes(c.id) ? Object.assign(c, { latestStatus: status }) : c
+            ids.includes(c.id)
+              ? Object.assign(c, {
+                  latestStatus: request.status,
+                  historyTime: [
+                    ...c.historyTime,
+                    {
+                      id: c.id,
+                      orderId: c.id,
+                      time: new Date().toISOString(),
+                      reason: request.reason,
+                      status: request.status,
+                      canceledImage: request.canceledImage
+                    }
+                  ]
+                })
+              : c
           ),
           totalElements: getOrdersApi.data?.totalElements || 0,
           totalPages: getOrdersApi.data?.totalPages || 1

@@ -1,4 +1,3 @@
-import { useAuth } from 'src/hooks/use-auth';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard';
 import type { Page as PageType } from 'src/types/page';
 import ContentHeader from 'src/components/content-header';
@@ -21,158 +20,87 @@ import { paths } from 'src/paths';
 import { OrdersApi } from 'src/api/orders';
 import { UsersApi } from 'src/api/users';
 import { ReportsApi } from 'src/api/reports';
+import { TicketsApi } from 'src/api/tickets';
 import useFunction from 'src/hooks/use-function';
-import { useEffect, useMemo } from 'react';
-import { formatDate, formatUnixTimestamp, formatVNDcurrency } from 'src/utils/format-time-currency';
+import { useEffect, useMemo, useState } from 'react';
+import { formatVNDcurrency } from 'src/utils/format-time-currency';
 import { useResponsive } from 'src/utils/use-responsive';
 import MobileContentHeader from 'src/components/mobile-content-header';
 import LoadingProcess from 'src/components/LoadingProcess';
+import { useFormContext } from 'react-hook-form';
 
 const Page: PageType = () => {
   const router = useRouter();
-  const getOrdersApi = useFunction(OrdersApi.getOrders);
   const getListUsersApi = useFunction(UsersApi.getUsers);
   const getReportsApi = useFunction(ReportsApi.getReports);
+  const getOrdersApi = useFunction(OrdersApi.getOrders);
+  const getTicketsApi = useFunction(TicketsApi.getListTicket);
 
   const { isMobile } = useResponsive();
+
+  const [allOrders, setAllOrders] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchAllOrders = async () => {
+      try {
+        const pageSize = 10;
+        const firstPage = await getOrdersApi.call({ page: 1, size: pageSize });
+        const totalElements = firstPage?.data?.totalElements || 0;
+        const totalPages = Math.ceil(totalElements / pageSize);
+
+        let totalOrders = [...(firstPage?.data?.results || [])];
+
+        if (totalPages > 1) {
+          const promises = [];
+          for (let page = 2; page <= totalPages; page++) {
+            promises.push(getOrdersApi.call({ page, size: pageSize }));
+          }
+          const results = await Promise.all(promises);
+          results.forEach((res) => {
+            totalOrders = [...totalOrders, ...(res.data?.results || [])];
+          });
+        }
+
+        setAllOrders(totalOrders);
+      } catch (e) {
+        setAllOrders([]);
+        throw e;
+      }
+    };
+
+    fetchAllOrders();
+    getListUsersApi.call({});
+    getTicketsApi.call({});
+    getReportsApi.call({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const users = useMemo(() => {
     return (getListUsersApi.data || []).filter((user) => user.role === 'STUDENT');
   }, [getListUsersApi.data]);
   const orders = useMemo(() => {
-    return getOrdersApi.data?.results || [];
-  }, [getOrdersApi.data]);
+    return allOrders;
+  }, [allOrders]);
   const reports = useMemo(() => {
     return getReportsApi.data?.results || [];
   }, [getReportsApi.data]);
 
-  const thisWeekUsers = useMemo(() => {
-    const now = new Date();
-    const dayOfWeek = now.getDay();
-    const diffToMonday = (dayOfWeek + 6) % 7;
-    const monday = new Date(now);
-    monday.setDate(now.getDate() - diffToMonday);
-    monday.setHours(0, 0, 0, 0);
+  const tickets = useMemo(() => {
+    return getTicketsApi.data || [];
+  }, [getTicketsApi.data]);
 
-    return users.filter((user) => {
-      const createDate = new Date(Number(user.createdAt) * 1000); // Convert Unix timestamp to Date
-      return createDate >= monday && createDate <= now;
-    });
-  }, [users]);
-  const lastWeekUsers = useMemo(() => {
-    const now = new Date();
-    const dayOfWeek = now.getDay();
-    const diffToMonday = (dayOfWeek + 6) % 7;
-    const thisMonday = new Date(now);
-    thisMonday.setDate(now.getDate() - diffToMonday);
-    thisMonday.setHours(0, 0, 0, 0);
-
-    const lastMonday = new Date(thisMonday);
-    lastMonday.setDate(thisMonday.getDate() - 7);
-
-    const lastSunday = new Date(lastMonday);
-    lastSunday.setDate(lastMonday.getDate() + 6);
-
-    return users.filter((user) => {
-      const createDate = new Date(Number(user.createdAt) * 1000); // Convert Unix timestamp to Date
-      return createDate >= lastMonday && createDate <= lastSunday;
-    });
-  }, [users]);
-
-  const thisWeekOrders = useMemo(() => {
-    const now = new Date();
-    const dayOfWeek = now.getDay();
-    const diffToMonday = (dayOfWeek + 6) % 7;
-    const monday = new Date(now);
-    monday.setDate(now.getDate() - diffToMonday);
-    monday.setHours(0, 0, 0, 0);
-
-    return orders.filter((order) => {
-      const orderDate = new Date(order.deliveryDate);
-      return orderDate >= monday && orderDate <= now;
-    });
-  }, [orders]);
-  const lastWeekOrders = useMemo(() => {
-    const now = new Date();
-    const dayOfWeek = now.getDay();
-    const diffToMonday = (dayOfWeek + 6) % 7;
-    const thisMonday = new Date(now);
-    thisMonday.setDate(now.getDate() - diffToMonday);
-    thisMonday.setHours(0, 0, 0, 0);
-
-    const lastMonday = new Date(thisMonday);
-    lastMonday.setDate(thisMonday.getDate() - 7);
-
-    const lastSunday = new Date(lastMonday);
-    lastSunday.setDate(lastMonday.getDate() + 6);
-
-    return orders?.filter((order) => {
-      const orderDate = new Date(order.deliveryDate);
-      return orderDate >= lastMonday && orderDate <= lastSunday;
-    });
-  }, [orders]);
-
-  const thisMonthOrders = useMemo(() => {
-    const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-
-    return orders?.filter((order) => {
-      const deliveredAt = new Date(Number(order.deliveryDate) * 1000);
-      return deliveredAt >= startOfMonth && deliveredAt <= endOfMonth;
-    });
-  }, [orders]);
-  const lastMonthOrders = useMemo(() => {
-    const now = new Date();
-    const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
-
-    return orders?.filter((order) => {
-      const deliveredAt = new Date(Number(order.deliveryDate) * 1000);
-      return deliveredAt >= startOfLastMonth && deliveredAt <= endOfLastMonth;
-    });
-  }, [orders]);
-
-  const thisMonthRevenue = useMemo(() => {
-    const totalRevenue = thisMonthOrders.reduce((total, order) => {
+  const revenue = useMemo(() => {
+    const totalRevenue = orders.reduce((total, order) => {
       return total + order.shippingFee;
     }, 0);
     return totalRevenue;
-  }, [thisMonthOrders]);
-  const lastMonthRevenue = useMemo(() => {
-    const totalRevenue = thisMonthOrders.reduce((total, order) => {
-      return total + order.shippingFee;
-    }, 0);
-    return totalRevenue;
-  }, [lastMonthOrders]);
-
-  const thisMonthReports = useMemo(() => {
-    const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-    return reports?.filter((report) => {
-      const reportedAt = new Date(Number(report.reportedAt) * 1000);
-      return reportedAt >= startOfMonth && reportedAt <= endOfMonth;
-    });
-  }, [reports]);
-  const lastMonthReports = useMemo(() => {
-    const now = new Date();
-    const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
-
-    return reports?.filter((report) => {
-      const reportedAt = new Date(Number(report.reportedAt) * 1000);
-      return reportedAt >= startOfLastMonth && reportedAt <= endOfLastMonth;
-    });
-  }, [reports]);
+  }, [orders]);
 
   const analysticList: AnaLysticCardProps[] = [
     {
       title: 'Số người dùng',
       value: users.length,
-      type: 'WEEK',
       icon: <Profile2User variant='Bold' />,
-      changeValue: (thisWeekUsers.length - lastWeekUsers.length) / lastWeekUsers.length,
       iconColor: '#8280FF',
       backgroundColor: '#E5E4FF',
       onClick: () => router.push(paths.dashboard.student.index as string)
@@ -180,54 +108,36 @@ const Page: PageType = () => {
     {
       title: 'Tổng số đơn hàng',
       value: orders.length,
-      type: 'WEEK',
       icon: <Box1 variant='Bold' />,
-      changeValue: (thisWeekOrders.length - lastWeekOrders.length) / lastWeekOrders.length,
       iconColor: '#FEC53D',
       backgroundColor: '#FFF3D6',
       onClick: () => router.push(paths.dashboard.order.index as string)
     },
     {
       title: 'Tổng doanh thu',
-      value: formatVNDcurrency(thisMonthRevenue),
-      type: 'MONTH',
+      value: formatVNDcurrency(revenue),
       icon: <Diagram variant='Bold' />,
-      changeValue: (thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue,
       iconColor: '#4AD991',
       backgroundColor: '#D9F7E8',
       onClick: () => router.push(paths.dashboard.delivery.index as string)
     },
     {
-      title: 'Số đơn chưa xử lý',
-      value: orders.filter((order) => order.latestStatus === 'PENDING').length,
-      type: 'WEEK',
+      title: 'Số lượng ticket',
+      value: tickets.length,
       icon: <ArrowRotateLeft variant='Bold' />,
-      changeValue:
-        (thisWeekOrders.filter((order) => order.latestStatus === 'PENDING').length -
-          lastWeekOrders.filter((order) => order.latestStatus === 'PENDING').length) /
-        lastWeekOrders.filter((order) => order.latestStatus === 'PENDING').length,
       iconColor: '#FF9871',
       backgroundColor: '#FFDED1',
-      onClick: () => router.push(paths.dashboard.order.index as string)
+      onClick: () => router.push(paths.tickets.index as string)
     },
     {
       title: 'Tổng số khiếu nại',
-      value: thisMonthReports.length,
-      type: 'MONTH',
+      value: getReportsApi.data?.totalElements || 0,
       icon: <DocumentText variant='Bold' />,
-      changeValue: (thisMonthReports.length - lastMonthReports.length) / lastMonthReports.length,
       iconColor: '#4AD991',
       backgroundColor: '#D9F7E8',
       onClick: () => router.push(paths.dashboard.report.index)
     }
   ];
-
-  useEffect(() => {
-    getOrdersApi.call({});
-    getListUsersApi.call({});
-    getReportsApi.call({});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <>
@@ -275,9 +185,10 @@ const Page: PageType = () => {
           </Stack>
         </Box>
       )}
-      {(getOrdersApi.loading || getListUsersApi.loading || getReportsApi.loading) && (
-        <LoadingProcess />
-      )}
+      {(getOrdersApi.loading ||
+        getListUsersApi.loading ||
+        getReportsApi.loading ||
+        getTicketsApi.loading) && <LoadingProcess />}
     </>
   );
 };

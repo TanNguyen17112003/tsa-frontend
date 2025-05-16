@@ -3,12 +3,15 @@ import { CustomTableConfig } from 'src/components/custom-table';
 import { ArrowUp, CloseCircle } from 'iconsax-react';
 import { formatDate, formatUnixTimestamp } from 'src/utils/format-time-currency';
 import { UserDetail } from 'src/types/user';
+import { Restore } from '@mui/icons-material';
 const getStaffTableConfig = ({
   onClickUpgrade,
-  onClickDelete
+  onClickDelete,
+  onClickRestore
 }: {
   onClickUpgrade: (data: UserDetail) => void;
   onClickDelete: (data: UserDetail) => void;
+  onClickRestore: (data: UserDetail) => void;
 }): CustomTableConfig<UserDetail['id'], UserDetail>[] => [
   {
     key: 'information',
@@ -79,6 +82,26 @@ const getStaffTableConfig = ({
         </Tooltip>
       </Stack>
     )
+  },
+  {
+    key: 'recover',
+    headerLabel: 'Khôi phục',
+    type: 'string',
+    renderCell: (data) =>
+      data?.status === 'DEACTIVATED' && (
+        <Stack
+          direction={'row'}
+          spacing={2}
+          onClick={(event) => {
+            event.stopPropagation();
+            onClickRestore(data);
+          }}
+        >
+          <Tooltip title='KHÔI PHỤC'>
+            <Restore />
+          </Tooltip>
+        </Stack>
+      )
   }
 ];
 

@@ -35,6 +35,7 @@ import { useFormik } from 'formik';
 import { OrdersApi } from 'src/api/orders';
 import { OrderFormTextField } from '../order-add/order-form-text-field';
 import { useOrdersContext } from 'src/contexts/orders/orders-context';
+import LoadingProcess from 'src/components/LoadingProcess';
 
 interface OrderDelayFieldProps {
   deliveryDay: string;
@@ -189,6 +190,10 @@ function OrderConfirmAdvancedDialog({
     formik.values.deliveryTimeSlot,
     result?.delayed
   ]);
+
+  const isAllDeliveriesStaffSelected = useMemo(() => {
+    return result?.deliveries.every((_, deliveryIndex) => selectedStaffs[deliveryIndex]);
+  }, [result?.deliveries, selectedStaffs]);
 
   useEffect(() => {
     getOrdersApi.call({});
@@ -392,11 +397,12 @@ function OrderConfirmAdvancedDialog({
           variant='contained'
           color='primary'
           onClick={handleCreateDeliveriesHelper.call}
-          disabled={loading || isConfirmDisabled}
+          disabled={loading || isConfirmDisabled || !isAllDeliveriesStaffSelected}
         >
           {loading ? 'Đang xử lý...' : 'Xác nhận'}
         </Button>
       </DialogActions>
+      {loading && <LoadingProcess />}
     </Dialog>
   );
 }

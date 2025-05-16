@@ -11,12 +11,14 @@ import { useRouter } from 'next/router';
 import UpdateRoleDialog from '../../update-role-dialog';
 import DeleteUserDialog from '../../delete-user-dialog';
 import { useUsersContext } from '@contexts';
+import RestoreUserDialog from '../../restore-user-dialog';
 import LoadingProcess from 'src/components/LoadingProcess';
 
 function StaffList() {
   const router = useRouter();
-  const { getListUsersApi, deleteUser } = useUsersContext();
+  const { getListUsersApi, deleteUser, updateUserStatus } = useUsersContext();
   const deleteStaffDialog = useDialog<UserDetail>();
+  const restoreStaffDialog = useDialog<UserDetail>();
   const updateRoleDialog = useDialog<UserDetail>();
   const [selectedStatus, setSelectedStatus] = useState<string>('');
 
@@ -71,6 +73,9 @@ function StaffList() {
       },
       onClickDelete: (data: UserDetail) => {
         deleteStaffDialog.handleOpen(data);
+      },
+      onClickRestore: (data: UserDetail) => {
+        restoreStaffDialog.handleOpen(data);
       }
     });
   }, []);
@@ -106,6 +111,14 @@ function StaffList() {
         open={updateRoleDialog.open}
         user={updateRoleDialog.data as UserDetail}
         onClose={updateRoleDialog.handleClose}
+      />
+      <RestoreUserDialog
+        open={restoreStaffDialog.open}
+        user={restoreStaffDialog.data as UserDetail}
+        onClose={restoreStaffDialog.handleClose}
+        onConfirm={() =>
+          updateUserStatus(restoreStaffDialog.data?.id as string, { status: 'AVAILABLE' })
+        }
       />
     </Box>
   );

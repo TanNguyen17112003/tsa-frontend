@@ -56,7 +56,7 @@ interface OrderStatusHistory {
   reason?: string;
   time: string;
   status: OrderStatus;
-  cancelImage: string;
+  canceledImage: string;
 }
 
 export interface Order {

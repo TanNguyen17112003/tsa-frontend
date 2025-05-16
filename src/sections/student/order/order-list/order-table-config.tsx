@@ -1,7 +1,7 @@
-import { Typography, Stack, Chip, Box } from '@mui/material';
+import { Typography, Stack, Chip, Box, Tooltip } from '@mui/material';
 import { CustomTableConfig } from 'src/components/custom-table';
 import { OrderDetail } from 'src/types/order';
-import { Edit, DocumentText, Trash, Bank } from 'iconsax-react';
+import { Edit, DocumentText, Trash, Bank, CloseCircle } from 'iconsax-react';
 import { formatDate, formatUnixTimestamp, formatVNDcurrency } from 'src/utils/format-time-currency';
 import Image from 'next/image';
 
@@ -9,12 +9,14 @@ const getOrderTableConfigs = ({
   onClickReport,
   onClickDelete,
   onClickEdit,
+  onClickCancel,
   onClickPayment,
   isPaid
 }: {
   onClickReport: (data: OrderDetail) => void;
   onClickDelete: (data: OrderDetail) => void;
   onClickEdit: (data: OrderDetail) => void;
+  onClickCancel: (data: OrderDetail) => void;
   onClickPayment?: (data: OrderDetail) => void;
   isPaid: boolean;
 }): CustomTableConfig<OrderDetail['id'], OrderDetail>[] => {
@@ -144,6 +146,44 @@ const getOrderTableConfigs = ({
       }
     },
     {
+      key: 'canceledImage',
+      headerLabel: 'Danh sách hình ảnh hủy đơn',
+      type: 'string',
+      renderCell: (data) => {
+        const listImage = data.historyTime
+          .filter((item) => item.canceledImage !== null && item.canceledImage?.length > 0)
+          .map((item) => item.canceledImage);
+        const handleClick = (index: number) => {
+          window.open(listImage[index] as string, '_blank');
+        };
+        return listImage?.length > 0 ? (
+          <Stack direction={'row'} spacing={1}>
+            {listImage.map((image, index) => (
+              <Box key={index} className='cursor-pointer' onClick={() => handleClick(index)}>
+                <img src={image as string} alt='proof' width={100} />
+              </Box>
+            ))}
+          </Stack>
+        ) : (
+          <>Chưa có thông tin</>
+        );
+      }
+    },
+    {
+      key: 'cancelReason',
+      headerLabel: 'Lý do hủy đơn',
+      renderCell: (data) => {
+        const listReason = data.historyTime
+          .filter((item) => item.reason !== null && (item.reason?.length ?? 0) > 0)
+          .map((item) => item.reason);
+        return listReason?.length > 0 ? (
+          <Typography>{listReason.join(', ')}</Typography>
+        ) : (
+          <>Chưa có thông tin</>
+        );
+      }
+    },
+    {
       key: 'report',
       headerLabel: 'Khiếu nại',
       type: 'string',
@@ -165,24 +205,42 @@ const getOrderTableConfigs = ({
       type: 'string',
       renderCell: (data) => (
         <Stack direction={'row'} spacing={2}>
-          <Edit
-            color='blue'
-            size={24}
-            className='cursor-pointer'
-            onClick={(event) => {
-              event.stopPropagation();
-              onClickEdit(data);
-            }}
-          />
-          <Trash
-            color='red'
-            size={24}
-            className='cursor-pointer'
-            onClick={(event) => {
-              event.stopPropagation();
-              onClickDelete(data);
-            }}
-          />
+          <Tooltip title='Xem chi tiết đơn hàng'>
+            <Edit
+              color='blue'
+              size={24}
+              className='cursor-pointer'
+              onClick={(event) => {
+                event.stopPropagation();
+                onClickEdit(data);
+              }}
+            />
+          </Tooltip>
+          <Tooltip title='Xóa đơn hàng'>
+            <Trash
+              color='red'
+              size={24}
+              className='cursor-pointer'
+              onClick={(event) => {
+                event.stopPropagation();
+                onClickDelete(data);
+              }}
+            />
+          </Tooltip>
+
+          {data.latestStatus === 'PENDING' && (
+            <Tooltip title='Hủy đơn hàng'>
+              <CloseCircle
+                color='red'
+                size={24}
+                className='cursor-pointer'
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onClickCancel(data);
+                }}
+              />
+            </Tooltip>
+          )}
         </Stack>
       )
     }

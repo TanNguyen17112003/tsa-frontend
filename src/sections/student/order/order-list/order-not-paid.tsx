@@ -19,6 +19,7 @@ import { useSocketContext } from 'src/contexts/socket-client/socket-client-conte
 import { paths } from 'src/paths';
 import { OrdersApi } from 'src/api/orders';
 import LoadingProcess from 'src/components/LoadingProcess';
+import OrderDetailCancelDialog from './order-detail-cancel-dialog';
 
 const OrderNotPaid: React.FC = () => {
   const { socket } = useSocketContext();
@@ -70,6 +71,7 @@ const OrderNotPaid: React.FC = () => {
 
   const orderDetailReportDrawer = useDrawer<OrderDetail>();
   const orderDetailDeleteDialog = useDialog<OrderDetail>();
+  const orderDetailCancelDialog = useDialog<OrderDetail>();
   const orderDetailEditDrawer = useDrawer<OrderDetail>();
 
   const orders = useMemo(() => {
@@ -214,6 +216,9 @@ const OrderNotPaid: React.FC = () => {
       onClickPayment: (data: OrderDetail) => {
         handlePayment(data);
       },
+      onClickCancel: (data: OrderDetail) => {
+        orderDetailCancelDialog.handleOpen(data);
+      },
       isPaid: false
     });
   }, [handlePayment, handleReportOrder, handleEditOrder, handleDeleteOrder]);
@@ -258,8 +263,8 @@ const OrderNotPaid: React.FC = () => {
       socket.on('paymentUpdate', paymentUpdateHandler);
 
       return () => {
-        socket.emit('unsubscribeToPayment', { orderId: order?.id });
-        console.log(`Unsubscribe to payment with ${order?.id}`);
+        socket.emit('unsubscribeFromPayment', { orderId: order?.id });
+        console.log(`Unsubscribe from payment with ${order?.id}`);
         socket.off('paymentUpdate', paymentUpdateHandler);
       };
     }
@@ -313,6 +318,11 @@ const OrderNotPaid: React.FC = () => {
           open={orderDetailEditDrawer.open}
           onClose={orderDetailEditDrawer.handleClose}
           order={orderDetailEditDrawer.data}
+        />
+        <OrderDetailCancelDialog
+          open={orderDetailCancelDialog.open}
+          onClose={orderDetailCancelDialog.handleClose}
+          order={orderDetailCancelDialog.data as OrderDetail}
         />
       </Box>
     </>

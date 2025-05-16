@@ -5,8 +5,8 @@ import { TrendingDown, TrendingUp } from 'lucide-react';
 export interface AnaLysticCardProps {
   title: string;
   value: string | number;
-  changeValue: number;
-  type: 'WEEK' | 'MONTH';
+  changeValue?: number;
+  type?: 'WEEK' | 'MONTH';
   icon: React.ReactNode;
   iconColor: string;
   backgroundColor: string;
@@ -27,19 +27,6 @@ const AnaLysticCard: React.FC<AnaLysticCardProps> = (props) => {
         >
           <Box style={{ color: props.iconColor }}>{props.icon}</Box>
         </Box>
-      </Stack>
-      <Stack direction={'row'} gap={0.5} alignItems={'center'}>
-        {props.changeValue > 0 ? (
-          <TrendingUp size={16} color='#20BFA7' />
-        ) : (
-          <TrendingDown size={16} color='red' />
-        )}
-        <Typography color={props.changeValue > 0 ? '#20BFA7' : 'red'} variant='subtitle2'>
-          {props.changeValue.toFixed(2)}%
-        </Typography>
-        <Typography variant='subtitle2'>
-          so với {props.type === 'WEEK' ? 'tuần' : 'tháng'} trước
-        </Typography>
       </Stack>
     </Card>
   );

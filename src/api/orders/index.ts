@@ -72,6 +72,15 @@ export interface ShippingFeeRequest {
   weight: number;
 }
 
+export interface OrderStatusRequest {
+  status: OrderStatus;
+  finishedImage?: string;
+  canceledImage?: string;
+  reason?: string;
+  distance?: number;
+  cancelReasonType?: 'FROM_STUDENT' | 'FROM_STAFF';
+}
+
 export class OrdersApi {
   static async postOrders(request: OrderFormProps): Promise<OrderCreateResponse> {
     return await apiPost('/orders', request);
@@ -95,8 +104,8 @@ export class OrdersApi {
     return await apiPatch('/orders/' + orderId, request);
   }
 
-  static async updateOrderStatus(status: OrderStatus, id: string): Promise<OrderDetail> {
-    return await apiPatch('/orders/status/' + id, { status });
+  static async updateOrderStatus(request: OrderStatusRequest, id: string): Promise<OrderDetail> {
+    return await apiPatch('/orders/status/' + id, request);
   }
 
   static async deleteOrder(id: Order['id']) {

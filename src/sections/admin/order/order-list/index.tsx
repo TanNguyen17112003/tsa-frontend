@@ -151,7 +151,7 @@ function OrderList() {
         showSnackbarError('Không thể phê duyệt danh sách đơn hàng này');
       } else if (notApprovedOrders.length === 0) {
         await updateOrderStatus(
-          'ACCEPTED',
+          { status: 'ACCEPTED' },
           approvedOrders.map((order) => order.id)
         );
         showSnackbarSuccess('Phê duyệt các đơn hàng thành công');
@@ -174,13 +174,8 @@ function OrderList() {
       showSnackbarError('Không thể gom nhóm danh sách đơn hàng trống!');
       return;
     }
-    const deliveryDate = unixTimestampToDate(orders[0].deliveryDate);
-    const notSatisfiedOrders = orders.filter(
-      (order) =>
-        unixTimestampToDate(order.deliveryDate).getDay() !== deliveryDate.getDay() ||
-        unixTimestampToDate(order.deliveryDate).getMonth() !== deliveryDate.getMonth() ||
-        unixTimestampToDate(order.deliveryDate).getFullYear() !== deliveryDate.getFullYear()
-    );
+    const deliveryDate = orders[0].deliveryDate;
+    const notSatisfiedOrders = orders.filter((order) => order.deliveryDate !== deliveryDate);
     const notSameDormitoryOrders = orders.filter(
       (order) => order.dormitory !== orders[0].dormitory
     );
@@ -190,7 +185,7 @@ function OrderList() {
     }
     if (notSatisfiedOrders.length > 0) {
       showSnackbarError(
-        'Không thể gom nhóm danh sách đơn hàng này vì ngày giao hàng không giống nhau!'
+        'Không thể gom nhóm danh sách đơn hàng này vì thời gian giao hàng không giống nhau!'
       );
       return;
     }
@@ -258,7 +253,7 @@ function OrderList() {
 
   const handleConfirmApproveOrders = useCallback(async () => {
     await updateOrderStatus(
-      'ACCEPTED',
+      { status: 'ACCEPTED' },
       approvedOrders.map((order) => order.id)
     );
     setApprovedOrders([]);

@@ -17,6 +17,7 @@ import { formatVNDcurrency } from 'src/utils/format-time-currency';
 import { FormikProps } from 'formik';
 import { OrderFormProps } from 'src/api/orders';
 import Carousel from 'react-material-ui-carousel';
+import LoadingProcess from 'src/components/LoadingProcess';
 
 function OrderConfirmFeeDialog({
   orders,
@@ -33,6 +34,7 @@ function OrderConfirmFeeDialog({
   onConfirmPayment?: () => Promise<void>;
 }) {
   const onConfirmPaymentHelper = useFunction(onConfirmPayment!, {});
+  const onConfirmHelper = useFunction(onConfirm!);
   const orderInfoList = useMemo(() => {
     return [
       {
@@ -193,7 +195,7 @@ function OrderConfirmFeeDialog({
           color='primary'
           onClick={async (e) => {
             dialogProps.onClose?.(e, 'escapeKeyDown');
-            await onConfirm?.call({});
+            await onConfirmHelper.call({});
           }}
         >
           {formik.values.paymentMethod !== 'CASH' ? 'Xác nhận và thanh toán sau' : 'Xác nhận'}
@@ -211,6 +213,7 @@ function OrderConfirmFeeDialog({
           </Button>
         )}
       </DialogActions>
+      {(onConfirmPaymentHelper.loading || onConfirmHelper.loading) && <LoadingProcess />}
     </Dialog>
   );
 }

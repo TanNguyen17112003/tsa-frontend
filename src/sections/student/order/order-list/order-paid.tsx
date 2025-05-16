@@ -14,6 +14,7 @@ import useAppSnackbar from 'src/hooks/use-app-snackbar';
 import Pagination from 'src/components/ui/Pagination';
 import { useAuth } from '@hooks';
 import LoadingProcess from 'src/components/LoadingProcess';
+import OrderDetailCancelDialog from './order-detail-cancel-dialog';
 
 const OrderNotPaid: React.FC = () => {
   const router = useRouter();
@@ -35,6 +36,7 @@ const OrderNotPaid: React.FC = () => {
   const orderDetailReportDrawer = useDrawer<OrderDetail>();
   const orderDetailDeleteDialog = useDialog<OrderDetail>();
   const orderDetailEditDrawer = useDrawer<OrderDetail>();
+  const orderDetailCancelDialog = useDialog<OrderDetail>();
 
   const orders = useMemo(() => {
     return getOrdersApi.data?.results || [];
@@ -123,6 +125,9 @@ const OrderNotPaid: React.FC = () => {
       onClickDelete: (data: OrderDetail) => {
         handleDeleteOrder(data);
       },
+      onClickCancel: (data: OrderDetail) => {
+        orderDetailCancelDialog.handleOpen(data);
+      },
       isPaid: true
     });
   }, [handleReportOrder, handleEditOrder, handleDeleteOrder]);
@@ -179,6 +184,11 @@ const OrderNotPaid: React.FC = () => {
           open={orderDetailEditDrawer.open}
           onClose={orderDetailEditDrawer.handleClose}
           order={orderDetailEditDrawer.data}
+        />
+        <OrderDetailCancelDialog
+          open={orderDetailCancelDialog.open}
+          onClose={orderDetailCancelDialog.handleClose}
+          order={orderDetailCancelDialog.data as OrderDetail}
         />
       </Box>
     </>

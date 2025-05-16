@@ -107,7 +107,7 @@ const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
     // };
     return () => {
       socket?.off('locationUpdate');
-      socket?.emit('unsubscribeToShipper', { shipperId: order?.shipperId });
+      socket?.emit('unsubscribeFromShipper', { shipperId: order?.shipperId });
       console.log(`Unsubscribed to shipper with ID ${order?.shipperId}`);
     };
   }, [order?.shipperId, socket]);

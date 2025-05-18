@@ -1,4 +1,4 @@
-export type TicketStatus = 'PENDING' | 'PROCESSING' | 'REPLIED' | 'CLOSED';
+export type TicketStatus = 'PENDING' | 'PROCESSING' | 'CLOSED';
 
 export type TicketType =
   | 'Payment and Fee'

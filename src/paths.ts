@@ -45,6 +45,9 @@ export const paths = {
   tickets: {
     index: '/tickets'
   },
+  regulations: {
+    index: '/regulations'
+  },
   banned: {
     index: '/banned'
   },

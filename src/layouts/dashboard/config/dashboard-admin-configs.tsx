@@ -51,7 +51,7 @@ export const getDashboardAdminConfigs = () => {
       items: [
         {
           title: 'Cài đặt',
-          path: paths.dashboard.accounts.index,
+          path: paths.regulations.index,
           icon: <Setting2 className='h-6 w-6' />
         },
         {

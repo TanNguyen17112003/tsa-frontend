@@ -1,5 +1,4 @@
 import CookieHelper, { CookieKeys } from './cookie-helper';
-import { UsersApi } from 'src/api/users';
 
 export const API_HOST = process.env.NEXT_PUBLIC_API_HOST;
 
@@ -40,18 +39,24 @@ function reviver(key: any, value: any) {
 }
 
 // Attach body as search params
-const getRequestUrl = (query: string, body?: any) => {
+export const getRequestUrl = (query: string, body?: any) => {
   return API_HOST + query + (body ? '?' + new URLSearchParams(body) : '');
 };
 
-const apiFetch = async (input: RequestInfo | URL, init?: RequestInit | undefined) => {
+export const apiFetch = async (input: RequestInfo | URL, init?: RequestInit | undefined) => {
   try {
     const response = await fetch(input, init);
+
+    if (response.status === 204 || response.headers.get('Content-Length') === '0') {
+      return null;
+    }
+
     const result = await response.json();
-    if (!response.ok || (response.status != 200 && response.status != 201)) {
+    if (!response.ok || (response.status !== 200 && response.status !== 201)) {
       const message = `Error: ${result.message || response.status}`;
       throw new Error(message);
     }
+
     const data = JSON.stringify(result);
     return JSON.parse(data, reviver);
   } catch (error) {
@@ -61,24 +66,7 @@ const apiFetch = async (input: RequestInfo | URL, init?: RequestInit | undefined
 
 const refreshToken = async () => {
   const refreshToken = CookieHelper.getItem(CookieKeys.REFRESH_TOKEN);
-  if (refreshToken) {
-    try {
-      const response = await UsersApi.refreshToken(refreshToken as string);
-      if (response && response.accessToken && response.refreshToken) {
-        CookieHelper.setItem(CookieKeys.TOKEN, response.accessToken);
-        CookieHelper.setItem(CookieKeys.REFRESH_TOKEN, response.refreshToken);
-        return response.accessToken;
-      } else {
-        console.error('Invalid refreshToken response:', response);
-        throw new Error('Invalid refresh token');
-      }
-    } catch (error) {
-      console.error('RefreshToken error:', error);
-      throw error;
-    }
-  } else {
-    throw new Error('No refresh token available');
-  }
+  return 'test';
 };
 
 const apiFetchWithRetry = async (input: RequestInfo | URL, init?: RequestInit | undefined) => {
@@ -114,11 +102,17 @@ export const apiPost = async (query: string, body: any) => {
 export const apiDelete = async (query: string, body: any) => {
   const isFormData = body instanceof FormData;
   const headers = await getRequestHeaders('DELETE', isFormData);
-  return await apiFetchWithRetry(getRequestUrl(query), {
+  const response = await apiFetchWithRetry(getRequestUrl(query), {
     method: 'DELETE',
     headers,
     body: isFormData ? body : JSON.stringify(body)
   });
+
+  if (response && response.status === 204) {
+    return null;
+  }
+
+  return response;
 };
 
 export const apiPut = async (query: string, body: any) => {

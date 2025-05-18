@@ -10,20 +10,20 @@ import {
   TextField,
   Typography
 } from '@mui/material';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { TicketDetail } from 'src/types/ticket';
 import { useAuth, useDialog } from '@hooks';
 import { useFirebaseAuth } from '@hooks';
 import { Printer, Send } from 'lucide-react';
-import { AttachCircle, CloseCircle } from 'iconsax-react';
+import { AttachCircle, Check, CloseCircle, ShieldTick } from 'iconsax-react';
 import { useFormik } from 'formik';
-import { useRef } from 'react';
 import { formatDate } from 'src/utils/format-time-currency';
 import { useTicketsContext } from 'src/contexts/tickets/tickets-context';
 import { useRouter } from 'next/router';
 import useFunction from 'src/hooks/use-function';
 import TicketDetailUpdateStatusDialog from './ticket-detail-update-status-dialog';
 import LoadingProcess from 'src/components/LoadingProcess';
+import TicketDetailCompleteDialog from './ticket-detail-complete-dialog';
 
 interface TicketDetailHistoryProps {
   ticket: TicketDetail;
@@ -50,7 +50,7 @@ const TicketDetailHistoryItem: React.FC<{
 }> = ({ createdAt, name, avatarUrl, isInitial, content, attachments, toReply }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
-  const { replyTicket } = useTicketsContext();
+  const { replyTicket, updateStatusTicket } = useTicketsContext();
   const handleFileUploadClick = useCallback(() => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
@@ -201,8 +201,11 @@ const TicketDetailHistoryItem: React.FC<{
 
 const TicketDetailHistory: React.FC<TicketDetailHistoryProps> = ({ ticket }) => {
   const { user } = useAuth();
+  const { updateStatusTicket } = useTicketsContext();
   const updateTicketStatusDialog = useDialog<TicketDetail>();
+  const ticketDetailCompleteDialog = useDialog<TicketDetail>();
   const { user: firebaseUser } = useFirebaseAuth();
+  const printRef = useRef<HTMLDivElement>(null);
   const ticketOwnerInfo: TicketHeaderItemProps[] = useMemo(() => {
     return [
       {
@@ -215,6 +218,36 @@ const TicketDetailHistory: React.FC<TicketDetailHistoryProps> = ({ ticket }) => 
       }
     ];
   }, [user, firebaseUser, ticket]);
+
+  const handlePrint = () => {
+    if (!printRef.current) return;
+    const printContents = printRef.current.innerHTML;
+    const printWindow = window.open('', '', 'height=600,width=800');
+    if (printWindow) {
+      printWindow.document.write('<html><head><title>Print</title>');
+      const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
+        .map((style) => style.outerHTML)
+        .join('');
+      printWindow.document.write(styles);
+      printWindow.document.write('</head><body>');
+      printWindow.document.write(printContents);
+      printWindow.document.write('</body></html>');
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(() => {
+        printWindow.print();
+        printWindow.close();
+      }, 500);
+    }
+  };
+
+  const handleCompleteTicket = useCallback(async (ticket: TicketDetail) => {
+    try {
+      await updateStatusTicket(ticket.id, 'CLOSED');
+    } catch (error) {
+      console.error('Error completing ticket:', error);
+    }
+  }, []);
 
   return (
     <Box
@@ -234,14 +267,19 @@ const TicketDetailHistory: React.FC<TicketDetailHistoryProps> = ({ ticket }) => 
             {(user?.role === 'ADMIN' || firebaseUser?.role === 'ADMIN') && (
               <Button
                 variant='contained'
-                onClick={() => updateTicketStatusDialog.handleOpen(ticket as TicketDetail)}
+                color='success'
+                startIcon={<ShieldTick />}
+                onClick={() => ticketDetailCompleteDialog.handleOpen(ticket as TicketDetail)}
+                // onClick={() => updateTicketStatusDialog.handleOpen(ticket as TicketDetail)}
               >
-                Cập nhật trạng thái
+                Đánh dấu hoàn thành
               </Button>
             )}
-            <Printer className='cursor-pointer' size={20} onClick={() => window.print()} />
+            <Printer className='cursor-pointer' size={20} onClick={handlePrint} />
           </Box>
         </Stack>
+      </Box>
+      <div ref={printRef} className='print-area' style={{ background: 'white', color: 'black' }}>
         <Stack direction={'row'} gap={2} mt={1}>
           {ticketOwnerInfo.map((item, index) => (
             <Box key={index} display={'flex'} alignItems={'center'} gap={0.5}>
@@ -253,50 +291,59 @@ const TicketDetailHistory: React.FC<TicketDetailHistoryProps> = ({ ticket }) => 
             </Box>
           ))}
         </Stack>
-      </Box>
-      <Divider />
-      <TicketDetailHistoryItem
-        createdAt={ticket?.createdAt as Date}
-        name={ticket?.userName}
-        avatarUrl={ticket?.photoUrl}
-        isInitial={true}
-        content={ticket?.content}
-        attachments={ticket?.attachments.map((attachment) => attachment.fileUrl)}
-        toReply={false}
-      />
-      {ticket?.replies.length > 0 && <Divider />}
-      <Stack gap={2}>
-        {ticket?.replies.map((reply, index) => (
-          <Box key={index} display={'flex'} flexDirection={'column'} gap={2}>
-            <TicketDetailHistoryItem
-              createdAt={reply.createdAt as Date}
-              name={reply.userName}
-              avatarUrl={reply.photoUrl}
-              isInitial={false}
-              content={reply.content}
-              attachments={reply.attachments.map((attachment) => attachment.fileUrl)}
-              toReply={false}
-            />
-            <Divider />
-          </Box>
-        ))}
-      </Stack>
-      <TicketDetailHistoryItem
-        name={
-          user?.lastName + ' ' + user?.firstName ||
-          firebaseUser?.lastName + ' ' + firebaseUser?.firstName ||
-          ''
-        }
-        avatarUrl={user?.photoUrl || firebaseUser?.photoUrl || ''}
-        isInitial={false}
-        content={''}
-        attachments={[]}
-        toReply={true}
-      />
+        <Divider />
+        <Box my={2}>
+          <TicketDetailHistoryItem
+            createdAt={ticket?.createdAt as Date}
+            name={ticket?.userName}
+            avatarUrl={ticket?.photoUrl}
+            isInitial={true}
+            content={ticket?.content}
+            attachments={ticket?.attachments.map((attachment) => attachment.fileUrl)}
+            toReply={false}
+          />
+        </Box>
+        {ticket?.replies.length > 0 && <Divider sx={{ mb: 2 }} />}
+        <Stack gap={2}>
+          {ticket?.replies.map((reply, index) => (
+            <Box key={index} display={'flex'} flexDirection={'column'} gap={2}>
+              <TicketDetailHistoryItem
+                createdAt={reply.createdAt as Date}
+                name={reply.userName}
+                avatarUrl={reply.photoUrl}
+                isInitial={false}
+                content={reply.content}
+                attachments={reply.attachments.map((attachment) => attachment.fileUrl)}
+                toReply={false}
+              />
+              <Divider />
+            </Box>
+          ))}
+        </Stack>
+      </div>
+      {ticket?.status !== 'CLOSED' && (
+        <TicketDetailHistoryItem
+          name={
+            user?.lastName + ' ' + user?.firstName ||
+            firebaseUser?.lastName + ' ' + firebaseUser?.firstName ||
+            ''
+          }
+          avatarUrl={user?.photoUrl || firebaseUser?.photoUrl || ''}
+          isInitial={false}
+          content={''}
+          attachments={[]}
+          toReply={true}
+        />
+      )}
       <TicketDetailUpdateStatusDialog
         ticket={ticket}
         open={updateTicketStatusDialog.open}
         onClose={updateTicketStatusDialog.handleClose}
+      />
+      <TicketDetailCompleteDialog
+        ticket={ticket}
+        open={ticketDetailCompleteDialog.open}
+        onClose={ticketDetailCompleteDialog.handleClose}
       />
     </Box>
   );

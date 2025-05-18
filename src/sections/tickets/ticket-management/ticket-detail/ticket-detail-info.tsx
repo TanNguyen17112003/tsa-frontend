@@ -1,4 +1,4 @@
-import { Box, Divider, Stack, Typography } from '@mui/material';
+import { Box, Chip, Divider, Stack, Typography } from '@mui/material';
 import React, { useMemo } from 'react';
 import { TicketDetail, ticketTypeMap } from 'src/types/ticket';
 import { Reply, AlarmClock } from 'lucide-react';
@@ -12,7 +12,7 @@ interface TicketDetailInfoProps {
 interface TicketDetailInfoItem {
   title: string;
   icon?: React.ReactNode;
-  value: string | number;
+  value: any;
 }
 
 const TicketDetailInfo: React.FC<TicketDetailInfoProps> = ({ ticket, type }) => {
@@ -31,13 +31,13 @@ const TicketDetailInfo: React.FC<TicketDetailInfoProps> = ({ ticket, type }) => 
       {
         title: 'Tình trạng',
         value:
-          ticket?.status === 'PENDING'
-            ? 'Đang mở'
-            : ticket?.status === 'PROCESSING'
-              ? 'Đang trao đổi'
-              : ticket?.status === 'REPLIED'
-                ? 'Đã trả lời'
-                : 'Đã hoàn thành'
+          ticket?.status === 'PENDING' ? (
+            <Chip label='Đang mở' color='warning' size='small' />
+          ) : ticket?.status === 'PROCESSING' ? (
+            <Chip label='Đang trao đổi' color='info' size='small' />
+          ) : (
+            <Chip label='Đã hoàn thành' color='success' size='small' />
+          )
       },
       {
         title: 'Loại',

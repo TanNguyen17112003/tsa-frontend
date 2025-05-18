@@ -70,11 +70,11 @@ export class UsersApi {
   }
 
   static async signIn(request: SignInRequest): Promise<SignInResponse> {
-    return await apiPost('/auth/signin', request);
+    return await apiPost('/auth/signin?mobile=false', request);
   }
 
   static async loginFirebase(request: LoginFirebaseRequest): Promise<FirebaseSignInResponse> {
-    return await apiPost('/auth/signin/google', request);
+    return await apiPost('/auth/signin/google?mobile=false', request);
   }
 
   static async initiateSignUp(request: InitialSignUpRequest): Promise<void> {

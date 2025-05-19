@@ -74,7 +74,9 @@ function OrderInfoCard({ order }: { order: OrderDetail }) {
                 ? 'Đã hủy'
                 : order?.latestStatus === 'ACCEPTED'
                   ? 'Đã xác nhận'
-                  : 'Đã từ chối'
+                  : order?.latestStatus === 'RECEIVED_EXTERNAL'
+                    ? 'Đã nhận hàng'
+                    : 'Đã từ chối'
     }
   ];
 
@@ -103,7 +105,24 @@ function OrderInfoCard({ order }: { order: OrderDetail }) {
                   <Typography variant='subtitle1' className='w-[300px]'>
                     {boxField.name}
                   </Typography>
-                  <Typography className='flex-1'>{boxField.value}</Typography>
+                  {boxField.name === 'Trạng thái' ? (
+                    <Chip
+                      label={boxField.value}
+                      color={
+                        boxField.value === 'Đã xác nhận' ||
+                        boxField.value === 'Đã giao' ||
+                        boxField.value === 'Đã nhận hàng'
+                          ? 'success'
+                          : boxField.value === 'Đã hủy' || boxField.value === 'Đã từ chối'
+                            ? 'error'
+                            : boxField.value === 'Đang chờ xử lý'
+                              ? 'warning'
+                              : 'primary'
+                      }
+                    />
+                  ) : (
+                    <Typography className='flex-1'>{boxField.value}</Typography>
+                  )}
                 </Box>
                 {index == boxFields.length - 1 ? null : <Divider />}
               </>

@@ -27,8 +27,6 @@ const getTicketTableConfigs = ({}: {}): CustomTableConfig<TicketDetail['id'], Ti
         <Chip label='Đang mở' color='primary' />
       ) : data.status === 'PROCESSING' ? (
         <Chip label='Đang trao đổi' color='warning' />
-      ) : data.status === 'REPLIED' ? (
-        <Chip label='Đã trả lời' color='success' />
       ) : (
         <Chip label='Đã hoàn thành' color='success' />
       )

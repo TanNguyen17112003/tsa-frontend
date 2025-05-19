@@ -323,6 +323,7 @@ const OrderNotPaid: React.FC = () => {
           open={orderDetailCancelDialog.open}
           onClose={orderDetailCancelDialog.handleClose}
           order={orderDetailCancelDialog.data as OrderDetail}
+          type='STUDENT'
         />
       </Box>
     </>

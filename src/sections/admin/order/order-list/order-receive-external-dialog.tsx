@@ -19,33 +19,15 @@ import { DialogProps } from '@mui/material';
 import { OrderDetail } from 'src/types/order';
 import LoadingProcess from 'src/components/LoadingProcess';
 
-function OrderDetailCancelDialog({
+function OrderReceiveExternalDialog({
   order,
-  type,
   ...dialogProps
 }: DialogProps & {
   order: OrderDetail;
-  type: 'STUDENT' | 'ADMIN';
 }) {
   const { updateOrderStatus } = useOrdersContext();
-  const [reason, setReason] = useState('');
-  const [canceledImage, setCanceledImage] = useState<string | undefined>(undefined);
+  const [receivedImage, setReceivedImage] = useState<string | undefined>(undefined);
   const [uploading, setUploading] = useState(false);
-
-  const cancelReasonTypeList = useMemo(() => {
-    return [
-      {
-        label: 'Lý do từ sinh viên',
-        value: 'FROM_STUDENT'
-      },
-      {
-        label: 'Lý do từ nhân viên hệ thống',
-        value: 'FROM_STAFF'
-      }
-    ];
-  }, []);
-
-  const [cancelReasonType, setCancelReasonType] = useState<string>('');
 
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -53,7 +35,7 @@ function OrderDetailCancelDialog({
     setUploading(true);
     try {
       const uploaded = await UploadImagesApi.postImage(file);
-      setCanceledImage(uploaded.secure_url);
+      setReceivedImage(uploaded.secure_url);
     } finally {
       setUploading(false);
     }
@@ -61,18 +43,10 @@ function OrderDetailCancelDialog({
 
   const onConfirmHelper = useFunction(
     async () => {
-      await updateOrderStatus(
-        {
-          status: 'CANCELED',
-          reason,
-          canceledImage,
-          cancelReasonType: type === 'STUDENT' ? 'FROM_STUDENT' : (cancelReasonType as any)
-        },
-        [order.id]
-      );
+      await updateOrderStatus({ status: 'RECEIVED_EXTERNAL', receivedImage }, [order.id]);
     },
     {
-      successMessage: 'Hủy đơn hàng thành công!'
+      successMessage: 'Nhận đơn hàng thành công!'
     }
   );
 
@@ -87,45 +61,16 @@ function OrderDetailCancelDialog({
             gap: 2
           }}
         >
-          <Typography variant='h6'>{'Hủy đơn hàng  #' + order?.id}</Typography>
+          <Typography variant='h6'>{'Xác nhận đơn hàng ' + order?.checkCode}</Typography>
         </Box>
       </DialogTitle>
 
       <Box px={3} py={2} gap={2}>
-        <Box mb={3}>
-          <Typography variant='subtitle2'>Lý do hủy đơn</Typography>
-          <TextField
-            placeholder='Nhập lý do hủy đơn'
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-            fullWidth
-          />
-        </Box>
         <input type='file' accept='image/*' onChange={onFileChange} disabled={uploading} />
-        {canceledImage && (
+        {receivedImage && (
           <Box mt={2}>
-            <img src={canceledImage} alt='Canceled' style={{ maxWidth: '100%', maxHeight: 120 }} />
+            <img src={receivedImage} alt='Received' style={{ maxWidth: '100%', maxHeight: 120 }} />
           </Box>
-        )}
-        {type === 'ADMIN' && (
-          <FormControl fullWidth className='mt-5'>
-            <InputLabel id='demo-simple-select-label'>Lý do hủy đơn</InputLabel>
-            <Select
-              labelId='demo-simple-select-label'
-              id='demo-simple-select'
-              value={cancelReasonType}
-              label='Lý do hủy đơn'
-              onChange={(e) => setCancelReasonType(e.target.value)}
-            >
-              {cancelReasonTypeList.map((type) => {
-                return (
-                  <MenuItem key={type.value} value={type.value}>
-                    {type.label}
-                  </MenuItem>
-                );
-              })}
-            </Select>
-          </FormControl>
         )}
       </Box>
       <DialogActions className='flex justify-center'>
@@ -140,7 +85,7 @@ function OrderDetailCancelDialog({
         </Button>
         <Button
           variant='contained'
-          color='error'
+          color='success'
           disabled={uploading}
           onClick={async (e) => {
             dialogProps.onClose?.(e, 'escapeKeyDown');
@@ -155,4 +100,4 @@ function OrderDetailCancelDialog({
   );
 }
 
-export default OrderDetailCancelDialog;
+export default OrderReceiveExternalDialog;

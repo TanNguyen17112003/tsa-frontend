@@ -21,7 +21,14 @@ import { getShippingFee } from 'src/utils/shipping-fee';
 import { usePayOS, PayOSConfig } from 'payos-checkout';
 import { PaymentsApi } from 'src/api/payment';
 import dayjs from 'dayjs';
+import { RegulationsApi } from 'src/api/regulations';
 import { useSocketContext } from 'src/contexts/socket-client/socket-client-context';
+import LoadingProcess from 'src/components/LoadingProcess';
+
+export interface DeliverySlot {
+  startTime: string;
+  endTime: string;
+}
 
 const OrderAddPage = () => {
   const [resetUploadSection, setResetUploadSection] = useState('');
@@ -39,6 +46,17 @@ const OrderAddPage = () => {
 
   const { user } = useAuth();
   const { user: firebaseUser } = useFirebaseAuth();
+
+  const getRegulationApi = useFunction(RegulationsApi.getRegulationByDormitory);
+
+  const timeSlots: DeliverySlot[] = useMemo(() => {
+    return (getRegulationApi.data || null)?.deliverySlots.map((slot) => {
+      return {
+        startTime: slot.startTime,
+        endTime: slot.endTime
+      };
+    }) as DeliverySlot[];
+  }, [getRegulationApi.data]);
 
   const orderShippingFeeDialog = useDialog<{
     shippingFee: number;
@@ -214,6 +232,12 @@ const OrderAddPage = () => {
     }
   }, [socket, orderId, checkoutUrl, formik]);
 
+  useEffect(() => {
+    if (formik.values.dormitory) {
+      getRegulationApi.call(formik.values.dormitory);
+    }
+  }, [formik.values.dormitory]);
+
   return (
     <>
       <Box id='payos-checkout-iframe-add' className='absolute top-0 left-0 w-full h-full' />
@@ -261,7 +285,12 @@ const OrderAddPage = () => {
           </Stack>
           <Stack p={3} gap={2}>
             <>
-              <OrderForm formik={formik} title='1. Nhập thông tin đơn hàng' status={true} />
+              <OrderForm
+                formik={formik}
+                title='1. Nhập thông tin đơn hàng'
+                status={true}
+                timeSlots={timeSlots}
+              />
               <Stack gap={2}>
                 <Typography variant='subtitle1' sx={{ fontWeight: 700 }}>
                   2. Tải lên danh sách đơn hàng
@@ -291,6 +320,7 @@ const OrderAddPage = () => {
           onConfirm={handleCreateOrderAndPayment}
           onAlternativeConfirm={async () => formik.handleSubmit()}
         />
+        {(getRegulationApi.loading || handleSubmitOrderHelper.loading) && <LoadingProcess />}
       </Box>
     </>
   );

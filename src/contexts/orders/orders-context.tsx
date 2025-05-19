@@ -196,7 +196,9 @@ const OrdersProvider = ({ children }: { children: ReactNode }) => {
                       status: request.status,
                       canceledImage: request.canceledImage
                     }
-                  ]
+                  ],
+                  receivedImage: request.receivedImage ? request.receivedImage : c.receivedImage,
+                  finishedImage: request.finishedImage ? request.finishedImage : c.finishedImage
                 })
               : c
           ),

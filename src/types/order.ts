@@ -1,5 +1,5 @@
 import { OrderFormProps } from 'src/api/orders';
-import { CloseCircle, TickCircle, Truck, UserTick, MessageQuestion } from 'iconsax-react';
+import { CloseCircle, TickCircle, Truck, UserTick, MessageQuestion, Box } from 'iconsax-react';
 import React from 'react';
 
 type PaymentMethod = 'CASH' | 'MOMO' | 'CREDIT';
@@ -9,7 +9,8 @@ export type OrderStatus =
   | 'PENDING'
   | 'REJECTED'
   | 'IN_TRANSPORT'
-  | 'ACCEPTED';
+  | 'ACCEPTED'
+  | 'RECEIVED_EXTERNAL';
 
 export const orderStatusIconList = [
   {
@@ -47,6 +48,12 @@ export const orderStatusIconList = [
     icon: React.createElement(Truck),
     color: 'blue',
     title: 'Đang giao'
+  },
+  {
+    status: 'RECEIVED_EXTERNAL',
+    icon: React.createElement(Box),
+    color: 'green',
+    title: 'Nhận từ bên ngoài'
   }
 ];
 
@@ -87,7 +94,8 @@ export interface Order {
     phoneNumber?: string;
     photoUrl?: string;
   };
-  finishedImage: string;
+  finishedImage?: string;
+  receivedImage?: string;
 }
 
 export interface OrderDetail extends Order {
@@ -117,5 +125,6 @@ export const orderStatusMap = {
   'Đang chờ xử lý': 'PENDING',
   'Đã hủy': 'CANCELED',
   'Đã từ chối': 'REJECTED',
-  'Đã xác nhận': 'ACCEPTED'
+  'Đã xác nhận': 'ACCEPTED',
+  'Đã nhận hàng': 'RECEIVED_EXTERNAL'
 };

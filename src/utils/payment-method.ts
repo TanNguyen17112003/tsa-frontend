@@ -17,10 +17,5 @@ export const paymentMethodOptions = [
     label: 'Thanh toán qua ngân hàng',
     value: 'CREDIT',
     image: OptionBank
-  },
-  {
-    label: 'Qua Momo',
-    value: 'MOMO',
-    image: OptionMomo
   }
 ] as unknown as PaymentMethodOptionsProps[];

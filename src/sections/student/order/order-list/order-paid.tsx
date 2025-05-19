@@ -186,6 +186,7 @@ const OrderNotPaid: React.FC = () => {
           order={orderDetailEditDrawer.data}
         />
         <OrderDetailCancelDialog
+          type='STUDENT'
           open={orderDetailCancelDialog.open}
           onClose={orderDetailCancelDialog.handleClose}
           order={orderDetailCancelDialog.data as OrderDetail}

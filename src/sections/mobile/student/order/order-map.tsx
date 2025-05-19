@@ -241,11 +241,11 @@ const OrderMap: React.FC<{ order: OrderDetail }> = ({ order }) => {
         open={deliveryHistoryDialog.open}
         onClose={deliveryHistoryDialog.handleClose}
       />
-      <OrderSucceedDialog
+      {/* <OrderSucceedDialog
         open={successDeliveryDialog.open}
         onClose={successDeliveryDialog.handleClose}
         onConfirm={handleClickVerified}
-      />
+      /> */}
     </Box>
   );
 };

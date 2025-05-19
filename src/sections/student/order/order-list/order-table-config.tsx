@@ -4,6 +4,7 @@ import { OrderDetail } from 'src/types/order';
 import { Edit, DocumentText, Trash, Bank, CloseCircle } from 'iconsax-react';
 import { formatDate, formatUnixTimestamp, formatVNDcurrency } from 'src/utils/format-time-currency';
 import Image from 'next/image';
+import { Verified } from 'lucide-react';
 
 const getOrderTableConfigs = ({
   onClickReport,
@@ -25,7 +26,80 @@ const getOrderTableConfigs = ({
       key: 'checkCode',
       headerLabel: 'Mã đơn hàng',
       type: 'string',
-      renderCell: (data) => <Typography>#{data.checkCode}</Typography>
+      renderCell: (data) => {
+        const isContainingReceiveStatus = data.historyTime
+          .map((historyItem) => historyItem.status)
+          .includes('RECEIVED_EXTERNAL');
+
+        return (
+          <Stack direction={'row'} alignItems={'center'} gap={1}>
+            <Typography>#{data.checkCode}</Typography>
+            {isContainingReceiveStatus && (
+              <Tooltip title='Đơn hàng này đã được nhận từ bên ngoài'>
+                <Verified color='green' fontVariant={'contained'} />
+              </Tooltip>
+            )}
+          </Stack>
+        );
+      }
+    },
+    {
+      key: 'receivedImage',
+      headerLabel: 'Minh chứng nhận hàng',
+      type: 'string',
+      renderCell: (data) => {
+        const handleClick = () => {
+          window.open(data.receivedImage as string, '_blank');
+        };
+        return data.receivedImage ? (
+          <Box className='cursor-pointer' onClick={handleClick}>
+            <img src={data.receivedImage as string} alt='proof' width={100} />
+          </Box>
+        ) : (
+          <Typography>Chưa có thông tin</Typography>
+        );
+      }
+    },
+    {
+      key: 'finishedImage',
+      headerLabel: 'Minh chứng',
+      type: 'string',
+      renderCell: (data) => {
+        const handleClick = () => {
+          window.open(data.finishedImage as string, '_blank');
+        };
+        return data.finishedImage ? (
+          <Box className='cursor-pointer' onClick={handleClick}>
+            <img src={data.finishedImage as string} alt='proof' width={100} />
+          </Box>
+        ) : (
+          <>Chưa có thông tin</>
+        );
+      }
+    },
+    {
+      key: 'canceledImage',
+      headerLabel: 'Minh chứng hủy đơn',
+      type: 'string',
+      renderCell: (data) => {
+        const listImage = data.historyTime
+          .filter((item) => item.canceledImage !== null && item.canceledImage?.length > 0)
+          .map((item) => item.canceledImage);
+        const handleClick = (index: number) => {
+          window.open(listImage[index] as string, '_blank');
+        };
+        return listImage?.length > 0 ? (
+          <Stack direction={'row'} spacing={1}>
+            {listImage.map((image, index) => (
+              <Box key={index} className='cursor-pointer' onClick={() => handleClick(index)}>
+                <img src={image as string} alt='proof' width={100} />
+              </Box>
+            ))}
+          </Stack>
+        ) : (
+          <>Chưa có thông tin</>
+        );
+      }
     },
     {
       key: 'brand',
@@ -82,6 +156,7 @@ const getOrderTableConfigs = ({
         return <Typography>{formatDate(formatUnixTimestamp(data.deliveryDate))}</Typography>;
       }
     },
+
     {
       key: 'paymentMethod',
       headerLabel: 'Phương thức thanh toán',
@@ -97,6 +172,17 @@ const getOrderTableConfigs = ({
       )
     },
     {
+      key: 'isPaid',
+      headerLabel: 'Trạng thái thanh toán',
+      type: 'string',
+      renderCell: (data) => (
+        <Chip
+          color={data.isPaid ? 'success' : 'warning'}
+          label={data.isPaid ? 'Đã thanh toán' : 'Chưa thanh toán'}
+        />
+      )
+    },
+    {
       key: 'status',
       headerLabel: 'Trạng thái',
       type: 'string',
@@ -106,20 +192,22 @@ const getOrderTableConfigs = ({
           label={
             data.latestStatus === 'DELIVERED'
               ? 'Đã giao'
-              : data.latestStatus === 'PENDING'
-                ? 'Chờ xử lý'
-                : data.latestStatus === 'CANCELED'
-                  ? 'Đã hủy'
-                  : data.latestStatus === 'REJECTED'
-                    ? 'Đã từ chối'
-                    : data.latestStatus === 'IN_TRANSPORT'
-                      ? 'Đang vận chuyển'
-                      : data.latestStatus === 'ACCEPTED'
-                        ? 'Đã xác nhận'
-                        : 'Không xác định'
+              : data.latestStatus === 'IN_TRANSPORT'
+                ? 'Đang giao'
+                : data.latestStatus === 'PENDING'
+                  ? 'Đang chờ xử lý'
+                  : data.latestStatus === 'CANCELED'
+                    ? 'Đã hủy'
+                    : data.latestStatus === 'ACCEPTED'
+                      ? 'Đã chấp nhận'
+                      : data.latestStatus === 'RECEIVED_EXTERNAL'
+                        ? 'Đã nhận hàng'
+                        : 'Đã từ chối'
           }
           color={
-            data.latestStatus === 'DELIVERED' || data.latestStatus === 'ACCEPTED'
+            data.latestStatus === 'DELIVERED' ||
+            data.latestStatus === 'ACCEPTED' ||
+            data.latestStatus === 'RECEIVED_EXTERNAL'
               ? 'success'
               : data.latestStatus === 'PENDING' || data.latestStatus === 'IN_TRANSPORT'
                 ? 'warning'
@@ -128,47 +216,7 @@ const getOrderTableConfigs = ({
         />
       )
     },
-    {
-      key: 'finishedImage',
-      headerLabel: 'Minh chứng',
-      type: 'string',
-      renderCell: (data) => {
-        const handleClick = () => {
-          window.open(data.finishedImage as string, '_blank');
-        };
-        return data.finishedImage ? (
-          <Box className='cursor-pointer' onClick={handleClick}>
-            <img src={data.finishedImage as string} alt='proof' width={100} />
-          </Box>
-        ) : (
-          <>Chưa có thông tin</>
-        );
-      }
-    },
-    {
-      key: 'canceledImage',
-      headerLabel: 'Danh sách hình ảnh hủy đơn',
-      type: 'string',
-      renderCell: (data) => {
-        const listImage = data.historyTime
-          .filter((item) => item.canceledImage !== null && item.canceledImage?.length > 0)
-          .map((item) => item.canceledImage);
-        const handleClick = (index: number) => {
-          window.open(listImage[index] as string, '_blank');
-        };
-        return listImage?.length > 0 ? (
-          <Stack direction={'row'} spacing={1}>
-            {listImage.map((image, index) => (
-              <Box key={index} className='cursor-pointer' onClick={() => handleClick(index)}>
-                <img src={image as string} alt='proof' width={100} />
-              </Box>
-            ))}
-          </Stack>
-        ) : (
-          <>Chưa có thông tin</>
-        );
-      }
-    },
+
     {
       key: 'cancelReason',
       headerLabel: 'Lý do hủy đơn',
@@ -205,7 +253,7 @@ const getOrderTableConfigs = ({
       type: 'string',
       renderCell: (data) => (
         <Stack direction={'row'} spacing={2}>
-          <Tooltip title='Xem chi tiết đơn hàng'>
+          <Tooltip title='Chỉnh sửa đơn hàng'>
             <Edit
               color='blue'
               size={24}

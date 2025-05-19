@@ -23,7 +23,8 @@ import { SearchIcon } from 'lucide-react';
 import { unixTimestampToDate } from 'src/utils/format-time-currency';
 import OrderFastGroupDialog from './order-fast-group-dialog';
 import LoadingProcess from 'src/components/LoadingProcess';
-
+import OrderDetailCancelDialog from 'src/sections/student/order/order-list/order-detail-cancel-dialog';
+import OrderReceiveExternalDialog from './order-receive-external-dialog';
 function OrderList() {
   const router = useRouter();
   const { showSnackbarError, showSnackbarSuccess } = useAppSnackbar();
@@ -54,6 +55,8 @@ function OrderList() {
   const orderApproveWarningDialog = useDialog<OrderDetail[]>();
   const orderGroupWarningDialog = useDialog<OrderDetail[]>();
   const orderFastGroupDialog = useDialog();
+  const orderDetailCancelDialog = useDialog<OrderDetail>();
+  const orderReceiveExternalDialog = useDialog<OrderDetail>();
 
   const orders = useMemo(() => {
     return getOrdersApi.data?.results || [];
@@ -274,6 +277,12 @@ function OrderList() {
       onClickEdit: (data: any) => {
         handleEditOrder(data);
       },
+      onClickCancel: (data: any) => {
+        orderDetailCancelDialog.handleOpen(data);
+      },
+      onClickReceiveExternal: (data: any) => {
+        orderReceiveExternalDialog.handleOpen(data);
+      },
       users: users.users
     });
   }, [users, handleDeleteOrder, handleEditOrder]);
@@ -417,6 +426,17 @@ function OrderList() {
       <OrderFastGroupDialog
         open={orderFastGroupDialog.open}
         onClose={orderFastGroupDialog.handleClose}
+      />
+      <OrderDetailCancelDialog
+        open={orderDetailCancelDialog.open}
+        onClose={orderDetailCancelDialog.handleClose}
+        order={orderDetailCancelDialog.data as OrderDetail}
+        type='ADMIN'
+      />
+      <OrderReceiveExternalDialog
+        open={orderReceiveExternalDialog.open}
+        onClose={orderReceiveExternalDialog.handleClose}
+        order={orderReceiveExternalDialog.data as OrderDetail}
       />
       {isLoading && <LoadingProcess />}
     </Box>

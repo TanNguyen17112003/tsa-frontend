@@ -17,14 +17,16 @@ import { paymentMethodOptions } from 'src/utils/payment-method';
 import Image from 'next/image';
 import { AddressData } from '@utils';
 import { OrderFormProps } from 'src/api/orders';
+import { DeliverySlot } from './order-add-page';
 
 interface OrderFormAttributes {
   formik: FormikProps<OrderFormProps>;
   title?: string;
   status: boolean;
+  timeSlots?: DeliverySlot[];
 }
 
-export const OrderForm: FC<OrderFormAttributes> = ({ formik, title, status }) => {
+export const OrderForm: FC<OrderFormAttributes> = ({ formik, title, status, timeSlots }) => {
   const options = [
     { value: 'Mũ', label: 'Mũ' },
     { value: 'Điện thoại', label: 'Điện thoại' },
@@ -79,6 +81,15 @@ export const OrderForm: FC<OrderFormAttributes> = ({ formik, title, status }) =>
     }
     return slots;
   }, []);
+
+  const filteredTimeSlotOptions = useMemo(() => {
+    return timeSlots?.map((timeSlot) => {
+      return {
+        label: `${timeSlot.startTime} - ${timeSlot.endTime}`,
+        value: timeSlot.startTime
+      };
+    });
+  }, [timeSlots]);
 
   const dormitoryList = useMemo(() => {
     return AddressData.dormitories;
@@ -209,7 +220,7 @@ export const OrderForm: FC<OrderFormAttributes> = ({ formik, title, status }) =>
             onChange={(event) => formik.setFieldValue('deliveryTimeSlot', event.target.value)}
             value={formik.values.deliveryTimeSlot as string}
           >
-            {timeSlotOptions.map((slot, index) => (
+            {filteredTimeSlotOptions?.map((slot, index) => (
               <MenuItem key={index} value={slot.value}>
                 {slot.label}
               </MenuItem>

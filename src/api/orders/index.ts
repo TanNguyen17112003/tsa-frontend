@@ -79,6 +79,7 @@ export interface OrderStatusRequest {
   reason?: string;
   distance?: number;
   cancelReasonType?: 'FROM_STUDENT' | 'FROM_STAFF';
+  receivedImage?: string;
 }
 
 export class OrdersApi {

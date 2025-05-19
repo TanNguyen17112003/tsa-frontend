@@ -13,6 +13,7 @@ import React, { useMemo, useState } from 'react';
 import { useRegulationsContext } from 'src/contexts/regulations/regulations-context';
 import { Ban, Calendar } from 'lucide-react';
 import useFunction from 'src/hooks/use-function';
+import LoadingProcess from 'src/components/LoadingProcess';
 
 interface RegulationProps {
   dormitoryName: string;
@@ -279,6 +280,11 @@ const Regulation: React.FC<RegulationProps> = ({ dormitoryName }) => {
           </Button>
         </Stack>
       </Stack>
+      {(handleAddSlotHelper.loading ||
+        handleSaveSlotHelper.loading ||
+        handleDeleteSlotHelper.loading ||
+        handleSaveThresholdHelper.loading ||
+        getRegulationsApi.loading) && <LoadingProcess />}
     </Paper>
   );
 };

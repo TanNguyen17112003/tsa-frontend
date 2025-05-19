@@ -1,24 +1,102 @@
-import { Typography, Stack, Chip, Box } from '@mui/material';
+import { Typography, Stack, Chip, Box, Tooltip } from '@mui/material';
 import { CustomTableConfig } from 'src/components/custom-table';
 import { OrderDetail } from 'src/types/order';
-import { Edit, DocumentText, Trash } from 'iconsax-react';
+import { Edit, DocumentText, Trash, CloseCircle, Security, Check } from 'iconsax-react';
 import { formatDate, formatUnixTimestamp, formatVNDcurrency } from 'src/utils/format-time-currency';
 import { UserDetail } from 'src/types/user';
+import { Verified } from 'lucide-react';
 
 const getOrderTableConfigs = ({
   onClickDelete,
   onClickEdit,
+  onClickCancel,
+  onClickReceiveExternal,
   users
 }: {
   onClickDelete: (data: OrderDetail) => void;
   onClickEdit: (data: OrderDetail) => void;
+  onClickCancel: (data: OrderDetail) => void;
+  onClickReceiveExternal: (data: OrderDetail) => void;
   users: UserDetail[];
 }): CustomTableConfig<OrderDetail['id'], OrderDetail>[] => [
   {
     key: 'checkCode',
     headerLabel: 'Mã đơn hàng',
     type: 'string',
-    renderCell: (data) => <Typography>#{data.checkCode}</Typography>
+    renderCell: (data) => {
+      const isContainingReceiveStatus = data.historyTime
+        .map((historyItem) => historyItem.status)
+        .includes('RECEIVED_EXTERNAL');
+
+      return (
+        <Stack direction={'row'} alignItems={'center'} gap={1}>
+          <Typography>#{data.checkCode}</Typography>
+          {isContainingReceiveStatus && (
+            <Tooltip title='Đơn hàng này đã được nhận từ bên ngoài'>
+              <Verified color='green' fontVariant={'contained'} />
+            </Tooltip>
+          )}
+        </Stack>
+      );
+    }
+  },
+  {
+    key: 'receivedImage',
+    headerLabel: 'Minh chứng nhận hàng',
+    type: 'string',
+    renderCell: (data) => {
+      const handleClick = () => {
+        window.open(data.receivedImage as string, '_blank');
+      };
+      return data.receivedImage ? (
+        <Box className='cursor-pointer' onClick={handleClick}>
+          <img src={data.receivedImage as string} alt='proof' width={100} />
+        </Box>
+      ) : (
+        <Typography>Chưa có thông tin</Typography>
+      );
+    }
+  },
+  {
+    key: 'finishedImage',
+    headerLabel: 'Minh chứng giao hàng',
+    type: 'string',
+    renderCell: (data) => {
+      const handleClick = () => {
+        window.open(data.finishedImage as string, '_blank');
+      };
+      return data.finishedImage ? (
+        <Box className='cursor-pointer' onClick={handleClick}>
+          <img src={data.finishedImage as string} alt='proof' width={100} />
+        </Box>
+      ) : (
+        <>Chưa có thông tin</>
+      );
+    }
+  },
+  {
+    key: 'canceledImage',
+    headerLabel: 'Minh chứng hủy đơn',
+    type: 'string',
+    renderCell: (data) => {
+      const listImage = data.historyTime
+        .filter((item) => item.canceledImage !== null && item.canceledImage?.length > 0)
+        .map((item) => item.canceledImage);
+      const handleClick = (index: number) => {
+        window.open(listImage[index] as string, '_blank');
+      };
+      return listImage?.length > 0 ? (
+        <Stack direction={'row'} spacing={1}>
+          {listImage.map((image, index) => (
+            <Box key={index} className='cursor-pointer' onClick={() => handleClick(index)}>
+              <img src={image as string} alt='proof' width={100} />
+            </Box>
+          ))}
+        </Stack>
+      ) : (
+        <>Chưa có thông tin</>
+      );
+    }
   },
   {
     key: 'brand',
@@ -150,10 +228,14 @@ const getOrderTableConfigs = ({
                   ? 'Đã hủy'
                   : data.latestStatus === 'ACCEPTED'
                     ? 'Đã chấp nhận'
-                    : 'Đã từ chối'
+                    : data.latestStatus === 'RECEIVED_EXTERNAL'
+                      ? 'Đã nhận hàng'
+                      : 'Đã từ chối'
         }
         color={
-          data.latestStatus === 'DELIVERED' || data.latestStatus === 'ACCEPTED'
+          data.latestStatus === 'DELIVERED' ||
+          data.latestStatus === 'ACCEPTED' ||
+          data.latestStatus === 'RECEIVED_EXTERNAL'
             ? 'success'
             : data.latestStatus === 'PENDING' || data.latestStatus === 'IN_TRANSPORT'
               ? 'warning'
@@ -162,47 +244,7 @@ const getOrderTableConfigs = ({
       />
     )
   },
-  {
-    key: 'finishedImage',
-    headerLabel: 'Minh chứng',
-    type: 'string',
-    renderCell: (data) => {
-      const handleClick = () => {
-        window.open(data.finishedImage as string, '_blank');
-      };
-      return data.finishedImage ? (
-        <Box className='cursor-pointer' onClick={handleClick}>
-          <img src={data.finishedImage as string} alt='proof' width={100} />
-        </Box>
-      ) : (
-        <>Chưa có thông tin</>
-      );
-    }
-  },
-  {
-    key: 'canceledImage',
-    headerLabel: 'Danh sách hình ảnh hủy đơn',
-    type: 'string',
-    renderCell: (data) => {
-      const listImage = data.historyTime
-        .filter((item) => item.canceledImage !== null && item.canceledImage?.length > 0)
-        .map((item) => item.canceledImage);
-      const handleClick = (index: number) => {
-        window.open(listImage[index] as string, '_blank');
-      };
-      return listImage?.length > 0 ? (
-        <Stack direction={'row'} spacing={1}>
-          {listImage.map((image, index) => (
-            <Box key={index} className='cursor-pointer' onClick={() => handleClick(index)}>
-              <img src={image as string} alt='proof' width={100} />
-            </Box>
-          ))}
-        </Stack>
-      ) : (
-        <>Chưa có thông tin</>
-      );
-    }
-  },
+
   {
     key: 'cancelReason',
     headerLabel: 'Lý do hủy đơn',
@@ -223,24 +265,55 @@ const getOrderTableConfigs = ({
     type: 'string',
     renderCell: (data) => (
       <Stack direction={'row'} spacing={2}>
-        <Edit
-          color='blue'
-          size={24}
-          className='cursor-pointer'
-          onClick={(event) => {
-            event.stopPropagation();
-            onClickEdit(data);
-          }}
-        />
-        <Trash
-          color='red'
-          size={24}
-          className='cursor-pointer'
-          onClick={(event) => {
-            event.stopPropagation();
-            onClickDelete(data);
-          }}
-        />
+        <Tooltip title='Chỉnh sửa đơn hàng'>
+          <Edit
+            color='blue'
+            size={24}
+            className='cursor-pointer'
+            onClick={(event) => {
+              event.stopPropagation();
+              onClickEdit(data);
+            }}
+          />
+        </Tooltip>
+        <Tooltip title='Xóa đơn hàng'>
+          <Trash
+            color='red'
+            size={24}
+            className='cursor-pointer'
+            onClick={(event) => {
+              event.stopPropagation();
+              onClickDelete(data);
+            }}
+          />
+        </Tooltip>
+
+        {data.latestStatus !== 'CANCELED' && data.latestStatus !== 'DELIVERED' && (
+          <Tooltip title='Hủy đơn hàng'>
+            <CloseCircle
+              color='red'
+              size={24}
+              className='cursor-pointer'
+              onClick={(event) => {
+                event.stopPropagation();
+                onClickCancel(data);
+              }}
+            />
+          </Tooltip>
+        )}
+        {data.latestStatus === 'PENDING' && (
+          <Tooltip title='Xác nhận đơn từ bên ngoài'>
+            <Verified
+              color='green'
+              size={24}
+              className='cursor-pointer'
+              onClick={(event) => {
+                event.stopPropagation();
+                onClickReceiveExternal(data);
+              }}
+            />
+          </Tooltip>
+        )}
       </Stack>
     )
   }

@@ -21,6 +21,7 @@ import { getShippingFee } from 'src/utils/shipping-fee';
 import { usePayOS, PayOSConfig } from 'payos-checkout';
 import { PaymentsApi } from 'src/api/payment';
 import dayjs from 'dayjs';
+import OrderSatisfiedDialog from './order-satisfied-dialog';
 import { RegulationsApi } from 'src/api/regulations';
 import { useSocketContext } from 'src/contexts/socket-client/socket-client-context';
 import LoadingProcess from 'src/components/LoadingProcess';
@@ -37,7 +38,7 @@ const OrderAddPage = () => {
   const [isUploaded, setIsUploaded] = useState(false);
   const [checkoutUrl, setCheckoutUrl] = useState<string>('');
   const [orderId, setOrderId] = useState<string>('');
-
+  const orderSatisfiedDialog = useDialog();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [orderList, setOrderList] = useState<OrderFormProps[]>([]);
@@ -47,7 +48,12 @@ const OrderAddPage = () => {
   const { user } = useAuth();
   const { user: firebaseUser } = useFirebaseAuth();
 
+  const getRegulationsApi = useFunction(RegulationsApi.getRegulations);
   const getRegulationApi = useFunction(RegulationsApi.getRegulationByDormitory);
+
+  const allTimeSlots = useMemo(() => {
+    return getRegulationsApi.data || [];
+  }, [getRegulationsApi.data]);
 
   const timeSlots: DeliverySlot[] = useMemo(() => {
     return (getRegulationApi.data || null)?.deliverySlots.map((slot) => {
@@ -57,6 +63,34 @@ const OrderAddPage = () => {
       };
     }) as DeliverySlot[];
   }, [getRegulationApi.data]);
+
+  const isSatisfiedDeliverySlots = useCallback(
+    (deliveryDate: string, dormitoryName: string) => {
+      const foundRegulationTimeSlots = allTimeSlots.find(
+        (regulation) => regulation.name === dormitoryName
+      );
+      if (!foundRegulationTimeSlots) return false;
+
+      const startTimeFromDeliveryDate = deliveryDate.split('T')[1];
+      return foundRegulationTimeSlots.deliverySlots.some((slot) => {
+        const startTime = slot.startTime;
+        return startTimeFromDeliveryDate == startTime;
+      });
+    },
+    [allTimeSlots]
+  );
+
+  const satisfiedOrderList = useMemo(() => {
+    return orderList.filter((order) => {
+      return isSatisfiedDeliverySlots(order.deliveryDate as string, order.dormitory as string);
+    });
+  }, [orderList]);
+
+  const notSatisfiedOrderList = useMemo(() => {
+    return orderList.filter((order) => {
+      return !isSatisfiedDeliverySlots(order.deliveryDate as string, order.dormitory as string);
+    });
+  }, [orderList]);
 
   const orderShippingFeeDialog = useDialog<{
     shippingFee: number;
@@ -71,8 +105,8 @@ const OrderAddPage = () => {
   });
 
   const shippingFee = useMemo(() => {
-    if (orderList && orderList.length > 0) {
-      return orderList.reduce((acc, order) => {
+    if (satisfiedOrderList && satisfiedOrderList.length > 0) {
+      return satisfiedOrderList.reduce((acc, order) => {
         return (
           acc +
           getShippingFee(
@@ -91,7 +125,7 @@ const OrderAddPage = () => {
       formik.values.weight as number
     );
   }, [
-    orderList,
+    satisfiedOrderList,
     formik.values.room,
     formik.values.building,
     formik.values.dormitory,
@@ -99,9 +133,13 @@ const OrderAddPage = () => {
   ]);
 
   const handleOpenShippingFeeDialog = useCallback(() => {
-    orderShippingFeeDialog.handleOpen({
-      shippingFee: shippingFee as number
-    });
+    if (notSatisfiedOrderList.length > 0) {
+      orderSatisfiedDialog.handleOpen();
+    } else {
+      orderShippingFeeDialog.handleOpen({
+        shippingFee: shippingFee as number
+      });
+    }
   }, [shippingFee, orderShippingFeeDialog]);
 
   const payOSConfig: PayOSConfig = useMemo(() => {
@@ -163,9 +201,9 @@ const OrderAddPage = () => {
   const handleSubmitOrder = useCallback(
     async (values: OrderFormProps) => {
       try {
-        if (orderList && orderList.length > 0) {
+        if (satisfiedOrderList && satisfiedOrderList.length > 0) {
           await createOrder(
-            orderList.map((order) => ({
+            satisfiedOrderList.map((order) => ({
               ...order,
               deliveryDate: dayjs(order.deliveryDate).toISOString(),
               product: order.product
@@ -197,7 +235,7 @@ const OrderAddPage = () => {
       createOrder,
       showSnackbarError,
       showSnackbarSuccess,
-      orderList,
+      satisfiedOrderList,
       user?.id,
       firebaseUser?.id,
       formik,
@@ -237,6 +275,16 @@ const OrderAddPage = () => {
       getRegulationApi.call(formik.values.dormitory);
     }
   }, [formik.values.dormitory]);
+
+  useEffect(() => {
+    getRegulationsApi.call({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleOrderSatisfiedConfirm = useCallback(() => {
+    orderSatisfiedDialog.handleClose();
+    orderShippingFeeDialog.handleOpen({ shippingFee: shippingFee as number });
+  }, [orderSatisfiedDialog, orderShippingFeeDialog, shippingFee]);
 
   return (
     <>
@@ -306,7 +354,7 @@ const OrderAddPage = () => {
           </Stack>
         </Stack>
         <OrderConfirmFeeDialog
-          orders={orderList}
+          orders={satisfiedOrderList}
           formik={formik}
           open={orderShippingFeeDialog.open}
           onClose={orderShippingFeeDialog.handleClose}
@@ -319,6 +367,13 @@ const OrderAddPage = () => {
           onClose={orderPaymentDialog.handleClose}
           onConfirm={handleCreateOrderAndPayment}
           onAlternativeConfirm={async () => formik.handleSubmit()}
+        />
+        <OrderSatisfiedDialog
+          open={orderSatisfiedDialog.open}
+          onClose={orderSatisfiedDialog.handleClose}
+          satisfiedOrders={satisfiedOrderList}
+          notSatisfiedOrders={notSatisfiedOrderList}
+          onConfirm={handleOrderSatisfiedConfirm}
         />
         {(getRegulationApi.loading || handleSubmitOrderHelper.loading) && <LoadingProcess />}
       </Box>

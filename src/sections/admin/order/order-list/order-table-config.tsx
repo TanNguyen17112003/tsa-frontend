@@ -301,7 +301,7 @@ const getOrderTableConfigs = ({
             />
           </Tooltip>
         )}
-        {data.latestStatus === 'PENDING' && (
+        {data.latestStatus === 'ACCEPTED' && (
           <Tooltip title='Xác nhận đơn từ bên ngoài'>
             <Verified
               color='green'

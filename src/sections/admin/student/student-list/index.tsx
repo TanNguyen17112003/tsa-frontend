@@ -12,6 +12,7 @@ import DeleteUserDialog from '../../delete-user-dialog';
 import { useDialog } from '@hooks';
 import RestoreUserDialog from '../../restore-user-dialog';
 import LoadingProcess from 'src/components/LoadingProcess';
+import UpdateRoleDialog from '../../update-role-dialog';
 
 function StudentList() {
   const router = useRouter();
@@ -31,6 +32,7 @@ function StudentList() {
 
   const deleteStudentDialog = useDialog<UserDetail>();
   const restoreStudentDialog = useDialog<UserDetail>();
+  const updateRoleDialog = useDialog<UserDetail>();
 
   const handleStatusChange = (event: SelectChangeEvent<string>) => {
     setSelectedStatus(event.target.value as string);
@@ -97,7 +99,7 @@ function StudentList() {
         deleteStudentDialog.handleOpen(data);
       },
       onClickUpgrade: (data: UserDetail) => {
-        console.log(data);
+        updateRoleDialog.handleOpen(data);
       },
       onClickRestore: (data: UserDetail) => {
         restoreStudentDialog.handleOpen(data);
@@ -145,6 +147,11 @@ function StudentList() {
         onConfirm={() =>
           updateUserStatus(restoreStudentDialog.data?.id as string, { status: 'AVAILABLE' })
         }
+      />
+      <UpdateRoleDialog
+        open={updateRoleDialog.open}
+        user={updateRoleDialog.data as UserDetail}
+        onClose={updateRoleDialog.handleClose}
       />
     </Box>
   );

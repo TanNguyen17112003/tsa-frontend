@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { Filter, ArrowRotateLeft } from 'iconsax-react';
 import DateRangePickerTextField from 'src/components/date-range-picker-textfield';
-import { userStatusMap } from 'src/types/user';
+import { staffStatusMap, userStatusMap } from 'src/types/user';
 
 interface StaffFilterProps {
   selectedStatus: string;
@@ -30,7 +30,7 @@ const StaffFilter: React.FC<StaffFilterProps> = ({
   onResetFilters,
   numberOfStaff
 }) => {
-  const orderStatusList = Object.keys(userStatusMap);
+  const orderStatusList = Object.keys(staffStatusMap);
   return (
     <Box display={'flex'} justifyContent={'space-between'} alignItems={'center'}>
       <Stack direction={'row'} className='w-4/5 my-6'>

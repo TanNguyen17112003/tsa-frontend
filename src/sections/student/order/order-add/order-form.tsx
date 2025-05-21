@@ -83,12 +83,15 @@ export const OrderForm: FC<OrderFormAttributes> = ({ formik, title, status, time
   }, []);
 
   const filteredTimeSlotOptions = useMemo(() => {
-    return timeSlots?.map((timeSlot) => {
-      return {
-        label: `${timeSlot.startTime} - ${timeSlot.endTime}`,
-        value: timeSlot.startTime
-      };
-    });
+    return timeSlots
+      ?.slice()
+      .sort((a, b) => a.startTime.localeCompare(b.startTime))
+      .map((timeSlot) => {
+        return {
+          label: `${timeSlot.startTime} - ${timeSlot.endTime}`,
+          value: timeSlot.startTime
+        };
+      });
   }, [timeSlots]);
 
   const dormitoryList = useMemo(() => {

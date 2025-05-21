@@ -9,7 +9,19 @@ export type UserStatus = 'AVAILABLE' | 'BUSY' | 'DEACTIVATED' | 'BANNED';
 export const userStatusMap = {
   'Đang online': 'AVAILABLE',
   'Đang bận': 'BUSY',
-  'Đã offline': 'OFFLINE'
+  'Đã hủy': 'DEACTIVATED',
+  'Đã bị cấm': 'BANNED'
+};
+
+export const studenStatusMap = {
+  'Đang online': 'AVAILABLE',
+  'Đã bị cấm': 'BANNED'
+};
+
+export const staffStatusMap = {
+  'Đang online': 'AVAILABLE',
+  'Đang bận': 'BUSY',
+  'Đã hủy': 'DEACTIVATED'
 };
 
 export interface User {

@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { Filter, ArrowRotateLeft } from 'iconsax-react';
 import DateRangePickerTextField from 'src/components/date-range-picker-textfield';
-import { userStatusMap } from 'src/types/user';
+import { studenStatusMap, userStatusMap } from 'src/types/user';
 import { AddressData } from '@utils';
 
 interface StudentFilterProps {
@@ -43,7 +43,7 @@ const StudentFilter: React.FC<StudentFilterProps> = ({
   onResetFilters,
   numberOfStudent
 }) => {
-  const orderStatusList = Object.keys(userStatusMap);
+  const orderStatusList = Object.keys(studenStatusMap);
   return (
     <Box display={'flex'} justifyContent={'space-between'} alignItems={'center'}>
       <Stack direction={'row'} className='w-4/5 my-6'>

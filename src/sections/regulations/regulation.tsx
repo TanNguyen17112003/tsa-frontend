@@ -175,7 +175,11 @@ const Regulation: React.FC<RegulationProps> = ({ dormitoryName }) => {
         </Typography>
       </Box>
       <Stack spacing={2}>
-        {regulation.deliverySlots?.map((slot) => (
+        {(
+          regulation.deliverySlots
+            ?.slice()
+            .sort((a, b) => a.startTime.localeCompare(b.startTime)) || []
+        ).map((slot) => (
           <Stack key={slot.id} direction='row' alignItems='center' spacing={1} minWidth={300}>
             {editingSlotId === slot.id ? (
               <>

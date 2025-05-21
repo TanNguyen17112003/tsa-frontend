@@ -30,6 +30,7 @@ import { useDialog } from '@hooks';
 import OrderConfirmAdvancedDialog from './order-confirm-advanced-dialog';
 import { GroupOrderMode, OrdersApi } from 'src/api/orders';
 import LoadingProcess from 'src/components/LoadingProcess';
+import { RegulationsApi } from 'src/api/regulations';
 
 interface OrderFastGroupFieldProps {
   deliveryDay: string;
@@ -41,6 +42,18 @@ interface OrderFastGroupFieldProps {
 
 function OrderFastGroupDialog({ ...dialogProps }: DialogProps & {}) {
   const [result, setResult] = useState<AdvancedDelivery | null>(null);
+  const getRegulationApi = useFunction(RegulationsApi.getRegulationByDormitory);
+  const filterTimeSlotOptions = useMemo(() => {
+    return (getRegulationApi.data?.deliverySlots || [])
+      .slice()
+      .sort((a, b) => a.startTime.localeCompare(b.startTime))
+      .map((timeSlot) => {
+        return {
+          label: `${timeSlot.startTime} - ${timeSlot.endTime}`,
+          value: timeSlot.startTime
+        };
+      });
+  }, [getRegulationApi.data]);
   const confirmAdvancedDialog = useDialog();
   const modeOptions = useMemo(() => {
     return [
@@ -128,6 +141,11 @@ function OrderFastGroupDialog({ ...dialogProps }: DialogProps & {}) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    getRegulationApi.call(formik.values.dormitory);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formik.values.dormitory]);
+
   return (
     <Dialog fullWidth maxWidth='sm' {...dialogProps}>
       <DialogTitle>
@@ -178,7 +196,7 @@ function OrderFastGroupDialog({ ...dialogProps }: DialogProps & {}) {
               onChange={(event) => formik.setFieldValue('deliveryTimeSlot', event.target.value)}
               value={formik.values.deliveryTimeSlot as string}
             >
-              {timeSlotOptions.map((slot, index) => (
+              {filterTimeSlotOptions.map((slot, index) => (
                 <MenuItem key={index} value={slot.value}>
                   {slot.label}
                 </MenuItem>
@@ -258,7 +276,9 @@ function OrderFastGroupDialog({ ...dialogProps }: DialogProps & {}) {
         staffs={staffs}
         result={result}
       />
-      {(fetchGroupOrdersHelper.loading || getListUsersApiApi.loading) && <LoadingProcess />}
+      {(fetchGroupOrdersHelper.loading ||
+        getListUsersApiApi.loading ||
+        getRegulationApi.loading) && <LoadingProcess />}
     </Dialog>
   );
 }

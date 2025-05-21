@@ -28,6 +28,7 @@ const OrderNotPaid: React.FC = () => {
     'Đã giao',
     'Đã hủy',
     'Đang giao',
+    'Đã nhận hàng',
     'Đã xác nhận',
     'Đang chờ xử lý',
     'Đã từ chối'

@@ -62,7 +62,7 @@ const getOrderTableConfigs = ({
     },
     {
       key: 'finishedImage',
-      headerLabel: 'Minh chứng',
+      headerLabel: 'Minh chứng giao hàng',
       type: 'string',
       renderCell: (data) => {
         const handleClick = () => {
